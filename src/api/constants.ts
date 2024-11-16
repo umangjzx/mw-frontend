@@ -12,9 +12,17 @@ export const endpoints: EndpointProps = {
   },
   volunteer: {
     update: (id: string) => `volunteer/${id}`,
+    getAllVolunteers: "volunteer",
   },
   volunteer_slot: {
-    update: (id: string) => `volunteer_slot/${id}`,
-    get: (id: string) => `volunteer_slot/${id}`,
+    update: "volunteer_slots",
+    get: `volunteer_slots`,
+    availableSlots: (id: string, date: string) =>
+      `volunteer_slots/available_slots/${id}/${date}`,
+  },
+  session: {
+    bookSession: "session",
+    getLearnerSessions: (id: string) => `session/learner/${id}`,
+    cancelSession: (id: string) => `session/${id}`,
   },
 };

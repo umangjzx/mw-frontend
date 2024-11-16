@@ -64,7 +64,7 @@ export default function Volunteer() {
       volunteer_service_type: service,
     };
     PutAPI(endpoints.volunteer.update(id), payload).then((res) => {
-      router.push("/dashboard");
+      // router.push("/dashboard");
     });
   };
 

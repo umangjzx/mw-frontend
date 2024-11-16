@@ -10,9 +10,16 @@ export interface EndpointProps {
   };
   volunteer: {
     update: (id: string) => string;
+    getAllVolunteers: string;
   };
   volunteer_slot: {
-    update: (id: string) => string;
-    get: (id: string) => string;
+    update: string;
+    get: string;
+    availableSlots: (id: string, date: string) => string;
+  };
+  session: {
+    bookSession: string;
+    getLearnerSessions: (id: string) => string;
+    cancelSession: (id: string) => string;
   };
 }

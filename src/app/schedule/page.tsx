@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 interface TimeSlot {
   start_time: string;
   end_time: string;
-  slot_id?: string;
+  volunteer_slot_id?: string;
 }
 
 interface DaySchedule {
@@ -35,7 +35,6 @@ const Schedule = () => {
     Saturday: [],
   });
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
-  const volunteer_id = "50beb288-d29a-4b80-88e9-0bc59324bccf";
   const days = [
     "Sunday",
     "Monday",
@@ -48,7 +47,7 @@ const Schedule = () => {
   const [deletedSlots, setDeletedSlots] = useState<string[]>([]);
 
   useEffect(() => {
-    GetAPI(endpoints.volunteer_slot.get(volunteer_id)).then((res) => {
+    GetAPI(endpoints.volunteer_slot.get).then((res: any) => {
       const newSchedule = { ...schedule };
 
       // Initialize all days with empty arrays
@@ -60,7 +59,7 @@ const Schedule = () => {
       res.data.forEach((dayData: any) => {
         if (dayData.slots && dayData.slots.length > 0) {
           newSchedule[dayData.day] = dayData.slots.map((slot: any) => ({
-            slot_id: slot.slot_id,
+            volunteer_slot_id: slot.volunteer_slot_id,
             start_time: slot.start_time,
             end_time: slot.end_time,
           }));
@@ -70,7 +69,9 @@ const Schedule = () => {
       // Ensure each day has at least one empty slot if no slots exist
       days.forEach((day) => {
         if (newSchedule[day].length === 0) {
-          newSchedule[day] = [{ slot_id: "", start_time: "", end_time: "" }];
+          newSchedule[day] = [
+            { volunteer_slot_id: "", start_time: "", end_time: "" },
+          ];
         }
       });
 
@@ -170,8 +171,8 @@ const Schedule = () => {
   const removeTimeSlot = (day: string, slotIndex: number) => {
     setSchedule((prev) => {
       const slotToRemove = prev[day][slotIndex];
-      if (slotToRemove.slot_id) {
-        setDeletedSlots((prev) => [...prev, slotToRemove.slot_id!]);
+      if (slotToRemove.volunteer_slot_id) {
+        setDeletedSlots((prev) => [...prev, slotToRemove.volunteer_slot_id!]);
       }
 
       return {
@@ -195,7 +196,7 @@ const Schedule = () => {
       slots: schedule[day]
         .filter((slot) => slot.start_time && slot.end_time) // Only include filled slots
         .map((slot) => ({
-          slot_id: uuidv4(),
+          volunteer_slot_id: uuidv4(),
           start_time: slot.start_time,
           end_time: slot.end_time,
         })),
@@ -212,12 +213,10 @@ const Schedule = () => {
     };
 
     console.log(payload, "payload");
-    PutAPI(endpoints.volunteer_slot.update(volunteer_id), payload).then(
-      (res) => {
-        console.log(res, "res");
-        setDeletedSlots([]);
-      }
-    );
+    PutAPI(endpoints.volunteer_slot.update, payload).then((res) => {
+      console.log(res, "res");
+      setDeletedSlots([]);
+    });
   };
 
   return (

@@ -37,6 +37,11 @@ const LoginPage = () => {
             console.log("Signup response:", response.data);
             if (typeof window !== "undefined") {
               setLocalStorage("token", response.data.auth_token);
+              if (role === "volunteer") {
+                setLocalStorage("volunteer_id", response.data.volunteer_id);
+              } else {
+                setLocalStorage("learner_id", response.data.learner_id);
+              }
             }
             if (
               response?.data?.onboarded_status === "pending" &&
