@@ -14,7 +14,9 @@ interface AuthResponse {
 const LoginPage = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [role, setRole] = useState<UserRole>("learner");
+  const [role, setRole] = useState<UserRole>(
+    (getLocalStorage("role") as UserRole) || "volunteer"
+  );
 
   useEffect(() => {
     const savedRole = getLocalStorage("role") as UserRole;

@@ -25,4 +25,13 @@ export const endpoints: EndpointProps = {
     getLearnerSessions: (id: string) => `session/learner/${id}`,
     cancelSession: (id: string) => `session/${id}`,
   },
+  post: {
+    createPost: "post",
+    getPosts: "post",
+    getSinglePost: (post_id: string) => `post/${post_id}`,
+  },
+  comment: {
+    createComment: "comment",
+    getPostComments: (post_id: string) => `comment/${post_id}`,
+  },
 };
