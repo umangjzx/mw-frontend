@@ -1,6 +1,6 @@
 "use client";
 
-import CenterModal from "@/components/common/modals/CenterModal";
+import CenterModal from "@/components/common/Modals/CenterModal";
 
 export default function Login() {
     return (
