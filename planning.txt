@@ -1,0 +1,95 @@
+# @format
+
+Pages
+  Learner
+    Onboarding
+    Home
+  Volunteer
+    Onboarding
+    Home 
+
+Components
+  Learners (Sidebar)
+    Header
+  Volunteer
+  Schedule
+    Header
+  Community
+    Action Panel
+    Header
+    Add new post Modal
+    Detailed Feed Modal
+    Feed
+      FeedCard
+      CommentCard
+    Notifications
+      NotifcationCard
+  Resources
+    Header
+    Card
+    New Resource Modal
+    Detailed Resource Modal 
+  Common
+    Sidebar
+      Avatar
+      Section card 
+    Modals
+      CenterModal
+      RightModal
+    Button
+    Table
+      Pagination
+    Inputs
+      TextInput
+      Date picker
+      Radio buttons
+      Textarea
+      File upload
+      Dropdown
+        Search and select
+        Select
+        MultiSelect
+
+Layouts
+  CommunityLayout
+  MainLayout
+   
+
+Routes 
+  Dynamic Routes 
+    Learner - /learner
+      /onboarding
+  Volunteer - /volunteer
+      /onboarding
+      /schedule?date={date}
+      /schedule?date={date}&&mode={"View notifications"}
+      /schedule?id={sechduleId}&&mode={"feedback" | "edit"}
+      /learner?query=""&&page=1&&size=10
+      /leaner?id={leanerId}&&mode={"uploadtestimonial" | "sendmessage"}
+      /resources/?query=""
+      /resources/?id={resourceId}&&mode={"view"| "edit"}
+      /resources/myresources?mode="new"
+      /community/allpost
+      /community/suggested
+      /community/notifications
+      /community/savedposts
+      /community/manageposts
+      /volunteer/volunteerid
+
+  Static Routes
+
+Zustand
+  Learner
+  Volunteer 
+
+Localstorage
+  Learner
+  Volunteer 
+  Common
+    JWT
+
+Api integration
+  Learner - /learner
+    POST - /onboarding
+  Volunteer - /volunteer
+    POST - /onboarding
