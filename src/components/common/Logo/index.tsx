@@ -3,9 +3,9 @@ import LogoIcon from "@/assets/icons/LogoIcon";
 
 const Logo = () => {
     return (
-        <div className="bg-slate-900 ">
+        <div className="flex items-center gap-2  rounded-lg">
             <LogoIcon />
-            <h1 className="text-white text-2xl font-bold">Melody Wings</h1>
+            <h3 className="text-xl font-medium">Melody Wings</h3>
         </div>
     );
 };
