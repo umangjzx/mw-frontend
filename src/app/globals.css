@@ -3,13 +3,14 @@
 @tailwind utilities;
 
 :root {
-    --gray-color: #505050;
-    --white-color: #ffffff;
-    --black-color: #121212;
-    --error-color: #ef4444;
-    --error-light-color: #fee2e2;
-    --success-color: #16a34a;
-    --success-light-color: #dcfce7;
+  --gray-color: #505050;
+  --white-color: #ffffff;
+  --black-color: #121212;
+  --error-color: #EF4444;
+  --error-light-color: #FEE2E2;
+  --success-color: #16A34A;
+  --success-light-color: #DCFCE7;
+  --border-stroke:#E0E0E0;
 
     /* Font weights */
     --font-light: 300;

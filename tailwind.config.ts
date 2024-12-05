@@ -14,6 +14,7 @@ const config: Config = {
         gray: 'var(--gray-color)',
         white: 'var(--white-color)',
         black: 'var(--black-color)',
+        stroke: 'var(--border-stroke)',
         error: {
           DEFAULT: 'var(--error-color)',
           light: 'var(--error-light-color)',
