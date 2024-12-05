@@ -47,11 +47,25 @@ body {
     }
 }
 
-/* @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-} */
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #fff; /* Or any other color you prefer */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: rgb(165, 165, 165); /* Color of the scrollbar handle */
+    border-radius: 5px; /* Roundness of the scrollbar handle */
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Darker color when hovered */
+}
 
 /* Rating Radio Button Styles */
 .ant-radio-button-wrapper {
