@@ -1,0 +1,34 @@
+import React from "react";
+import { Button as AntButton } from "antd";
+import { ButtonProps } from "./button";
+
+const Button: React.FC<ButtonProps> = ({
+    btnVariant = "primary",
+    customClassName = "",
+    title,
+    children,
+    ...props
+}) => {
+    const baseStyles = "rounded-2xl px-4 py-4 font-medium transition-all duration-200";
+
+    const variantStyles = {
+        primary: "bg-primary text-white hover:bg-primary focus:bg-primary",
+        secondary: "bg-black text-white hover:bg-black focus:bg-black",
+        error: "bg-error-light text-error hover:bg-error focus:bg-error",
+        success: "bg-success-light text-success hover:bg-success focus:bg-success",
+        link: "bg-transparent text-primary hover:bg-transparent focus:bg-transparent border-none"
+    };
+
+    return (
+        <AntButton
+            rootClassName={`${baseStyles} ${
+                variantStyles[btnVariant as keyof typeof variantStyles]
+            } ${customClassName}`}
+        >
+            {title}
+            {children}
+        </AntButton>
+    );
+};
+
+export default Button;

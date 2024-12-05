@@ -1,4 +1,5 @@
 "use client";
+
 import { UserType } from "@/interfaces/user";
 import { getLocalStorage } from "./localStorage";
 
