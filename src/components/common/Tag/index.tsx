@@ -10,13 +10,20 @@ interface TagComponentProps {
 }
 
 const TagComponent = ({ text, isClose, onClose, className }: TagComponentProps) => {
-
     return (
         <Tag
             closeIcon={false}
             onClose={isClose ? onClose : undefined}
             rootClassName={`${className} flex items-center gap-2 flex-row-reverse`}
-            icon={isClose ? <BiX onClick={onClose} className="text-black bg-white rounded-full active:scale-90 transition-all duration-300" size={14} /> : undefined}
+            icon={
+                isClose ? (
+                    <BiX
+                        onClick={onClose}
+                        className="text-black bg-white rounded-full active:scale-90 transition-all duration-300"
+                        size={14}
+                    />
+                ) : undefined
+            }
             className={`bg-background text-black border-background font-medium text-[0.8rem] capitalize rounded-full`}
         >
             {text}

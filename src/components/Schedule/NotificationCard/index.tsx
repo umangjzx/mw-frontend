@@ -18,15 +18,15 @@ const NotificationCard = () => {
             </div>
             <div className="flex gap-2 items-center justify-between">
                 <div className="flex flex-col gap-1 ">
-                    <p className="text-[0.75rem] font-medium text-[#4F4F4F]">Subject</p>
+                    <p className="text-[0.75rem] font-medium text-darkGrey">Subject</p>
                     <p className="text-sm font-medium">Music</p>
                 </div>
                 <div className="flex flex-col gap-1 ">
-                    <p className="text-[0.75rem] font-medium text-[#4F4F4F]">Date</p>
+                    <p className="text-[0.75rem] font-medium text-darkGrey">Date</p>
                     <p className="text-sm font-medium">23 Nov 2024</p>
                 </div>
                 <div className="flex flex-col gap-1 ">
-                    <p className="text-[0.75rem] font-medium text-[#4F4F4F]">Time</p>
+                    <p className="text-[0.75rem] font-medium text-darkGrey">Time</p>
                     <p className="text-sm font-medium">9:30 - 10:30 AM</p>
                 </div>
             </div>

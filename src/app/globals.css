@@ -3,16 +3,16 @@
 @tailwind utilities;
 
 :root {
-  --gray-color: #505050;
-  --gray-light-color: #4F4F4F;
-  --white-color: #ffffff;
-  --black-color: #121212;
-  --error-color: #EF4444;
-  --error-light-color: #FEE2E2;
-  --success-color: #16A34A;
-  --success-light-color: #DCFCE7;
-  --border-stroke:#E0E0E0;
-  --input-background: #F4F7FB;
+    --gray-color: #505050;
+    --gray-light-color: #4f4f4f;
+    --white-color: #ffffff;
+    --black-color: #121212;
+    --error-color: #ef4444;
+    --error-light-color: #fee2e2;
+    --success-color: #16a34a;
+    --success-light-color: #dcfce7;
+    --border-stroke: #e0e0e0;
+    --input-background: #f4f7fb;
 
     /* Font weights */
     --font-light: 300;
@@ -105,8 +105,8 @@ body {
 }
 
 .ant-select-selector {
-  padding: 3px !important;
-  padding-left: 8px !important;
-  background-color: var(--input-background) !important;
-  font-size: 14px !important;
+    padding: 3px !important;
+    padding-left: 8px !important;
+    background-color: var(--input-background) !important;
+    font-size: 14px !important;
 }
