@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal, ModalProps } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
-import Button from "../button";
+import Button from "../Button";
 import { CenterModalProps } from "./modal";
 
 const CenterModal: React.FC<CenterModalProps> = ({

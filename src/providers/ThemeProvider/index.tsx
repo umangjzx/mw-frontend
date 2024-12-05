@@ -73,6 +73,13 @@ const theme : ThemeConfig = {
 
 
 export const ThemeProvider = ({ children }: ThemeProviderProps) => {
+  useEffect(() => {
+    const theme = getTheme();
+
+    // Set CSS variables
+    document.documentElement.style.setProperty('--primary-color', theme.primary);
+    document.documentElement.style.setProperty('--background-color', theme.background);
+  }, []);
 
     // Listen for storage changes
     useEffect(() => {
