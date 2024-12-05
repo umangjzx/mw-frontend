@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { GetAPI, PostAPI } from "@/api/request";
 import { endpoints } from "@/api/constants";
@@ -95,7 +95,7 @@ const LoginPage = () => {
       <div className="flex items-center gap-4 bg-gray-100 p-2 rounded-lg">
         <button
           onClick={() => handleSetRole("volunteer")}
-          className={`px-4 py-2 rounded-md transition-colors duration-300 ${
+          className={`px-4 py-2 rounded-md bg-primary  transition-colors duration-300 ${
             role === "volunteer"
               ? "bg-blue-500 text-white"
               : "bg-transparent text-gray-700"
@@ -105,7 +105,7 @@ const LoginPage = () => {
         </button>
         <button
           onClick={() => handleSetRole("learner")}
-          className={`px-4 py-2 rounded-md transition-colors duration-300 ${
+          className={`px-4 py-2 rounded-md  bg-primary transition-colors duration-300 ${
             role === "learner"
               ? "bg-blue-500 text-white"
               : "bg-transparent text-gray-700"
