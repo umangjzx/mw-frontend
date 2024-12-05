@@ -1,6 +1,6 @@
 const UserType = {
-  VOLUNTEER: 'volunteer',
-  LEARNER: 'learner',
+    VOLUNTEER: "volunteer",
+    LEARNER: "learner",
 };
 
 export { UserType };
