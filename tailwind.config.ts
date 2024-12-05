@@ -23,6 +23,16 @@ const config: Config = {
           light: 'var(--success-light-color)',
         },
       },
+      fontFamily: {
+        sans: ['Poppins', 'sans-serif'],
+      },
+      fontWeight: {
+        light: 'var(--font-light)',
+        regular: 'var(--font-regular)',
+        medium: 'var(--font-medium)',
+        semibold: 'var(--font-semibold)',
+        bold: 'var(--font-bold)',
+      },
     },
   },
   plugins: [],
