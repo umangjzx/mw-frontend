@@ -10,8 +10,14 @@ const config: Config = {
     extend: {
       colors: {
         primary: 'var(--primary-color)',
-        background: 'var(--background-color)',
-        gray: 'var(--gray-color)',
+        background: {
+          DEFAULT: 'var(--background-color)',
+          input: 'var(--input-background)',
+        },
+        gray: {
+          DEFAULT: 'var(--gray-color)',
+          light: 'var(--gray-light-color)',
+        },
         white: 'var(--white-color)',
         black: 'var(--black-color)',
         stroke: 'var(--border-stroke)',

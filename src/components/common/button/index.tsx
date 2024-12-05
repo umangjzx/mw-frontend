@@ -16,7 +16,7 @@ const Button: React.FC<ButtonProps> = ({
         secondary: "bg-black text-white hover:bg-black focus:bg-black",
         error: "bg-error-light text-error hover:bg-error focus:bg-error",
         success: "bg-success-light text-success hover:bg-success focus:bg-success",
-        link: "bg-transparent text-primary hover:bg-transparent focus:bg-transparent border-none"
+        link: "bg-transparent text-primary hover:bg-transparent focus:bg-transparent border-none",
     };
 
     return (
@@ -24,6 +24,7 @@ const Button: React.FC<ButtonProps> = ({
             rootClassName={`${baseStyles} ${
                 variantStyles[btnVariant as keyof typeof variantStyles]
             } ${customClassName}`}
+            {...props}
         >
             {title}
             {children}
