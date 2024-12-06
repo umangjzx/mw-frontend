@@ -1,0 +1,49 @@
+/* Essential FullCalendar Overrides */
+.fc .fc-daygrid-day-top {
+    justify-content: flex-start !important;
+    padding: 0.5rem !important;
+}
+
+.fc .fc-daygrid-day-number {
+    color: #666;
+    font-size: 0.875rem;
+    text-decoration: none;
+}
+
+.fc-theme-standard td {
+    border: 1px solid #e0e0e0 !important;
+}
+
+.fc-theme-standard th {
+    border: none !important;
+}
+
+.fc-theme-standard .fc-scrollgrid {
+    border: none;
+}
+
+/* Header Styles */
+.fc .fc-toolbar-title {
+    font-size: 1.25rem !important;
+    font-weight: 600;
+    color: #374151;
+}
+
+.fc .fc-button {
+    background-color: transparent !important;
+    border: none !important;
+    color: #374151 !important;
+}
+
+.fc .fc-button:focus {
+    box-shadow: none !important;
+}
+
+.fc .fc-button:hover {
+    background-color: #f3f4f6 !important;
+}
+
+.fc .fc-daygrid-day-top {
+    display: flex !important;
+    flex-direction: row !important;
+}

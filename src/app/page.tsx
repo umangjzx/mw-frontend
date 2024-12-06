@@ -1,21 +1,14 @@
 "use client";
 import React, { useState } from "react";
-import { Input } from "@/components/common/Input";
-import type { InputProps } from "@/components/common/Input/input.d";
-import { ImageFile } from "@/components/common/Input/input.d";
+import { FormField, ImageFile } from "@/components/common/Input/input.d";
+import { FeedbackModal } from "@/components/schedule/Modals";
+import { MessageModal, TestmonialModal } from "@/components/volunteer/Modals";
+import { ResourceModal } from "@/components/resources/Modals";
+import { PostModal } from "@/components/community/Modals";
+import { ProfileModal } from "@/components/profile/Modals";
+import Calender from "@/components/schedule/Calender";
 
-interface FormField extends Omit<InputProps, 'value' | 'onChange'> {
-    name: string;
-    label: string;
-    inputType: InputProps['inputType'];
-    placeholder?: string;
-    options?: { label: string; value: string | number; sublabel?: string }[];
-    required?: boolean;
-    sublabel?: string;
-    sublabelAlignment?: 'right' | 'bottom';
-    variant?: 'rating';
-    maxFiles?: number;
-}
+
 
 const formFields: FormField[] = [
     {
@@ -131,20 +124,6 @@ const formFields: FormField[] = [
         inputType: "image-upload",
         maxFiles: 5,
     },
-    {
-        name: "skills",
-        label: "Skills and Expertise to Share",
-        inputType: "search-select",
-        placeholder: "Search and Select",
-        options: [
-            { label: "Music Therapy", value: "music_therapy" },
-            { label: "Early Childhood Education", value: "early_childhood_education" },
-            { label: "Language Development", value: "language_development" },
-            { label: "Art Therapy", value: "art_therapy" },
-            { label: "Behavioral Support", value: "behavioral_support" },
-            // Add more options as needed
-        ],
-    },
 ];
 
 interface FormData {
@@ -170,8 +149,8 @@ export default function FormPage() {
     };
 
     return (
-        <div className="max-w-2xl mx-auto p-6">
-            <h1 className="text-2xl font-bold mb-6">Registration Form</h1>
+        <div className="w-screen h-screen mx-auto p-6">
+            {/* <h1 className="text-2xl font-bold mb-6">Registration Form</h1>
             <form onSubmit={handleSubmit} className="space-y-4">
                 {formFields.map((field) => (
                     <Input
@@ -187,7 +166,14 @@ export default function FormPage() {
                 >
                     Submit
                 </button>
-            </form>
+            </form> */}
+            <FeedbackModal isOpen={false} mode="create" />
+            <MessageModal isOpen={false} />
+            <TestmonialModal isOpen={false} mode="create" />
+            <ResourceModal isOpen={false} mode="create" />
+            <PostModal isOpen={false} />
+            <ProfileModal isOpen={false} />
+            <Calender />
         </div>
     );
 }
