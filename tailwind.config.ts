@@ -13,6 +13,7 @@ const config: Config = {
                 background: {
                     DEFAULT: "var(--background-color)",
                     input: "var(--input-background)",
+                    secondary: "var(--background-secondary-color)",
                 },
                 gray: {
                     DEFAULT: "var(--gray-color)",

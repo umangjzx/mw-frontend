@@ -69,7 +69,6 @@ const FeedViewModal = () => {
                                 <CommentCard />
                                 <CommentCard reply />
                                 <CommentCard />
-
                                 <CommentCard />
                                 <CommentCard reply />
                                 <CommentCard />

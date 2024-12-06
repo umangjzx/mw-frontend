@@ -32,12 +32,6 @@ export default function RootLayout({
                     <QueryProvider>
                         <div className="flex w-full">
                             <Sidebar />
-                            {/* 
-                            <NotificationCard />
-                        <ResourceCard />
-                        <TopicCard />
-                            <ViewDetailModal />
-                        */}
                             {children}
                         </div>
                     </QueryProvider>
