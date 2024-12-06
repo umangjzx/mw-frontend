@@ -3,6 +3,11 @@ import "./globals.css";
 import QueryProvider from "@/providers/QueryWrapper";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import type { Metadata } from "next";
+import Sidebar from "@/components/common/Sidebar";
+import NotificationCard from "@/components/Schedule/NotificationCard";
+import ResourceCard from "@/components/resources/Card";
+import TopicCard from "@/components/resources/TopicCard";
+import ViewDetailModal from "@/components/resources/DetailModal";
 
 const poppins = Poppins({
     weight: ["300", "400", "500", "600", "700"],
@@ -25,7 +30,11 @@ export default function RootLayout({
             <body className={poppins.className}>
                 <ThemeProvider>
                     <QueryProvider>
-                        {/* <Sidebar /> */}
+                        {/* <Sidebar />
+                        <NotificationCard />
+                        <ResourceCard />
+                        <TopicCard />
+                        <ViewDetailModal /> */}
                         {children}
                     </QueryProvider>
                 </ThemeProvider>

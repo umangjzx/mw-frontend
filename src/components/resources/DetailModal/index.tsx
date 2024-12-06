@@ -98,15 +98,15 @@ const DetailModal = () => {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <p className="text-2xl font-medium text-black ">Basics of Guitar</p>
-                        <span className="text-sm font-medium text-darkGrey">By Samuel Jones</span>
+                        <span className="text-sm font-medium text-gray-light">By Samuel Jones</span>
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-darkGrey">Level : Beginner</p>
+                        <p className="text-sm font-medium text-gray-light">Level : Beginner</p>
                     </div>
                 </div>
                 <div className="flex flex-col gap-2">
                     <p className="font-medium text-black">Description</p>
-                    <p className="text-sm text-darkGrey">
+                    <p className="text-sm text-gray-light">
                         The Basics of Guitar course introduces beginners to foundational guitar
                         skills. You’ll learn how to tune the guitar, basic chord shapes, strumming
                         techniques, and simple songs to get you playing in no time. This course is
@@ -122,7 +122,7 @@ const DetailModal = () => {
                             <TagComponent
                                 key={index}
                                 text={item}
-                                customStyle="!py-0 !px-4 !text-[0.75rem] w-fit"
+                                className="!py-0 !px-4 !text-[0.75rem] w-fit"
                             />
                         ))}
                     </div>

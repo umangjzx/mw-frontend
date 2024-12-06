@@ -22,12 +22,12 @@ const Card = () => {
             </div>
             <div className="flex flex-col p-3 gap-2 flex-grow justify-between">
                 <div className="flex justify-between items-center ">
-                    <p className="text-[0.75rem] font-medium text-darkGrey">By Samuel Jones</p>
-                    <TagComponent customStyle="!py-0 !px-4 !text-[0.75rem]" text={"Music"} />
+                    <p className="text-[0.75rem] font-medium text-gray-light">By Samuel Jones</p>
+                    <TagComponent className="!py-0 !px-4 !text-[0.75rem]" text={"Music"} />
                 </div>
                 <p className="font-medium text-black ">Understanding Different Learning Styles</p>
                 <div className="flex flex-col gap-1">
-                    <p className="text-[0.75rem] font-medium text-darkGrey">Difficulty Level</p>
+                    <p className="text-[0.75rem] font-medium text-gray-light">Difficulty Level</p>
                     <p className="font-medium text-black text-sm">Beginner</p>
                 </div>
                 <div className="flex justify-between items-center">
