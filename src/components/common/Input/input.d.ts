@@ -4,6 +4,20 @@ export type InputOption = {
   sublabel?: string;
 };
 
+interface FormField extends Omit<InputProps, 'value' | 'onChange'> {
+  name: string;
+  label?: string;
+  inputType: InputProps['inputType'];
+  placeholder?: string;
+  options?: { label: string; value: string | number; sublabel?: string }[];
+  required?: boolean;
+  sublabel?: string;
+  sublabelAlignment?: 'right' | 'bottom';
+  variant?: 'rating' | "cover" | "default" | "profile";
+  maxFiles?: number;
+  rows?: number;
+}
+
 export type SublabelAlignment = 'right' | 'bottom';
 
 export type BaseInputProps = {
@@ -17,6 +31,7 @@ export type BaseInputProps = {
   className?: string;
   labelClassName?: string;
   inputClassName?: string;
+  contentType?: "number" | "text";
 };
 
 export type TextInputProps = BaseInputProps & {
@@ -31,6 +46,7 @@ export type TextAreaInputProps = BaseInputProps & {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  rows?: number;
 };
 
 export type SelectInputProps = BaseInputProps & {
@@ -83,6 +99,8 @@ export type ImageUploadProps = BaseInputProps & {
   value: ImageFile[];
   onChange: (value: ImageFile[]) => void;
   maxFiles?: number;
+  inputClassName?: string;
+  variant?: "cover" | "default" | "profile";
 };
 
 

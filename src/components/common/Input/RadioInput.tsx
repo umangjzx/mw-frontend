@@ -52,13 +52,13 @@ const RadioInput: React.FC<RadioInputProps> = ({
             disabled={disabled}
             className={inputClassName}
         >
-            <div className="space-y-2">
+            <div className="flex items-center gap-2">
                 {options.map((option) => (
                     <div
                         key={option.value}
-                        className="flex items-start hover:bg-background-input bg-background-input px-2 py-1 rounded-lg"
+                        className="flex items-center hover:bg-background-input bg-background-input px-2 py-1 rounded-lg"
                     >
-                        <Radio value={option.value} className="mt-1">
+                        <Radio value={option.value} className="">
                             <div>
                                 <span>{option.label}</span>
                                 {option.sublabel && (
