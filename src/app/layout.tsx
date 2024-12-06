@@ -4,7 +4,7 @@ import QueryProvider from "@/providers/QueryWrapper";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import type { Metadata } from "next";
 import Sidebar from "@/components/common/Sidebar";
-import NotificationCard from "@/components/Schedule/NotificationCard";
+import NotificationCard from "@/components/schedule/NotificationCard";
 import ResourceCard from "@/components/resources/Card";
 import TopicCard from "@/components/resources/TopicCard";
 import ViewDetailModal from "@/components/resources/DetailModal";
@@ -30,12 +30,16 @@ export default function RootLayout({
             <body className={poppins.className}>
                 <ThemeProvider>
                     <QueryProvider>
-                        {/* <Sidebar />
-                        <NotificationCard />
+                        <div className="flex w-full">
+                            <Sidebar />
+                            {/* 
+                            <NotificationCard />
                         <ResourceCard />
                         <TopicCard />
-                        <ViewDetailModal /> */}
-                        {children}
+                            <ViewDetailModal />
+                        */}
+                            {children}
+                        </div>
                     </QueryProvider>
                 </ThemeProvider>
             </body>

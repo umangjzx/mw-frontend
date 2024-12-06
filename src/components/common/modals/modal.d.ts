@@ -16,3 +16,11 @@ interface CenterModalProps {
     primaryActionProps?: ButtonProps;
     secondaryActionProps?: ButtonProps;
 }
+
+interface ViewModalProps {
+    modalOpen: boolean;
+    onClose: () => void;
+    children: React.ReactNode;
+    width?: number | string;
+    height?: number | string;
+}

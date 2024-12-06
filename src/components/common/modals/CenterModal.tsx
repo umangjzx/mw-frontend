@@ -18,22 +18,20 @@ const CenterModal: React.FC<CenterModalProps> = ({
     primaryActionProps,
     secondaryActionProps,
 }) => {
-
-
     const defaultButtonStyles = {
         primaryActionProps: {
             title: primaryActionProps?.title,
             shape: primaryActionProps?.shape ?? "round",
             btnVariant: primaryActionProps?.btnVariant ?? "secondary",
             size: primaryActionProps?.size ?? "small",
-            className: primaryActionProps?.className ?? "text-sm"
+            className: primaryActionProps?.className ?? "text-sm",
         },
         secondaryActionProps: {
             title: secondaryActionProps?.title,
             shape: secondaryActionProps?.shape ?? "round",
             btnVariant: secondaryActionProps?.btnVariant ?? "secondary",
             size: secondaryActionProps?.size ?? "small",
-            className: secondaryActionProps?.className ?? "text-sm"
+            className: secondaryActionProps?.className ?? "text-sm",
         },
     };
 

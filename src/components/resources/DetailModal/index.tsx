@@ -9,6 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import HeartIcon from "@/assets/icons/HeartIcon";
+import ViewModal from "@/components/common/Modals/ViewModal";
 
 const DetailModal = () => {
     const [modalOpen, setModalOpen] = useState(true);
@@ -59,26 +60,7 @@ const DetailModal = () => {
     };
 
     return (
-        <Modal
-            className="detail-modal"
-            styles={{
-                content: {
-                    padding: 0,
-                    borderRadius: "1rem",
-                },
-                body: {
-                    padding: 0,
-                },
-            }}
-            modalRender={(node) => (
-                <div style={{ borderRadius: "12px", overflow: "hidden" }}>{node}</div>
-            )}
-            centered
-            open={modalOpen}
-            closeIcon={false}
-            footer={null}
-            width={800}
-        >
+        <ViewModal modalOpen={modalOpen} onClose={handleCloseModal} width={800} height="720px">
             <div className="relative w-full h-[260px] rounded-t-xl">
                 <Image src={BackgroundImg} fill className="object-cover" alt="background" />
                 <div className="flex items-center gap-4 w-fit absolute top-4 right-4">
@@ -146,7 +128,7 @@ const DetailModal = () => {
                     </div>
                 </div>
             </div>
-        </Modal>
+        </ViewModal>
     );
 };
 
