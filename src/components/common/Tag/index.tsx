@@ -1,24 +1,23 @@
 "use client";
-import React from "react";
-import { CloseCircleOutlined } from "@ant-design/icons";
 import { Tag } from "antd";
+import { BiX } from "react-icons/bi";
 
 interface TagComponentProps {
     text: string | null;
     isClose?: boolean;
+    onClose?: () => void;
+    className?: string;
 }
 
-const TagComponent = ({ text, isClose }: TagComponentProps) => {
-    const preventDefault = (e: React.MouseEvent<HTMLElement>) => {
-        e.preventDefault();
-        console.log("Clicked! But prevent default.");
-    };
+const TagComponent = ({ text, isClose, onClose, className }: TagComponentProps) => {
 
     return (
         <Tag
-            closeIcon={isClose ? true : false}
-            onClose={preventDefault}
-            className="bg-background text-black border-background font-medium text-[0.8rem] px-3 py-0.5 capitalize rounded-full"
+            closeIcon={false}
+            onClose={isClose ? onClose : undefined}
+            rootClassName={`${className} flex items-center gap-2 flex-row-reverse`}
+            icon={isClose ? <BiX onClick={onClose} className="text-black bg-white rounded-full active:scale-90 transition-all duration-300" size={14} /> : undefined}
+            className={`bg-background text-black border-background font-medium text-[0.8rem] capitalize rounded-full`}
         >
             {text}
         </Tag>

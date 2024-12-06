@@ -4,6 +4,7 @@
 
 :root {
   --gray-color: #505050;
+  --gray-light-color: #4F4F4F;
   --white-color: #ffffff;
   --black-color: #121212;
   --error-color: #EF4444;
@@ -11,6 +12,7 @@
   --success-color: #16A34A;
   --success-light-color: #DCFCE7;
   --border-stroke:#E0E0E0;
+  --input-background: #F4F7FB;
 
     /* Font weights */
     --font-light: 300;
@@ -50,3 +52,61 @@ body {
     text-wrap: balance;
   }
 } */
+
+/* Rating Radio Button Styles */
+.ant-radio-button-wrapper {
+    border: 1px solid var(--border-stroke) !important;
+    border-radius: 100% !important;
+}
+
+.ant-radio-button-wrapper:before {
+    display: none !important;
+}
+
+.ant-radio-button-wrapper-checked {
+    border-color: var(--primary-color) !important;
+    color: var(--primary-color) !important;
+    border-radius: 100% !important;
+}
+
+/* Remove default ant-design radio button styles */
+.ant-radio-button-wrapper > .ant-radio-button {
+    display: none;
+}
+
+/* Search Select Styles */
+.ant-select-selection-item {
+    background: transparent !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.ant-select-selection-item-content {
+    margin-right: 0 !important;
+}
+
+.ant-select-selection-search {
+    margin-inline-start: 0 !important;
+}
+
+.ant-select-dropdown {
+    padding: 4px !important;
+}
+
+.ant-select-item {
+    border-radius: 4px !important;
+    min-height: 32px !important;
+}
+
+.ant-select-item-option-selected {
+    background-color: var(--gray-light-color) !important;
+    color: white !important;
+}
+
+.ant-select-selector {
+  padding: 3px !important;
+  padding-left: 8px !important;
+  background-color: var(--input-background) !important;
+  font-size: 14px !important;
+}
