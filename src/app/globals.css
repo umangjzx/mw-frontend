@@ -151,3 +151,60 @@ body {
     height: 5px; /* Adjust the height of the scrollbar (for horizontal scroll) */
     cursor: pointer;
  }
+
+
+
+/* Table styles */
+/* Custom styles for the Ant Design table */
+.ant-table {
+    @apply font-sans;
+}
+
+.ant-table-thead > tr > th {
+    @apply bg-white !important;
+    @apply font-medium !important;
+    @apply text-gray-900 !important;
+    @apply text-sm !important;
+    @apply px-6 py-4 !important;
+    @apply border-b border-gray-200 !important;
+}
+
+.ant-table-tbody > tr > td {
+    @apply border-b border-gray-200 !important;
+    @apply hover:bg-gray-50 !important;
+}
+
+.ant-table-row{
+    @apply bg-white !important;
+    &:hover{
+        @apply bg-white !important;
+    }
+}
+
+.ant-pagination {
+    @apply flex justify-center bg-transparent items-center gap-2 mt-4 !important;
+}
+
+.ant-pagination-item {
+    @apply rounded-md border border-gray-300 !important;
+}
+
+.ant-pagination-item-active {
+    @apply bg-orange-100 border-orange-500 !important;
+}
+
+.ant-pagination-item-active a {
+    @apply text-orange-500 !important;
+}
+
+.ant-table-column-sorter {
+    @apply text-gray-400;
+}
+
+.ant-table-column-sort {
+    background-color: transparent !important;
+}
+
+.ant-table-cell-row-hover{
+    @apply bg-white !important;
+}

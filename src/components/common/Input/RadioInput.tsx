@@ -1,6 +1,5 @@
 import React from "react";
 import { Radio } from "antd";
-import { RadioInputProps } from "./input.d";
 
 const RadioInput: React.FC<RadioInputProps> = ({
     name,

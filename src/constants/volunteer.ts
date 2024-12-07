@@ -1,5 +1,3 @@
-import { FormField } from "@/components/common/Input/input";
-
 export const TestimonialFormConstants: FormField[] = [
     {
         name: "comments",

@@ -1,5 +1,3 @@
-import { FormField } from "@/components/common/Input/input";
-
 export const LearnerProfileFormConstants: FormField[] = [
     {
         name: "username",

@@ -4,11 +4,6 @@ import CenterModal from "@/components/common/Modals/CenterModal";
 import { LearnerFeedbackFormConstants } from "@/constants/schedule";
 import { cn } from "@/utils/merge-class";
 
-type FeedbackModalProps = {
-    isOpen: boolean;
-    mode: "edit" | "create" | "view";
-};
-
 const FeedbackModal = ({ isOpen, mode = "view" }: FeedbackModalProps) => {
     const feedbackTitle = mode === "edit" ? "Edit Feedback" : "Please Fill the Feedback";
     const details = {
