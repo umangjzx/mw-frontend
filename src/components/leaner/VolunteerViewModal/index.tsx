@@ -16,6 +16,110 @@ import Image from "next/image";
 import { FaLocationDot } from "react-icons/fa6";
 import { useState } from "react";
 import RatingHeader from "@/components/profile/Overview/RatingHeader";
+
+const ProfileHeader = ({ text }: { text: string | null }) => (
+    <div className="flex items-center justify-between px-5">
+        <p className="font-medium text-xl">Profile</p>
+        <div className="flex items-center gap-2">
+            <Button
+                title="Schedule a meeting"
+                className="text-sm !text-black !bg-[#dff5ff] !border-primary !border"
+            />
+            <ModalCloseIcon />
+        </div>
+    </div>
+);
+
+const ProfileInfo = ({ text, overViewCard }: { text: string | null; overViewCard: any[] }) => (
+    <div className="grid grid-cols-[1.7fr,2fr,2fr] gap-4 px-5">
+        <div className="flex items-center gap-3">
+            <Image src={DummyProfileImg} alt="avatar" width={80} height={80} />
+            <div className="flex flex-col gap-2">
+                <p className="font-medium">Alexander Harris</p>
+                <TagComponent text={text} />
+            </div>
+        </div>
+        {overViewCard.map((item, index) => (
+            <OverViewCard key={index} title={item.title} value={item.value} icon={item.icon} />
+        ))}
+    </div>
+);
+
+const TabButtons = ({
+    activeTab,
+    handleTabChange,
+}: {
+    activeTab: string;
+    handleTabChange: (tab: string) => void;
+}) => (
+    <div className="px-5">
+        <div className="flex items-center justify-between border-stroke border-2 rounded-full">
+            {["overview", "reviews"].map((tab) => (
+                <div
+                    key={tab}
+                    onClick={() => handleTabChange(tab)}
+                    className={`font-medium text-center w-[50%] rounded-full py-2.5 px-5 ${
+                        activeTab === tab
+                            ? "bg-[#dff5ff] border-primary border-2"
+                            : "border-2 border-transparent"
+                    } transition-all duration-200 cursor-pointer`}
+                >
+                    {tab === "overview" ? "Overview" : "Reviews - 4.5 (120)️️"}
+                </div>
+            ))}
+        </div>
+    </div>
+);
+
+const OverviewContent = ({ details, bio }: { details: any[]; bio: any[] }) => (
+    <div className="flex flex-col gap-4">
+        <div className="px-5 flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+                <p className="font-medium ">Bio</p>
+                <TagComponent
+                    text="Los Angeles, CA"
+                    className="text-sm py-1 font-medium px-2"
+                    icon={<FaLocationDot />}
+                />
+            </div>
+            <p className="text-sm text-gray-light font-normal">
+                Passionate educator with over 5 years of experience working with children of all
+                abilities. I specialize in personalized learning plans, with a focus on music
+                therapy and language development, aimed at fostering creativity and confidence.
+            </p>
+        </div>
+        {details.map((detail, index) => (
+            <DetailChipCard
+                key={index}
+                className="!gap-2"
+                tags={detail.tags}
+                title={detail.title}
+            />
+        ))}
+        {bio.map((item, index) => (
+            <DetailCard
+                key={index}
+                className="!gap-2"
+                title={item.title}
+                description={item.description}
+            />
+        ))}
+    </div>
+);
+
+const ReviewsContent = ({ ratingCard }: { ratingCard: any }) => (
+    <div className="flex flex-col gap-3">
+        <div className="px-5">
+            <div className="flex flex-col gap-5">
+                <RatingHeader />
+                {[...Array(3)].map((_, index) => (
+                    <RatingCard key={index} {...ratingCard} />
+                ))}
+            </div>
+        </div>
+    </div>
+);
+
 const VolunteerViewModal = () => {
     const text = getLocalStorage("role");
 
@@ -87,60 +191,12 @@ const VolunteerViewModal = () => {
     return (
         <ViewModal modalOpen={true} onClose={() => {}} width={855}>
             <div className="flex flex-col gap-4 py-4">
-                <div className="flex items-center justify-between px-5 ">
-                    <p className="font-medium text-xl">Profile</p>
-                    <div className="flex items-center gap-2">
-                        <Button
-                            title="Schedule a meeting"
-                            className="text-sm !text-black !bg-[#dff5ff] !border-primary !border"
-                        />
-                        <ModalCloseIcon />
-                    </div>
-                </div>
+                <ProfileHeader text={text} />
                 <Divider />
+                <ProfileInfo text={text} overViewCard={overViewCard} />
+                <Divider />
+                <TabButtons activeTab={activeTab} handleTabChange={handleTabChange} />
 
-                <div className="grid grid-cols-[1.7fr,2fr,2fr] gap-4 px-5">
-                    <div className="flex items-center gap-3 ">
-                        <Image src={DummyProfileImg} alt="avatar" width={80} height={80} />
-                        <div className="flex flex-col gap-2">
-                            <p className="font-medium">Alexander Harris</p>
-                            <TagComponent text={text} />
-                        </div>
-                    </div>
-                    {overViewCard.map((item, index) => (
-                        <OverViewCard
-                            key={index}
-                            title={item.title}
-                            value={item.value}
-                            icon={item.icon}
-                        />
-                    ))}
-                </div>
-                <Divider />
-                <div className="px-5">
-                    <div className="flex items-center justify-between border-stroke border-2 rounded-full ">
-                        <div
-                            onClick={() => handleTabChange("overview")}
-                            className={`font-medium text-center w-[50%] rounded-full py-2.5 px-5  ${
-                                activeTab === "overview"
-                                    ? " bg-[#dff5ff] border-primary border-2"
-                                    : "border-2 border-transparent"
-                            } transition-all duration-200 cursor-pointer`}
-                        >
-                            Overview
-                        </div>
-                        <div
-                            onClick={() => handleTabChange("reviews")}
-                            className={`font-medium text-center w-[50%] rounded-full py-2.5 px-5  ${
-                                activeTab === "reviews"
-                                    ? " border-primary bg-[#dff5ff] border-2"
-                                    : "border-2 border-transparent"
-                            } transition-all duration-200 cursor-pointer`}
-                        >
-                            Reviews - 4.5 (120)️️
-                        </div>
-                    </div>
-                </div>
                 <div className="relative">
                     <div
                         className={`transform transition-all duration-300 ${
@@ -150,30 +206,7 @@ const VolunteerViewModal = () => {
                         }`}
                     >
                         {activeTab === "overview" && (
-                            <div className="flex flex-col gap-3">
-                                <div className="px-5 flex flex-col gap-3">
-                                    <div className="flex items-center justify-between">
-                                        <p className="font-medium text-xl">Bio</p>
-                                        <TagComponent
-                                            text="Los Angeles, CA"
-                                            className="text-sm py-1 font-medium px-2"
-                                            icon={<FaLocationDot />}
-                                        />
-                                    </div>
-                                    <p className="text-sm text-gray-light font-normal">
-                                        Passionate educator with over 5 years of experience working
-                                        with children of all abilities. I specialize in personalized
-                                        learning plans, with a focus on music therapy and language
-                                        development, aimed at fostering creativity and confidence.
-                                    </p>
-                                </div>
-                                {details.map((detail) => (
-                                    <DetailChipCard tags={detail.tags} title={detail.title} />
-                                ))}
-                                {bio.map((item) => (
-                                    <DetailCard title={item.title} description={item.description} />
-                                ))}
-                            </div>
+                            <OverviewContent details={details} bio={bio} />
                         )}
                     </div>
 
@@ -184,18 +217,7 @@ const VolunteerViewModal = () => {
                                 : "opacity-0 translate-x-8 absolute top-0 left-0 right-0"
                         }`}
                     >
-                        {activeTab === "reviews" && (
-                            <div className="flex flex-col gap-3">
-                                <div className="px-5">
-                                    <RatingHeader />
-                                    <div className="flex flex-col gap-3">
-                                        <RatingCard {...ratingCard} />
-                                        <RatingCard {...ratingCard} />
-                                        <RatingCard {...ratingCard} />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+                        {activeTab === "reviews" && <ReviewsContent ratingCard={ratingCard} />}
                     </div>
                 </div>
             </div>
