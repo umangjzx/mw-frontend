@@ -3,9 +3,9 @@ import { Input as AntInput, Select, DatePicker, Checkbox } from "antd";
 import RadioInput from "./RadioInput";
 import ImageUpload from "./ImageUpload";
 import { BiCaretDown } from "react-icons/bi";
-import { InputProps } from "./input";
 import MultiSelect from "./MultiSelect";
 import { cn } from "@/utils/merge-class";
+import { IoIosSearch } from "react-icons/io";
 
 const { TextArea } = AntInput;
 
@@ -89,6 +89,26 @@ export const Input: React.FC<InputProps> = props => {
                         rootClassName='hover:!border-stroke border focus:!border-stroke focus:!bg-background-input border-stroke'
                         className={`w-full text-sm p-2 rounded-md hover:bg-background-input bg-background-input ${inputClassName}`}
                         rows={props.rows ?? 4}
+                    />
+                );
+
+            case "search":
+                return (
+                    <AntInput
+                        inputMode='search'
+                        placeholder={props.placeholder}
+                        onChange={e => props.onChange(e.target.value)}
+                        value={props.value}
+                        rootClassName={cn(
+                            "hover:!border-stroke border focus:!bg-background-input !border-stroke w-full h-fit focus:!border-stroke focus:!bg-background-input border-stroke",
+                            inputClassName
+                        )}
+                        className={cn(
+                            `w-full text-sm p-2 rounded-md hover:bg-background-input !bg-background-input`,
+                            inputClassName
+                        )}
+                        prefix={<IoIosSearch className='text-gray text-xl' />}
+
                     />
                 );
 

@@ -1,13 +1,7 @@
 import Image from "next/image";
-import { ImageUploadProps } from "./input";
 import { BiPlus } from "react-icons/bi";
 import { useRef } from "react";
 import Button from "../Button";
-
-type SingleImageUploadProps = Partial<ImageUploadProps> & {
-    handleRemove: (index: number) => void;
-    handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-};
 
 const SingleImageUpload = ({
     handleRemove,

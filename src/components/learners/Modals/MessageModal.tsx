@@ -4,21 +4,19 @@ import { MessageModalConstants } from "@/constants/volunteer";
 
 type MessageModalProps = {
     isOpen: boolean;
+    onClose: () => void;
 };
 
-const MessageModal = ({ isOpen }: MessageModalProps) => {
-
+const MessageModal = ({ isOpen, onClose }: MessageModalProps) => {
     const handleSubmit = () => {
         console.log("Proceed");
     };
-
-    const handleCancel = () => {};
 
     return (
         <CenterModal
             title={"Send a Message"}
             isOpen={isOpen}
-            onClose={handleCancel}
+            onClose={onClose}
             width='40%'
             customClassName='max-h-[80vh] text-primary font-semibold !rounded-2xl overflow-hidden'
             secondaryActionProps={{
@@ -27,7 +25,7 @@ const MessageModal = ({ isOpen }: MessageModalProps) => {
                 customClassName: "!rounded-xl hover:!bg-black hover:!text-white",
             }}
             primaryActionProps={{
-                onClick: handleCancel,
+                onClick: onClose,
                 title: "Cancel",
                 btnVariant: "secondary",
                 customClassName: "!bg-transparent !text-black !rounded-xl",

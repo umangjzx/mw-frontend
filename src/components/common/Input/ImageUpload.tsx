@@ -1,5 +1,4 @@
 import React, { useRef } from "react";
-import { ImageFile, ImageUploadProps } from "./input.d";
 import Image from "next/image";
 import Button from "../Button";
 import { BiPlus } from "react-icons/bi";

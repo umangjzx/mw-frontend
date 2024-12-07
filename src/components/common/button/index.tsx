@@ -16,7 +16,7 @@ const Button: React.FC<ButtonProps> = ({
         secondary: "bg-black text-white hover:bg-black focus:bg-black",
         error: "bg-error-light text-error hover:bg-error focus:bg-error",
         success: "bg-success-light text-success hover:bg-success focus:bg-success",
-        link: "bg-transparent text-primary hover:bg-transparent focus:bg-transparent border-none",
+        link: 'text-primary border-none shadow-none hover:underline !bg-transparent hover:!bg-transparent hover:!text-primary text-sm font-normal',
     };
 
     return (
@@ -26,7 +26,7 @@ const Button: React.FC<ButtonProps> = ({
             } ${customClassName}`}
             {...props}
         >
-            {title}
+            {title && title}
             {children}
         </AntButton>
     );
