@@ -1,4 +1,3 @@
-import { ButtonProps } from "../Button/button";
 
 interface CenterModalProps {
     isOpen: boolean;

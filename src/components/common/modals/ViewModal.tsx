@@ -1,6 +1,5 @@
 import React from "react";
 import { Modal } from "antd";
-import { ViewModalProps } from "./modal";
 
 const ViewModal: React.FC<ViewModalProps> = ({ modalOpen, onClose, children, width, height }) => {
     return (

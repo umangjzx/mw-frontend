@@ -22,13 +22,13 @@ const MessageModal = ({ isOpen, onClose }: MessageModalProps) => {
             secondaryActionProps={{
                 onClick: handleSubmit,
                 title: "Send Email",
-                customClassName: "!rounded-xl hover:!bg-black hover:!text-white",
+                customClassName: "!rounded-xl hover:!bg-black text-sm hover:!text-white",
             }}
             primaryActionProps={{
                 onClick: onClose,
                 title: "Cancel",
                 btnVariant: "secondary",
-                customClassName: "!bg-transparent !text-black !rounded-xl",
+                customClassName: "!bg-transparent !text-black text-sm !rounded-xl",
             }}
         >
             {MessageModalConstants.map((field: any) => (
