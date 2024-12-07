@@ -7,9 +7,10 @@ interface TagComponentProps {
     isClose?: boolean;
     onClose?: () => void;
     className?: string;
+    icon?: any;
 }
 
-const TagComponent = ({ text, isClose, onClose, className }: TagComponentProps) => {
+const TagComponent = ({ text, isClose, onClose, className, icon }: TagComponentProps) => {
     return (
         <Tag
             closeIcon={false}
@@ -26,7 +27,7 @@ const TagComponent = ({ text, isClose, onClose, className }: TagComponentProps) 
             }
             className={`bg-background text-black border-background font-medium text-[0.8rem] capitalize rounded-full`}
         >
-            {text}
+            {text} {icon ? icon : null}
         </Tag>
     );
 };
