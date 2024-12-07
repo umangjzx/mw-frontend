@@ -1,6 +1,5 @@
 import React from "react";
 import { Button as AntButton } from "antd";
-import { ButtonProps } from "./button";
 
 const Button: React.FC<ButtonProps> = ({
     btnVariant = "primary",

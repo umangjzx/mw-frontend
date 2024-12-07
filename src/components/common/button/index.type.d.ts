@@ -1,4 +1,3 @@
-import { ButtonProps as AntButtonProps } from "antd";
 
 type ButtonProps = AntButtonProps & {
     customClassName?: string;
