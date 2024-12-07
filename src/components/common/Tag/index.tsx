@@ -14,7 +14,7 @@ const TagComponent = ({ text, isClose, onClose, className }: TagComponentProps) 
         <Tag
             closeIcon={false}
             onClose={isClose ? onClose : undefined}
-            rootClassName={`${className} flex items-center gap-2 flex-row-reverse`}
+            rootClassName={`${className} w-fit flex items-center gap-2 flex-row-reverse`}
             icon={
                 isClose ? (
                     <BiX

@@ -3,7 +3,6 @@ import Image from "next/image";
 import DummyProfileImg from "@/assets/images/DummyProfileImg.png";
 import TagComponent from "@/components/common/Tag";
 import HeartIcon from "@/assets/icons/HeartIcon";
-import { CommentCardProps } from "./commentcard";
 
 const CommentCard: React.FC<CommentCardProps> = ({ reply }) => {
     return (
