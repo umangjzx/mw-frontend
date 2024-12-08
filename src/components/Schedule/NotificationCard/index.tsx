@@ -1,6 +1,5 @@
 "use client";
 import Image from "next/image";
-import React from "react";
 import DummyProfileImg from "@/assets/images/DummyProfileImg.png";
 import Button from "@/components/common/Button";
 import { IoMdCheckmark } from "react-icons/io";

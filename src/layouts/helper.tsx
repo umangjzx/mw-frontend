@@ -7,7 +7,6 @@ export const getHeaderTitle = (pathname: string) => {
     return path;
 };
 
-
 //TODO: Need Redandunt work here
 export const getHeaderIcon = (pathname: string) => {
     switch (getHeaderTitle(pathname)) {
@@ -28,11 +27,6 @@ export const renderHeader = (pathname: string) => {
         case "schedule":
             return <CalenderHeader />;
         default:
-            return (
-                <CommonHeader
-                    titleIcon={getHeaderIcon(pathname)}
-                    title={getHeaderTitle(pathname)}
-                />
-            );
+            return <CommonHeader />;
     }
 };

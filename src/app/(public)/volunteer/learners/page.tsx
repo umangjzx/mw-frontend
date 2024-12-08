@@ -2,9 +2,16 @@
 
 import { MessageModal, TestmonialModal } from "@/components/learners/Modals";
 import LearnersTable from "@/components/learners/Table";
+import { getHeaderIcon } from "@/layouts/helper";
+import { useAppStore } from "@/store/useAppStore";
+import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
+import { useEffect } from "react";
 
 export default function LearnersPage () {
+
+    const { setHeaderOptions } = useAppStore();
+    const pathname = usePathname();
 
 
     const [_, setLearnerId] = useQueryState("id", {
@@ -30,6 +37,13 @@ export default function LearnersPage () {
         setLearnerId(null);
         setMode(null);
     };
+
+    useEffect(() => {
+        setHeaderOptions({
+            title: "Learners",
+            titleIcon: getHeaderIcon(pathname),
+        });
+    }, [setHeaderOptions]);
 
     return (
         <div className='w-full h-full p-6'>

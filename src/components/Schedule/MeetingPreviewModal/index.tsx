@@ -1,13 +1,30 @@
 "use client";
 import React from "react";
-import ViewModal from "@/components/common/Modals/ViewModal";
 import FeedModalCloseIcon from "@/assets/icons/FeedModalCloseIcon";
 import Divider from "@/components/common/Divider";
 import Button from "@/components/common/Button";
+import { createPortal } from 'react-dom';
 
-const MeetingPreviewModal = () => {
-    return (
-        <ViewModal modalOpen={true} onClose={() => {}}>
+interface MeetingPreviewModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    event: any;
+    style?: React.CSSProperties;
+}
+
+const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({ isOpen, onClose, event, style }) => {
+    if (!isOpen) return null;
+
+    return createPortal(
+        <div
+            className="meeting-preview-modal border border-stroke bg-white rounded-lg shadow-lg"
+            style={{
+                ...style,
+                position: 'fixed',
+                zIndex: 9999,
+            }}
+            onClick={(e) => e.stopPropagation()}
+        >
             <div className="flex flex-col gap-6 p-5">
                 <div className="flex justify-between gap-3">
                     <div className="flex flex-col gap-1">
@@ -16,7 +33,9 @@ const MeetingPreviewModal = () => {
                             Saturday, November 23, 9:30 - 10:00am
                         </p>
                     </div>
-                    <FeedModalCloseIcon />
+                    <Button onClick={onClose} customClassName="!bg-transparent !border-none !p-0 !w-fit !h-fit">
+                        <FeedModalCloseIcon />
+                    </Button>
                 </div>
                 <Divider />
                 <div className="flex items-center justify-between gap-3">
@@ -52,14 +71,14 @@ const MeetingPreviewModal = () => {
                 <Divider />
                 <div className="flex items-center justify-between gap-3">
                     <p className="text-gray-light font-medium text-sm">Availability Status</p>
-                    {/* <p className="text-[#DC2626] font-medium text-sm">Availability Status</p> */}
                     <Button
                         title="Mark as Available"
                         customClassName="w-fit bg-white !text-[#DC2626] border border-[#DC2626] text-sm rounded-full !py-0 !px-5"
                     />
                 </div>
             </div>
-        </ViewModal>
+        </div>,
+        document.body
     );
 };
 

@@ -23,4 +23,8 @@ interface ViewModalProps {
     children: React.ReactNode;
     width?: number | string;
     height?: number | string;
+    style?: React.CSSProperties;
+    className?: string;
 }
+
+type ShowModalType = "view" | "edit" | "create" | null;

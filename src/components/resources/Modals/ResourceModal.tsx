@@ -6,10 +6,11 @@ import { useState } from "react";
 
 type ResourceModalProps = {
     isOpen: boolean;
-    mode: "edit" | "create" | "view";
+    mode: ShowModalType;
+    onClose: () => void;
 };
 
-const ResourceModal = ({ isOpen, mode = "view" }: ResourceModalProps) => {
+const ResourceModal = ({ isOpen, mode = "view", onClose }: ResourceModalProps) => {
     const [formData, setFormData] = useState<any>({});
 
     const resourceTitle = mode === "edit" ? "Edit Resource" : "Add new Resource";
@@ -22,11 +23,10 @@ const ResourceModal = ({ isOpen, mode = "view" }: ResourceModalProps) => {
         setFormData((prev: any) => ({ ...prev, [key]: value }));
     };
 
-    const handleCancel = () => {};
 
     const buttonProps = {
         primary:{
-            onClick: handleCancel,
+            onClick: onClose,
             title: mode === "view" ? "Delete" : "Cancel",
             btnVariant: "secondary" as const,
             customClassName: cn(
@@ -47,7 +47,7 @@ const ResourceModal = ({ isOpen, mode = "view" }: ResourceModalProps) => {
         <CenterModal
             title={resourceTitle}
             isOpen={isOpen}
-            onClose={handleCancel}
+            onClose={onClose}
             width='40%'
             customClassName='max-h-[80vh] !rounded-2xl overflow-hidden'
             secondaryActionProps={buttonProps.secondary}
