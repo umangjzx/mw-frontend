@@ -21,7 +21,7 @@ const MonthYearSlider: React.FC<Props> = ({ onChange }) => {
     return (
         <div className='flex items-center'>
             <Button
-                icon={<IoIosArrowBack className='text-xl' />}
+                icon={<IoIosArrowBack className='text-lg' />}
                 rootClassName='flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100'
                 onClick={() => handleMonthChange("prev")}
             />
@@ -31,7 +31,7 @@ const MonthYearSlider: React.FC<Props> = ({ onChange }) => {
             </span>
 
             <Button
-                icon={<IoIosArrowForward className='text-xl' />}
+                icon={<IoIosArrowForward className='text-lg' />}
                 rootClassName='flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100'
                 onClick={() => handleMonthChange("next")}
             />

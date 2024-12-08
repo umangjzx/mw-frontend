@@ -1,11 +1,22 @@
 import React from "react";
 import { Modal } from "antd";
 
-const ViewModal: React.FC<ViewModalProps> = ({ modalOpen, onClose, children, width, height }) => {
+const ViewModal: React.FC<ViewModalProps> = ({
+    modalOpen,
+    onClose,
+    children,
+    width,
+    height,
+    style,
+    className,
+}) => {
     return (
         <Modal
-            className="detail-modal"
+            className={className}
             styles={{
+                wrapper: {
+                    zIndex: 1000,
+                },
                 content: {
                     padding: 0,
                     borderRadius: "1rem",
@@ -15,7 +26,8 @@ const ViewModal: React.FC<ViewModalProps> = ({ modalOpen, onClose, children, wid
                     height: height,
                 },
             }}
-            modalRender={(node) => (
+            style={style}
+            modalRender={node => (
                 <div style={{ borderRadius: "12px", overflow: "hidden" }}>{node}</div>
             )}
             centered

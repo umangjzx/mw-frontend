@@ -208,3 +208,36 @@ body {
 .ant-table-cell-row-hover{
     @apply bg-white !important;
 }
+
+
+
+/* Add these styles if they don't exist already */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Override default carousel styles */
+.carousel__slider-tray {
+    display: flex !important;
+    gap: 1rem !important;
+    transition: transform 0.5s ease-in-out !important;
+}
+
+.carousel__slider {
+    overflow: visible !important;
+}
+
+.carousel__slide {
+    padding: 0 !important;
+}
+
+.carousel__inner-slide {
+    position: relative !important;
+    height: auto !important;
+    transform: none !important;
+}

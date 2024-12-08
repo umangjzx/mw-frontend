@@ -1,13 +1,18 @@
 "use client";
-import React from "react";
 import BackgroundImg from "@/assets/images/BackgroundImg.jpeg";
 import Image from "next/image";
 import TagComponent from "@/components/common/Tag";
 import FlagIcon from "@/assets/icons/FlagIcon";
 import TrendArrow from "@/assets/icons/TrendArrow";
-const Card = () => {
+
+
+type CardProps = {
+    onClick: () => void;
+};
+
+const Card = ({ onClick }: CardProps) => {
     return (
-        <div className="w-[259px] h-[313px] rounded-xl shadow-md border border-[#f7f7f7] flex flex-col justify-between">
+        <div className="w-[259px] h-[313px] rounded-xl shadow-md border border-[#f7f7f7] flex flex-col justify-between" onClick={onClick}   >
             <div className="w-full h-[120px] relative">
                 <span className="absolute top-2 right-2 flex items-center gap-1 text-white z-10">
                     <TrendArrow />

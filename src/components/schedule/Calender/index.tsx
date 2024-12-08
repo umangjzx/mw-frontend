@@ -9,12 +9,13 @@ import {
     EventRemoveArg,
     formatDate,
 } from "@fullcalendar/core";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./styles.css";
 import EventCard from "./EventCard";
 import DayCellContent from "./DayCellContent";
 import { AlertModal, AllEventsModal } from "../Modals";
 import { getTime } from "@/utils/calender";
+import MeetingPreviewModal from "../MeetingPreviewModal";
 
 interface CalendarProps {}
 
@@ -24,6 +25,9 @@ const Calendar: React.FC<CalendarProps> = () => {
         events: [],
         date: "",
     });
+    const [previewPosition, setPreviewPosition] = useState({ x: 0, y: 0, });
+    const [showPreview, setShowPreview] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState<EventApi | null>(null);
 
     const handleDateSelect = (selectInfo: DateSelectArg) => {
         const title = prompt("Please enter a new title for your event");
@@ -49,8 +53,38 @@ const Calendar: React.FC<CalendarProps> = () => {
         alert("Are you sure you want to delete this event?");
     };
 
+
+    //TODO: Fix the preview modal position
     const handleEventClick = (clickInfo: EventClickArg) => {
-        setShowModal(null);
+        // Get click coordinates
+        const rect = clickInfo.el.getBoundingClientRect();
+
+        // Calculate position relative to viewport
+        let xPosition = rect.left;
+        let yPosition = rect.bottom + 10; // Add 10px padding
+
+        // Adjust for viewport edges
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const modalWidth = 450;
+        const modalHeight = 400; // Approximate height
+
+        // Check right edge
+        if (xPosition + modalWidth > viewportWidth) {
+            xPosition = viewportWidth - modalWidth - 10;
+        }
+
+        // Check bottom edge
+        if (yPosition + modalHeight > viewportHeight) {
+            yPosition = rect.top - modalHeight - 10;
+        }
+
+        setPreviewPosition({ x: xPosition, y: yPosition });
+        setSelectedEvent(clickInfo.event);
+        setShowPreview(true);
+
+        clickInfo.jsEvent.preventDefault();
+        clickInfo.jsEvent.stopPropagation();
     };
 
     const handleCloseModal = () => {
@@ -69,7 +103,7 @@ const Calendar: React.FC<CalendarProps> = () => {
 
     const customDayHeaderContent = (args: any) => {
         const dayIcons: { [key: string]: string } = {
-            Mon: "🧟",
+            Mon: "����",
             Tue: "☕",
             Wed: "🐪",
             Thu: "🧠",
@@ -103,8 +137,36 @@ const Calendar: React.FC<CalendarProps> = () => {
         setShowModal("events");
     };
 
+    // Add a click handler to close the preview when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (showPreview) {
+                const modal = document.querySelector('.meeting-preview-modal');
+                if (modal && !modal.contains(event.target as Node)) {
+                    setShowPreview(false);
+                }
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showPreview]);
+
     return (
         <>
+            <MeetingPreviewModal
+                isOpen={showPreview}
+                onClose={() => setShowPreview(false)}
+                event={selectedEvent}
+                style={{
+                    position: 'fixed',
+                    left: `${previewPosition.x}px`,
+                    top: `${previewPosition.y}px`,
+                    zIndex: 1000,
+                }}
+            />
             <AlertModal
                 isOpen={showModal === "alert"}
                 onCancel={handleCloseModal}
@@ -123,7 +185,7 @@ const Calendar: React.FC<CalendarProps> = () => {
                     handleEventClick({ event } as EventClickArg);
                 }}
             />
-            <div className='p-4'>
+            <div className='p-4 calendar-container'>
                 <FullCalendar
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                     initialView='dayGridMonth'

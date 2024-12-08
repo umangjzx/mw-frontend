@@ -5,35 +5,31 @@ import { cn } from "@/utils/merge-class";
 
 type PostModalProps = {
     isOpen: boolean;
+    onClose: () => void;
 };
 
-const PostModal = ({ isOpen }: PostModalProps) => {
+const PostModal = ({ isOpen, onClose }: PostModalProps) => {
     const handleSubmit = () => {
         console.log("Proceed");
     };
-
-    const handleCancel = () => {};
 
     return (
         <CenterModal
             title={"Add new post"}
             isOpen={isOpen}
-            onClose={handleCancel}
+            onClose={onClose}
             width='40%'
             customClassName='max-h-[80vh] !rounded-2xl overflow-hidden'
             secondaryActionProps={{
                 onClick: handleSubmit,
-                title:  "Share now",
+                title: "Share now",
                 customClassName: "!rounded-xl hover:!bg-black hover:!text-white",
             }}
             primaryActionProps={{
-                onClick: handleCancel,
+                onClick: onClose,
                 title: "Cancel",
                 btnVariant: "secondary",
-                customClassName: cn(
-                    "!bg-transparent !text-black",
-                    "!rounded-xl"
-                ),
+                customClassName: cn("!bg-transparent !text-black", "!rounded-xl"),
             }}
         >
             {LearnerCommunityFormConstants.map((field: any) => (
