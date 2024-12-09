@@ -7,14 +7,15 @@ interface TagComponentProps {
     isClose?: boolean;
     onClose?: () => void;
     className?: string;
+    icon?: any;
 }
 
-const TagComponent = ({ text, isClose, onClose, className }: TagComponentProps) => {
+const TagComponent = ({ text, isClose, onClose, className, icon }: TagComponentProps) => {
     return (
         <Tag
             closeIcon={false}
             onClose={isClose ? onClose : undefined}
-            rootClassName={`${className} flex items-center gap-2 flex-row-reverse`}
+            rootClassName={`${className} w-fit flex items-center gap-2 flex-row-reverse`}
             icon={
                 isClose ? (
                     <BiX
@@ -26,7 +27,7 @@ const TagComponent = ({ text, isClose, onClose, className }: TagComponentProps) 
             }
             className={`bg-background text-black border-background font-medium text-[0.8rem] capitalize rounded-full`}
         >
-            {text}
+            {text} {icon ? icon : null}
         </Tag>
     );
 };
