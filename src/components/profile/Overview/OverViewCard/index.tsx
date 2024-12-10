@@ -7,7 +7,7 @@ const OverViewCard: React.FC<OverViewCardProps> = ({ title, value, icon }) => {
 
     return (
         <div
-            className=" rounded-xl flex px-5 py-8 w-fit gap-7 items-center"
+            className=" rounded-xl flex px-5 py-8 w-full gap-7 items-center"
             style={{ background: gradient }}
         >
             {icon}

@@ -7,44 +7,36 @@ import Button from "@/components/common/Button";
 import { useState } from "react";
 import MyScheduleModal from "@/components/schedule/Modals/MyScheduleModal";
 import AddNewMeetingModal from "@/components/schedule/Modals/AddNewMeetingModal";
-
-interface FormData {
-    title_of_the_meeting: string;
-    select_volunteer: string;
-    select_date: string;
-    select_time: string;
-    google_meet_link: string;
-    description: string;
-}
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
+import { getHeaderIcon } from "@/layouts/helper";
+import { useAppStore } from "@/store/useAppStore";
 
 const Profile = () => {
-    const [formData, setFormData] = useState<FormData>({
-        title_of_the_meeting: "",
-        select_volunteer: "",
-        select_date: "",
-        select_time: "",
-        google_meet_link: "",
-        description: "",
-    });
+    const pathname = usePathname();
+    const { setHeaderOptions } = useAppStore();
 
-    console.log(formData, "formData side");
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e?.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
+    useEffect(() => {
+        setHeaderOptions({
+            searchPlaceholder: "Search",
+            actionButtonTitle: "Add new post",
+            actionButtonOnClick: () => {},
+            actionButtonClassName:
+                "!bg-background-secondary hover:!border-none !text-black !rounded-xl hover:!bg-background-secondary hover:!text-black !h-[35px] !text-xs !py-2 px-4",
+            actionButtonPlacement: "right",
+            hideButton: false,
+            title: "Community",
+            titleIcon: getHeaderIcon(pathname),
+        });
+    }, [pathname, setHeaderOptions]);
 
     return (
-        <div className="p-10 bg-slate-300 flex gap-10">
-            {/* <Bio /> */}
-            {/* <Overview /> */}
-
-            {/* <VolunteerCard /> */}
-            {/* <VolunteerViewModal /> */}
-            <AddNewMeetingModal />
-            {/* <MyScheduleModal /> */}
+        <div className="h-[100vh] bg-[#f4f7fb]">
+            <div className="h-[10vh] w-full"></div>
+            <div className="h-[90vh] w-full grid grid-cols-[1fr,2fr] gap-10 p-5">
+                <Bio />
+                <Overview />
+            </div>
         </div>
     );
 };
