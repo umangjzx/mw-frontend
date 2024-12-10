@@ -1,21 +1,16 @@
 import React, { useRef } from "react";
-import { ImageFile } from "./input.d";
 import Image from "next/image";
 import Button from "../Button";
 import { BiPlus } from "react-icons/bi";
-
-interface ImageUploadProps {
-    value: ImageFile[];
-    onChange: (files: ImageFile[]) => void;
-    maxFiles?: number;
-    disabled?: boolean;
-}
+import { cn } from "@/utils/merge-class";
+import SingleImageUpload from "./SingleUpload";
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
     value = [],
     onChange,
-    maxFiles = 10,
+    maxFiles = 1,
     disabled = false,
+    ...props
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -28,7 +23,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             file,
         }));
 
-        onChange([...value, ...newFiles].slice(0, maxFiles));
+        if (props.variant === "profile" || maxFiles === 1) {
+            onChange([newFiles[newFiles.length - 1]]);
+        } else {
+            onChange([...value, ...newFiles].slice(0, maxFiles));
+        }
     };
 
     const handleRemove = (index: number) => {
@@ -36,10 +35,34 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         onChange(newFiles);
     };
 
+    if (props.variant === "profile") {
+        return (
+            <SingleImageUpload
+                value={value}
+                disabled={disabled}
+                handleFileChange={handleFileChange}
+                handleRemove={handleRemove}
+            />
+        );
+    }
+
     return (
-        <div className='flex flex-wrap gap-4'>
+        <div
+            className={cn(
+                "flex w-full flex-wrap gap-4",
+                props.variant === "cover" ? "!h-[250px]" : ""
+            )}
+        >
             {value.map((file, index) => (
-                <div key={index} className='relative w-24 h-24 flex items-center justify-center group rounded-lg overflow-hidden'>
+                <div
+                    key={index}
+                    className={cn(
+                        "relative flex items-center justify-center group rounded-lg overflow-hidden",
+                        props.variant === "cover"
+                            ? "h-[250px] active:!scale-100 w-full"
+                            : "h-24 w-24"
+                    )}
+                >
                     <Image
                         src={file.url}
                         alt={`Upload ${index + 1}`}
@@ -62,9 +85,12 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                 <Button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={disabled}
-                    className='w-24 h-24 border-2 group border-stroke !bg-transparent rounded-lg flex items-center justify-center text-gray hover:border-primary hover:text-primary transition-colors'
+                    className={cn(
+                        "w-24 h-24 border-2 group border-stroke !bg-transparent rounded-lg flex items-center justify-center text-gray hover:border-primary hover:text-primary transition-colors",
+                        props.variant === "cover" ? "!h-[250px] active:!scale-100 w-full" : ""
+                    )}
                 >
-                    <BiPlus className="text-2xl text-black bg-stroke rounded-full" />
+                    <BiPlus className='text-2xl text-black bg-stroke rounded-full' />
                 </Button>
             )}
             <input

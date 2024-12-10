@@ -1,4 +1,3 @@
-import { ButtonProps } from "../Button/button";
 
 interface CenterModalProps {
     isOpen: boolean;
@@ -15,6 +14,7 @@ interface CenterModalProps {
     titleClassName?: string;
     primaryActionProps?: ButtonProps;
     secondaryActionProps?: ButtonProps;
+    hideFooter?: boolean;
 }
 
 interface ViewModalProps {
@@ -23,4 +23,8 @@ interface ViewModalProps {
     children: React.ReactNode;
     width?: number | string;
     height?: number | string;
+    style?: React.CSSProperties;
+    className?: string;
 }
+
+type ShowModalType = "view" | "edit" | "create" | null;

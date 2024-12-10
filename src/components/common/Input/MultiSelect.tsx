@@ -1,7 +1,6 @@
 import React from "react";
 import { Select } from "antd";
 import { BiCaretDown } from "react-icons/bi";
-import { MultiSelectInputProps } from "./input";
 import TagComponent from "../Tag";
 
 

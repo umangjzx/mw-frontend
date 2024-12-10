@@ -1,5 +1,4 @@
-import React from "react";
-import LogoIcon from "@/assets/icons/LogoIcon";
+import { LogoIcon } from "@/assets/icons";
 
 const Logo = () => {
     return (

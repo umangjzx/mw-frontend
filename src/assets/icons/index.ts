@@ -1,0 +1,10 @@
+export { default as CalendarDayOne } from './CalendarDayOne';
+export { default as CalendarIcon } from './CalendarIcon';
+export { default as NotificationIcon } from './NotificationIcon';
+export { default as LearnerIcon } from './LeanerIcon';
+export { default as ResourceIcon } from './ResourceIcon';
+export { default as CommunityIcon } from './CommunityIcon';
+export { default as LogoIcon } from './LogoIcon';
+export { default as SignOutIcon } from './SignOutIcon';
+export { default as FeedModalCloseIcon } from './FeedModalCloseIcon';
+export { default as FeedModalMenuIcon } from './FeedModalMenuIcon';

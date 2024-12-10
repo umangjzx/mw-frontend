@@ -124,3 +124,120 @@ body {
     background-color: var(--input-background) !important;
     font-size: 14px !important;
 }
+
+
+*::-webkit-scrollbar-track {
+    background-color: #f1f1f1; /* Light grey track background */
+    cursor: pointer;
+    border-radius: 10px;
+ }
+
+ /* This styles the scrollbar thumb (the moving part) */
+ *::-webkit-scrollbar-thumb {
+    background-color: #0c0c0d62; /* Dark grey thumb */
+    border-radius: 0.8rem;
+    cursor: pointer;
+ }
+
+ *::-webkit-scrollbar-thumb:hover {
+    background-color: #0c0c0d62;
+    border-radius: 0.8rem;
+    cursor: pointer;
+ }
+
+ /* This styles the scrollbar itself (width, height) */
+ *::-webkit-scrollbar {
+    width: 5px; /* Adjust the width of the scrollbar */
+    height: 5px; /* Adjust the height of the scrollbar (for horizontal scroll) */
+    cursor: pointer;
+ }
+
+
+
+/* Table styles */
+/* Custom styles for the Ant Design table */
+.ant-table {
+    @apply font-sans;
+}
+
+.ant-table-thead > tr > th {
+    @apply bg-white !important;
+    @apply font-medium !important;
+    @apply text-gray-900 !important;
+    @apply text-sm !important;
+    @apply px-6 py-4 !important;
+    @apply border-b border-gray-200 !important;
+}
+
+.ant-table-tbody > tr > td {
+    @apply border-b border-gray-200 !important;
+    @apply hover:bg-gray-50 !important;
+}
+
+.ant-table-row{
+    @apply bg-white !important;
+    &:hover{
+        @apply bg-white !important;
+    }
+}
+
+.ant-pagination {
+    @apply flex justify-center bg-transparent items-center gap-2 mt-4 !important;
+}
+
+.ant-pagination-item {
+    @apply rounded-md border border-gray-300 !important;
+}
+
+.ant-pagination-item-active {
+    @apply bg-orange-100 border-orange-500 !important;
+}
+
+.ant-pagination-item-active a {
+    @apply text-orange-500 !important;
+}
+
+.ant-table-column-sorter {
+    @apply text-gray-400;
+}
+
+.ant-table-column-sort {
+    background-color: transparent !important;
+}
+
+.ant-table-cell-row-hover{
+    @apply bg-white !important;
+}
+
+
+
+/* Add these styles if they don't exist already */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Override default carousel styles */
+.carousel__slider-tray {
+    display: flex !important;
+    gap: 1rem !important;
+    transition: transform 0.5s ease-in-out !important;
+}
+
+.carousel__slider {
+    overflow: visible !important;
+}
+
+.carousel__slide {
+    padding: 0 !important;
+}
+
+.carousel__inner-slide {
+    position: relative !important;
+    height: auto !important;
+    transform: none !important;
+}

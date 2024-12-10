@@ -1,14 +1,15 @@
 import React from "react";
 import { Input as AntInput, Select, DatePicker, Checkbox } from "antd";
 import RadioInput from "./RadioInput";
-import ImageUpload from './ImageUpload';
+import ImageUpload from "./ImageUpload";
 import { BiCaretDown } from "react-icons/bi";
-import { InputProps } from "./input";
 import MultiSelect from "./MultiSelect";
+import { cn } from "@/utils/merge-class";
+import { IoIosSearch } from "react-icons/io";
 
 const { TextArea } = AntInput;
 
-export const Input: React.FC<InputProps> = (props) => {
+export const Input: React.FC<InputProps> = props => {
     const {
         label,
         sublabel,
@@ -28,24 +29,21 @@ export const Input: React.FC<InputProps> = (props) => {
         const labelContent = (
             <div>
                 {label}
-                {required && <span className="text-red-500 ml-1">*</span>}
+                {required && <span className='text-red-500 ml-1'>*</span>}
             </div>
         );
 
         const sublabelContent = sublabel && (
             <p
                 className={`text-xs text-gray-light mb-2 text-gray-500 font-normal
-                ${sublabelAlignment === "right" ? "ml-2" : "mt-1"}`}
+                ${sublabelAlignment === "right" ? "!mb-0" : "mt-1"}`}
             >
                 {sublabel}
             </p>
         );
 
         return (
-            <label
-                htmlFor={name}
-                className={`text-sm font-medium text-gray-700 ${labelClassName}`}
-            >
+            <label htmlFor={name} className={`text-sm font-medium text-gray-700 ${labelClassName}`}>
                 <div
                     className={`flex ${
                         sublabelAlignment === "right" ? "items-center" : "flex-col items-start"
@@ -64,11 +62,19 @@ export const Input: React.FC<InputProps> = (props) => {
                 return (
                     <AntInput
                         name={name}
+                        type={props.contentType}
                         placeholder={props.placeholder}
                         value={props.value}
-                        onChange={(e) => props.onChange(e.target.value)}
+                        onChange={e => props.onChange(e.target.value)}
                         disabled={disabled}
-                        className={`w-full text-sm p-2 rounded-md border-gray-300 hover:bg-background-input bg-background-input ${inputClassName}`}
+                        rootClassName={cn(
+                            "hover:!border-stroke border w-full h-fit focus:!border-stroke focus:!bg-background-input border-stroke",
+                            inputClassName
+                        )}
+                        className={cn(
+                            `w-full text-sm p-2 rounded-md hover:bg-background-input bg-background-input`,
+                            inputClassName
+                        )}
                     />
                 );
 
@@ -78,10 +84,31 @@ export const Input: React.FC<InputProps> = (props) => {
                         name={name}
                         placeholder={props.placeholder}
                         value={props.value}
-                        onChange={(e) => props.onChange(e.target.value)}
+                        onChange={e => props.onChange(e.target.value)}
                         disabled={disabled}
-                        className={`w-full text-sm p-2 rounded-md border-gray-300 hover:bg-background-input bg-background-input ${inputClassName}`}
-                        rows={4}
+                        rootClassName='hover:!border-stroke border focus:!border-stroke focus:!bg-background-input border-stroke'
+                        className={`w-full text-sm p-2 rounded-md hover:bg-background-input bg-background-input ${inputClassName}`}
+                        rows={props.rows ?? 4}
+                    />
+                );
+
+            case "search":
+                return (
+                    <AntInput
+                        inputMode='search'
+                        placeholder={props.placeholder}
+                        onChange={e => props.onChange(e.target.value)}
+                        value={props.value}
+                        rootClassName={cn(
+                            "hover:!border-stroke border focus:!bg-background-input !border-stroke w-full h-fit focus:!border-stroke focus:!bg-background-input border-stroke",
+                            inputClassName
+                        )}
+                        className={cn(
+                            `w-full text-sm p-2 rounded-md hover:bg-background-input !bg-background-input`,
+                            inputClassName
+                        )}
+                        prefix={<IoIosSearch className='text-gray text-xl' />}
+
                     />
                 );
 
@@ -92,17 +119,15 @@ export const Input: React.FC<InputProps> = (props) => {
                         value={props.value}
                         onChange={props.onChange}
                         disabled={disabled}
-                        rootClassName="text-sm border hover:bg-background-input !bg-background-input border-stroke rounded-md"
+                        rootClassName='text-sm border hover:bg-background-input !bg-background-input border-stroke rounded-md'
                         className={`w-full text-sm h-fit rounded-md hover:bg-background-input bg-background-input ${inputClassName}`}
                         options={props.options}
-                        suffixIcon={<BiCaretDown className="text-black" />}
+                        suffixIcon={<BiCaretDown className='text-black' />}
                     />
                 );
 
             case "multiselect":
-                return (
-                    <MultiSelect {...props} />
-                );
+                return <MultiSelect {...props} />;
 
             case "datepicker":
                 return (
@@ -112,8 +137,8 @@ export const Input: React.FC<InputProps> = (props) => {
                         value={props.value}
                         onChange={props.onChange}
                         disabled={disabled}
-                        suffixIcon={<BiCaretDown className="text-black" />}
-                        rootClassName="text-sm border-gray-300 bg-background-input rounded-md"
+                        suffixIcon={<BiCaretDown className='text-black' />}
+                        rootClassName='text-sm border-gray-300 bg-background-input rounded-md'
                         className={`w-full text-sm placeholder:text-sm hover:bg-background-input bg-background-input ${inputClassName}`}
                     />
                 );
@@ -123,7 +148,7 @@ export const Input: React.FC<InputProps> = (props) => {
                     <Checkbox
                         name={name}
                         checked={props.value}
-                        onChange={(e) => props.onChange(e.target.checked)}
+                        onChange={e => props.onChange(e.target.checked)}
                         disabled={disabled}
                         className={inputClassName}
                     >
@@ -134,9 +159,10 @@ export const Input: React.FC<InputProps> = (props) => {
             case "radio":
                 return <RadioInput {...props} />;
 
-            case 'image-upload':
+            case "image-upload":
                 return (
                     <ImageUpload
+                        {...props}
                         value={props.value}
                         onChange={props.onChange}
                         maxFiles={props.maxFiles}
@@ -147,10 +173,10 @@ export const Input: React.FC<InputProps> = (props) => {
     };
 
     return (
-        <div className={`mb-4 flex flex-col gap-1 ${className}`}>
+        <div className={`mb-4 w-full h-auto flex flex-col gap-2 ${className}`}>
             {renderLabel()}
             {renderInput()}
-            {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+            {error && <p className='mt-1 text-sm text-red-500'>{error}</p>}
         </div>
     );
 };
