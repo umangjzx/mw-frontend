@@ -108,6 +108,11 @@ type SingleImageUploadProps = Partial<ImageUploadProps> & {
     handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
+type TimeRangeValue = {
+    from: string;
+    to: string;
+        };
+
 type InputProps =
     | TextInputProps
     | TextAreaInputProps
@@ -118,4 +123,5 @@ type InputProps =
     | RadioInputProps
     | UploadProps
     | MultiSelectInputProps
-    | SearchInputProps;
+    | SearchInputProps
+    | TimeRangeInputProps;

@@ -1,4 +1,3 @@
-
 interface CenterModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -25,6 +24,16 @@ interface ViewModalProps {
     height?: number | string;
     style?: React.CSSProperties;
     className?: string;
+}
+
+interface SideModalProps {
+    children: React.ReactNode;
+    title?: string;
+    onClose: () => void;
+    saveButtonText?: string;
+    cancelButtonText?: string;
+    onSave?: () => void;
+    onCancel?: () => void;
 }
 
 type ShowModalType = "view" | "edit" | "create" | null;

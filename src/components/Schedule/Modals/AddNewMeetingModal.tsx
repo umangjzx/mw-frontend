@@ -1,12 +1,9 @@
 "use client";
-import VolunteerViewModal from "@/components/leaner/VolunteerViewModal";
+import Button from "@/components/common/Button";
+import { Input } from "@/components/common/Input";
 import SideModal from "@/components/common/Modals/SideModal";
 import { LearnerScheduleModalConstants } from "@/constants/schedule";
-import { Input } from "@/components/common/Input";
-import Button from "@/components/common/Button";
 import { useState } from "react";
-import MyScheduleModal from "@/components/schedule/Modals/MyScheduleModal";
-import AddNewMeetingModal from "@/components/schedule/Modals/AddNewMeetingModal";
 
 interface FormData {
     title_of_the_meeting: string;
@@ -16,8 +13,7 @@ interface FormData {
     google_meet_link: string;
     description: string;
 }
-
-const Profile = () => {
+const AddNewMeetingModal = () => {
     const [formData, setFormData] = useState<FormData>({
         title_of_the_meeting: "",
         select_volunteer: "",
@@ -37,16 +33,20 @@ const Profile = () => {
     };
 
     return (
-        <div className="p-10 bg-slate-300 flex gap-10">
-            {/* <Bio /> */}
-            {/* <Overview /> */}
-
-            {/* <VolunteerCard /> */}
-            {/* <VolunteerViewModal /> */}
-            <AddNewMeetingModal />
-            {/* <MyScheduleModal /> */}
-        </div>
+        <SideModal title="Add New Meeting" onClose={() => {}}>
+            <div className="flex flex-col px-5 mt-7">
+                {LearnerScheduleModalConstants.map((field: any) => (
+                    <Input key={field.name} {...field} onChange={handleChange} />
+                ))}
+                <div className="flex flex-col gap-2">
+                    <p className="text-sm ">Meeting link</p>
+                    <Button className="w-full !text-black text-sm border-none !rounded-xl !bg-background-secondary">
+                        Add Google Meet Video Conferencing
+                    </Button>
+                </div>
+            </div>
+        </SideModal>
     );
 };
 
-export default Profile;
+export default AddNewMeetingModal;
