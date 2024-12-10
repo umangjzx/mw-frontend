@@ -1,11 +1,12 @@
 import React from "react";
-import { Input as AntInput, Select, DatePicker, Checkbox } from "antd";
-import RadioInput from "./RadioInput";
-import ImageUpload from "./ImageUpload";
-import { BiCaretDown } from "react-icons/bi";
-import MultiSelect from "./MultiSelect";
+import { Input as AntInput, DatePicker, Checkbox } from "antd";
+import MultiSelect from "./Select/MultiSelect";
 import { cn } from "@/utils/merge-class";
 import { IoIosSearch } from "react-icons/io";
+import { CalendarIcon } from "@/assets/icons";
+import RadioInput from "./RadioButton";
+import Select from "./Select/Select";
+import Uploader from "./Upload";
 
 const { TextArea } = AntInput;
 
@@ -108,23 +109,11 @@ export const Input: React.FC<InputProps> = props => {
                             inputClassName
                         )}
                         prefix={<IoIosSearch className='text-gray text-xl' />}
-
                     />
                 );
 
             case "select":
-                return (
-                    <Select
-                        placeholder={props.placeholder}
-                        value={props.value}
-                        onChange={props.onChange}
-                        disabled={disabled}
-                        rootClassName='text-sm border hover:bg-background-input !bg-background-input border-stroke rounded-md'
-                        className={`w-full text-sm h-fit rounded-md hover:bg-background-input bg-background-input ${inputClassName}`}
-                        options={props.options}
-                        suffixIcon={<BiCaretDown className='text-black' />}
-                    />
-                );
+                return <Select {...props} />;
 
             case "multiselect":
                 return <MultiSelect {...props} />;
@@ -135,9 +124,9 @@ export const Input: React.FC<InputProps> = props => {
                         name={name}
                         placeholder={props.placeholder}
                         value={props.value}
-                        onChange={props.onChange}
+                        onChange={e => props.onChange(e)}
                         disabled={disabled}
-                        suffixIcon={<BiCaretDown className='text-black' />}
+                        suffixIcon={<CalendarIcon className='text-black' />}
                         rootClassName='text-sm border-gray-300 bg-background-input rounded-md'
                         className={`w-full text-sm placeholder:text-sm hover:bg-background-input bg-background-input ${inputClassName}`}
                     />
@@ -159,16 +148,8 @@ export const Input: React.FC<InputProps> = props => {
             case "radio":
                 return <RadioInput {...props} />;
 
-            case "image-upload":
-                return (
-                    <ImageUpload
-                        {...props}
-                        value={props.value}
-                        onChange={props.onChange}
-                        maxFiles={props.maxFiles}
-                        disabled={disabled}
-                    />
-                );
+            case "upload":
+                return <Uploader {...props} />;
         }
     };
 

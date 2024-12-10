@@ -2,9 +2,8 @@ export const ResourceFormConstants: FormField[] = [
     {
         name: "coverImage",
         label: "Add Cover Image",
-        inputType: "image-upload",
+        inputType: "upload",
         maxFiles: 1,
-        variant: "cover",
     },
     {
         name: "title",

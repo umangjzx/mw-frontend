@@ -1,15 +1,9 @@
 import Image from "next/image";
 import { BiPlus } from "react-icons/bi";
-import { useRef } from "react";
-import Button from "../Button";
+import Button from "../../Button";
 
-const SingleImageUpload = ({
-    handleRemove,
-    handleFileChange,
-    value = [],
-    disabled,
-}: SingleImageUploadProps) => {
-    const fileInputRef = useRef<HTMLInputElement>(null);
+const SingleImageUpload = ({ ...props }: UploaderProps) => {
+    const { value, handleRemove, handleClick } = props;
     return (
         <div className='w-full h-full bg-background-input p-2 rounded-xl border border-stroke flex items-center justify-between'>
             <div className='relative w-24 h-24 group'>
@@ -23,7 +17,7 @@ const SingleImageUpload = ({
                     />
                 ) : (
                     <div
-                        onClick={() => fileInputRef.current?.click()}
+                        onClick={handleClick}
                         className='w-full h-full rounded-full bg-stroke flex items-center justify-center'
                     >
                         <BiPlus className='text-2xl text-black bg-stroke rounded-full' />
@@ -38,7 +32,7 @@ const SingleImageUpload = ({
                         title='Change'
                         btnVariant='secondary'
                         customClassName='!text-xs !text-black !border-black !bg-white'
-                        onClick={() => fileInputRef.current?.click()}
+                        onClick={handleClick}
                     />
                     <Button
                         size='small'
@@ -49,15 +43,6 @@ const SingleImageUpload = ({
                     />
                 </div>
             )}
-            <input
-                title='image_upload'
-                ref={fileInputRef}
-                type='file'
-                accept='image/*'
-                onChange={handleFileChange}
-                className='hidden'
-                disabled={disabled}
-            />
         </div>
     );
 };
