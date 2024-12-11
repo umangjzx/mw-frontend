@@ -1,9 +1,8 @@
 import React from "react";
-import { Input as AntInput, DatePicker, Checkbox } from "antd";
+import { Input as AntInput, Checkbox } from "antd";
 import MultiSelect from "./Select/MultiSelect";
 import { cn } from "@/utils/merge-class";
 import { IoIosSearch } from "react-icons/io";
-import { CalendarIcon } from "@/assets/icons";
 import RadioInput from "./RadioButton";
 import Select from "./Select/Select";
 import Uploader from "./Upload";
@@ -21,7 +20,6 @@ export const Input: React.FC<InputProps> = props => {
         disabled = false,
         className = "",
         labelClassName = "",
-        inputClassName = "",
     } = props;
 
     const renderLabel = () => {
@@ -69,12 +67,12 @@ export const Input: React.FC<InputProps> = props => {
                         onChange={e => props.onChange(e.target.value)}
                         disabled={disabled}
                         rootClassName={cn(
-                            "hover:!border-stroke border w-full h-fit focus:!border-stroke focus:!bg-background-input border-stroke",
-                            inputClassName
+                            props.inputClassName ? "w-[49%]" : "",
+                            "hover:!border-stroke border h-fit focus:!border-stroke focus:!bg-background-input border-stroke",
                         )}
                         className={cn(
-                            `w-full text-sm p-2 rounded-md hover:bg-background-input bg-background-input`,
-                            inputClassName
+                            `text-sm p-2 rounded-md hover:bg-background-input bg-background-input`,
+                            props.inputClassName
                         )}
                     />
                 );
@@ -87,8 +85,14 @@ export const Input: React.FC<InputProps> = props => {
                         value={props.value}
                         onChange={e => props.onChange(e.target.value)}
                         disabled={disabled}
-                        rootClassName='hover:!border-stroke border focus:!border-stroke focus:!bg-background-input border-stroke'
-                        className={`w-full text-sm p-2 rounded-md hover:bg-background-input bg-background-input ${inputClassName}`}
+                        rootClassName={cn(
+                            props.inputClassName,
+                            `hover:!border-stroke border focus:!border-stroke focus:!bg-background-input border-stroke`,
+                        )}
+                        className={cn(
+                            props.inputClassName,
+                            `w-full text-sm p-2 rounded-md hover:bg-background-input bg-background-input`,
+                        )}
                         rows={props.rows ?? 4}
                     />
                 );
@@ -102,11 +106,11 @@ export const Input: React.FC<InputProps> = props => {
                         value={props.value}
                         rootClassName={cn(
                             "hover:!border-stroke border focus:!bg-background-input !border-stroke w-full h-fit focus:!border-stroke focus:!bg-background-input border-stroke",
-                            inputClassName
+                            props.inputClassName
                         )}
                         className={cn(
-                            `w-full text-sm p-2 rounded-md hover:bg-background-input !bg-background-input`,
-                            inputClassName
+                            props.inputClassName,
+                            `w-full text-sm p-2 rounded-md hover:bg-background-input !bg-background-input`
                         )}
                         prefix={<IoIosSearch className='text-gray text-xl' />}
                     />
@@ -120,26 +124,27 @@ export const Input: React.FC<InputProps> = props => {
 
             case "datepicker":
                 return (
-                    <DatePicker
-                        name={name}
-                        placeholder={props.placeholder}
-                        value={props.value}
-                        onChange={e => props.onChange(e)}
-                        disabled={disabled}
-                        suffixIcon={<CalendarIcon className='text-black' />}
-                        rootClassName='text-sm border-gray-300 bg-background-input rounded-md'
-                        className={`w-full text-sm placeholder:text-sm hover:bg-background-input bg-background-input ${inputClassName}`}
-                    />
+                    // <DatePicker
+                    //     name={name}
+                    //     placeholder={props.placeholder}
+                    //     value={dayjs(props.value).format("DD-MM-YYYY")}
+                    //     onChange={e => props.onChange(new Date(e))}
+                    //     disabled={disabled}
+                    //     suffixIcon={<CalendarIcon className='text-black' />}
+                    //     rootClassName='text-sm border-gray-300 bg-background-input rounded-md'
+                    //     className={`w-full text-sm placeholder:text-sm hover:bg-background-input bg-background-input ${inputClassName}`}
+                    // />
+                    <div>DatePicker</div>
                 );
 
             case "checkbox":
                 return (
                     <Checkbox
+                        className={props.inputClassName}
                         name={name}
                         checked={props.value}
                         onChange={e => props.onChange(e.target.checked)}
                         disabled={disabled}
-                        className={inputClassName}
                     >
                         {props.placeholder}
                     </Checkbox>

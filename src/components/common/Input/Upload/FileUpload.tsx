@@ -25,7 +25,10 @@ const FileUpload = ({ ...props }: UploaderProps) => {
                     onClick={handleClick}
                 />
             ) : (
-                value.map((file: File, index: number) => <div key={index}>{file.name}</div>)
+                // value?.map((file: File, index: number) => <div key={index}>{file.name}</div>)
+                <div>
+                    {"url"}
+                </div>
             )}
             {value?.length > 0 && (
                 <div className='flex items-center flex-row-reverse gap-2'>

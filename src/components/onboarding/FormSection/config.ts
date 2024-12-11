@@ -8,7 +8,7 @@ export const volunteerFormSchema = z.object({
     volunteer_parent_email: z.string().email("Invalid email").optional(),
     volunteer_gender: z.string().min(1, "Gender is required").optional(),
     volunteer_higher_education: z.string().min(1, "Education is required").optional(),
-    volunteer_languages: z.string().min(1, "Languages is required").optional(),
+    volunteer_languages: z.array(z.any()).optional(),
     education_details: z.string().min(1, "Education details is required").optional(),
     volunteer_experience: z.string().min(1, "Experience is required").optional(),
     consented_from_parent: z.boolean().optional().default(false),
@@ -24,7 +24,10 @@ export const volunteerFormSchema = z.object({
     volunteer_contact_details: z
         .object({
             email: z.string().email("Invalid email").default("").optional(),
-            contact_number: z.string().min(1, "Contact number is required").optional(),
+            contact_number: z.object({
+                number: z.string().min(1, "Contact number is required").optional(),
+                country_code: z.string().min(1, "Country code is required").optional(),
+            }),
             zip_code: z.string().min(1, "Zip code is required").optional(),
         })
         .optional(),
@@ -111,14 +114,105 @@ export const volunteerFormSchema = z.object({
             document_id: z.string().optional().default(""),
         })
         .optional(),
+
+    //Volunteer Subjects
+    volunteer_subjects: z.array(z.any()).optional(),
 });
 
 export type VolunteerFormData = z.infer<typeof volunteerFormSchema>;
 
-
 export const learnerFormSchema = z.object({
-    learner_first_name: z.string().min(1, "First name is required").optional(),
-    learner_last_name: z.string().min(1, "Last name is required").optional(),
+
+    //Learner personal info
+    learner_personal_info: z.object({
+        learner_first_name: z.string().min(1, "First name is required").optional(),
+        learner_last_name: z.string().min(1, "Last name is required").optional(),
+        learner_date_of_birth: z.string().optional(),
+        learner_gender: z.string().min(1, "Gender is required").optional(),
+        learner_preferred_pronoun: z.string().min(1, "Preferred pronoun is required").optional(),
+        learner_primary_language: z.string().min(1, "Primary language is required").optional(),
+        learner_contact_details: z.object({
+            email: z.string().email("Invalid email").default("").optional(),
+            contact_number: z.object({
+                number: z.string().min(1, "Contact number is required").optional(),
+                country_code: z.string().min(1, "Country code is required").optional(),
+            }),
+            zip_code: z.string().min(1, "Zip code is required").optional(),
+        }),
+    }).optional(),
+
+    //Learner special needs
+    learner_special_needs: z.object({
+        type_of_developmental_disability: z.string().optional(),
+        level_of_support_needed: z.string().optional(),
+        assistive_device_used: z.string().optional(),
+        communication_style: z.string().optional(),
+        description: z.string().optional(),
+        areas_of_support_needed: z.array(z.any()).optional(),
+        learning_styles: z.array(z.any()).optional(),
+    }).optional(),
+
+    //Parent info
+    parent_info: z.object({
+        parent_first_name: z.string().min(1, "First name is required").optional(),
+        parent_last_name: z.string().min(1, "Last name is required").optional(),
+        parent_email: z.string().email("Invalid email").default("").optional(),
+        parent_contact_number: z.object({
+            number: z.string().min(1, "Contact number is required").optional(),
+            country_code: z.string().min(1, "Country code is required").optional(),
+        }),
+        parent_address: z.string().optional(),
+        emergency_contact_number: z.object({
+            number: z.string().min(1, "Contact number is required").optional(),
+            country_code: z.string().min(1, "Country code is required").optional(),
+        }),
+        relationship_to_learner: z.string().optional(),
+    }).optional(),
+
+    //Education
+    education: z.object({
+        current_school: z.string().optional(),
+        iep_plan_key: z.string().optional(),
+        academic_strengths: z.array(z.any()).optional(),
+        academic_challenges: z.array(z.any()).optional(),
+    }).optional(),
+
+    //Social skills
+    social_skills: z.object({
+        communication_preferences: z.array(z.any()).optional(),
+        social_interaction_styles: z.array(z.any()).optional(),
+        behavioral_concerns: z.array(z.any()).optional(),
+        techniques_to_calm: z.array(z.any()).optional(),
+    }).optional(),
+
+    //Current interests
+    current_interests: z.object({
+        interests: z.array(z.any()).optional(),
+        extra_curricular_activities: z.array(z.any()).optional(),
+        favorite_activities: z.array(z.any()).optional(),
+    }).optional(),
+
+    //Learner goals
+    learner_goals: z.object({
+        expected_goals: z.array(z.string()).optional(),
+        subjects_to_focus_on: z.array(z.string()).optional(),
+        preferred_volunteer_qualities: z.array(z.string()).optional(),
+        skill_level: z.string().optional(),
+    }).optional(),
+
+    //Additional info
+    additional_info: z.object({
+        cultural_consideration: z.string().optional(),
+        other_concerns_or_requests: z.string().optional(),
+        what_motivates_to_learn: z.string().optional(),
+    }).optional(),
+
+    //Consent and permissions
+    consent_and_permissions: z.object({
+        photo_or_video_consent: z.boolean().optional().default(false),
+        acknowledgement_of_program_policies: z.boolean().optional().default(false),
+    }).optional(),
+
 });
 
 export type LearnerFormData = z.infer<typeof learnerFormSchema>;

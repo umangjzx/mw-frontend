@@ -11,7 +11,6 @@ interface FormFieldProps {
 }
 
 export const FormField = ({ field, control, errors, parent }: FormFieldProps) => {
-
     const getFieldValue = (field: any) => {
         if (parent) {
             const parentKey = parent.split(".");
@@ -19,7 +18,6 @@ export const FormField = ({ field, control, errors, parent }: FormFieldProps) =>
                 parentKey?.length > 1
                     ? control._formValues?.[parentKey[0]]?.[parentKey[1]]
                     : control._formValues?.[parentKey[0]];
-
             return value?.[field?.id];
         }
         return control._formValues?.[field?.id];

@@ -14,7 +14,7 @@ type FormSectionProps = {
 };
 
 const FormSection = ({ schema, formData }: FormSectionProps) => {
-    const { form, onSubmit } = useOnboardingForm(schema);
+    const { form, onSubmit, isLoading } = useOnboardingForm(schema);
     const {
         control,
         formState: { errors },
@@ -60,7 +60,11 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
                                         field={field}
                                         control={control}
                                         errors={errors}
-                                        parent={section.parent}
+                                        parent={
+                                            field.parent
+                                                ? `${section.parent}.${field.parent}`
+                                                : section.parent
+                                        }
                                     />
                                 );
                             })}
@@ -71,7 +75,7 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
 
                 <div className='mt-5 flex flex-col gap-4'>
                     <Button
-                        loading={false}
+                        loading={isLoading}
                         htmlType='submit'
                         title='Submit Application'
                         size='large'

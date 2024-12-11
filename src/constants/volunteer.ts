@@ -410,6 +410,7 @@ export const VolunteerFormSections: FormSectionConfig[] = [
     },
     {
         title: null,
+        parent: null,
         fields: [
             {
                 id: "volunteer_description",
@@ -470,9 +471,10 @@ export const VolunteerFormSections: FormSectionConfig[] = [
     },
     {
         title: "Consent and Permissions",
+        parent: "consent_and_permissions",
         fields: [
             {
-                id: "hasDisciplinaryHistory",
+                id: "photo_or_video_consent",
                 label: "Photo/Video Consent",
                 sublabel: "(for use in program materials or promotional content)",
                 inputType: "radio",
@@ -484,7 +486,7 @@ export const VolunteerFormSections: FormSectionConfig[] = [
                 gridCols: 1,
             },
             {
-                id: "disciplinaryExplanation",
+                id: "acknowledgement_of_program_policies",
                 label: "Acknowledgment of Program Policies ",
                 sublabel: "(Rules, Expectations, and Procedures)",
                 options: [

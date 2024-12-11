@@ -1,6 +1,9 @@
-import { EndpointProps } from "@/interfaces";
+import { EndpointProps } from "@/interfaces/endpoints";
 
 export const endpoints: EndpointProps = {
+  onboarding: {
+    update: (role: "volunteer" | "learner") => `onboarding/${role}`,
+  },
   auth: {
     oauth2callback: "auth/oauth2callback",
   },

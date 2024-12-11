@@ -1,9 +1,10 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { GetAPI, PostAPI } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import { getLocalStorage, setLocalStorage } from "@/utils/localStorage";
+import { GET_API, POST_API } from "@/api/request";
+import Cookies from "js-cookie";
 
 export type UserRole = "volunteer" | "learner";
 
@@ -35,7 +36,7 @@ const LoginPage = () => {
                     code,
                     signup_type: role,
                 };
-                PostAPI(endpoints.user.signIn, payload)
+                POST_API(endpoints.user.signIn, payload)
                     .then((response: any) => {
                         console.log("Signup response:", response.data);
                         if (typeof window !== "undefined") {
@@ -50,14 +51,18 @@ const LoginPage = () => {
                             response?.data?.onboarded_status === "pending" &&
                             role === "volunteer"
                         ) {
-                            router.push(`/volunteer?id=${response.data.volunteer_id}`);
+                            // router.push(`/volunteer?id=${response.data.volunteer_id}`);
                         } else if (
                             response?.data?.onboarded_status === "pending" &&
                             role === "learner"
                         ) {
-                            router.push(`/learner?id=${response.data.learner_id}`);
+                            // router.push(`/learner?id=${response.data.learner_id}`);
                         } else {
-                            router.push("/dashboard");
+                            Cookies.set("refresh_token", response.data.refresh_token);
+                            Cookies.set("access_token", response.data.access_token);
+                            Cookies.set("role", role);
+                            Cookies.set("volunteer_id", response.data.volunteer_id);
+                            router.push("/onboarding");
                         }
                     })
                     .catch(error => {
@@ -75,7 +80,7 @@ const LoginPage = () => {
     }, [handleSignup]);
 
     const handleLogin = () => {
-        GetAPI(endpoints.auth.oauth2callback).then((res: any) => {
+        GET_API(endpoints.auth.oauth2callback).then((res: any) => {
             if (res?.data) {
                 if (typeof window !== "undefined") {
                     window.location.href = res.data;

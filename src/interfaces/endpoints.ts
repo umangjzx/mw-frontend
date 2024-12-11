@@ -1,4 +1,7 @@
 export interface EndpointProps {
+    onboarding: {
+        update: (role: "volunteer" | "learner") => `onboarding/${typeof role}`,
+    };
     auth: {
         oauth2callback: string;
     };
