@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import VolunteerCard from "@/components/leaner/VolunteerCard";
 import VolunteerViewModal from "@/components/leaner/VolunteerViewModal";
 import { useQuery } from "@tanstack/react-query";
-import { GetAPI } from "@/api/request";
+import { GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 
 interface VolunteerCardData {
@@ -30,7 +30,7 @@ export default function LearnersPage() {
     const [volunteerCardData, setVolunteerCardData] = useState<VolunteerCardData[]>([]);
 
     const getAllVolunteers = async () => {
-        const response: any = await GetAPI(endpoints.volunteer.getAllVolunteers);
+        const response: any = await GET_API(endpoints.volunteer.getAllVolunteers);
         return response.data;
     };
 

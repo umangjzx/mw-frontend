@@ -1,6 +1,6 @@
 "use client";
 import { endpoints } from "@/api/constants";
-import { GetAPI, PutAPI } from "@/api/request";
+import { GET_API, PUT_API } from "@/api/request";
 import SideModal from "@/components/common/Modals/SideModal";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -46,7 +46,7 @@ const MyScheduleModal = () => {
     const [deletedSlots, setDeletedSlots] = useState<string[]>([]);
 
     useEffect(() => {
-        GetAPI(endpoints.volunteer_slot.get).then((res: any) => {
+        GET_API(endpoints.volunteer_slot.get).then((res: any) => {
             const newSchedule = { ...schedule };
 
             // Initialize all days with empty arrays
@@ -190,7 +190,7 @@ const MyScheduleModal = () => {
         };
 
         console.log(payload, "payload");
-        PutAPI(endpoints.volunteer_slot.update, payload).then((res) => {
+        PUT_API(endpoints.volunteer_slot.update, payload).then((res) => {
             console.log(res, "res");
             setDeletedSlots([]);
         });

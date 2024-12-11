@@ -1,6 +1,6 @@
 "use client";
 import { endpoints } from "@/api/constants";
-import { GetAPI } from "@/api/request";
+import { GET_API } from "@/api/request";
 import ClockIcon from "@/assets/icons/ClockIcon";
 import ModalCloseIcon from "@/assets/icons/FeedModalCloseIcon";
 import LearnerConnectIcon from "@/assets/icons/LearnerConnectIcon";
@@ -197,7 +197,7 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
     console.log(volunteerId, "volunteerId Modal");
 
     const getIndividualVolunteer = async () => {
-        const response: any = await GetAPI(
+        const response: any = await GET_API(
             endpoints.volunteer.getIndividualVolunteer(volunteerId as string)
         );
         return response.data;
