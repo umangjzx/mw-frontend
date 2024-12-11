@@ -34,6 +34,7 @@ interface SideModalProps {
     cancelButtonText?: string;
     onSave?: () => void;
     onCancel?: () => void;
+    isOpen?: boolean;
 }
 
 type ShowModalType = "view" | "edit" | "create" | null;

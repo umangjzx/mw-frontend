@@ -12,27 +12,15 @@ const SideModal: React.FC<SideModalProps> = ({
     cancelButtonText = "Cancel",
     onSave,
     onCancel,
+    isOpen = false,
 }) => {
-    const [visible, setVisible] = useState(false);
-
-    const showDrawer = () => {
-        setVisible(true);
-    };
-
-    const onCloseDrawer = () => {
-        setVisible(false);
-    };
-
     return (
         <div>
-            <Button type="primary" onClick={showDrawer}>
-                Open
-            </Button>
             <Drawer
                 placement="right"
                 closable={false}
-                onClose={onCloseDrawer}
-                open={true}
+                onClose={onClose}
+                open={isOpen}
                 width={400}
                 className="py-4 !px-0"
                 bodyStyle={{ padding: 0 }}

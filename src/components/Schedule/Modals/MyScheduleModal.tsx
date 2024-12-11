@@ -210,6 +210,7 @@ const MyScheduleModal = () => {
             onClose={() => {}}
             saveButtonText="Create Meeting"
             cancelButtonText="Cancel"
+            isOpen={true}
         >
             <div>
                 <div className="flex flex-col gap-1 px-5 py-4">

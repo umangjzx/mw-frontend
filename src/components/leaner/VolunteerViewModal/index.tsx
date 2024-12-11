@@ -1,4 +1,6 @@
 "use client";
+import { endpoints } from "@/api/constants";
+import { GetAPI } from "@/api/request";
 import ClockIcon from "@/assets/icons/ClockIcon";
 import ModalCloseIcon from "@/assets/icons/FeedModalCloseIcon";
 import LearnerConnectIcon from "@/assets/icons/LearnerConnectIcon";
@@ -7,17 +9,19 @@ import Button from "@/components/common/Button";
 import Divider from "@/components/common/Divider";
 import ViewModal from "@/components/common/Modals/ViewModal";
 import TagComponent from "@/components/common/Tag";
+import OverViewCard from "@/components/leaner/LeanerOverViewCard";
 import DetailCard from "@/components/profile/Bio/DetailCard";
 import DetailChipCard from "@/components/profile/Bio/DetailChipCard";
 import RatingCard from "@/components/profile/Overview/RatingCard";
-import OverViewCard from "@/components/leaner/LeanerOverViewCard";
-import { getLocalStorage } from "@/utils/localStorage";
-import Image from "next/image";
-import { FaLocationDot } from "react-icons/fa6";
-import { useState } from "react";
 import RatingHeader from "@/components/profile/Overview/RatingHeader";
+import { getLocalStorage } from "@/utils/localStorage";
+import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { FaLocationDot } from "react-icons/fa6";
 
-const ProfileHeader = ({ text }: { text: string | null }) => (
+const ProfileHeader = ({ text, onClose }: { text: string | null; onClose: () => void }) => (
     <div className="flex items-center justify-between px-5">
         <p className="font-medium text-xl">Profile</p>
         <div className="flex items-center gap-2">
@@ -25,23 +29,61 @@ const ProfileHeader = ({ text }: { text: string | null }) => (
                 title="Schedule a meeting"
                 className="text-sm !text-black !bg-[#dff5ff] !border-primary !border"
             />
-            <ModalCloseIcon />
+            <span onClick={onClose} className="cursor-pointer">
+                <ModalCloseIcon />
+            </span>
         </div>
     </div>
 );
 
-const ProfileInfo = ({ text, overViewCard }: { text: string | null; overViewCard: any[] }) => (
+interface VolunteerData {
+    volunteer_first_name: string;
+    volunteer_last_name: string;
+    volunteer_description: string;
+    volunteer_education: string;
+    volunteer_experience: string;
+    volunteer_languages: Array<{ language_name: string; language_id: string }>;
+    volunteer_subjects: Array<{ subject_name: string; subject_id: string }>;
+    volunteer_skills: Array<{ skill_name: string; skill_id: string }>;
+    profile_picture: { image_url: string };
+    volunteered_hours: number;
+    students_connected: number;
+}
+
+const ProfileInfo = ({
+    text,
+    volunteerData,
+}: {
+    text: string | null;
+    volunteerData: VolunteerData;
+}) => (
     <div className="grid grid-cols-[1.7fr,2fr,2fr] gap-4 px-5">
         <div className="flex items-center gap-3">
-            <Image src={DummyProfileImg} alt="avatar" width={80} height={80} />
+            <div className="relative w-[80px] h-[80px] rounded-full shrink-0">
+                <Image
+                    src={volunteerData?.profile_picture?.image_url}
+                    alt="avatar"
+                    fill
+                    className="object-cover rounded-full w-full h-full"
+                />
+            </div>
             <div className="flex flex-col gap-2">
-                <p className="font-medium">Alexander Harris</p>
+                <p className="font-medium">
+                    {`${volunteerData?.volunteer_first_name} ${volunteerData?.volunteer_last_name}`}
+                </p>
                 <TagComponent text={text} />
             </div>
         </div>
-        {overViewCard.map((item, index) => (
-            <OverViewCard key={index} title={item.title} value={item.value} icon={item.icon} />
-        ))}
+        <OverViewCard
+            title="Hours Volunteered"
+            value={volunteerData?.volunteered_hours}
+            icon={<ClockIcon />}
+        />
+        <OverViewCard
+            title="Students Connected"
+            value={volunteerData?.students_connected}
+            icon={<LearnerConnectIcon />}
+        />
     </div>
 );
 
@@ -71,41 +113,67 @@ const TabButtons = ({
     </div>
 );
 
-const OverviewContent = ({ details, bio }: { details: any[]; bio: any[] }) => (
-    <div className="flex flex-col gap-4">
-        <div className="px-5 flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-                <p className="font-medium ">Bio</p>
-                <TagComponent
-                    text="Los Angeles, CA"
-                    className="text-sm py-1 font-medium px-2"
-                    icon={<FaLocationDot />}
-                />
+const OverviewContent = ({ volunteerData }: { volunteerData: VolunteerData }) => {
+    const details = [
+        {
+            title: "Subjects I Teach",
+            tags: volunteerData?.volunteer_subjects.map((subject) => subject.subject_name),
+        },
+        {
+            title: "Languages I Speak",
+            tags: volunteerData?.volunteer_languages.map((lang) => lang.language_name),
+        },
+        {
+            title: "Skills",
+            tags: volunteerData?.volunteer_skills.map((skill) => skill.skill_name),
+        },
+    ];
+
+    const bio = [
+        {
+            title: "Experience",
+            description: volunteerData?.volunteer_experience,
+        },
+        {
+            title: "Education",
+            description: volunteerData?.volunteer_education,
+        },
+    ];
+
+    return (
+        <div className="flex flex-col gap-4">
+            <div className="px-5 flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                    <p className="font-medium">Bio</p>
+                    <TagComponent
+                        text="Los Angeles, CA"
+                        className="text-sm py-1 font-medium px-2"
+                        icon={<FaLocationDot />}
+                    />
+                </div>
+                <p className="text-sm text-gray-light font-normal">
+                    {volunteerData?.volunteer_description}
+                </p>
             </div>
-            <p className="text-sm text-gray-light font-normal">
-                Passionate educator with over 5 years of experience working with children of all
-                abilities. I specialize in personalized learning plans, with a focus on music
-                therapy and language development, aimed at fostering creativity and confidence.
-            </p>
+            {details.map((detail, index) => (
+                <DetailChipCard
+                    key={index}
+                    className="!gap-2"
+                    tags={detail?.tags}
+                    title={detail?.title}
+                />
+            ))}
+            {bio.map((item, index) => (
+                <DetailCard
+                    key={index}
+                    className="!gap-2"
+                    title={item?.title}
+                    description={item?.description}
+                />
+            ))}
         </div>
-        {details.map((detail, index) => (
-            <DetailChipCard
-                key={index}
-                className="!gap-2"
-                tags={detail.tags}
-                title={detail.title}
-            />
-        ))}
-        {bio.map((item, index) => (
-            <DetailCard
-                key={index}
-                className="!gap-2"
-                title={item.title}
-                description={item.description}
-            />
-        ))}
-    </div>
-);
+    );
+};
 
 const ReviewsContent = ({ ratingCard }: { ratingCard: any }) => (
     <div className="flex flex-col gap-3">
@@ -120,61 +188,30 @@ const ReviewsContent = ({ ratingCard }: { ratingCard: any }) => (
     </div>
 );
 
-const VolunteerViewModal = () => {
-    const text = getLocalStorage("role");
-
-    const subjects = [
-        "Math",
-        "Science",
-        "English",
-        "History",
-        "Art",
-        "Music",
-        "Physical Education",
-    ];
-
-    const languages = ["English", "Spanish", "French", "German", "Italian", "Japanese"];
-    const skills = [
-        "Teaching",
-        "Music Therapy",
-        "Language Development",
-        "Creativity",
-        "Confidence",
-    ];
-
-    const details = [
-        { title: "Subjects I Teach", tags: subjects },
-        { title: "Languages I Speak", tags: languages },
-        { title: "Skills", tags: skills },
-    ];
-
-    const bio = [
-        {
-            title: "Experience",
-            description:
-                "Led weekly music sessions for children with special needs, focusing on rhythm, melody, and emotional expression.",
-        },
-        {
-            title: "Education",
-            description:
-                "Bachelor's degree in Music Therapy from the University of California, Los Angeles.",
-        },
-    ];
-
-    const overViewCard = [
-        {
-            title: "Hours Volunteered",
-            value: 40,
-            icon: <ClockIcon />,
-        },
-        {
-            title: "Students Connected",
-            value: 40,
-            icon: <LearnerConnectIcon />,
-        },
-    ];
-
+const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose }) => {
     const [activeTab, setActiveTab] = useState("overview");
+    const text = getLocalStorage("role");
+    const searchParams = useSearchParams();
+    const volunteerId = searchParams.get("volunteerId");
+
+    console.log(volunteerId, "volunteerId Modal");
+
+    const getIndividualVolunteer = async () => {
+        const response: any = await GetAPI(
+            endpoints.volunteer.getIndividualVolunteer(volunteerId as string)
+        );
+        return response.data;
+    };
+
+    const {
+        data: volunteerData,
+        isLoading,
+        isError,
+    } = useQuery({
+        queryKey: ["volunteer", volunteerId],
+        queryFn: getIndividualVolunteer,
+        enabled: !!volunteerId,
+    });
 
     const handleTabChange = (tab: string) => {
         setActiveTab(tab);
@@ -188,15 +225,26 @@ const VolunteerViewModal = () => {
         review: "Jane was so patient and attentive with my child. She made learning fun and engaging, and I could see real progress in just a few weeks!",
     };
 
+    if (isLoading) {
+        return <div></div>;
+    }
+
+    if (isError) {
+        return (
+            <ViewModal modalOpen={isOpen} onClose={onClose} width={855}>
+                <div className="p-5">Error loading volunteer data</div>
+            </ViewModal>
+        );
+    }
+
     return (
-        <ViewModal modalOpen={true} onClose={() => {}} width={855}>
+        <ViewModal modalOpen={isOpen} onClose={onClose} width={855}>
             <div className="flex flex-col gap-4 py-4">
-                <ProfileHeader text={text} />
+                <ProfileHeader text={text} onClose={onClose} />
                 <Divider />
-                <ProfileInfo text={text} overViewCard={overViewCard} />
+                <ProfileInfo text={text} volunteerData={volunteerData} />
                 <Divider />
                 <TabButtons activeTab={activeTab} handleTabChange={handleTabChange} />
-
                 <div className="relative">
                     <div
                         className={`transform transition-all duration-300 ${
@@ -206,10 +254,9 @@ const VolunteerViewModal = () => {
                         }`}
                     >
                         {activeTab === "overview" && (
-                            <OverviewContent details={details} bio={bio} />
+                            <OverviewContent volunteerData={volunteerData} />
                         )}
                     </div>
-
                     <div
                         className={`transform transition-all duration-300 ${
                             activeTab === "reviews"

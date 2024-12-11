@@ -13,7 +13,7 @@ interface FormData {
     google_meet_link: string;
     description: string;
 }
-const AddNewMeetingModal = () => {
+const AddNewMeetingModal: React.FC<AddNewMeetingModalProps> = ({ isOpen, onClose }) => {
     const [formData, setFormData] = useState<FormData>({
         title_of_the_meeting: "",
         select_volunteer: "",
@@ -33,7 +33,7 @@ const AddNewMeetingModal = () => {
     };
 
     return (
-        <SideModal title="Add New Meeting" onClose={() => {}}>
+        <SideModal title="Add New Meeting" onClose={onClose} isOpen={isOpen}>
             <div className="flex flex-col px-5 mt-7">
                 {LearnerScheduleModalConstants.map((field: any) => (
                     <Input key={field.name} {...field} onChange={handleChange} />

@@ -14,6 +14,7 @@ export interface EndpointProps {
     volunteer: {
         update: (id: string) => string;
         getAllVolunteers: string;
+        getIndividualVolunteer: (id: string) => string;
     };
     volunteer_slot: {
         update: string;
