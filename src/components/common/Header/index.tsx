@@ -20,8 +20,8 @@ const CommonHeader: React.FC = () => {
     } = headerOptions || {};
 
     return (
-        <div className='w-full h-full p-2 px-3 flex items-center justify-between'>
-            <div className='flex capitalize items-center'>
+        <div className="w-full h-full p-2 px-3 flex items-center justify-between">
+            <div className="flex capitalize items-center">
                 <Button
                     icon={titleIcon}
                     rootClassName={cn(
@@ -30,7 +30,7 @@ const CommonHeader: React.FC = () => {
                     )}
                     onClick={titleIconClick}
                 />
-                <h1 className='text-lg font-medium'>{formatString(title ?? "")}</h1>
+                <h1 className="text-lg font-medium">{formatString(title ?? "")}</h1>
             </div>
             <div
                 className={cn(
@@ -40,11 +40,11 @@ const CommonHeader: React.FC = () => {
             >
                 <Input
                     value={searchQuery ?? ""}
-                    inputType='search'
-                    name='search'
-                    inputClassName='!bg-transparent mt-4 rounded-full gap-1 items-center'
-                    className='!bg-transparent !w-fit'
-                    onChange={value => setSearchQuery(value)}
+                    inputType="search"
+                    name="search"
+                    inputClassName="!bg-transparent mt-4 rounded-full gap-1 items-center"
+                    className="!bg-transparent !w-fit"
+                    onChange={(value: string) => setSearchQuery(value)}
                     placeholder={searchPlaceholder ?? "Search"}
                 />
                 {!hideButton && (

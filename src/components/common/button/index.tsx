@@ -21,10 +21,10 @@ const Button: React.FC<ButtonProps> = ({
 
     return (
         <AntButton
-            {...props}
             rootClassName={`${baseStyles} ${
                 variantStyles[btnVariant as keyof typeof variantStyles]
             } ${customClassName}`}
+            {...props}
         >
             {title && title}
             {children}

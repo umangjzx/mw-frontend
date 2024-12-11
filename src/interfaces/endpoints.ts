@@ -10,10 +10,12 @@ export interface EndpointProps {
     };
     learner: {
         update: (id: string) => string;
+        getAllLearners: string;
     };
     volunteer: {
         update: (id: string) => string;
         getAllVolunteers: string;
+        getIndividualVolunteer: (id: string) => string;
     };
     volunteer_slot: {
         update: string;

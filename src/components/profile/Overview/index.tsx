@@ -6,6 +6,7 @@ import RatingHeader from "./RatingHeader";
 import RatingCard from "./RatingCard";
 import DummyProfileImg from "@/assets/images/DummyProfileImg.png";
 import ReviewFilter from "./ReviewFilter";
+import Divider from "@/components/common/Divider";
 
 const Overview = () => {
     const overViewCard = [
@@ -21,22 +22,58 @@ const Overview = () => {
         },
     ];
 
-    const ratingCard = {
-        profileImg: DummyProfileImg,
-        name: "Vinoth Kumar",
-        rating: 4.5,
-        day: "1d",
-        review: "Jane was so patient and attentive with my child. She made learning fun and engaging, and I could see real progress in just a few weeks!",
-    };
+    const ratingCard = [
+        {
+            profileImg: DummyProfileImg,
+            name: "Vinoth Kumar",
+            rating: 4.5,
+            day: "1d",
+            review: "Jane was so patient and attentive with my child. She made learning fun and engaging, and I could see real progress in just a few weeks!",
+        },
+        {
+            profileImg: DummyProfileImg,
+            name: "Vinoth Kumar",
+            rating: 4.5,
+            day: "1d",
+            review: "Jane was so patient and attentive with my child. She made learning fun and engaging, and I could see real progress in just a few weeks!",
+        },
+        {
+            profileImg: DummyProfileImg,
+            name: "Vinoth Kumar",
+            rating: 4.5,
+            day: "1d",
+            review: "Jane was so patient and attentive with my child. She made learning fun and engaging, and I could see real progress in just a few weeks!",
+        },
+        {
+            profileImg: DummyProfileImg,
+            name: "Vinoth Kumar",
+            rating: 4.5,
+            day: "1d",
+            review: "Jane was so patient and attentive with my child. She made learning fun and engaging, and I could see real progress in just a few weeks!",
+        },
+    ];
 
     return (
-        <div className="bg-white rounded-lg p-5">
-            <RatingCard {...ratingCard} />
+        <div className="bg-white rounded-3xl p-5 flex flex-col gap-7 h-[83vh]">
+            <h2 className="text-xl font-medium">Overview</h2>
+            <div className="flex gap-5">
+                {overViewCard.map((item, index) => (
+                    <OverViewCard
+                        key={index}
+                        title={item.title}
+                        value={item.value}
+                        icon={item.icon}
+                    />
+                ))}
+            </div>
+            <Divider />
             <ReviewFilter />
-            {/* {overViewCard.map((item, index) => (
-                <OverViewCard key={index} title={item.title} value={item.value} icon={item.icon} />
-            ))}
-            <RatingHeader /> */}
+            <RatingHeader />
+            <div className="flex flex-col gap-5 h-[60vh] overflow-y-auto">
+                {ratingCard.map((item, index) => (
+                    <RatingCard key={index} {...item} />
+                ))}
+            </div>
         </div>
     );
 };

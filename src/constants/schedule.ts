@@ -43,3 +43,42 @@ export const LearnerFeedbackFormConstants: FormField[] = [
         maxFiles: 5,
     },
 ];
+
+export const LearnerScheduleModalConstants = [
+    {
+        name: "title_of_the_meeting",
+        label: "Title of the meeting",
+        inputType: "text",
+        placeholder: "Enter meeting title here",
+    },
+    {
+        name: "select_volunteer",
+        label: "Select Volunteer",
+        inputType: "select",
+        placeholder: "Select volunteer here",
+    },
+    {
+        name: "select_date",
+        label: "Select Date",
+        inputType: "datepicker",
+        placeholder: "Select date here",
+    },
+    {
+        name: "select_time",
+        label: "Available Time",
+        inputType: "timerange",
+        placeholder: "Select time here",
+    },
+    {
+        name: "google_meet_link",
+        label: "Google meet Link",
+        inputType: "text",
+        placeholder: "Enter meeting link here",
+    },
+    {
+        name: "description",
+        label: "Description",
+        inputType: "textarea",
+        placeholder: "Enter meeting description here",
+    },
+];

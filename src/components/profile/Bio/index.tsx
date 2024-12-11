@@ -45,27 +45,30 @@ const index = () => {
     ];
 
     return (
-        <div className="bg-white rounded-3xl w-[465px] flex flex-col gap-6 py-5">
+        <div className="bg-white rounded-3xl w-full flex flex-col gap-6 py-5 h-[83vh]">
             <BioHeader />
             <Divider />
-            <div className="px-5 flex flex-col gap-3">
-                <p className="font-medium text-xl">Bio</p>
-                <p className="text-sm text-gray-light font-normal">
-                    Passionate educator with over 5 years of experience working with children of all
-                    abilities. I specialize in personalized learning plans, with a focus on music
-                    therapy and language development, aimed at fostering creativity and confidence.
-                </p>
+            <div className="h-[65vh] overflow-y-auto flex flex-col gap-3">
+                <div className="px-5 flex flex-col gap-3">
+                    <p className="font-medium text-xl">Bio</p>
+                    <p className="text-sm text-gray-light font-normal">
+                        Passionate educator with over 5 years of experience working with children of
+                        all abilities. I specialize in personalized learning plans, with a focus on
+                        music therapy and language development, aimed at fostering creativity and
+                        confidence.
+                    </p>
+                </div>
+                <div className="px-5 flex items-center justify-between gap-3">
+                    <p className="font-medium ">Location</p>
+                    <TagComponent text="New York, NY" className="text-xs py-1 font-medium px-2" />
+                </div>
+                {details.map((detail) => (
+                    <DetailChipCard tags={detail.tags} title={detail.title} />
+                ))}
+                {bio.map((item) => (
+                    <DetailCard title={item.title} description={item.description} />
+                ))}
             </div>
-            <div className="px-5 flex items-center justify-between gap-3">
-                <p className="font-medium ">Location</p>
-                <TagComponent text="New York, NY" className="text-xs py-1 font-medium px-2" />
-            </div>
-            {details.map((detail) => (
-                <DetailChipCard tags={detail.tags} title={detail.title} />
-            ))}
-            {bio.map((item) => (
-                <DetailCard title={item.title} description={item.description} />
-            ))}
         </div>
     );
 };

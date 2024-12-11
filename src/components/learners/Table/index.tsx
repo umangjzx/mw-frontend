@@ -1,6 +1,6 @@
 import Button from "@/components/common/Button";
 import { Table as AntTable } from "antd";
-import { } from 'nuqs';
+import {} from "nuqs";
 
 interface Learner {
     id: string;
@@ -16,8 +16,23 @@ interface Props {
     handleUploadTestimonial: (learnerId: string) => void;
 }
 
-const LearnersTable = ({ data, isLoading = false, handleMessageLearner, handleUploadTestimonial }: Props) => {
+interface LearnersTableProps {
+    data: TableLearner[];
+    handleMessageLearner: (id: string) => void;
+    handleUploadTestimonial: (id: string) => void;
+    loading?: boolean;
+    pagination?: any;
+    onChange?: (pagination: any) => void;
+}
 
+const LearnersTable: React.FC<LearnersTableProps> = ({
+    data,
+    handleMessageLearner,
+    handleUploadTestimonial,
+    loading,
+    pagination,
+    onChange,
+}) => {
     const columns = [
         {
             title: "Learner Name",
@@ -44,16 +59,16 @@ const LearnersTable = ({ data, isLoading = false, handleMessageLearner, handleUp
             title: "Actions",
             key: "actions",
             render: (_: any, record: Learner) => (
-                <div className='flex items-center gap-2'>
+                <div className="flex items-center gap-2">
                     <Button
                         onClick={() => handleMessageLearner(record.id)}
-                        btnVariant='link'
-                        title='Message Learner'
+                        btnVariant="link"
+                        title="Message Learner"
                     />
                     <Button
                         onClick={() => handleUploadTestimonial(record.id)}
-                        btnVariant='link'
-                        title='Upload Testimonial'
+                        btnVariant="link"
+                        title="Upload Testimonial"
                     />
                 </div>
             ),
@@ -62,21 +77,15 @@ const LearnersTable = ({ data, isLoading = false, handleMessageLearner, handleUp
     ];
 
     return (
-        <div className='w-full overflow-hidden h-full '>
+        <div className="w-full overflow-hidden h-full ">
             <AntTable
+                className="!capitalize"
                 dataSource={data}
                 columns={columns}
-                loading={isLoading}
-                pagination={{
-                    pageSize: 10,
-                    className: "px-6 py-3 !bg-white flex w-full flex justify-center items-center",
-                    showSizeChanger: false,
-                }}
-                rowKey='id'
-                onChange={(pagination, filters, sorter) => {
-                    // Handle sorting here if needed
-                    console.log(sorter);
-                }}
+                loading={loading}
+                pagination={pagination}
+                onChange={onChange}
+                rowKey="id"
                 showSorterTooltip={false}
                 sticky
                 scroll={{ x: "max-content" }}

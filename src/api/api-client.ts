@@ -1,21 +1,17 @@
-import { API_URL } from '@/definitions';
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import Cookies from 'js-cookie';
-
-
+import { API_URL } from "@/definitions";
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import Cookies from "js-cookie";
 
 const axiosInstance = axios.create({
     baseURL: API_URL,
     withCredentials: true,
     headers: {
-        'Content-Type': 'application/json',
-    }
+        "Content-Type": "application/json",
+    },
 });
 
 export const request = async (options: AxiosRequestConfig) => {
-
-
-    const token = await Cookies.get('access_token');
+    const token = await Cookies.get("access_token");
 
     //* check if the token is null or not
     if (token) {
@@ -24,7 +20,7 @@ export const request = async (options: AxiosRequestConfig) => {
     }
     //* Change accept header based on the data type
     if (options.data instanceof FormData) {
-        axiosInstance.defaults.headers.common.Accept = 'multipart/form-data';
+        axiosInstance.defaults.headers.common.Accept = "multipart/form-data";
     }
 
     const onSuccess = (response: AxiosResponse) => response;

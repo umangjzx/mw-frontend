@@ -1,13 +1,10 @@
 "use client";
-import VolunteerViewModal from "@/components/leaner/VolunteerViewModal";
+
+import ThankyouCard from "@/components/landingpage/ThankyouCard";
 const Profile = () => {
     return (
-        <div className="p-10 bg-slate-300 flex gap-10">
-            {/* <Bio /> */}
-            {/* <Overview /> */}
-
-            {/* <VolunteerCard /> */}
-            <VolunteerViewModal />
+        <div className="h-[100vh] bg-[#f4f7fb]">
+            <ThankyouCard />
         </div>
     );
 };

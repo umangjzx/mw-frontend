@@ -10,6 +10,7 @@ type AllEventsModalProps = {
     data: {
         events: any[];
         date: string;
+        w;
     };
     onEventClick: (event: any) => void;
 };
@@ -21,4 +22,9 @@ type AlertModalProps = {
     onCancel: () => void;
     value: string;
     onChange: (value: string) => void;
+};
+
+type AddNewMeetingModalProps = {
+    isOpen: boolean;
+    onClose: () => void;
 };
