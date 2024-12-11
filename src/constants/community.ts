@@ -9,7 +9,7 @@ export const LearnerCommunityFormConstants: FormField[] = [
     {
         name: "uploadPictures",
         label: "Do you want to upload any pictures to share in the community/forum?",
-        inputType: "image-upload",
+        inputType: "upload",
         maxFiles: 5,
     },
 ];

@@ -9,8 +9,8 @@ export const LearnerProfileFormConstants: FormField[] = [
     {
         name: "profileImage",
         label: "Image",
-        inputType: "image-upload",
-        variant: "profile",
+        inputType: "upload",
+        variant: "profile-image",
     },
     {
         name: "bio",

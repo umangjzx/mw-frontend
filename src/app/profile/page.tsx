@@ -1,7 +1,4 @@
 "use client";
-import Bio from "@/components/profile/Bio";
-import Overview from "@/components/profile/Overview";
-import VolunteerCard from "@/components/leaner/VolunteerCard";
 import VolunteerViewModal from "@/components/leaner/VolunteerViewModal";
 const Profile = () => {
     return (

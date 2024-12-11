@@ -1,7 +1,7 @@
 import React from "react";
 import { Select } from "antd";
 import { BiCaretDown } from "react-icons/bi";
-import TagComponent from "../Tag";
+import TagComponent from "../../Tag";
 
 
 
@@ -12,6 +12,7 @@ const MultiSelect: React.FC<MultiSelectInputProps> = ({
     disabled = false,
     placeholder = "Search and Select",
     className = "",
+    isLoading = false,
 }) => {
     return (
         <div className="flex flex-col gap-2 h-fit">
@@ -32,6 +33,7 @@ const MultiSelect: React.FC<MultiSelectInputProps> = ({
                 menuItemSelectedIcon={null}
                 popupClassName='!bg-background-input'
                 options={options.filter(option => !value.includes(option.value as string))}
+                loading={isLoading}
             />
             <div className='flex flex-wrap gap-1'>
                 {value.map(item => (

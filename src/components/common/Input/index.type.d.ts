@@ -1,22 +1,10 @@
 type InputOption = {
     label: string;
-    value: string | number;
+    value: any;
     sublabel?: string;
 };
 
-interface FormField extends Omit<InputProps, "value" | "onChange"> {
-    name: string;
-    label?: string;
-    inputType: InputProps["inputType"];
-    placeholder?: string;
-    options?: { label: string; value: string | number; sublabel?: string }[];
-    required?: boolean;
-    sublabel?: string;
-    sublabelAlignment?: "right" | "bottom";
-    variant?: "rating" | "cover" | "default" | "profile";
-    maxFiles?: number;
-    rows?: number;
-}
+
 
 type SublabelAlignment = "right" | "bottom";
 
@@ -26,7 +14,7 @@ type BaseInputProps = {
     sublabelAlignment?: SublabelAlignment;
     name: string;
     required?: boolean;
-    error?: string;
+    error?: any;
     disabled?: boolean;
     className?: string;
     labelClassName?: string;
@@ -55,6 +43,8 @@ type SelectInputProps = BaseInputProps & {
     onChange: (value: string | number) => void;
     options: InputOption[];
     placeholder?: string;
+    isLoading?: boolean;
+    showSearch?: boolean;
 };
 
 type MultiSelectInputProps = BaseInputProps & {
@@ -63,6 +53,7 @@ type MultiSelectInputProps = BaseInputProps & {
     onChange: (value: (string | number)[]) => void;
     options: InputOption[];
     placeholder?: string;
+    isLoading?: boolean;
 };
 
 type DatePickerInputProps = BaseInputProps & {
@@ -89,18 +80,20 @@ type RadioInputProps = BaseInputProps & {
     variant?: RadioVariant;
 };
 
-type ImageFile = {
+type File = {
     url: string;
     file?: File;
 };
 
-type ImageUploadProps = BaseInputProps & {
-    inputType: "image-upload";
-    value: ImageFile[];
-    onChange: (value: ImageFile[]) => void;
+type UploadProps = BaseInputProps & {
+    inputType: "upload";
+    value: File[];
+    onChange: (value: File[]) => void;
     maxFiles?: number;
     inputClassName?: string;
-    variant?: "cover" | "default" | "profile";
+    variant?: "cover-image" | "file" | "profile-image";
+    fileType?: "image/*" | "application/*" | "video/*";
+    error?: (error: Error) => void;
 };
 
 type SearchInputProps = BaseInputProps & {
@@ -111,8 +104,8 @@ type SearchInputProps = BaseInputProps & {
 };
 
 type SingleImageUploadProps = Partial<ImageUploadProps> & {
-  handleRemove: (index: number) => void;
-  handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    handleRemove: (index: number) => void;
+    handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 type InputProps =
@@ -123,6 +116,6 @@ type InputProps =
     | DatePickerInputProps
     | CheckboxInputProps
     | RadioInputProps
-    | ImageUploadProps
+    | UploadProps
     | MultiSelectInputProps
     | SearchInputProps;

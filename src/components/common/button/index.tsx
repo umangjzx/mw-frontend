@@ -8,22 +8,23 @@ const Button: React.FC<ButtonProps> = ({
     children,
     ...props
 }) => {
-    const baseStyles = "rounded-2xl px-4 py-4 font-medium transition-all duration-200 active:scale-95";
+    const baseStyles =
+        "rounded-2xl px-4 py-4 font-medium transition-all duration-200 active:scale-95";
 
     const variantStyles = {
         primary: "bg-primary text-white hover:bg-primary focus:bg-primary",
         secondary: "bg-black text-white hover:bg-black focus:bg-black",
         error: "bg-error-light text-error hover:bg-error focus:bg-error-light",
         success: "bg-success-light text-success hover:bg-success focus:bg-success-light",
-        link: 'text-primary border-none shadow-none hover:underline !bg-transparent hover:!bg-transparent hover:!text-primary text-sm font-normal',
+        link: "text-primary border-none shadow-none hover:underline !bg-transparent hover:!bg-transparent hover:!text-primary text-sm font-normal",
     };
 
     return (
         <AntButton
+            {...props}
             rootClassName={`${baseStyles} ${
                 variantStyles[btnVariant as keyof typeof variantStyles]
             } ${customClassName}`}
-            {...props}
         >
             {title && title}
             {children}

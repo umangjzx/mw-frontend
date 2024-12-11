@@ -1,95 +1,38 @@
 /** @format */
-import axios from "axios";
-import { API_URL } from "@/definitions";
-import { trackPromise } from "react-promise-tracker";
+"use client";
 
-const BASE_URL = API_URL;
+import { request } from "./api-client";
 
-const getHeaders = async () => {
-  const TOKEN = await localStorage.getItem("token");
-  const headers = {
-    "Content-Type": "application/json",
-    "ngrok-skip-browser-warning": "any",
-    Authorization: `Bearer ${TOKEN}`,
-  };
-  return headers;
-};
+export async function GET_API<T>(endpoint: string) {
+    const response = await request({
+        method: 'GET',
+        url: endpoint,
+    });
+    return response;
+}
 
-export const GetAPI = async (endPoint: any) => {
-  const headers = await getHeaders();
-  return new Promise((resolve, reject) => {
-    trackPromise(
-      axios
-        .get(`${BASE_URL}/${endPoint}`, {
-          headers: headers,
-        })
-        .then((response) => {
-          resolve(response);
-        })
-        .catch((err) => reject(err))
-    );
-  });
-};
+export async function POST_API<T>(endpoint: string, data: T) {
+    const response = await request({
+        method: 'POST',
+        url: endpoint,
+        data: data,
+    });
+    return response;
+}
 
-export const PostAPI = async (endPoint: any, payload: any) => {
-  const headers = await getHeaders();
+export async function PUT_API<T>(endpoint: string, data: T) {
+    const response = await request({
+        method: 'PUT',
+        url: endpoint,
+        data: data,
+    });
+    return response;
+}
 
-  return new Promise((resolve, reject) => {
-    trackPromise(
-      axios
-        .post(`${BASE_URL}/${endPoint}`, payload, { headers: headers })
-        .then((response) => {
-          resolve(response);
-        })
-        .catch((err) => reject(err))
-    );
-  });
-};
-
-export const PostFormDataAPI = async (endPoint: any, payload: any) => {
-  const headers = await getHeaders();
-
-  return new Promise((resolve, reject) => {
-    trackPromise(
-      axios
-        .post(`${BASE_URL}/${endPoint}`, payload, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            "ngrok-skip-browser-warning": "any",
-            Authorization: headers.Authorization,
-          },
-        })
-        .then((response) => {
-          resolve(response);
-        })
-        .catch((err) => reject(err))
-    );
-  });
-};
-
-export const PutAPI = async (endPoint: any, payload: any) => {
-  const headers = await getHeaders();
-  return new Promise((resolve, reject) => {
-    axios
-      .put(`${BASE_URL}/${endPoint}`, payload, { headers: headers })
-      .then((response) => {
-        resolve(response);
-      })
-      .catch((err) => reject(err));
-  });
-};
-
-export const DeleteAPI = async (endPoint: any, payload?: any) => {
-  const headers = await getHeaders();
-
-  return new Promise((resolve, reject) => {
-    trackPromise(
-      axios
-        .delete(`${BASE_URL}/${endPoint}`, { headers: headers })
-        .then((response) => {
-          resolve(response);
-        })
-        .catch((err) => reject(err))
-    );
-  });
-};
+export async function DELETE_API(endpoint: string) {
+    const response = await request({
+        method: 'DELETE',
+        url: endpoint,
+    });
+    return response;
+}

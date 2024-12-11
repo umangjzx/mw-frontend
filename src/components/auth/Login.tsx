@@ -1,9 +1,10 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { GetAPI } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import { getLocalStorage, setLocalStorage } from "@/utils/localStorage";
+import { GET_API, POST_API } from "@/api/request";
+import Cookies from "js-cookie";
 
 export type UserRole = "volunteer" | "learner";
 
@@ -26,56 +27,60 @@ const LoginPage = () => {
         }
     }, []);
 
-    // const handleSignup = useCallback(() => {
-    //     const code = searchParams.get("code");
-    //     let isApiSubscribed = true;
-    //     if (isApiSubscribed) {
-    //         if (code) {
-    //             let payload = {
-    //                 code,
-    //                 signup_type: role,
-    //             };
-    //             PostAPI(endpoints.user.signIn, payload)
-    //                 .then((response: any) => {
-    //                     console.log("Signup response:", response.data);
-    //                     if (typeof window !== "undefined") {
-    //                         setLocalStorage("token", response.data.auth_token);
-    //                         if (role === "volunteer") {
-    //                             setLocalStorage("volunteer_id", response.data.volunteer_id);
-    //                         } else {
-    //                             setLocalStorage("learner_id", response.data.learner_id);
-    //                         }
-    //                     }
-    //                     if (
-    //                         response?.data?.onboarded_status === "pending" &&
-    //                         role === "volunteer"
-    //                     ) {
-    //                         router.push(`/volunteer?id=${response.data.volunteer_id}`);
-    //                     } else if (
-    //                         response?.data?.onboarded_status === "pending" &&
-    //                         role === "learner"
-    //                     ) {
-    //                         router.push(`/learner?id=${response.data.learner_id}`);
-    //                     } else {
-    //                         router.push("/dashboard");
-    //                     }
-    //                 })
-    //                 .catch(error => {
-    //                     console.error("Signup error:", error);
-    //                 });
-    //         }
-    //     }
-    //     return () => {
-    //         isApiSubscribed = false;
-    //     };
-    // }, [searchParams, role, router]);
+    const handleSignup = useCallback(() => {
+        const code = searchParams.get("code");
+        let isApiSubscribed = true;
+        if (isApiSubscribed) {
+            if (code) {
+                let payload = {
+                    code,
+                    signup_type: role,
+                };
+                POST_API(endpoints.user.signIn, payload)
+                    .then((response: any) => {
+                        console.log("Signup response:", response.data);
+                        if (typeof window !== "undefined") {
+                            setLocalStorage("token", response.data.auth_token);
+                            if (role === "volunteer") {
+                                setLocalStorage("volunteer_id", response.data.volunteer_id);
+                            } else {
+                                setLocalStorage("learner_id", response.data.learner_id);
+                            }
+                        }
+                        if (
+                            response?.data?.onboarded_status === "pending" &&
+                            role === "volunteer"
+                        ) {
+                            // router.push(`/volunteer?id=${response.data.volunteer_id}`);
+                        } else if (
+                            response?.data?.onboarded_status === "pending" &&
+                            role === "learner"
+                        ) {
+                            // router.push(`/learner?id=${response.data.learner_id}`);
+                        } else {
+                            Cookies.set("refresh_token", response.data.refresh_token);
+                            Cookies.set("access_token", response.data.access_token);
+                            Cookies.set("role", role);
+                            Cookies.set("volunteer_id", response.data.volunteer_id);
+                            router.push("/onboarding");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Signup error:", error);
+                    });
+            }
+        }
+        return () => {
+            isApiSubscribed = false;
+        };
+    }, [searchParams, role, router]);
 
-    // useEffect(() => {
-    //     handleSignup();
-    // }, [handleSignup]);
+    useEffect(() => {
+        handleSignup();
+    }, [handleSignup]);
 
     const handleLogin = () => {
-        GetAPI(endpoints.auth.oauth2callback).then((res: any) => {
+        GET_API(endpoints.auth.oauth2callback).then((res: any) => {
             if (res?.data) {
                 if (typeof window !== "undefined") {
                     window.location.href = res.data;
@@ -118,7 +123,7 @@ const LoginPage = () => {
             </div>
 
             <button
-                onClick={() => router.push(`/${role}`)}
+                onClick={handleLogin}
                 className='bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors duration-300 px-7'
             >
                 Login as {role}
