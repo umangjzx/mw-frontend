@@ -6,6 +6,8 @@ import { IoIosSearch } from "react-icons/io";
 import RadioInput from "./RadioButton";
 import Select from "./Select/Select";
 import Uploader from "./Upload";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const { TextArea } = AntInput;
 
@@ -123,6 +125,8 @@ export const Input: React.FC<InputProps> = (props) => {
                 return <MultiSelect {...props} />;
 
             case "datepicker":
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
                 return (
                     // <DatePicker
                     //     name={name}
@@ -134,7 +138,16 @@ export const Input: React.FC<InputProps> = (props) => {
                     //     rootClassName='text-sm border-gray-300 bg-background-input rounded-md'
                     //     className={`w-full text-sm placeholder:text-sm hover:bg-background-input bg-background-input ${inputClassName}`}
                     // />
-                    <div>DatePicker</div>
+                    <div>
+                        <DatePicker
+                            selected={props.value}
+                            onChange={(date) => props.onChange(date)}
+                            dateFormat="yyyy-MM-dd"
+                            minDate={today}
+                            placeholderText="Click to select date"
+                            className="w-full p-2 border rounded-md mb-4"
+                        />
+                    </div>
                 );
 
             case "checkbox":

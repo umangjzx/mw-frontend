@@ -13,7 +13,9 @@ const SideModal: React.FC<SideModalProps> = ({
     onSave,
     onCancel,
     isOpen = false,
+    isDisabled = false,
 }) => {
+    console.log(isDisabled, "isDisabled side modal");
     return (
         <div>
             <Drawer
@@ -43,9 +45,14 @@ const SideModal: React.FC<SideModalProps> = ({
                                 className="w-fit px-4 py-2 !text-sm !text-black bg-white !border !border-stroke-light rounded-xl"
                             />
                             <Button
+                                disabled={isDisabled}
                                 onClick={onSave}
                                 title={saveButtonText}
-                                className="w-fit !text-sm px-4 py-2 !bg-black !text-white rounded-xl"
+                                className={`w-fit !text-sm px-4 py-2 !bg-black !text-white rounded-xl ${
+                                    isDisabled
+                                        ? "!bg-opacity-50 !bg-gray-light !cursor-not-allowed"
+                                        : ""
+                                }`}
                             />
                         </div>
                     </div>

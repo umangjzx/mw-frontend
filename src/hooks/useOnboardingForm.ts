@@ -5,7 +5,9 @@ import { endpoints } from "@/api/constants";
 import { useSendData } from "./useReactQuery";
 import { PUT_API } from "@/api/request";
 
-const volunteerData = {
+const volunteerData: Volunteer = {
+    volunteer_description: "some description",
+    volunteer_education: "some education",
     volunteer_first_name: "Iwin",
     volunteer_last_name: "T",
     volunteer_birth_date: "2024-12-25T18:30:00.000Z",
@@ -86,6 +88,10 @@ const volunteerData = {
             subject_id: "44b87f07-d623-47e2-b8c7-a895aa5369eb",
         },
     ],
+    consent_and_permissions: {
+        photo_or_video_consent: true,
+        acknowledgement_of_program_policies: true,
+    },
 };
 
 const learnerData = {

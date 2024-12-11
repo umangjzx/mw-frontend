@@ -30,20 +30,21 @@ interface APIScheduleFormat {
     slots: APITimeSlot[];
 }
 
-const MyScheduleModal = () => {
+const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) => {
     const [formData, setFormData] = useState<any>({});
     const [schedule, setSchedule] = useState<DaySchedule>({
-        Sun: [],
-        Mon: [],
-        Tue: [],
-        Wed: [],
-        Thu: [],
-        Fri: [],
-        Sat: [],
+        Sunday: [],
+        Monday: [],
+        Tuesday: [],
+        Wednesday: [],
+        Thursday: [],
+        Friday: [],
+        Saturday: [],
     });
     const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
-    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const [deletedSlots, setDeletedSlots] = useState<string[]>([]);
+    const [isDisabled, setIsDisabled] = useState(false);
 
     useEffect(() => {
         GET_API(endpoints.volunteer_slot.get).then((res: any) => {
@@ -204,13 +205,21 @@ const MyScheduleModal = () => {
         "[&_.ant-picker-dropdown]:!text-sm" // This affects the dropdown container
     );
 
+    // Add this function to check if there are any errors
+    const hasErrors = () => {
+        return Object.values(errors).some((dayErrors) => dayErrors.length > 0);
+    };
+
     return (
         <SideModal
             title="My Schedule"
-            onClose={() => {}}
-            saveButtonText="Create Meeting"
+            onClose={onClose}
+            saveButtonText="Save Changes"
             cancelButtonText="Cancel"
-            isOpen={true}
+            isOpen={isOpen}
+            onSave={handleSave}
+            onCancel={onClose}
+            isDisabled={hasErrors()}
         >
             <div>
                 <div className="flex flex-col gap-1 px-5 py-4">
@@ -224,7 +233,7 @@ const MyScheduleModal = () => {
                         {days.map((day) => (
                             <div key={day} className="flex flex-col gap-2">
                                 <div className="flex items-start justify-between gap-2 px-5">
-                                    <p className="font-semibold w-[2rem]">{day}</p>
+                                    <p className="font-semibold w-[2rem]">{day.slice(0, 3)}</p>
                                     <div className="flex flex-col items-center gap-2 w-full">
                                         {schedule[day].length > 0 ? (
                                             schedule[day].map((slot, slotIndex) => (

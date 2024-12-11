@@ -28,3 +28,9 @@ type AddNewMeetingModalProps = {
     isOpen: boolean;
     onClose: () => void;
 };
+
+type MyScheduleModalProps = {
+    isOpen: boolean;
+    onClose: () => void;
+};
+

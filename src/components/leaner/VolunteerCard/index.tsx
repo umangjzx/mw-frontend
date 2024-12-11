@@ -26,7 +26,7 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
             <div className="flex items-center gap-4">
                 <div className="w-[64px] h-[64px] rounded-full relative">
                     <Image
-                        src={profileImage}
+                        src={DummyProfileImg}
                         alt="avatar"
                         fill
                         className="w-full h-full object-cover rounded-full"

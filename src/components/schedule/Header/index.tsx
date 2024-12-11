@@ -17,6 +17,10 @@ const Header = (props: Props) => {
         router.push("/learner/schedule?modal=add_new_meeting");
     };
 
+    const handleMySchedule = () => {
+        router.push("/volunteer/schedule?modal=my_schedule");
+    };
+
     return (
         <div className="w-full h-full p-2 px-3 flex items-center justify-between">
             <Button
@@ -54,7 +58,7 @@ const Header = (props: Props) => {
                             customClassName="!bg-transparent font-semibold !text-black rounded-full !py-3 !px-3"
                         />
                         <Button
-                            onClick={() => {}}
+                            onClick={handleMySchedule}
                             title="My Schedule"
                             customClassName="!bg-transparent font-medium !text-black rounded-full !py-3 !px-3"
                         />
