@@ -29,6 +29,9 @@ type EndpointProps = {
         getApprovalNotifications: (id: string, status: string) => string;
         updateNotificationStatus: (id: string) => string;
     };
+    resources: {
+        create: string;
+    };
     post: {
         getPosts: string;
         createPost: string;
@@ -39,7 +42,6 @@ type EndpointProps = {
         getPostComments: (post_id: string) => string;
     };
     common: (path: CommonPath) => string;
-}
-
+};
 
 type CommonPath = "skills" | "languages" | "subjects" | "media" | "categories";

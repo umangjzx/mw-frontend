@@ -1,4 +1,3 @@
-
 export const endpoints: EndpointProps = {
     onboarding: {
         update: (role: "volunteer" | "learner") => `onboarding/${role}`,
@@ -42,4 +41,7 @@ export const endpoints: EndpointProps = {
         getPostComments: (post_id: string) => `comment/${post_id}`,
     },
     common: (path: CommonPath) => `common/${path}`,
+    resources: {
+        create: "resource",
+    },
 };
