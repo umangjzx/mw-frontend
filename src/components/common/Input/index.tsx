@@ -8,6 +8,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { AsyncSelect, MultiSelect } from "./Select";
 import { Select } from "./Select";
+import ContactInput from "../ContactInput";
 
 const { TextArea } = AntInput;
 
@@ -169,7 +170,8 @@ export const Input: React.FC<InputProps> = props => {
 
             case "upload":
                 return <Uploader {...props} />;
-
+            case "contact-input":
+                return <ContactInput {...props} />;
             case "timerange":
                 return (
                     <div className='flex items-center gap-2'>

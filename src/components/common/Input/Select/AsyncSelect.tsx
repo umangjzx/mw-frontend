@@ -8,24 +8,6 @@ import { BiCaretDown } from "react-icons/bi";
 import TagComponent from "../../Tag";
 import { cn } from "@/utils/merge-class";
 
-type BaseAsyncSelectProps = SelectInputProps & {
-    variant: "multi" | "single";
-    creatable?: boolean;
-    endpoint: CommonPath;
-    responseAsLabel: string;
-    responseAsValue: string | string[] | "payload" | null;
-    value: any;
-    queryParams?: Record<string, any>;
-    transformResponse?: (data: any) => any;
-    onError?: (error: Error) => void;
-};
-
-type CreatableSelectProps = BaseAsyncSelectProps & {
-    creatable: true;
-    onCreate: (value: string) => void;
-};
-
-type AsyncSelectProps = BaseAsyncSelectProps | CreatableSelectProps;
 
 const AsyncSelect = ({
     variant,
@@ -33,17 +15,16 @@ const AsyncSelect = ({
     endpoint,
     responseAsLabel,
     responseAsValue,
-    queryParams = {},
-    transformResponse,
     onError,
     ...props
 }: AsyncSelectProps) => {
+
     const { data, isLoading, error } = useQuery({
-        queryKey: ["async-select", props.name, endpoint, queryParams],
+        queryKey: ["async-select", props.name, endpoint],
         queryFn: async () => {
             try {
                 const response = await GET_API(endpoints.common(endpoint));
-                return transformResponse ? transformResponse(response.data) : response.data;
+                return response.data;
             } catch (error) {
                 onError?.(error as Error);
                 throw error;
@@ -59,13 +40,8 @@ const AsyncSelect = ({
         const valueKey: any = Array.isArray(responseAsValue) ? responseAsValue[0] : responseAsValue;
 
         if (variant === "multi") {
-            console.log("value", value);
             // For multi-select, value will be an array of selected values
             const selectedItems = value.map((selectedValue: any) => selectedValue.value);
-
-            // const transformedValues = selectedItems.map((item: any) =>
-            //     getOptionValue(item, responseAsValue)
-            // );
             props.onChange?.(selectedItems);
         } else {
             // For single select
@@ -84,7 +60,6 @@ const AsyncSelect = ({
 
         if (variant === "multi" && Array.isArray(props.value)) {
             // For multi-select, convert each value to its corresponding option value
-            console.log("props.value", props.value);
             return convertToOptions(
                 data.filter((d: any) => {
                     const values = props.value.map((v: any) => v[valueKey]);
@@ -117,7 +92,7 @@ const AsyncSelect = ({
     );
     console.log("getValue", getValue);
     return (
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col gap-2 w-full'>
             <CreatableSelect
                 {...props}
                 isMulti={variant === "multi"}
@@ -138,6 +113,9 @@ const AsyncSelect = ({
                     DropdownIndicator: () => <BiCaretDown className='text-black mr-1' />,
                     ClearIndicator: () => null,
                     MultiValueContainer: () => null,
+                }}
+                classNames={{
+                    container: () => props.inputClassName ? "w-[49%]" : "w-full"
                 }}
                 backspaceRemovesValue={false}
             />
