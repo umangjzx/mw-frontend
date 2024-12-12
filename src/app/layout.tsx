@@ -1,6 +1,5 @@
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/providers/ThemeProvider";
 import type { Metadata } from "next";
 import QueryProvider from "@/providers/QueryWrapper";
 
@@ -23,9 +22,7 @@ export default function RootLayout ({
     return (
         <html lang='en'>
             <body className={poppins.className}>
-                <ThemeProvider>
-                    <QueryProvider>{children}</QueryProvider>
-                </ThemeProvider>
+                <QueryProvider>{children}</QueryProvider>
             </body>
         </html>
     );

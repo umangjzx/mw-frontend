@@ -1,4 +1,3 @@
-import { EndpointProps } from "@/interfaces/endpoints";
 
 export const endpoints: EndpointProps = {
     onboarding: {
@@ -39,4 +38,5 @@ export const endpoints: EndpointProps = {
         createComment: "comment",
         getPostComments: (post_id: string) => `comment/${post_id}`,
     },
+    common: (path: CommonPath) => `common/${path}`,
 };

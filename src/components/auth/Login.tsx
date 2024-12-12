@@ -2,11 +2,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { endpoints } from "@/api/constants";
-import { getLocalStorage, setLocalStorage } from "@/utils/localStorage";
 import { GET_API, POST_API } from "@/api/request";
 import Cookies from "js-cookie";
 
-export type UserRole = "volunteer" | "learner";
 
 interface AuthResponse {
     data: string;
@@ -15,15 +13,15 @@ interface AuthResponse {
 const LoginPage = () => {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const [role, setRole] = useState<UserRole>(
-        (getLocalStorage("role") as UserRole) || "volunteer"
+    const [role, setRole] = useState<UserType>(
+        (Cookies.get("role") as UserType) || "volunteer"
     );
 
     useEffect(() => {
-        const savedRole = getLocalStorage("role") as UserRole;
+        const savedRole = Cookies.get("role") as UserType;
         if (savedRole) {
             setRole(savedRole);
-            router.replace(`/${savedRole}`);
+            // router.replace(`/onboarding`);
         }
     }, []);
 
@@ -40,11 +38,11 @@ const LoginPage = () => {
                     .then((response: any) => {
                         console.log("Signup response:", response.data);
                         if (typeof window !== "undefined") {
-                            setLocalStorage("token", response.data.auth_token);
+                            Cookies.set("token", response.data.access_token);
                             if (role === "volunteer") {
-                                setLocalStorage("volunteer_id", response.data.volunteer_id);
+                                Cookies.set("volunteer_id", response.data.volunteer_id);
                             } else {
-                                setLocalStorage("learner_id", response.data.learner_id);
+                                Cookies.set("learner_id", response.data.learner_id);
                             }
                         }
                         if (
@@ -59,10 +57,10 @@ const LoginPage = () => {
                             // router.push(`/learner?id=${response.data.learner_id}`);
                         } else {
                             Cookies.set("refresh_token", response.data.refresh_token);
-                            Cookies.set("access_token", response.data.access_token);
+                            Cookies.set("token", response.data.access_token);
                             Cookies.set("role", role);
                             Cookies.set("volunteer_id", response.data.volunteer_id);
-                            router.push("/onboarding");
+                            // router.push("/onboarding");
                         }
                     })
                     .catch(error => {
@@ -81,6 +79,7 @@ const LoginPage = () => {
 
     const handleLogin = () => {
         GET_API(endpoints.auth.oauth2callback).then((res: any) => {
+            console.log("res", res);
             if (res?.data) {
                 if (typeof window !== "undefined") {
                     window.location.href = res.data;
@@ -89,10 +88,10 @@ const LoginPage = () => {
         });
     };
 
-    const handleSetRole = (newRole: UserRole) => {
+    const handleSetRole = (newRole: UserType) => {
         console.log("newRole", newRole);
         setRole(newRole);
-        setLocalStorage("role", newRole);
+        Cookies.set("role", newRole);
     };
 
     return (

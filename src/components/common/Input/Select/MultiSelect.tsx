@@ -32,7 +32,7 @@ const MultiSelect: React.FC<MultiSelectInputProps> = ({
                 listHeight={300}
                 menuItemSelectedIcon={null}
                 popupClassName='!bg-background-input'
-                options={options.filter(option => !value.includes(option.value as string))}
+                options={options.filter(option => !value?.includes(option?.value))}
                 loading={isLoading}
             />
             <div className='flex flex-wrap gap-1'>

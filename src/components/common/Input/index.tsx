@@ -1,17 +1,17 @@
 import React from "react";
 import { Input as AntInput, Checkbox, TimePicker } from "antd";
-import MultiSelect from "./Select/MultiSelect";
 import { cn } from "@/utils/merge-class";
 import { IoIosSearch } from "react-icons/io";
 import RadioInput from "./RadioButton";
-import Select from "./Select/Select";
 import Uploader from "./Upload";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { AsyncSelect, MultiSelect } from "./Select";
+import { Select } from "./Select";
 
 const { TextArea } = AntInput;
 
-export const Input: React.FC<InputProps> = (props) => {
+export const Input: React.FC<InputProps> = props => {
     const {
         label,
         sublabel,
@@ -30,7 +30,7 @@ export const Input: React.FC<InputProps> = (props) => {
         const labelContent = (
             <div>
                 {label}
-                {required && <span className="text-red-500 ml-1">*</span>}
+                {required && <span className='text-red-500 ml-1'>*</span>}
             </div>
         );
 
@@ -66,7 +66,7 @@ export const Input: React.FC<InputProps> = (props) => {
                         type={props.contentType}
                         placeholder={props.placeholder}
                         value={props.value}
-                        onChange={(e) => props.onChange(e.target.value)}
+                        onChange={e => props.onChange(e.target.value)}
                         disabled={disabled}
                         rootClassName={cn(
                             props.inputClassName ? "w-[49%]" : "",
@@ -85,7 +85,7 @@ export const Input: React.FC<InputProps> = (props) => {
                         name={name}
                         placeholder={props.placeholder}
                         value={props.value}
-                        onChange={(e) => props.onChange(e.target.value)}
+                        onChange={e => props.onChange(e.target.value)}
                         disabled={disabled}
                         rootClassName={cn(
                             props.inputClassName,
@@ -102,9 +102,9 @@ export const Input: React.FC<InputProps> = (props) => {
             case "search":
                 return (
                     <AntInput
-                        inputMode="search"
+                        inputMode='search'
                         placeholder={props.placeholder}
-                        onChange={(e) => props.onChange(e.target.value)}
+                        onChange={e => props.onChange(e.target.value)}
                         value={props.value}
                         rootClassName={cn(
                             "hover:!border-stroke border focus:!bg-background-input !border-stroke w-full h-fit focus:!border-stroke focus:!bg-background-input border-stroke",
@@ -114,7 +114,7 @@ export const Input: React.FC<InputProps> = (props) => {
                             props.inputClassName,
                             `w-full text-sm p-2 rounded-md hover:bg-background-input !bg-background-input`
                         )}
-                        prefix={<IoIosSearch className="text-gray text-xl" />}
+                        prefix={<IoIosSearch className='text-gray text-xl' />}
                     />
                 );
 
@@ -123,7 +123,8 @@ export const Input: React.FC<InputProps> = (props) => {
 
             case "multiselect":
                 return <MultiSelect {...props} />;
-
+            case "async-select":
+                return <AsyncSelect {...props} />;
             case "datepicker":
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
@@ -141,11 +142,11 @@ export const Input: React.FC<InputProps> = (props) => {
                     <div>
                         <DatePicker
                             selected={props.value}
-                            onChange={(date) => props.onChange(date)}
-                            dateFormat="yyyy-MM-dd"
+                            onChange={date => props.onChange(date)}
+                            dateFormat='yyyy-MM-dd'
                             minDate={today}
-                            placeholderText="Click to select date"
-                            className="w-full p-2 border rounded-md mb-4"
+                            placeholderText='Click to select date'
+                            className='w-full p-2 border rounded-md mb-4'
                         />
                     </div>
                 );
@@ -156,7 +157,7 @@ export const Input: React.FC<InputProps> = (props) => {
                         className={props.inputClassName}
                         name={name}
                         checked={props.value}
-                        onChange={(e) => props.onChange(e.target.checked)}
+                        onChange={e => props.onChange(e.target.checked)}
                         disabled={disabled}
                     >
                         {props.placeholder}
@@ -171,18 +172,18 @@ export const Input: React.FC<InputProps> = (props) => {
 
             case "timerange":
                 return (
-                    <div className="flex items-center gap-2">
+                    <div className='flex items-center gap-2'>
                         <TimePicker
                             name={`${name}-from`}
                             placeholder={props.fromPlaceholder || "Start Time"}
                             value={props.value?.from}
-                            onChange={(time) => {
+                            onChange={time => {
                                 props.onChange({
                                     from: time,
                                     to: props.value?.to,
                                 });
                             }}
-                            format="h:mm A"
+                            format='h:mm A'
                             use12Hours
                             disabled={disabled}
                             className={cn(
@@ -190,18 +191,18 @@ export const Input: React.FC<InputProps> = (props) => {
                                 props.inputClassName
                             )}
                         />
-                        <span className="text-gray-500">to</span>
+                        <span className='text-gray-500'>to</span>
                         <TimePicker
                             name={`${name}-to`}
                             placeholder={props.toPlaceholder || "End Time"}
                             value={props.value?.to}
-                            onChange={(time) => {
+                            onChange={time => {
                                 props.onChange({
                                     from: props.value?.from,
                                     to: time,
                                 });
                             }}
-                            format="h:mm A"
+                            format='h:mm A'
                             use12Hours
                             disabled={disabled}
                             className={cn(
@@ -218,7 +219,7 @@ export const Input: React.FC<InputProps> = (props) => {
         <div className={`mb-4 w-full h-auto flex flex-col gap-2 ${className}`}>
             {renderLabel()}
             {renderInput()}
-            {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+            {error && <p className='mt-1 text-sm text-red-500'>{error}</p>}
         </div>
     );
 };

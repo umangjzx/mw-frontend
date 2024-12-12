@@ -1,4 +1,4 @@
-export interface EndpointProps {
+type EndpointProps = {
     onboarding: {
         update: (role: "volunteer" | "learner") => `onboarding/${typeof role}`,
     };
@@ -36,4 +36,8 @@ export interface EndpointProps {
         createComment: string;
         getPostComments: (post_id: string) => string;
     };
+    common: (path: CommonPath) => string;
 }
+
+
+type CommonPath = "skills" | "languages" | "subjects" | "media" | "categories";
