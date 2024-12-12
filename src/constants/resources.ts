@@ -1,3 +1,4 @@
+import { endpoints } from "@/api/constants";
 export const ResourceFormConstants: FormField[] = [
     {
         name: "coverImage",
@@ -37,14 +38,22 @@ export const ResourceFormConstants: FormField[] = [
     {
         name: "skills",
         label: "Skills you gain (Optional)",
-        inputType: "multiselect",
+        inputType: "async-select",
         placeholder: "Select the skills",
+        endpoints: "skills",
+        variant: "multi",
+        responseAsLabel: "skill_name",
+        responseAsValue: ["skill_id", "skill_name"],
     },
     {
         name: "category",
         label: "Select Category",
-        inputType: "select",
+        inputType: "async-select",
         placeholder: "Select category",
+        endpoints: "categories",
+        variant: "single",
+        responseAsLabel: "category_name",
+        responseAsValue: "category_id",
     },
     {
         name: "notes",

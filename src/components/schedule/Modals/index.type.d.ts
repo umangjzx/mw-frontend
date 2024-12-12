@@ -34,3 +34,7 @@ type MyScheduleModalProps = {
     onClose: () => void;
 };
 
+type ApprovalModalProps = {
+    isOpen: boolean;
+    onClose: () => void;
+};

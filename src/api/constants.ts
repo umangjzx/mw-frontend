@@ -1,4 +1,3 @@
-
 export const endpoints: EndpointProps = {
     onboarding: {
         update: (role: "volunteer" | "learner") => `onboarding/${role}`,
@@ -28,6 +27,9 @@ export const endpoints: EndpointProps = {
         bookSession: "session",
         getLearnerSessions: (id: string) => `session/learner/${id}`,
         cancelSession: (id: string) => `session/${id}`,
+        getApprovalNotifications: (id: string, status: string) =>
+            `session/volunteer/${id}/${status}`,
+        updateNotificationStatus: (id: string) => `session/${id}`,
     },
     post: {
         createPost: "post",
@@ -39,4 +41,7 @@ export const endpoints: EndpointProps = {
         getPostComments: (post_id: string) => `comment/${post_id}`,
     },
     common: (path: CommonPath) => `common/${path}`,
+    resources: {
+        create: "resource",
+    },
 };

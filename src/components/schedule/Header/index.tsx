@@ -21,6 +21,10 @@ const Header = (props: Props) => {
         router.push("/volunteer/schedule?modal=my_schedule");
     };
 
+    const handleNotification = () => {
+        router.push("/volunteer/schedule?modal=approval_notification");
+    };
+
     return (
         <div className="w-full h-full p-2 px-3 flex items-center justify-between">
             <Button
@@ -53,7 +57,7 @@ const Header = (props: Props) => {
                 ) : (
                     <div className="flex items-center gap-2">
                         <Button
-                            onClick={() => {}}
+                            onClick={handleNotification}
                             icon={<NotificationIcon />}
                             customClassName="!bg-transparent font-semibold !text-black rounded-full !py-3 !px-3"
                         />

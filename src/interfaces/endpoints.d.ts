@@ -1,6 +1,6 @@
 type EndpointProps = {
     onboarding: {
-        update: (role: "volunteer" | "learner") => `onboarding/${typeof role}`,
+        update: (role: "volunteer" | "learner") => `onboarding/${typeof role}`;
     };
     auth: {
         oauth2callback: string;
@@ -26,6 +26,11 @@ type EndpointProps = {
         bookSession: string;
         getLearnerSessions: (id: string) => string;
         cancelSession: (id: string) => string;
+        getApprovalNotifications: (id: string, status: string) => string;
+        updateNotificationStatus: (id: string) => string;
+    };
+    resources: {
+        create: string;
     };
     post: {
         getPosts: string;
@@ -37,7 +42,6 @@ type EndpointProps = {
         getPostComments: (post_id: string) => string;
     };
     common: (path: CommonPath) => string;
-}
+};
 
-
-type CommonPath = "skills" | "languages" | "subjects" | "media" | "categories";
+type CommonPath = "skills" | "languages" | "subjects" | "media" | "categories" | "media-uploader";

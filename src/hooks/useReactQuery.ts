@@ -4,7 +4,7 @@ import {
     useQuery,
     useQueryClient,
     UseQueryOptions,
-} from '@tanstack/react-query';
+} from "@tanstack/react-query";
 
 type useSendDataProps = {
     success?: (data: any) => void;
@@ -28,15 +28,14 @@ export const useSendData = ({ invalidateKey, error, success, fn }: useSendDataPr
         mutationFn: fn,
         onSuccess: (data: any) => {
             invalidateKey &&
-                invalidateKey.forEach(key =>
+                invalidateKey.forEach((key) =>
                     queryClient.invalidateQueries({
                         queryKey: [key],
-                    }),
+                    })
                 );
             success && success(data);
             return data;
         },
         onError: (data: any) => error && error(data),
-        retry: 1,
     });
 };
