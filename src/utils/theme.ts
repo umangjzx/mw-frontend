@@ -1,7 +1,6 @@
 "use client";
 
-import { UserType } from "@/interfaces/user";
-import { getLocalStorage } from "./localStorage";
+import Cookies from "js-cookie";
 
 export const VolunteerTheme = {
     primary: "#FE5B11",
@@ -18,14 +17,14 @@ export const LearnerTheme = {
 export const getTheme = () => {
     if (typeof window === "undefined") return LearnerTheme;
 
-    const userType = getLocalStorage("role");
+    const userType = Cookies.get("role");
 
     switch (userType) {
-        case UserType.VOLUNTEER:
+        case "volunteer":
             return VolunteerTheme;
-        case UserType.LEARNER:
+        case "learner":
             return LearnerTheme;
         default:
-            return LearnerTheme;
+            return VolunteerTheme;
     }
 };

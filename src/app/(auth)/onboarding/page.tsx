@@ -7,9 +7,10 @@ import { VolunteerOnboardingConstants } from "@/constants/volunteer";
 import TitleSection from "@/components/onboarding/TitleSection";
 import { LearnerFormSections, LearnerOnboardingConstants } from "@/constants/learner";
 import { VolunteerFormSections } from "@/constants/volunteer";
+import Cookies from "js-cookie";
 
 export default function OnboardingPage () {
-    const role = localStorage.getItem("role");
+    const role = Cookies.get("role");
 
     const titleSectionConstants =
         role === "volunteer" ? VolunteerOnboardingConstants : LearnerOnboardingConstants;

@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getTheme } from "@/utils/theme";
 import { ConfigProvider, ThemeConfig } from "antd";
 import { Poppins } from "next/font/google";
+import Cookies from "js-cookie";
 
 const poppins = Poppins({
     weight: ["300", "400", "500", "600", "700"],
@@ -28,12 +29,10 @@ const theme: ThemeConfig = {
         // Typography
         fontSize: 16,
         fontFamily: poppins.style.fontFamily,
-        // Border radius (keeping your existing values)
         borderRadius: 6,
         borderRadiusLG: 8,
         borderRadiusSM: 4,
 
-        // Spacing
         padding: 16,
         margin: 16,
     },
@@ -70,28 +69,45 @@ const theme: ThemeConfig = {
 };
 
 export const ThemeProvider = ({ children }: ThemeProviderProps) => {
-    useEffect(() => {
-        const theme = getTheme();
+    const [currentRole, setCurrentRole] = useState<UserType | null>(null);
 
-        // Set CSS variables
+    // Function to update theme based on current role
+    const updateTheme = () => {
+        const theme = getTheme();
         document.documentElement.style.setProperty("--primary-color", theme.primary);
         document.documentElement.style.setProperty("--background-color", theme.background);
         document.documentElement.style.setProperty(
             "--background-secondary-color",
             theme.backgroundSecondary
         );
-    }, []);
+    };
 
-    // Listen for storage changes
+    // Watch for cookie changes
     useEffect(() => {
-        const handleStorageChange = () => {
-            const theme = getTheme();
-            document.documentElement.style.setProperty("--primary-color", theme.primary);
-            document.documentElement.style.setProperty("--background-color", theme.background);
-            document.documentElement.style.setProperty(
-                "--background-secondary-color",
-                theme.backgroundSecondary
-            );
+        const checkCookies = () => {
+            const role = Cookies.get("role") as UserType | undefined;
+            if (role !== currentRole) {
+                setCurrentRole(role || null);
+                updateTheme();
+            }
+        };
+
+        // Check immediately
+        checkCookies();
+
+        // Set up an interval to check for cookie changes
+        const intervalId = setInterval(checkCookies, 1000);
+
+        // Clean up
+        return () => clearInterval(intervalId);
+    }, [currentRole]);
+
+    // Listen for storage events (in case cookies are changed in another tab)
+    useEffect(() => {
+        const handleStorageChange = (e: StorageEvent) => {
+            if (e.key === "role") {
+                updateTheme();
+            }
         };
 
         window.addEventListener("storage", handleStorageChange);

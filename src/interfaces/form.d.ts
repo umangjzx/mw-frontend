@@ -11,7 +11,8 @@ type FormField = {
         | "parent"
         | "multiselect"
         | "upload"
-        | "search";
+        | "search"
+        | "async-select";
     name?: string;
     placeholder?: string;
     required?: boolean;
@@ -33,7 +34,7 @@ type BaseFormField = Omit<InputProps, "value" | "onChange" | "inputType"> & {
     required?: boolean;
     sublabel?: string;
     sublabelAlignment?: "right" | "bottom";
-    variant?: "rating" | "cover-image" | "default" | "profile-image";
+    variant?: "rating" | "cover-image" | "default" | "profile-image" | "multi" | "single";
     maxFiles?: number;
     rows?: number;
     error?: any;

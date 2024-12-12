@@ -90,9 +90,14 @@ const ProfileDetailsFields: FormField[] = [
     {
         id: "volunteer_languages",
         label: "Languages Spoken",
-        inputType: "text",
+        inputType: "async-select",
+        variant: "multi",
         placeholder: "English, Tamil, Hindi",
+        endpoint: "languages",
+        responseAsLabel: "language_name",
+        responseAsValue: ["language_id", "language_name"],
         gridCols: 2,
+        inputClassName: "!w-[49%]",
     },
     {
         id: "education_details",
@@ -111,10 +116,14 @@ const ProfileDetailsFields: FormField[] = [
     {
         id: "volunteer_skills",
         label: "Skills and Expertise to Share",
-        inputType: "multiselect",
+        inputType: "async-select",
         placeholder: "Search and select skills",
         gridCols: 2,
         inputClassName: "!w-[49%]",
+        endpoint: "skills",
+        responseAsLabel: "skill_name",
+        responseAsValue: ["skill_id", "skill_name"],
+        variant: "multi",
     },
 ];
 
@@ -431,10 +440,14 @@ export const VolunteerFormSections: FormSectionConfig[] = [
                 label: "Why do you want to tutor with us, and what do you hope to gain from this experience? What subjects would you like to teach, and why?",
                 sublabel:
                     "Please share an overview of your profile, your areas of expertise and the reasons behind your choice, such as your passion for the subject or past teaching experience.",
-                inputType: "textarea",
+                inputType: "async-select",
                 placeholder: "Describe here",
                 required: true,
                 gridCols: 2,
+                endpoint: "subjects",
+                responseAsLabel: "subject_name",
+                responseAsValue: ["subject_id", "subject_name"],
+                variant: "multi",
             },
             {
                 id: "profile_picture",
@@ -479,8 +492,8 @@ export const VolunteerFormSections: FormSectionConfig[] = [
                 sublabel: "(for use in program materials or promotional content)",
                 inputType: "radio",
                 options: [
-                    { label: "Yes", value: "yes" },
-                    { label: "No", value: "no" },
+                    { label: "Yes", value: true },
+                    { label: "No", value: false },
                 ],
                 required: false,
                 gridCols: 1,
@@ -490,8 +503,8 @@ export const VolunteerFormSections: FormSectionConfig[] = [
                 label: "Acknowledgment of Program Policies ",
                 sublabel: "(Rules, Expectations, and Procedures)",
                 options: [
-                    { label: "Yes", value: "yes" },
-                    { label: "No", value: "no" },
+                    { label: "Yes", value: true },
+                    { label: "No", value: false },
                 ],
                 inputType: "radio",
                 gridCols: 1,

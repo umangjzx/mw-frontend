@@ -1,0 +1,1 @@
+type UserType = "volunteer" | "learner";

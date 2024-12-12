@@ -4,8 +4,6 @@ type InputOption = {
     sublabel?: string;
 };
 
-
-
 type SublabelAlignment = "right" | "bottom";
 
 type BaseInputProps = {
@@ -111,7 +109,7 @@ type SingleImageUploadProps = Partial<ImageUploadProps> & {
 type TimeRangeValue = {
     from: string;
     to: string;
-        };
+};
 
 type InputProps =
     | TextInputProps
