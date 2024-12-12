@@ -19,7 +19,7 @@ const ResourceModal = ({ isOpen, mode = "view", onClose }: ResourceModalProps) =
     const [error, setError] = useState<string | null>(null);
 
     const getCategories = async () => {
-        const response = await GET_API(endpoints.common.getCategories);
+        const response = await GET_API(endpoints.common("categories"));
         const categories = response.data.map((item: any) => ({
             label: item.category_name,
             value: item.category_id,
@@ -28,7 +28,7 @@ const ResourceModal = ({ isOpen, mode = "view", onClose }: ResourceModalProps) =
     };
 
     const getSkills = async () => {
-        const response = await GET_API(endpoints.common.getSkills);
+        const response = await GET_API(endpoints.common("skills"));
         const skills = response.data.map((item: any) => ({
             label: item.skill_name,
             value: item.skill_name,

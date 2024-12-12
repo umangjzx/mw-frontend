@@ -117,7 +117,7 @@ const AsyncSelect = ({
     );
     console.log("getValue", getValue);
     return (
-        <div className='flex flex-col gap-2'>
+        <div className="flex flex-col gap-2">
             <CreatableSelect
                 {...props}
                 isMulti={variant === "multi"}
@@ -127,15 +127,15 @@ const AsyncSelect = ({
                 onCreateOption={handleCreate}
                 isLoading={isLoading}
                 isClearable
-                classNamePrefix='select'
+                classNamePrefix="select"
                 isDisabled={props.disabled}
                 placeholder={props.placeholder || "Search and Select"}
-                formatCreateLabel={inputValue => `Create "${inputValue}"`}
+                formatCreateLabel={(inputValue: string) => `Create "${inputValue}"`}
                 hideSelectedOptions={variant === "multi"}
                 loadingMessage={() => "Loading..."}
                 styles={customStyles}
                 components={{
-                    DropdownIndicator: () => <BiCaretDown className='text-black mr-1' />,
+                    DropdownIndicator: () => <BiCaretDown className="text-black mr-1" />,
                     ClearIndicator: () => null,
                     MultiValueContainer: () => null,
                 }}
@@ -150,7 +150,7 @@ const AsyncSelect = ({
                         }
                         text={item.label}
                         isClose={true}
-                        className='!bg-black !text-white p-1 px-4'
+                        className="!bg-black !text-white p-1 px-4"
                     />
                 ))}
             </div>

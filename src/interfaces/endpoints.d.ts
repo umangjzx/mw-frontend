@@ -44,4 +44,4 @@ type EndpointProps = {
     common: (path: CommonPath) => string;
 };
 
-type CommonPath = "skills" | "languages" | "subjects" | "media" | "categories";
+type CommonPath = "skills" | "languages" | "subjects" | "media" | "categories" | "media-uploader";

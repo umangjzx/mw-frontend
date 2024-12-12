@@ -12,7 +12,7 @@ const Uploader = ({ ...props }: UploaderProps) => {
     const getImageData = async (baseImageString: string) => {
         let formData = new FormData();
         formData.append("image", baseImageString);
-        const response = await POST_API(endpoints.common.mediaUploader, formData);
+        const response = await POST_API(endpoints.common("media-uploader"), formData);
         return response;
     };
 
