@@ -29,7 +29,7 @@ export const FormField = ({ field, control, errors, parent }: FormFieldProps) =>
     };
 
     return (
-        <div className={`${field.gridCols === 2 ? "col-span-2" : "col-span-1"}`}>
+        <div className={`${field.gridCols === 2 ? "col-span-2 w-full" : "col-span-1 w-full"}`}>
             <Controller
                 name={getFieldProperty(field, "name") as keyof VolunteerFormData}
                 control={control}

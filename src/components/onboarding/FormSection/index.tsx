@@ -28,7 +28,7 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
                         {section.title && (
                             <h2 className='text-3xl font-semibold mb-8'>{section.title}</h2>
                         )}
-                        <div className='grid grid-cols-2 gap-6'>
+                        <div className='grid grid-cols-2 w-full gap-6'>
                             {section.fields.map((field, index) => {
                                 if (section?.type === "card") {
                                     const parent = section.parent

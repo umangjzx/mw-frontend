@@ -26,7 +26,8 @@ const ParentGuardianFields: FormField[] = [
         inputType: "select",
         placeholder: "Select relationship",
         gridCols: 2,
-        inputClassName: "w-[49%]",
+        inputClassName: "!w-[49%]",
+        className: "w-full",
     },
     {
         id: "parent_email",
@@ -37,25 +38,13 @@ const ParentGuardianFields: FormField[] = [
     },
     {
         id: "parent_contact_number",
-        label: "Contact Number",
-        inputType: "parent",
+        label: "Your contact number",
+        sublabel: "(with country code)",
+        inputType: "contact-input",
+        placeholder: "Enter Email ID",
+        sublabelAlignment: "right",
         gridCols: 1,
-        children: [
-            {
-                id: "country_code",
-                label: "Country Code",
-                inputType: "text",
-                placeholder: "+1",
-                gridCols: 1,
-            },
-            {
-                id: "number",
-                label: "Phone Number",
-                inputType: "text",
-                placeholder: "Enter number",
-                gridCols: 1,
-            },
-        ],
+        disabled: false,
     },
     {
         id: "parent_address",
@@ -68,24 +57,11 @@ const ParentGuardianFields: FormField[] = [
     {
         id: "emergency_contact_number",
         label: "Emergency Contact Number",
-        inputType: "parent",
-        gridCols: 2,
-        children: [
-            {
-                id: "country_code",
-                label: "Country Code",
-                inputType: "text",
-                placeholder: "+1",
-                gridCols: 1,
-            },
-            {
-                id: "number",
-                label: "Phone Number",
-                inputType: "text",
-                placeholder: "Enter number",
-                gridCols: 1,
-            },
-        ],
+        inputType: "contact-input",
+        placeholder: "Enter Email ID",
+        sublabelAlignment: "right",
+        gridCols: 1,
+        disabled: false,
     },
 ];
 
@@ -154,24 +130,11 @@ const LearnerPersonalFields: FormField[] = [
     {
         parent: "learner_contact_details",
         id: "contact_number",
-        inputType: "parent",
         label: "Contact Number",
-        children: [
-            {
-                id: "country_code",
-                label: "Country Code",
-                inputType: "text",
-                placeholder: "+1",
-                gridCols: 1,
-            },
-            {
-                id: "number",
-                label: "Phone Number",
-                inputType: "text",
-                placeholder: "Enter number",
-                gridCols: 1,
-            },
-        ],
+        inputType: "contact-input",
+        sublabelAlignment: "right",
+        gridCols: 1,
+        disabled: false,
     },
 ];
 
@@ -195,6 +158,8 @@ const DisabilityInfoFields: FormField[] = [
             { label: "Extensive", value: "extensive" },
         ],
         gridCols: 1,
+        sublabel: " ",
+        className: "w-full h-full mt-4",
     },
     {
         id: "assistive_device_used",
@@ -242,7 +207,7 @@ const EducationBackgroundFields: FormField[] = [
     {
         id: "current_school",
         label: "Current School/Program",
-        sublabel:"(name of school, grade level)",
+        sublabel: "(name of school, grade level)",
         inputType: "text",
         placeholder: "Enter school name",
         gridCols: 1,
@@ -250,7 +215,7 @@ const EducationBackgroundFields: FormField[] = [
     {
         id: "iep_plan_key",
         label: "IEP or 504 Plan",
-        sublabel:"(if applicable, include key details or goals)",
+        sublabel: "(if applicable, include key details or goals)",
         inputType: "text",
         placeholder: "(appropriate relative to developmental level)",
         gridCols: 1,
@@ -258,7 +223,7 @@ const EducationBackgroundFields: FormField[] = [
     {
         id: "academic_strengths",
         label: "Academic Strengths",
-        sublabel:"(subjects the child enjoys or does well in)",
+        sublabel: "(subjects the child enjoys or does well in)",
         inputType: "select",
         placeholder: "Describe strengths",
         gridCols: 1,
@@ -266,7 +231,7 @@ const EducationBackgroundFields: FormField[] = [
     {
         id: "academic_challenges",
         label: "Academic Challenges",
-        sublabel:"(subjects where the child may need extra support)",
+        sublabel: "(subjects where the child may need extra support)",
         inputType: "select",
         placeholder: "Describe what areas need extra support",
         gridCols: 1,
@@ -335,7 +300,6 @@ const InterestsHobbiesFields: FormField[] = [
         placeholder: "Enter here",
         gridCols: 1,
     },
-
 ];
 
 // Expectations and Goals Fields
@@ -374,6 +338,9 @@ const ExpectationsGoalsFields: FormField[] = [
             { label: "Expert", value: "expert" },
         ],
         gridCols: 1,
+        className: "w-full h-fit mt-4 gap-0 !mb-0",
+        inputClassName: "w-full h-full  mt-4",
+
     },
 ];
 
