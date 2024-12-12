@@ -4,17 +4,20 @@ const EventCard = ({ title, time, onEventClick, style, className }: EventCardPro
     return (
         <div
             onClick={onEventClick}
-            className={cn("flex items-center p-[1px] justify-between w-full text-sm", className)}
+            className={cn(
+                "flex items-center p-[1px] justify-between w-full text-sm px-2 py-1",
+                className
+            )}
             style={{ ...style, color: style?.textColor }}
         >
             <div className="flex items-center gap-2">
                 <span
-                    className='w-3 h-3 rounded-full'
+                    className="w-2 h-2  rounded-full"
                     style={{ backgroundColor: style?.textColor }}
                 />
-                <span className='font-normal'>{title}</span>
+                <span className="font-normal capitalize !text-sm">{title}</span>
             </div>
-            <span className='text-xs'>{time}</span>
+            <span className="text-xs">{time}</span>
         </div>
     );
 };

@@ -12,7 +12,8 @@ interface FormData {
     title_of_the_meeting: string;
     select_volunteer: string;
     select_date: string | Date;
-    select_time: string;
+    start_time: string;
+    end_time: string;
     google_meet_link: string;
     description: string;
     selected_slot?: string;
@@ -28,7 +29,8 @@ const AddNewMeetingModal: React.FC<AddNewMeetingModalProps> = ({ isOpen, onClose
         title_of_the_meeting: "",
         select_volunteer: "",
         select_date: "",
-        select_time: "",
+        start_time: "",
+        end_time: "",
         google_meet_link: "",
         description: "",
         selected_slot: "",
@@ -103,11 +105,13 @@ const AddNewMeetingModal: React.FC<AddNewMeetingModalProps> = ({ isOpen, onClose
         return field;
     };
 
-    const handleSlotSelection = (slotId: string, timeRange: string) => {
+    const handleSlotSelection = (slotId: string, startTime: string, endTime: string) => {
+        console.log(slotId, startTime, endTime, "slotId, startTime, endTime");
         setFormData((prev) => ({
             ...prev,
             selected_slot: slotId,
-            select_time: timeRange,
+            start_time: startTime,
+            end_time: endTime,
         }));
     };
 
@@ -116,7 +120,8 @@ const AddNewMeetingModal: React.FC<AddNewMeetingModalProps> = ({ isOpen, onClose
             volunteer_id: formData.select_volunteer,
             volunteer_slot_id: formData.selected_slot,
             session_date: moment(formData.select_date).format("YYYY-MM-DD"),
-            session_time: formData.select_time,
+            session_start_time: formData.start_time,
+            session_end_time: formData.end_time,
             session_title: formData.title_of_the_meeting,
             session_description: formData.description,
         };
@@ -128,7 +133,8 @@ const AddNewMeetingModal: React.FC<AddNewMeetingModalProps> = ({ isOpen, onClose
                     title_of_the_meeting: "",
                     select_volunteer: "",
                     select_date: "",
-                    select_time: "",
+                    start_time: "",
+                    end_time: "",
                     google_meet_link: "",
                     description: "",
                     selected_slot: "",
@@ -157,14 +163,18 @@ const AddNewMeetingModal: React.FC<AddNewMeetingModalProps> = ({ isOpen, onClose
                         <p className="text-sm font-medium mb-2">Available Slots:</p>
                         <Radio.Group
                             size="small"
-                            onChange={(e) =>
-                                handleSlotSelection(
-                                    e.target.value,
-                                    availableSlots.find(
-                                        (slot) => slot.volunteer_slot_id === e.target.value
-                                    )?.start_time
-                                )
-                            }
+                            onChange={(e) => {
+                                const selectedSlot = availableSlots.find(
+                                    (slot) => slot.volunteer_slot_id === e.target.value
+                                );
+                                if (selectedSlot) {
+                                    handleSlotSelection(
+                                        e.target.value,
+                                        selectedSlot.start_time,
+                                        selectedSlot.end_time
+                                    );
+                                }
+                            }}
                             value={formData.selected_slot}
                         >
                             <div className="flex gap-3 flex-wrap">

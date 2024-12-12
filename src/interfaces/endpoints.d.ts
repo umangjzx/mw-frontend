@@ -1,6 +1,6 @@
 type EndpointProps = {
     onboarding: {
-        update: (role: "volunteer" | "learner") => `onboarding/${typeof role}`,
+        update: (role: "volunteer" | "learner") => `onboarding/${typeof role}`;
     };
     auth: {
         oauth2callback: string;
@@ -26,6 +26,8 @@ type EndpointProps = {
         bookSession: string;
         getLearnerSessions: (id: string) => string;
         cancelSession: (id: string) => string;
+        getApprovalNotifications: (id: string, status: string) => string;
+        updateNotificationStatus: (id: string) => string;
     };
     post: {
         getPosts: string;

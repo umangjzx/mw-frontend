@@ -1,31 +1,40 @@
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
+import { getTime } from "@/utils/calender";
 import {
     DateSelectArg,
-    EventClickArg,
     EventApi,
+    EventClickArg,
     EventRemoveArg,
     formatDate,
 } from "@fullcalendar/core";
-import { useState, useEffect } from "react";
-import "./styles.css";
-import EventCard from "./EventCard";
-import DayCellContent from "./DayCellContent";
-import { AlertModal, AllEventsModal } from "../Modals";
-import { getTime } from "@/utils/calender";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import FullCalendar from "@fullcalendar/react";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import moment from "moment";
+import { useEffect, useState } from "react";
 import MeetingPreviewModal from "../MeetingPreviewModal";
+import { AlertModal, AllEventsModal } from "../Modals";
+import DayCellContent from "./DayCellContent";
+import EventCard from "./EventCard";
+import "./styles.css";
 
-interface CalendarProps {}
+interface CalendarProps {
+    events: any;
+}
 
-const Calendar: React.FC<CalendarProps> = () => {
+const Calendar: React.FC<CalendarProps> = ({ events }) => {
+    console.log("🚀 ~ Calendar ~ events:", events);
+    const [previewMeetingData, setPreviewMeetingData] = useState<any>(events);
     const [showModal, setShowModal] = useState<ModalType>(null);
-    const [currentEventData, setCurrentEventData] = useState<{ events: EventApi[]; date: string }>({
+    const [currentEventData, setCurrentEventData] = useState<{
+        events: EventApi[];
+        date: string;
+        w?: any;
+    }>({
         events: [],
         date: "",
     });
-    const [previewPosition, setPreviewPosition] = useState({ x: 0, y: 0, });
+    const [previewPosition, setPreviewPosition] = useState({ x: 0, y: 0 });
     const [showPreview, setShowPreview] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState<EventApi | null>(null);
 
@@ -42,7 +51,7 @@ const Calendar: React.FC<CalendarProps> = () => {
                 end: selectInfo.endStr,
                 allDay: selectInfo.allDay,
                 backgroundColor: "var(--success-light-color)",
-                classNames: ["event-item", "rounded-md", "px-3", "py-1", "my-0.5"],
+                classNames: ["event-item", "rounded-md", "capitalize", "px-3", "py-1", "my-0.5"],
                 textColor: "var(--success-color)",
                 borderColor: "var(--success-color)",
             });
@@ -53,28 +62,24 @@ const Calendar: React.FC<CalendarProps> = () => {
         alert("Are you sure you want to delete this event?");
     };
 
-
     //TODO: Fix the preview modal position
     const handleEventClick = (clickInfo: EventClickArg) => {
-        // Get click coordinates
         const rect = clickInfo.el.getBoundingClientRect();
 
         // Calculate position relative to viewport
         let xPosition = rect.left;
-        let yPosition = rect.bottom + 10; // Add 10px padding
+        let yPosition = rect.bottom + 10;
 
         // Adjust for viewport edges
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
         const modalWidth = 450;
-        const modalHeight = 400; // Approximate height
+        const modalHeight = 400;
 
-        // Check right edge
         if (xPosition + modalWidth > viewportWidth) {
             xPosition = viewportWidth - modalWidth - 10;
         }
 
-        // Check bottom edge
         if (yPosition + modalHeight > viewportHeight) {
             yPosition = rect.top - modalHeight - 10;
         }
@@ -92,11 +97,14 @@ const Calendar: React.FC<CalendarProps> = () => {
     };
 
     const renderEventContent = (eventInfo: any) => {
+        const startTime = moment(eventInfo.event.start).format("h:mm A");
+        const endTime = moment(eventInfo.event.end).format("h:mm A");
+
         return (
             <EventCard
                 style={eventInfo.event._def.ui}
                 title={eventInfo.event.title}
-                time={getTime(eventInfo.event.start)}
+                time={`${startTime} - ${endTime}`}
             />
         );
     };
@@ -141,16 +149,16 @@ const Calendar: React.FC<CalendarProps> = () => {
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (showPreview) {
-                const modal = document.querySelector('.meeting-preview-modal');
+                const modal = document.querySelector(".meeting-preview-modal");
                 if (modal && !modal.contains(event.target as Node)) {
                     setShowPreview(false);
                 }
             }
         };
 
-        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener("mousedown", handleClickOutside);
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [showPreview]);
 
@@ -158,10 +166,11 @@ const Calendar: React.FC<CalendarProps> = () => {
         <>
             <MeetingPreviewModal
                 isOpen={showPreview}
+                data={events}
                 onClose={() => setShowPreview(false)}
                 event={selectedEvent}
                 style={{
-                    position: 'fixed',
+                    position: "fixed",
                     left: `${previewPosition.x}px`,
                     top: `${previewPosition.y}px`,
                     zIndex: 1000,
@@ -181,14 +190,14 @@ const Calendar: React.FC<CalendarProps> = () => {
                 onClose={handleCloseModal}
                 onSave={() => setShowModal(null)}
                 data={currentEventData}
-                onEventClick={event => {
+                onEventClick={(event) => {
                     handleEventClick({ event } as EventClickArg);
                 }}
             />
-            <div className='p-4 calendar-container'>
+            <div className="p-4 calendar-container">
                 <FullCalendar
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                    initialView='dayGridMonth'
+                    initialView="dayGridMonth"
                     editable={true}
                     selectable={true}
                     selectMirror={true}
@@ -201,20 +210,7 @@ const Calendar: React.FC<CalendarProps> = () => {
                     dayHeaderContent={customDayHeaderContent}
                     eventContent={renderEventContent}
                     dayCellClassNames={dayCellClassNames}
-                    initialEvents={[
-                        {
-                            title: "Event Name",
-                            date: "2024-12-15",
-                            backgroundColor: "#4ade80",
-                            classNames: ["event-item", "rounded-md", "px-1", "py-1",],
-                        },
-                        {
-                            title: "Event Name",
-                            date: "2024-12-15",
-                            backgroundColor: "#ef4444",
-                            classNames: ["event-item", "rounded-md", "px-1", "py-1", ],
-                        },
-                    ]}
+                    events={events || []}
                     moreLinkClassNames={["!text-primary", "hover:!bg-transparent"]}
                     moreLinkClick={handleMoreLinkClick}
                 />
