@@ -4,6 +4,8 @@ import { z } from "zod";
 import { endpoints } from "@/api/constants";
 import { useSendData } from "./useReactQuery";
 import { PUT_API } from "@/api/request";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 // const volunteerData: Volunteer = {
 //     volunteer_description: "some description",
@@ -175,11 +177,12 @@ const learnerData = {
 };
 
 export const useOnboardingForm = (schema: any) => {
-    const role = localStorage.getItem("role");
+    const role = Cookies.get("role");
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: role === "volunteer" ? {} : learnerData,
     });
+    const router = useRouter();
 
     const { mutate: updateOnboarding, isPending } = useSendData({
         fn: (data: z.infer<typeof schema>) =>
@@ -190,7 +193,6 @@ export const useOnboardingForm = (schema: any) => {
         error: () => {
             alert("Error submitting form");
         },
-        invalidateKey: ["onboarding"],
     });
 
     const onSubmit = async (data: z.infer<typeof schema>) => {
