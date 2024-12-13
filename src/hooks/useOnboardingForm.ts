@@ -188,7 +188,7 @@ export const useOnboardingForm = (schema: any) => {
         fn: (data: z.infer<typeof schema>) =>
             PUT_API(endpoints.onboarding.update(role as "volunteer" | "learner"), data),
         success: () => {
-            alert("Form submitted");
+            router.push("/onboarding/verification");
         },
         error: () => {
             alert("Error submitting form");

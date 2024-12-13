@@ -502,3 +502,9 @@ export const VolunteerOnboardingConstants = {
     description:
         "Flexible schedules, meaningful impact—volunteer your way to help someone with special needs to discover their potential.",
 };
+
+export const VolunteerThankyouCardConstants = {
+    title: "Thank You for Applying!",
+    description:
+        "We appreciate you considering this rewarding opportunity to change lives. MelodyWings team will verify the information provided in your application and thank you for your enthusiasm and willingness to make a difference in the lives of others.",
+};
