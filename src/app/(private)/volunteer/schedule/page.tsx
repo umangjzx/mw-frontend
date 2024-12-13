@@ -5,18 +5,23 @@ import MyScheduleModal from "@/components/schedule/Modals/MyScheduleModal";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ApprovalModal from "@/components/schedule/Modals/ApprovalModal";
-import { GET_API } from "@/api/request";
+import { GET_API, POST_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import moment from "moment";
 import { useQuery } from "@tanstack/react-query";
+import FeedbackModal from "@/components/schedule/Modals/FeedbackModal";
+import { useVolunteer } from "@/store/useVolunteer";
+import { useAppStore } from "@/store/useAppStore";
 
 export default function SchedulePage() {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpenSchedule, setIsOpenSchedule] = useState(false);
     const [isOpenApproval, setIsOpenApproval] = useState(false);
     const router = useRouter();
     const searchParams = useSearchParams();
     const modal = searchParams.get("modal");
-    const currentDate = searchParams.get("current_date");
+    const currentDate = searchParams.get("current_month");
+    const [isOpenFeedback, setIsOpenFeedback] = useState(true);
+    const { eventDetails, currentMonth } = useAppStore();
 
     const getEvents = async () => {
         const monthParam = currentDate
@@ -42,6 +47,7 @@ export default function SchedulePage() {
                         description: item.session_description,
                         meetLink: item.meet_link,
                         sessionId: item.session_id,
+                        volunteerId: item.volunteer_id,
                         learner: {
                             id: item.learner_id,
                             firstName: item.learner_first_name,
@@ -59,32 +65,66 @@ export default function SchedulePage() {
         queryKey: ["events", currentDate],
         queryFn: () => getEvents(),
     });
-    console.log(data, "Events data");
 
     const handleModal = () => {
-        isOpen ? router.push("/volunteer/schedule") : setIsOpen(!isOpen);
+        isOpenSchedule
+            ? router.push(`/volunteer/schedule?current_month=${currentMonth}`)
+            : setIsOpenSchedule(!isOpenApproval);
     };
 
     const handleModalApproval = () => {
-        isOpenApproval ? router.push("/volunteer/schedule") : setIsOpenApproval(!isOpenApproval);
+        isOpenApproval
+            ? router.push(`/volunteer/schedule?current_month=${currentMonth}`)
+            : setIsOpenApproval(!isOpenApproval);
+    };
+
+    const handleModalFeedback = () => {
+        isOpenFeedback
+            ? router.push(`/volunteer/schedule?current_month=${currentMonth}`)
+            : setIsOpenFeedback(!isOpenFeedback);
+    };
+
+    const handleSubmitFeedback = (formData: any) => {
+        let payload = {
+            comment: formData?.notes,
+            learner_interest_level: formData?.rating || 0,
+            ...eventDetails,
+        };
+        POST_API(endpoints.volunterFeedback.create, payload)
+            .then((res) => {
+                handleModalFeedback();
+            })
+            .catch((err) => {
+                console.log(err, "err for feedback");
+            });
     };
 
     useEffect(() => {
         if (modal === "my_schedule") {
-            setIsOpen(true);
+            setIsOpenSchedule(true);
         } else if (modal === "approval_notification") {
             setIsOpenApproval(true);
+        } else if (modal === "feedback") {
+            setIsOpenFeedback(true);
         } else {
-            setIsOpen(false);
+            setIsOpenSchedule(false);
             setIsOpenApproval(false);
+            setIsOpenFeedback(false);
         }
     }, [searchParams]);
 
     return (
         <div className="w-full h-full">
             <Calendar events={data || []} />
-            <MyScheduleModal isOpen={isOpen} onClose={handleModal} />
+            <MyScheduleModal isOpen={isOpenSchedule} onClose={handleModal} />
             <ApprovalModal isOpen={isOpenApproval} onClose={handleModalApproval} />
+            <FeedbackModal
+                mode="create"
+                isOpen={isOpenFeedback}
+                onClose={handleModalFeedback}
+                onSubmit={handleSubmitFeedback}
+                data={eventDetails}
+            />
         </div>
     );
 }

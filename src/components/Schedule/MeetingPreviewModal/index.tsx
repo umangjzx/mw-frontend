@@ -1,16 +1,19 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import FeedModalCloseIcon from "@/assets/icons/FeedModalCloseIcon";
-import Divider from "@/components/common/Divider";
-import Button from "@/components/common/Button";
-import { createPortal } from "react-dom";
-import moment from "moment";
-import { useQueryClient } from "@tanstack/react-query";
 import { endpoints } from "@/api/constants";
 import { PUT_API } from "@/api/request";
+import FeedModalCloseIcon from "@/assets/icons/FeedModalCloseIcon";
+import Button from "@/components/common/Button";
+import Divider from "@/components/common/Divider";
+import { useAppStore } from "@/store/useAppStore";
+import { useQueryClient } from "@tanstack/react-query";
+import moment from "moment";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { IoMdCheckmark } from "react-icons/io";
 import { MdClose } from "react-icons/md";
 import "./styles.css";
+import Cookies from "js-cookie";
 
 interface MeetingPreviewModalProps {
     data: any;
@@ -28,6 +31,9 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
 }) => {
     const [isAnimating, setIsAnimating] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
+    const router = useRouter();
+    const { currentMonth } = useAppStore();
+    const role = Cookies.get("role");
 
     useEffect(() => {
         if (isOpen) {
@@ -66,6 +72,10 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
             .catch((err) => {
                 console.log("Error: ", err);
             });
+    };
+
+    const handleFeedBack = () => {
+        router.push(`/${role}/schedule?current_month=${currentMonth}&modal=feedback`);
     };
 
     return createPortal(
@@ -125,11 +135,16 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                     </p>
                 </div>
                 <Divider />
-                {/* <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center justify-between gap-3">
                     <p className="font-medium text-sm text-[#16A34A]">Feedback Completed</p>
-                    <p className="text-primary text-sm underline font-medium">See Feedback</p>
+                    <p
+                        onClick={handleFeedBack}
+                        className="text-primary text-sm underline font-medium"
+                    >
+                        See Feedback
+                    </p>
                 </div>
-                <Divider /> */}
+                <Divider />
                 {status === "rejected" && (
                     <div className="flex items-center justify-between gap-3">
                         <p className="text-gray-light font-medium text-sm">Availability Status</p>

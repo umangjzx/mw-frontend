@@ -14,12 +14,13 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import moment from "moment";
 import { useEffect, useState, useRef } from "react";
 import MeetingPreviewModal from "../MeetingPreviewModal";
-import { AlertModal, AllEventsModal } from "../Modals";
+import { AlertModal, AllEventsModal, FeedbackModal } from "../Modals";
 import DayCellContent from "./DayCellContent";
 import EventCard from "./EventCard";
 import "./styles.css";
 import { Dayjs } from "dayjs";
 import { useSearchParams } from "next/navigation";
+import { useAppStore } from "@/store/useAppStore";
 
 interface CalendarProps {
     events: any;
@@ -41,10 +42,18 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
     const [previewPosition, setPreviewPosition] = useState({ x: 0, y: 0 });
     const [showPreview, setShowPreview] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState<EventApi | null>(null);
+    const [selectedEventForFeedback, setSelectedEventForFeedback] = useState<EventApi | null>(null);
     const calendarRef = useRef<any>(null);
     const searchParams = useSearchParams();
-    const currentDate = searchParams.get("current_date");
-    console.log(currentDate, "current date from calendar");
+    const currentDate = searchParams.get("current_month");
+    const modalParam = searchParams.get("modal");
+    const { setEventDetails } = useAppStore();
+
+    useEffect(() => {
+        if (modalParam === "feedback") {
+            setShowPreview(false);
+        }
+    }, [modalParam]);
 
     const handleDateSelect = (selectInfo: DateSelectArg) => {
         const title = prompt("Please enter a new title for your event");
@@ -95,6 +104,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
 
         setPreviewPosition({ x: xPosition, y: yPosition });
         setSelectedEvent(clickInfo.event);
+        setSelectedEventForFeedback(clickInfo.event);
         setShowPreview(true);
 
         clickInfo.jsEvent.preventDefault();
@@ -103,6 +113,9 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
 
     const handleCloseModal = () => {
         setShowModal(null);
+        const url = new URL(window.location.href);
+        url.searchParams.delete("modal");
+        window.history.replaceState({}, "", url);
     };
 
     const renderEventContent = (eventInfo: any) => {
@@ -179,6 +192,12 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
             calendarApi.gotoDate(moment(currentDate).format("YYYY-MM-DD"));
         }
     }, [currentDate]);
+
+    useEffect(() => {
+        setEventDetails(selectedEventForFeedback);
+    }, [selectedEventForFeedback]);
+
+    useEffect(() => {}, [currentDate]);
 
     return (
         <>

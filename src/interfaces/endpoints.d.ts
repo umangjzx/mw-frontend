@@ -28,7 +28,7 @@ type EndpointProps = {
         cancelSession: (id: string) => string;
         getApprovalNotifications: (id: string, status: string) => string;
         updateNotificationStatus: (id: string) => string;
-        getCalendarEvents: (id: string, month?: string) => string;
+        getCalendarEvents: (id: string, month?: string, status?: string) => string;
     };
     resources: {
         create: string;
@@ -43,6 +43,17 @@ type EndpointProps = {
         getPostComments: (post_id: string) => string;
     };
     common: (path: CommonPath) => string;
+    volunterFeedback: {
+        create: string;
+        get: string;
+        update: string;
+    };
+    learnerFeedback: {
+        create: string;
+        get: string;
+        update: string;
+    };
 };
 
+type CommonPath = "skills" | "languages" | "subjects" | "media" | "categories" | "media-uploader";
 type CommonPath = "skills" | "languages" | "subjects" | "media" | "categories" | "media-uploader";

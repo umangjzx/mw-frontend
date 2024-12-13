@@ -12,4 +12,4 @@ type DayCellContentProps = {
     icon: string;
 };
 
-type ModalType = "events" | "alert" | null;
+type ModalType = "events" | "alert" | "feedback" | null;

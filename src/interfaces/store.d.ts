@@ -13,6 +13,20 @@ type HeaderOptions = {
 type UseVolunteerProps = {
     headerOptions: Partial<HeaderOptions>;
     setHeaderOptions: (options: HeaderOptions) => void;
+    volunteerName: string;
+    setVolunteerName: (name: string) => void;
 };
 
-type UseAppStoreProps = UseVolunteerProps;
+type UseLearnerProps = {
+    learnerName: string;
+    setLearnerName: (name: string) => void;
+};
+
+type UseGlobalStoreProps = {
+    currentMonth: string;
+    setCurrentMonth: (date: string) => void;
+    eventDetails: any;
+    setEventDetails: (details: any) => void;
+};
+
+type UseAppStoreProps = UseVolunteerProps & UseLearnerProps & UseGlobalStoreProps;

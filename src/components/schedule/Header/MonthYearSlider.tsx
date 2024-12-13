@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import Button from "@/components/common/Button";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useAppStore } from "@/store/useAppStore";
 
 interface Props {
     onChange?: (date: Dayjs) => void;
@@ -12,10 +13,11 @@ interface Props {
 const MonthYearSlider: React.FC<Props> = ({ onChange, defaultDate }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { setCurrentMonth } = useAppStore();
 
     // Initialize currentDate from props, URL, or default to current date
     const [currentDate, setCurrentDate] = useState<Dayjs>(() => {
-        const urlDate = searchParams.get("current_date");
+        const urlDate = searchParams.get("current_month");
         return defaultDate ? dayjs(defaultDate) : urlDate ? dayjs(urlDate) : dayjs();
     });
 
@@ -28,15 +30,17 @@ const MonthYearSlider: React.FC<Props> = ({ onChange, defaultDate }) => {
 
         // Update URL with new date
         const params = new URLSearchParams(searchParams.toString());
-        params.set("current_date", newDate.format("YYYY-MM"));
+        params.set("current_month", newDate.format("YYYY-MM"));
+        setCurrentMonth(newDate.format("YYYY-MM"));
         router.push(`?${params.toString()}`);
     };
 
     // Update URL when component mounts
     useEffect(() => {
-        if (!searchParams.get("current_date")) {
+        if (!searchParams.get("current_month")) {
             const params = new URLSearchParams(searchParams.toString());
-            params.set("current_date", currentDate.format("YYYY-MM-DD"));
+            params.set("current_month", currentDate.format("YYYY-MM"));
+            setCurrentMonth(currentDate.format("YYYY-MM"));
             router.push(`?${params.toString()}`);
         }
     }, []);
