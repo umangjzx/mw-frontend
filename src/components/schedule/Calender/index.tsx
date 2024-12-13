@@ -81,9 +81,10 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
         // Adjust for viewport edges
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
-        const modalWidth = 450;
-        const modalHeight = 400;
-
+        // const modalWidth = 450;
+        // const modalHeight = 400;
+        const modalWidth = 405;
+        const modalHeight = 315;
         if (xPosition + modalWidth > viewportWidth) {
             xPosition = viewportWidth - modalWidth - 10;
         }

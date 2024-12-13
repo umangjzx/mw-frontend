@@ -41,6 +41,7 @@ export default function SchedulePage() {
                     extendedProps: {
                         description: item.session_description,
                         meetLink: item.meet_link,
+                        sessionId: item.session_id,
                         learner: {
                             id: item.learner_id,
                             firstName: item.learner_first_name,
