@@ -14,8 +14,8 @@ const SideModal: React.FC<SideModalProps> = ({
     onCancel,
     isOpen = false,
     isDisabled = false,
+    isNeedButton = true,
 }) => {
-    console.log(isDisabled, "isDisabled side modal");
     return (
         <div>
             <Drawer
@@ -36,26 +36,28 @@ const SideModal: React.FC<SideModalProps> = ({
                     </div>
                     <Divider />
                     <div className="flex-1 overflow-y-auto pb-2">{children}</div>
-                    <div className="mt-auto">
-                        <Divider />
-                        <div className="flex items-center justify-end gap-4 px-5 pt-4">
-                            <Button
-                                onClick={onCancel}
-                                title={cancelButtonText}
-                                className="w-fit px-4 py-2 !text-sm !text-black bg-white !border !border-stroke-light rounded-xl"
-                            />
-                            <Button
-                                disabled={isDisabled}
-                                onClick={onSave}
-                                title={saveButtonText}
-                                className={`w-fit !text-sm px-4 py-2 !bg-black !text-white rounded-xl ${
-                                    isDisabled
-                                        ? "!bg-opacity-50 !bg-gray-light !cursor-not-allowed"
-                                        : ""
-                                }`}
-                            />
+                    {isNeedButton && (
+                        <div className="mt-auto">
+                            <Divider />
+                            <div className="flex items-center justify-end gap-4 px-5 pt-4">
+                                <Button
+                                    onClick={onCancel}
+                                    title={cancelButtonText}
+                                    className="w-fit px-4 py-2 !text-sm !text-black bg-white !border !border-stroke-light rounded-xl"
+                                />
+                                <Button
+                                    disabled={isDisabled}
+                                    onClick={onSave}
+                                    title={saveButtonText}
+                                    className={`w-fit !text-sm px-4 py-2 !bg-black !text-white rounded-xl ${
+                                        isDisabled
+                                            ? "!bg-opacity-50 !bg-gray-light !cursor-not-allowed"
+                                            : ""
+                                    }`}
+                                />
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </Drawer>
         </div>

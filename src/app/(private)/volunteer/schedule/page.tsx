@@ -16,13 +16,15 @@ export default function SchedulePage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const modal = searchParams.get("modal");
+    const currentDate = searchParams.get("current_date");
 
     const getEvents = async () => {
+        const monthParam = currentDate
+            ? moment(currentDate).format("YYYY-MM")
+            : moment().format("YYYY-MM");
+
         const response: any = await GET_API(
-            endpoints.session.getApprovalNotifications(
-                "0fd651c9-f10c-4e40-ad7c-13c1c4932fe3",
-                "accepted"
-            )
+            endpoints.session.getCalendarEvents("0fd651c9-f10c-4e40-ad7c-13c1c4932fe3", monthParam)
         );
         if (response?.data?.items) {
             const events =
@@ -35,6 +37,7 @@ export default function SchedulePage() {
                     classNames: ["event-item", "rounded-md", "px-3", "py-1", "my-0.5"],
                     textColor: "var(--success-color)",
                     borderColor: "var(--success-color)",
+                    status: item.status,
                     extendedProps: {
                         description: item.session_description,
                         meetLink: item.meet_link,
@@ -51,8 +54,8 @@ export default function SchedulePage() {
         return [];
     };
 
-    const { data, isLoading, isError } = useQuery({
-        queryKey: ["events"],
+    const { data, isLoading, isError, refetch } = useQuery({
+        queryKey: ["events", currentDate],
         queryFn: () => getEvents(),
     });
     console.log(data, "Events data");

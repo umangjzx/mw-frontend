@@ -8,12 +8,12 @@ const AllEventsModal = ({ isOpen, onClose, onSave, data, onEventClick }: AllEven
             title={`Schedule - ${data.date}`}
             isOpen={isOpen}
             onClose={onClose}
-            width='40%'
-            customClassName='!rounded-3xl !h-[70vh]'
+            width="40%"
+            customClassName="!rounded-3xl !h-[70vh]"
             hideFooter
         >
             <div className="flex flex-col gap-2">
-                {data.events.map(event => {
+                {data.events.map((event) => {
                     console.log("🚀 ~ AllEventsModal ~ event:", event);
                     return (
                         <EventCard

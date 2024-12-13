@@ -28,7 +28,9 @@ export const endpoints: EndpointProps = {
         getLearnerSessions: (id: string) => `session/learner/${id}`,
         cancelSession: (id: string) => `session/${id}`,
         getApprovalNotifications: (id: string, status: string) =>
-            `session/volunteer/${id}/${status}`,
+            `session/volunteer/${id}?status=${status}`,
+        getCalendarEvents: (id: string, month?: string) =>
+            `session/volunteer/${id}${month ? `?month=${month}` : ""}`,
         updateNotificationStatus: (id: string) => `session/${id}`,
     },
     post: {

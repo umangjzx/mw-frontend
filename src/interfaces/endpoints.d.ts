@@ -28,6 +28,7 @@ type EndpointProps = {
         cancelSession: (id: string) => string;
         getApprovalNotifications: (id: string, status: string) => string;
         updateNotificationStatus: (id: string) => string;
+        getCalendarEvents: (id: string, month?: string) => string;
     };
     resources: {
         create: string;

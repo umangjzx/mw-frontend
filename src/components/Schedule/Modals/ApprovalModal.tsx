@@ -64,7 +64,7 @@ const ApprovalModal: React.FC<ApprovalModalProps> = ({ isOpen, onClose }) => {
             title="Approval Notifications"
             onClose={onClose}
             isOpen={isOpen}
-            onSave={handleSave}
+            isNeedButton={false}
         >
             <div className="flex flex-col gap-4 px-5 mt-7">
                 {isLoading ? (

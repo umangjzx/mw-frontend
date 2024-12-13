@@ -28,7 +28,7 @@ export default function SchedulePage() {
     return (
         <div className="w-full h-full">
             <AddNewMeetingModal isOpen={isOpen} onClose={handleModal} />
-            <Calendar />
+            <Calendar events={[]} />
         </div>
     );
 }
