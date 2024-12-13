@@ -1,55 +1,110 @@
+"use client";
+
 import DetailsSection from "@/components/common/DetailsSection";
 import { Input } from "@/components/common/Input";
 import CenterModal from "@/components/common/Modals/CenterModal";
 import { LearnerFeedbackFormConstants } from "@/constants/schedule";
 import { cn } from "@/utils/merge-class";
-
-const FeedbackModal = ({ isOpen, mode = "view" }: FeedbackModalProps) => {
+import { useEffect, useState } from "react";
+import { useAppStore } from "@/store/useAppStore";
+import { useRouter, useSearchParams } from "next/navigation";
+import { POST_API } from "@/api/request";
+import { endpoints } from "@/api/constants";
+import Cookies from "js-cookie";
+const FeedbackModal = ({ isOpen, mode = "view", onClose, onSubmit, data }: FeedbackModalProps) => {
+    const [formData, setFormData] = useState<any>({});
+    const { learnerName, volunteerName } = useAppStore();
     const feedbackTitle = mode === "edit" ? "Edit Feedback" : "Please Fill the Feedback";
-    const details = {
-        Name: "John Doe",
-        Phone: "+1234567890",
-        Address: "1234 ",
+    const router = useRouter();
+    const [openModal, setOpenModal] = useState(false);
+    const searchParams = useSearchParams();
+    const modal = searchParams.get("modal");
+    const { currentMonth } = useAppStore();
+    const role = Cookies.get("role");
+
+    useEffect(() => {
+        if (modal === "feedback") {
+            setOpenModal(true);
+        } else {
+            setOpenModal(false);
+        }
+    }, [modal]);
+
+    const eventDetails = {
+        Name: role === "volunteer" ? volunteerName : learnerName,
+        Date: new Date().toLocaleDateString("en-GB"),
+        Time: new Date().toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true,
+        }),
     };
 
+    const [extendedData, setExtendedData] = useState<any>([]);
+    console.log(extendedData, "extendedData for feedback");
+
+    useEffect(() => {
+        if (data) {
+            setExtendedData(data?._def?.extendedProps);
+        }
+    }, [data]);
+
     const handleSubmit = () => {
-        console.log("Proceed");
+        const submissionData = {
+            ...formData,
+            image: [
+                {
+                    image_url: "",
+                    image_id: "",
+                },
+            ],
+        };
+        onSubmit(submissionData);
     };
 
     const handleCancel = () => {};
 
+    const handleChange = (key: string, value: any) => {
+        setFormData((prev: any) => ({ ...prev, [key]: value }));
+    };
 
-   const buttonProps = {
-    primary: {
-        onClick: handleSubmit,
-        title: mode === "view" ? "Edit" : "Submit",
-        customClassName: "!rounded-xl hover:!bg-black hover:!text-white",
-    },
-    secondary: {
-        onClick: handleCancel,
-        title: mode === "view" ? "Delete" : "Cancel",
-        btnVariant: "secondary" as const,
-        customClassName: cn(
-            mode === "view" ? "!text-error !bg-error-light !border-none" : "!bg-transparent !text-black",
-            "!rounded-xl"
-        ),
-    }
-   }
+    const buttonProps = {
+        primary: {
+            onClick: handleSubmit,
+            title: mode === "view" ? "Edit" : "Submit",
+            customClassName: "!rounded-xl hover:!bg-black hover:!text-white",
+        },
+        secondary: {
+            onClick: handleCancel,
+            title: mode === "view" ? "Delete" : "Cancel",
+            btnVariant: "secondary" as const,
+            customClassName: cn(
+                mode === "view"
+                    ? "!text-error !bg-error-light !border-none"
+                    : "!bg-transparent !text-black",
+                "!rounded-xl"
+            ),
+        },
+    };
 
     return (
         <CenterModal
             title={feedbackTitle}
-            isOpen={isOpen}
-            onClose={handleCancel}
-            topContent={<DetailsSection data={details} />}
-            width='40%'
-            customClassName='max-h-[80vh] !rounded-2xl overflow-hidden'
+            isOpen={openModal}
+            onClose={onClose}
+            topContent={<DetailsSection data={eventDetails} />}
+            width="40%"
+            customClassName="max-h-[80vh] !rounded-2xl overflow-hidden"
             secondaryActionProps={buttonProps.secondary}
             primaryActionProps={buttonProps.primary}
         >
             {mode !== "view" ? (
                 LearnerFeedbackFormConstants.map((field: any) => (
-                    <Input key={field.name} {...field} onChange={() => {}} />
+                    <Input
+                        key={field.name}
+                        {...field}
+                        onChange={(value: any) => handleChange(field.name, value)}
+                    />
                 ))
             ) : (
                 <div>View</div>

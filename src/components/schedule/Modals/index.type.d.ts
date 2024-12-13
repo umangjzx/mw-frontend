@@ -1,6 +1,9 @@
 type FeedbackModalProps = {
     isOpen: boolean;
-    mode: "edit" | "create" | "view";
+    mode?: "view" | "edit" | "create";
+    onClose: () => void;
+    onSubmit: (data: any) => void;
+    data: EventApi | null;
 };
 
 type AllEventsModalProps = {

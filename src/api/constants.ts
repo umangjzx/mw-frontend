@@ -28,7 +28,11 @@ export const endpoints: EndpointProps = {
         getLearnerSessions: (id: string) => `session/learner/${id}`,
         cancelSession: (id: string) => `session/${id}`,
         getApprovalNotifications: (id: string, status: string) =>
-            `session/volunteer/${id}/${status}`,
+            `session/volunteer/${id}?status=${status}`,
+        getCalendarEvents: (id: string, month?: string, status?: string) =>
+            `session/volunteer/${id}${month ? `?month=${month}` : ""}${
+                status ? `?status=${status}` : ""
+            }`,
         updateNotificationStatus: (id: string) => `session/${id}`,
     },
     post: {
@@ -43,5 +47,15 @@ export const endpoints: EndpointProps = {
     common: (path: CommonPath) => `common/${path}`,
     resources: {
         create: "resource",
+    },
+    volunterFeedback: {
+        create: "feedback/volunteer",
+        get: "feedback/volunteer",
+        update: "feedback/volunteer",
+    },
+    learnerFeedback: {
+        create: "feedback/learner",
+        get: "feedback/learner",
+        update: "feedback/learner",
     },
 };

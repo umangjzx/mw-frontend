@@ -4,6 +4,7 @@ type EventCardProps = {
     onEventClick?: (event: any) => void;
     style?: any;
     className?: string;
+    status?: string;
 };
 
 type DayCellContentProps = {
@@ -11,4 +12,4 @@ type DayCellContentProps = {
     icon: string;
 };
 
-type ModalType = "events" | "alert" | null;
+type ModalType = "events" | "alert" | "feedback" | null;

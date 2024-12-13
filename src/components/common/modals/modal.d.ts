@@ -36,6 +36,7 @@ interface SideModalProps {
     onCancel?: () => void;
     isOpen?: boolean;
     isDisabled?: boolean;
+    isNeedButton?: boolean;
 }
 
 type ShowModalType = "view" | "edit" | "create" | null;

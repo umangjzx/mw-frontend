@@ -6,6 +6,7 @@ import { IoMdCheckmark } from "react-icons/io";
 import { MdClose } from "react-icons/md";
 import { PUT_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface NotificationCardProps {
     data: {
@@ -23,6 +24,8 @@ interface NotificationCardProps {
 }
 
 const NotificationCard: React.FC<NotificationCardProps> = ({ data }) => {
+    const queryClient = useQueryClient();
+
     const formatTime = (start: string, end: string) => {
         if (!start || !end) return "Time not set";
 
@@ -40,9 +43,13 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ data }) => {
     const handleNotificationStatus = (status: string, sessionId: string) => {
         PUT_API(endpoints.session.updateNotificationStatus(sessionId), {
             status: status,
-        }).catch((err) => {
-            console.log("Error: ", err);
-        });
+        })
+            .then(() => {
+                queryClient.invalidateQueries({ queryKey: ["approval-notifications"] });
+            })
+            .catch((err) => {
+                console.log("Error: ", err);
+            });
     };
 
     return (

@@ -34,7 +34,11 @@ const Header = (props: Props) => {
                 rootClassName="bg-transparent border-none font-medium shadow-none"
             />
             <div className="flex items-center gap-4">
-                <MonthYearSlider />
+                <MonthYearSlider
+                    onChange={(date) => {
+                        console.log(date, "date from month year slider");
+                    }}
+                />
                 <Button
                     onClick={() => {}}
                     title="Today"

@@ -6,6 +6,7 @@ import { ResourceFormConstants } from "@/constants/resources";
 import { cn } from "@/utils/merge-class";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { extractLabelValue } from "@/utils/format";
 
 type ResourceModalProps = {
     isOpen: boolean;
@@ -20,21 +21,23 @@ const ResourceModal = ({ isOpen, mode = "view", onClose }: ResourceModalProps) =
 
     const getCategories = async () => {
         const response = await GET_API(endpoints.common("categories"));
-        const categories = response.data.map((item: any) => ({
-            label: item.category_name,
-            value: item.category_id,
-        }));
-        return categories;
+        return extractLabelValue({
+            data: response.data,
+            labelKey: "category_name",
+            valueKey: "category_id",
+        });
     };
 
     const getSkills = async () => {
         const response = await GET_API(endpoints.common("skills"));
-        const skills = response.data.map((item: any) => ({
-            label: item.skill_name,
-            value: item.skill_name,
-            id: item.skill_id,
-        }));
-        return skills;
+        return extractLabelValue({
+            data: response.data,
+            labelKey: "skill_name",
+            valueKey: "skill_name",
+            additionalKeys: {
+                id: "skill_id",
+            },
+        });
     };
 
     const {
