@@ -51,7 +51,7 @@ const RadioInput: React.FC<RadioInputProps> = ({
             disabled={disabled}
             className={inputClassName}
         >
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full h-full">
                 {options.map((option) => (
                     <div
                         key={option.value}

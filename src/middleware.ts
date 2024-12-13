@@ -10,6 +10,11 @@ export default function middleware(req: NextRequest) {
         return NextResponse.redirect(absoluteURL.toString());
     }
 
+    if(req.nextUrl.pathname === "/") {
+        const absoluteURL = new URL("/login", req.nextUrl.origin);
+        return NextResponse.redirect(absoluteURL.toString());
+    }
+
     if (isAuthenticated && protectedRoutes.includes(req.nextUrl.pathname) && req.nextUrl.pathname !== "/") {
         const path = req.nextUrl.pathname.replace("/", "");
         const absoluteURL = new URL(`/${path}/schedule`, req.nextUrl.origin);

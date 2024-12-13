@@ -111,6 +111,44 @@ type TimeRangeValue = {
     to: string;
 };
 
+type BaseAsyncSelectProps = BaseInputProps & {
+    inputType: "async-select";
+    variant: "multi" | "single";
+    creatable?: boolean;
+    endpoint: CommonPath;
+    responseAsLabel: string;
+    responseAsValue: string | string[] | "payload" | null;
+    onError?: (error: Error) => void;
+    onChange: (value: any) => void;
+    value: any;
+    placeholder?: string;
+};
+
+type CreatableSelectProps = BaseAsyncSelectProps & {
+    creatable: true;
+    onCreate: (value: string) => void;
+};
+
+type AsyncSelectProps = BaseAsyncSelectProps | CreatableSelectProps ;
+
+
+type ContactInputProps = BaseInputProps & {
+    inputType: "contact-input";
+    value: {
+        country_code: string;
+        number: string;
+    };
+    onChange: (value: { country_code: string; number: string }) => void;
+};
+
+type TimeRangeInputProps = BaseInputProps & {
+    inputType: "timerange";
+    onChange: (value: any) => void;
+    fromPlaceholder?: string;
+    toPlaceholder?: string;
+    value: any
+};
+
 type InputProps =
     | TextInputProps
     | TextAreaInputProps
@@ -122,4 +160,6 @@ type InputProps =
     | UploadProps
     | MultiSelectInputProps
     | SearchInputProps
+    | AsyncSelectProps
+    | ContactInputProps
     | TimeRangeInputProps;

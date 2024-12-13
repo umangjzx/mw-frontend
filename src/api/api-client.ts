@@ -52,8 +52,8 @@ axiosInstance.interceptors.response.use(
                 case 401:
                     apiError.message = "Unauthorized access";
                     // Handle token expiration
-                    Cookies.remove("access_token");
-                    window.location.href = "/";
+                    // Cookies.remove("access_token");
+                    // window.location.href = "/";
                     // You might want to redirect to login here
                     break;
                 case 403:

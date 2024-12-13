@@ -12,7 +12,8 @@ type FormField = {
         | "multiselect"
         | "upload"
         | "search"
-        | "async-select";
+        | "async-select"
+        | "contact-input";
     name?: string;
     placeholder?: string;
     required?: boolean;
@@ -25,6 +26,10 @@ type FormField = {
     children?: FormField[];
     sublabelAlignment?: "right" | "bottom";
     title?: string;
+    endpoint?: string;
+    responseAsLabel?: string;
+    responseAsValue?: string[];
+    variant?: "multi" | "single";
 } & Partial<BaseFormField>;
 
 type BaseFormField = Omit<InputProps, "value" | "onChange" | "inputType"> & {
