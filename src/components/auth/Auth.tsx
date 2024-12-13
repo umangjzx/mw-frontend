@@ -5,7 +5,7 @@ import { isAuthenticated } from "@/utils/auth";
 
 export default function isAuth (Component: any) {
     return function IsAuth (props: any) {
-        const auth = isAuthenticated
+        const auth = isAuthenticated();
 
         useEffect(() => {
             if (!auth) {

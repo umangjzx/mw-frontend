@@ -5,8 +5,8 @@ import { endpoints } from "@/api/constants";
 import { GET_API, POST_API } from "@/api/request";
 import Cookies from "js-cookie";
 import { useQueryState } from "nuqs";
-import { useSendData } from "@/hooks/useReactQuery";
 import Button from "../common/Button";
+import { useQuery } from "@tanstack/react-query";
 
 const LoginPage = () => {
     const router = useRouter();
@@ -20,6 +20,11 @@ const LoginPage = () => {
                 signup_type: role,
             };
             const response = await POST_API(endpoints.user.signIn, payload);
+
+            if (response.status === 200 || response.status === 201) {
+                handleSignUpSuccess(response?.data);
+            }
+
             return response?.data;
         } catch (error) {
             console.error("Error signing up:", error);
@@ -33,15 +38,25 @@ const LoginPage = () => {
         Cookies.set("token", data.access_token);
         Cookies.set("refresh_token", data.refresh_token);
         Cookies.set("role", role);
-        router.push("/onboarding");
+        Cookies.set("onboarded_status", data.onboarded_status);
+
+        handleNavigation(data);
     };
 
-    const { mutate: signUp, isPending } = useSendData({
-        fn: handleSignUp,
-        success: handleSignUpSuccess,
-        error: (error: any) => {
-            console.error("Error signing up:", error);
-        },
+    const handleNavigation = (data: any) => {
+        if (data.onboarded_status === "verification_pending") {
+            router.push("/onboarding/verification");
+        } else if (data.onboarded_status === "details_pending") {
+            router.push("/onboarding");
+        } else if (data.onboarded_status === "verification_completed") {
+            router.push(`/${role}`);
+        }
+    };
+
+    const { data, isLoading } = useQuery({
+        queryKey: ["onboarded_status"],
+        queryFn: handleSignUp,
+        enabled: !!code,
     });
 
     useEffect(() => {
@@ -50,11 +65,6 @@ const LoginPage = () => {
             setRole(savedRole);
         }
     }, []);
-
-    useEffect(() => {
-        if (!code) return;
-        signUp(code);
-    }, [signUp, code]);
 
     const handleLogin = () => {
         GET_API(endpoints.auth.oauth2callback).then((res: any) => {
@@ -103,7 +113,7 @@ const LoginPage = () => {
             <Button
                 onClick={handleLogin}
                 title={`Login as ${role}`}
-                loading={isPending}
+                loading={isLoading}
                 rootClassName='bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors duration-300 px-7'
             />
         </div>

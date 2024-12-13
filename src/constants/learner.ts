@@ -479,3 +479,10 @@ export const LearnerFormSections: FormSectionConfig[] = [
         fields: AdditionalInfoFields,
     },
 ];
+
+
+export const LearnerThankyouCardConstants = {
+    title: "Thank You for Enrolling in Melody Wings!",
+    description:
+        "We’re excited to have you join our community. Our team will review your details and get back to you shortly with the next steps. We appreciate your trust in us, and we look forward to helping you on this learning journey.",
+};
