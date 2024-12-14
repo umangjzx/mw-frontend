@@ -29,7 +29,7 @@ export default function VerificationPage() {
         queryFn: () =>
             GET_API(endpoints.onboarding.getOnboardingStatus(id as string)).then((res) => res.data),
         enabled: !!id,
-        refetchInterval: 60000,
+        refetchInterval: 30000,
         onSuccess: (data: OnboardingStatus) => {
             if (data?.status === "verification_completed") {
                 router.push(`/${role}/schedule`);
