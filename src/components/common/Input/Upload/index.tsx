@@ -12,7 +12,7 @@ const Uploader = ({ ...props }: UploaderProps) => {
     const getImageData = async (baseImageString: string) => {
         let formData = new FormData();
         formData.append("image", baseImageString);
-        const response = await POST_API(endpoints.common("media-uploader"), formData);
+        const response = await POST_API(endpoints.common("media_uploader"), formData);
         return response;
     };
 
@@ -50,7 +50,7 @@ const Uploader = ({ ...props }: UploaderProps) => {
                 console.log(file, "file image");
                 const baseImageString = await convertToBase64(file);
                 console.log(baseImageString, "baseImageString");
-                return Promise.all([handleUpload(baseImageString)]);
+                return Promise.all([handleUpload(file)]);
             })
         );
         if (props.variant === "profile-image" || props.maxFiles === 1 || props.variant === "file") {
