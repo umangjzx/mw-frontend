@@ -13,7 +13,7 @@ type AllEventsModalProps = {
     data: {
         events: any[];
         date: string;
-        w;
+        w?: any;
     };
     onEventClick: (event: any) => void;
 };

@@ -183,17 +183,14 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
 
     const handleSave = async () => {
         const formattedData = formatScheduleForAPI();
-        console.log(deletedSlots, "deletedSlots save");
-
         const payload = {
             deleted_slots: deletedSlots,
             slots: formattedData,
         };
 
-        console.log(payload, "payload");
         PUT_API(endpoints.volunteer_slot.update, payload).then((res) => {
-            console.log(res, "res");
             setDeletedSlots([]);
+            onClose();
         });
     };
 

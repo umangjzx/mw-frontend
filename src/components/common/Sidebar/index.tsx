@@ -9,9 +9,12 @@ import {
     ResourceIcon,
     SignOutIcon,
 } from "@/assets/icons";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 const Sidebar = () => {
-    const role = localStorage.getItem("role");
+    const role = Cookies.get("role");
+    const router = useRouter();
 
     const baseLinksData = [
         {
@@ -51,6 +54,12 @@ const Sidebar = () => {
     // Combine all links in the desired order
     const linksData = [...baseLinksData, roleBasedLink, ...remainingLinks];
 
+    const handleSignOut = () => {
+        Cookies.remove("role");
+        Cookies.remove("token");
+        router.push("/");
+    };
+
     return (
         <div className="bg-white w-full h-screen flex flex-col items-center justify-between p-6">
             <div>
@@ -65,7 +74,13 @@ const Sidebar = () => {
                     ))}
                 </div>
             </div>
-            <SectionCard href="/" text="Sign Out" icon={<SignOutIcon />} textColor="#B91C1C" />
+            <SectionCard
+                href="/"
+                text="Sign Out"
+                icon={<SignOutIcon />}
+                textColor="#B91C1C"
+                onClick={handleSignOut}
+            />
         </div>
     );
 };

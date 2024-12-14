@@ -17,8 +17,11 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
     const { form, onSubmit, isLoading } = useOnboardingForm(schema);
     const {
         control,
-        formState: { errors },
+        formState: { errors, isValid, dirtyFields },
     } = form;
+
+
+    console.log(dirtyFields, errors, "dirtyFields" , control._formValues);
 
     return (
         <form onSubmit={onSubmit} className='w-full pb-16'>

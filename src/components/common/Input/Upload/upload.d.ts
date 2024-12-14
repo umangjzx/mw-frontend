@@ -1,10 +1,5 @@
-type UploaderProps = ImageUploadProps & {
+type UploaderProps = UploadProps & {
     handleRemove: (index: number) => void;
     handleClick: () => void;
+    isLoading?: boolean;
 };
-
-interface UploadFile {
-    url: string;
-    file: File;
-    base64?: string;
-}

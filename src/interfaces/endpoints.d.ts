@@ -1,6 +1,7 @@
 type EndpointProps = {
     onboarding: {
         update: (role: "volunteer" | "learner") => `onboarding/${typeof role}`;
+        getOnboardingStatus: (id: string) => string;
     };
     auth: {
         oauth2callback: string;
@@ -55,5 +56,4 @@ type EndpointProps = {
     };
 };
 
-type CommonPath = "skills" | "languages" | "subjects" | "media" | "categories" | "media-uploader";
-type CommonPath = "skills" | "languages" | "subjects" | "media" | "categories" | "media-uploader";
+type CommonPath = "skills" | "languages" | "subjects" | "media" | "categories" | "media_uploader";

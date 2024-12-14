@@ -1,4 +1,62 @@
 import moment from "moment";
+import { GET_API } from "@/api/request";
+import { endpoints } from "@/api/constants";
+
+interface EventResponse {
+    session_title: string;
+    session_date: string;
+    session_start_time: string;
+    session_end_time: string;
+    session_description: string;
+    meet_link: string;
+    session_id: string;
+    volunteer_id: string;
+    learner_id: string;
+    learner_first_name: string;
+    learner_last_name: string;
+    learner_picture: string;
+    status: string;
+}
+
+export const getCalendarEvents = async (
+    userId: string,
+    userType: "volunteer" | "learner",
+    currentMonth?: string
+) => {
+    const monthParam = currentMonth
+        ? moment(currentMonth).format("YYYY-MM")
+        : moment().format("YYYY-MM");
+
+    const endpoint = endpoints.session.getCalendarEvents(userId, monthParam);
+
+    const response = await GET_API(endpoint);
+
+    return (
+        response?.data?.items?.map((item: EventResponse) => ({
+            title: item.session_title,
+            date: item.session_date,
+            start: moment(`${item.session_date} ${item.session_start_time}`).format(),
+            end: moment(`${item.session_date} ${item.session_end_time}`).format(),
+            backgroundColor: "var(--success-light-color)",
+            classNames: ["event-item", "rounded-md", "px-3", "py-1", "my-0.5"],
+            textColor: "var(--success-color)",
+            borderColor: "var(--success-color)",
+            status: item.status,
+            extendedProps: {
+                description: item.session_description,
+                meetLink: item.meet_link,
+                sessionId: item.session_id,
+                volunteerId: item.volunteer_id,
+                learner: {
+                    id: item.learner_id,
+                    firstName: item.learner_first_name,
+                    lastName: item.learner_last_name,
+                    picture: item.learner_picture,
+                },
+            },
+        })) || []
+    );
+};
 
 export const getTime = (date: Date): string => {
     if (!date) return "";

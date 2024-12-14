@@ -134,7 +134,7 @@ export const ContactDetailsFields: FormField[] = [
         inputType: "text",
         placeholder: "Enter Email ID",
         gridCols: 1,
-        disabled: true,
+        disabled: false,
     },
     {
         id: "contact_number",
@@ -161,8 +161,8 @@ const CriminalBackgroundCheckFields: FormField[] = [
         label: "Have you ever been convicted of a felony or misdemeanor?",
         inputType: "radio",
         options: [
-            { label: "Yes", value: "yes" },
-            { label: "No", value: "no" },
+            { label: "Yes", value: true },
+            { label: "No", value: false },
         ],
         gridCols: 2,
     },
@@ -171,8 +171,8 @@ const CriminalBackgroundCheckFields: FormField[] = [
         label: "Have you ever been involved in any criminal activity or legal proceedings, including pending charges or arrests?",
         inputType: "radio",
         options: [
-            { label: "Yes", value: "yes" },
-            { label: "No", value: "no" },
+            { label: "Yes", value: true },
+            { label: "No", value: false },
         ],
         gridCols: 2,
     },
@@ -181,8 +181,8 @@ const CriminalBackgroundCheckFields: FormField[] = [
         label: "Have you been convicted of any crimes involving minors, abuse, or neglect?",
         inputType: "radio",
         options: [
-            { label: "Yes", value: "yes" },
-            { label: "No", value: "no" },
+            { label: "Yes", value: true },
+            { label: "No", value: false },
         ],
         gridCols: 2,
     },
@@ -201,8 +201,8 @@ const SexOffenderCheckFields: FormField[] = [
         label: "Are you listed on any state or national sex offender registries?",
         inputType: "radio",
         options: [
-            { label: "Yes", value: "yes" },
-            { label: "No", value: "no" },
+            { label: "Yes", value: true },
+            { label: "No", value: false },
         ],
         gridCols: 2,
     },

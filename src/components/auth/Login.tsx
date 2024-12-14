@@ -39,7 +39,6 @@ const LoginPage = () => {
         Cookies.set("refresh_token", data.refresh_token);
         Cookies.set("role", role);
         Cookies.set("onboarded_status", data.onboarded_status);
-
         handleNavigation(data);
     };
 
@@ -49,7 +48,7 @@ const LoginPage = () => {
         } else if (data.onboarded_status === "details_pending") {
             router.push("/onboarding");
         } else if (data.onboarded_status === "verification_completed") {
-            router.push(`/${role}`);
+            router.push(`/${role}/schedule`);
         }
     };
 
@@ -84,10 +83,10 @@ const LoginPage = () => {
     };
 
     return (
-        <div className='flex flex-col items-center justify-center h-screen gap-4'>
-            <h1 className='text-2xl font-bold'>Login Page</h1>
+        <div className="flex flex-col items-center justify-center h-screen gap-4">
+            <h1 className="text-2xl font-bold">Login Page</h1>
 
-            <div className='flex items-center gap-4 bg-gray-100 p-2 rounded-lg'>
+            <div className="flex items-center gap-4 bg-gray-100 p-2 rounded-lg">
                 <button
                     onClick={() => handleSetRole("volunteer")}
                     className={`px-4 py-2 rounded-md bg-primary  transition-colors duration-300 ${
@@ -114,7 +113,7 @@ const LoginPage = () => {
                 onClick={handleLogin}
                 title={`Login as ${role}`}
                 loading={isLoading}
-                rootClassName='bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors duration-300 px-7'
+                rootClassName="bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors duration-300 px-7"
             />
         </div>
     );
