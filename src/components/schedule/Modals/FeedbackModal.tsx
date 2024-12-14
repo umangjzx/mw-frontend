@@ -4,31 +4,17 @@ import DetailsSection from "@/components/common/DetailsSection";
 import { Input } from "@/components/common/Input";
 import CenterModal from "@/components/common/Modals/CenterModal";
 import { LearnerFeedbackFormConstants } from "@/constants/schedule";
-import { cn } from "@/utils/merge-class";
-import { useEffect, useState } from "react";
 import { useAppStore } from "@/store/useAppStore";
-import { useRouter, useSearchParams } from "next/navigation";
-import { POST_API } from "@/api/request";
-import { endpoints } from "@/api/constants";
+import { cn } from "@/utils/merge-class";
 import Cookies from "js-cookie";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 const FeedbackModal = ({ isOpen, mode = "view", onClose, onSubmit, data }: FeedbackModalProps) => {
     const [formData, setFormData] = useState<any>({});
     const { learnerName, volunteerName } = useAppStore();
     const feedbackTitle = mode === "edit" ? "Edit Feedback" : "Please Fill the Feedback";
-    const router = useRouter();
-    const [openModal, setOpenModal] = useState(false);
     const searchParams = useSearchParams();
-    const modal = searchParams.get("modal");
-    const { currentMonth } = useAppStore();
     const role = Cookies.get("role");
-
-    useEffect(() => {
-        if (modal === "feedback") {
-            setOpenModal(true);
-        } else {
-            setOpenModal(false);
-        }
-    }, [modal]);
 
     const eventDetails = {
         Name: role === "volunteer" ? volunteerName : learnerName,
@@ -90,7 +76,7 @@ const FeedbackModal = ({ isOpen, mode = "view", onClose, onSubmit, data }: Feedb
     return (
         <CenterModal
             title={feedbackTitle}
-            isOpen={openModal}
+            isOpen={isOpen}
             onClose={onClose}
             topContent={<DetailsSection data={eventDetails} />}
             width="40%"

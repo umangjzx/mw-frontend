@@ -1,6 +1,7 @@
 export const endpoints: EndpointProps = {
     onboarding: {
         update: (role: "volunteer" | "learner") => `onboarding/${role}`,
+        getOnboardingStatus: (id: string) => `onboarding/status/${id}`,
     },
     auth: {
         oauth2callback: "auth/oauth2callback",

@@ -1,35 +1,25 @@
 "use client";
+import { useAppStore } from "@/store/useAppStore";
 import { getTime } from "@/utils/calender";
-import {
-    DateSelectArg,
-    EventApi,
-    EventClickArg,
-    EventRemoveArg,
-    formatDate,
-} from "@fullcalendar/core";
+import { EventApi, EventClickArg, formatDate } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import moment from "moment";
-import { useEffect, useState, useRef } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import MeetingPreviewModal from "../MeetingPreviewModal";
-import { AlertModal, AllEventsModal, FeedbackModal } from "../Modals";
+import { AlertModal, AllEventsModal } from "../Modals";
 import DayCellContent from "./DayCellContent";
 import EventCard from "./EventCard";
 import "./styles.css";
-import { Dayjs } from "dayjs";
-import { useSearchParams } from "next/navigation";
-import { useAppStore } from "@/store/useAppStore";
 
 interface CalendarProps {
     events: any;
-    // currentDate?: Dayjs;
 }
 
 const Calendar: React.FC<CalendarProps> = ({ events }) => {
-    console.log("🚀 ~ Calendar ~ events:", events);
-    const [previewMeetingData, setPreviewMeetingData] = useState<any>(events);
     const [showModal, setShowModal] = useState<ModalType>(null);
     const [currentEventData, setCurrentEventData] = useState<{
         events: EventApi[];
@@ -55,31 +45,6 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
         }
     }, [modalParam]);
 
-    const handleDateSelect = (selectInfo: DateSelectArg) => {
-        const title = prompt("Please enter a new title for your event");
-        const calendarApi = selectInfo.view.calendar;
-
-        calendarApi.unselect();
-
-        if (title) {
-            calendarApi.addEvent({
-                title,
-                start: selectInfo.startStr,
-                end: selectInfo.endStr,
-                allDay: selectInfo.allDay,
-                backgroundColor: "var(--success-light-color)",
-                classNames: ["event-item", "rounded-md", "capitalize", "px-3", "py-1", "my-0.5"],
-                textColor: "var(--success-color)",
-                borderColor: "var(--success-color)",
-            });
-        }
-    };
-
-    const handleEventRemove = (removeInfo: EventRemoveArg) => {
-        alert("Are you sure you want to delete this event?");
-    };
-
-    //TODO: Fix the preview modal position
     const handleEventClick = (clickInfo: EventClickArg) => {
         const rect = clickInfo.el.getBoundingClientRect();
 
@@ -121,8 +86,6 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
     const renderEventContent = (eventInfo: any) => {
         const startTime = moment(eventInfo.event.start).format("h:mm A");
         const endTime = moment(eventInfo.event.end).format("h:mm A");
-        console.log(eventInfo.event._def.extendedProps.status, "status from event card");
-
         return (
             <EventCard
                 style={eventInfo.event._def.ui}
@@ -150,8 +113,6 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
 
     const handleMoreLinkClick = (arg: any) => {
         arg.jsEvent.preventDefault();
-
-        console.log("🚀 ~ handleMoreLinkClick ~ arg:", arg);
 
         const dateEvents = arg.allSegs.map((seg: any) => ({
             ...seg.event._def,
@@ -236,14 +197,11 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
                     ref={calendarRef}
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                     initialView="dayGridMonth"
-                    editable={true}
-                    selectable={true}
-                    selectMirror={true}
+                    editable={false}
+                    selectable={false}
+                    selectMirror={false}
                     dayMaxEvents={true}
                     weekends={true}
-                    select={handleDateSelect}
-                    eventClick={handleEventClick}
-                    eventRemove={handleEventRemove}
                     headerToolbar={false}
                     dayHeaderContent={customDayHeaderContent}
                     eventContent={renderEventContent}

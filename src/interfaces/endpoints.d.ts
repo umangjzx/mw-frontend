@@ -1,6 +1,7 @@
 type EndpointProps = {
     onboarding: {
         update: (role: "volunteer" | "learner") => `onboarding/${typeof role}`;
+        getOnboardingStatus: (id: string) => string;
     };
     auth: {
         oauth2callback: string;
