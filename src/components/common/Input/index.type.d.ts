@@ -78,15 +78,10 @@ type RadioInputProps = BaseInputProps & {
     variant?: RadioVariant;
 };
 
-type File = {
-    url: string;
-    file?: File;
-};
-
 type UploadProps = BaseInputProps & {
     inputType: "upload";
-    value: File[];
-    onChange: (value: File[]) => void;
+    value: any;
+    onChange: (value: any) => void;
     maxFiles?: number;
     inputClassName?: string;
     variant?: "cover-image" | "file" | "profile-image";

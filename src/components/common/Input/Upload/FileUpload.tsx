@@ -1,36 +1,47 @@
 import Button from "../../Button";
 
 const FileUpload = ({ ...props }: UploaderProps) => {
-    const { handleClick, handleRemove, value = [] } = props;
+    const { handleClick, handleRemove, value = null, isLoading = false } = props;
 
     const getTitle = () => {
         if (props.fileType === "image/*") {
             return "Upload Image";
         } else if (props.fileType === "video/*") {
             return "Upload Video";
-        } else if (props.fileType === "audio/*") {
-            return "Upload Audio";
+        } else if (props.fileType === "application/*") {
+            return "Upload Document";
         }
         return "Upload Document";
     };
 
+    const getValue = () => {
+        if (props.fileType === "image/*") {
+            return value?.image_id;
+        } else if (props.fileType === "video/*") {
+            return value?.video_id;
+        } else if (props.fileType === "application/*") {
+            return value?.document_id;
+        }
+        return null
+    };
+
     return (
         <div className='flex w-full flex-wrap gap-4'>
-            {value.length === 0 ? (
+            {!getValue() ? (
                 <Button
                     size='small'
                     title={getTitle()}
                     btnVariant='secondary'
                     customClassName='!text-xs !text-white !border-black rounded-lg !bg-black'
                     onClick={handleClick}
+                    loading={isLoading}
                 />
             ) : (
-                // value?.map((file: File, index: number) => <div key={index}>{file.name}</div>)
-                <div>
-                    {"url"}
+                <div className='flex items-center flex-row-reverse gap-2 text-xs'>
+                    {getValue()}
                 </div>
             )}
-            {value?.length > 0 && (
+            {getValue() && (
                 <div className='flex items-center flex-row-reverse gap-2'>
                     <Button
                         size='small'
@@ -38,6 +49,7 @@ const FileUpload = ({ ...props }: UploaderProps) => {
                         btnVariant='secondary'
                         customClassName='!text-xs !text-black !border-black !bg-white'
                         onClick={handleClick}
+                        loading={isLoading}
                     />
                     <Button
                         size='small'
@@ -45,6 +57,7 @@ const FileUpload = ({ ...props }: UploaderProps) => {
                         btnVariant='secondary'
                         customClassName='!text-xs !bg-white !border !border-error !text-red-500'
                         onClick={() => handleRemove(0)}
+                        loading={isLoading}
                     />
                 </div>
             )}

@@ -2,34 +2,35 @@ import { z } from "zod";
 
 export const volunteerFormSchema = z.object({
     volunteer_education: z.string().optional(),
-    volunteer_first_name: z.string().min(1, "First name is required").optional(),
-    volunteer_last_name: z.string().min(1, "Last name is required").optional(),
+    volunteer_first_name: z.string().optional(),
+    volunteer_last_name: z.string().optional(),
     volunteer_birth_date: z.any().optional(),
-    volunteer_description: z.string().min(1, "Description is required").optional(),
+    volunteer_description: z.string().optional(),
     volunteer_parent_email: z.string().email("Invalid email").optional(),
-    volunteer_gender: z.string().min(1, "Gender is required").optional(),
-    volunteer_higher_education: z.string().min(1, "Education is required").optional(),
+    volunteer_gender: z.string().optional(),
+    volunteer_higher_education: z.string().optional(),
     volunteer_languages: z.array(z.any()).optional(),
-    education_details: z.string().min(1, "Education details is required").optional(),
-    volunteer_experience: z.string().min(1, "Experience is required").optional(),
-    consented_from_parent: z.boolean().optional().default(false),
+    education_details: z.string().optional(),
+    volunteer_experience: z.string().optional(),
+    consented_from_parent: z.boolean().optional(),
     volunteer_skills: z
         .array(
             z.object({
-                skill_name: z.string().min(1, "Skill is required"),
-                skill_id: z.string().min(1, "Skill ID is required"),
+                skill_name: z.string().optional(),
+                skill_id: z.string().optional(),
             })
         )
         .optional(),
+
     // Contact Details validations
     volunteer_contact_details: z
         .object({
-            email: z.string().email("Invalid email").default("").optional(),
+            email: z.string().email("Invalid email").optional(),
             contact_number: z.object({
-                number: z.string().min(1, "Contact number is required").optional(),
-                country_code: z.string().min(1, "Country code is required").optional(),
-            }),
-            zip_code: z.string().min(1, "Zip code is required").optional(),
+                number: z.string().optional(),
+                country_code: z.string().optional(),
+            }).optional(),
+            zip_code: z.string().optional(),
         })
         .optional(),
 
@@ -38,81 +39,80 @@ export const volunteerFormSchema = z.object({
         .object({
             //1.Criminal Background Check Details
             criminal_background_check_details: z.object({
-                convicted_of_a_felony: z.boolean().optional().default(false),
-                involved_in_criminal_activity: z.boolean().optional().default(false),
-                convicted_of_a_crime: z.boolean().optional().default(false),
-                description: z.string().optional().default(""),
-            }),
+                convicted_of_a_felony: z.boolean().optional(),
+                involved_in_criminal_activity: z.boolean().optional(),
+                convicted_of_a_crime: z.boolean().optional(),
+                description: z.string().optional(),
+            }).optional(),
 
             //2. Sex Offender Check Details
             sex_offender_check_details: z.object({
-                checked_for_sex_offender: z.boolean().optional().default(false),
-                description: z.string().optional().default(""),
-            }),
+                checked_for_sex_offender: z.boolean().optional(),
+                description: z.string().optional(),
+            }).optional(),
 
             //3. Disciplinary Check Details
             disciplinary_check_details: z.object({
-                terminated_from_volunteer_position: z.boolean().optional().default(false),
-                involved_in_disputes: z.boolean().optional().default(false),
-                dismissed_from_institution: z.boolean().optional().default(false),
-                description: z.string().optional().default(""),
-            }),
+                terminated_from_volunteer_position: z.boolean().optional(),
+                involved_in_disputes: z.boolean().optional(),
+                dismissed_from_institution: z.boolean().optional(),
+                description: z.string().optional(),
+            }).optional(),
 
             //4. Health and Safety Check Details
             health_and_safety_check_details: z.object({
-                having_health_issues: z.boolean().optional().default(false),
-                description: z.string().optional().default(""),
-            }),
+                having_health_issues: z.boolean().optional(),
+                description: z.string().optional(),
+            }).optional(),
 
             //5. Other Consents Details
             other_consents_details: z.object({
-                consent_to_background_checks: z.boolean().optional().default(false),
-                agree_to_follow_organization_policies: z.boolean().optional().default(false),
+                consent_to_background_checks: z.boolean().optional(),
+                agree_to_follow_organization_policies: z.boolean().optional(),
                 agree_to_understand_termination_of_volunteer_agreement: z
                     .boolean()
-                    .optional()
-                    .default(false),
-                description: z.string().optional().default(""),
-            }),
+                    .optional(),
+                description: z.string().optional(),
+            }).optional(),
 
             //6. Volunteer Experience Details
             volunteer_experience_details: z.object({
-                previously_volunteered: z.boolean().optional().default(false),
-                invloved_in_complaints: z.boolean().optional().default(false),
-                description: z.string().optional().default(""),
-            }),
+                previously_volunteered: z.boolean().optional(),
+                invloved_in_complaints: z.boolean().optional(),
+                description: z.string().optional(),
+            }).optional(),
         })
         .optional(),
 
     //Consent and Permissions
     consent_and_permissions: z
         .object({
-            photo_or_video_consent: z.boolean().optional().default(false),
-            acknowledgement_of_program_policies: z.boolean().optional().default(false),
+            photo_or_video_consent: z.boolean().optional(),
+            acknowledgement_of_program_policies: z.boolean().optional(),
         })
         .optional(),
 
     //Profile Picture
     profile_picture: z
         .object({
-            image_url: z.string().optional().default(""),
-            image_id: z.string().optional().default(""),
+            image_url: z.string().optional(),
+            image_id: z.string().optional(),
         })
         .optional(),
 
     //Profile Video
     profile_video: z
         .object({
-            video_url: z.string().optional().default(""),
-            video_id: z.string().optional().default(""),
+            video_url: z.string().optional(),
+            video_id: z.string().optional(),
         })
         .optional(),
 
     //Profile Document
     profile_document: z
         .object({
-            document_url: z.string().optional().default(""),
-            document_id: z.string().optional().default(""),
+            document_url: z.string().optional(),
+            document_id: z.string().optional(),
         })
         .optional(),
 
@@ -126,23 +126,20 @@ export const learnerFormSchema = z.object({
     //Learner personal info
     learner_personal_info: z
         .object({
-            learner_first_name: z.string().min(1, "First name is required").optional(),
-            learner_last_name: z.string().min(1, "Last name is required").optional(),
+            learner_first_name: z.string().optional(),
+            learner_last_name: z.string().optional(),
             learner_date_of_birth: z.string().optional(),
-            learner_gender: z.string().min(1, "Gender is required").optional(),
-            learner_preferred_pronoun: z
-                .string()
-                .min(1, "Preferred pronoun is required")
-                .optional(),
-            learner_primary_language: z.string().min(1, "Primary language is required").optional(),
+            learner_gender: z.string().optional(),
+            learner_preferred_pronoun: z.string().optional(),
+            learner_primary_language: z.string().optional(),
             learner_contact_details: z.object({
-                email: z.string().email("Invalid email").default("").optional(),
+                email: z.string().email("Invalid email").optional(),
                 contact_number: z.object({
-                    number: z.string().min(1, "Contact number is required").optional(),
-                    country_code: z.string().min(1, "Country code is required").optional(),
-                }),
-                zip_code: z.string().min(1, "Zip code is required").optional(),
-            }),
+                    number: z.string().optional(),
+                    country_code: z.string().optional(),
+                }).optional(),
+                zip_code: z.string().optional(),
+            }).optional(),
         })
         .optional(),
 
@@ -162,18 +159,18 @@ export const learnerFormSchema = z.object({
     //Parent info
     parent_info: z
         .object({
-            parent_first_name: z.string().min(1, "First name is required").optional(),
-            parent_last_name: z.string().min(1, "Last name is required").optional(),
-            parent_email: z.string().email("Invalid email").default("").optional(),
+            parent_first_name: z.string().optional(),
+            parent_last_name: z.string().optional(),
+            parent_email: z.string().email("Invalid email").optional(),
             parent_contact_number: z.object({
-                number: z.string().min(1, "Contact number is required").optional(),
-                country_code: z.string().min(1, "Country code is required").optional(),
-            }),
+                number: z.string().optional(),
+                country_code: z.string().optional(),
+            }).optional(),
             parent_address: z.string().optional(),
             emergency_contact_number: z.object({
-                number: z.string().min(1, "Contact number is required").optional(),
-                country_code: z.string().min(1, "Country code is required").optional(),
-            }),
+                number: z.string().optional(),
+                country_code: z.string().optional(),
+            }).optional(),
             relationship_to_learner: z.string().optional(),
         })
         .optional(),
@@ -229,10 +226,84 @@ export const learnerFormSchema = z.object({
     //Consent and permissions
     consent_and_permissions: z
         .object({
-            photo_or_video_consent: z.boolean().optional().default(false),
-            acknowledgement_of_program_policies: z.boolean().optional().default(false),
+            photo_or_video_consent: z.boolean().optional(),
+            acknowledgement_of_program_policies: z.boolean().optional(),
         })
         .optional(),
 });
 
 export type LearnerFormData = z.infer<typeof learnerFormSchema>;
+
+export const defaultVolunteerData: Volunteer = {
+    volunteer_description: "",
+    volunteer_education: "",
+    volunteer_first_name: "",
+    volunteer_last_name: "",
+    volunteer_birth_date: "",
+    volunteer_parent_email: "",
+    volunteer_gender: "",
+    volunteer_higher_education: "",
+    volunteer_languages: [],
+    education_details: "",
+    volunteer_experience: "",
+    consented_from_parent: true,
+    volunteer_skills: [],
+    volunteer_contact_details: {
+        email: "",
+        contact_number: {
+            number: "",
+            country_code: "",
+        },
+        zip_code: "",
+    },
+    legal_and_safety_info: {
+        criminal_background_check_details: {
+            convicted_of_a_felony: false,
+            involved_in_criminal_activity: false,
+            convicted_of_a_crime: false,
+            description: "",
+        },
+        sex_offender_check_details: {
+            checked_for_sex_offender: false,
+            description: "",
+        },
+        disciplinary_check_details: {
+            terminated_from_volunteer_position: false,
+            involved_in_disputes: false,
+            dismissed_from_institution: false,
+            description: "",
+        },
+        health_and_safety_check_details: {
+            having_health_issues: false,
+            description: "",
+        },
+        other_consents_details: {
+            consent_to_background_checks: false,
+            agree_to_follow_organization_policies: false,
+            agree_to_understand_termination_of_volunteer_agreement: false,
+            description: "",
+        },
+        volunteer_experience_details: {
+            previously_volunteered: false,
+            invloved_in_complaints: false,
+            description: "",
+        },
+    },
+    profile_picture: {
+        image_url: "",
+        image_id: "",
+    },
+    profile_video: {
+        video_url: "",
+        video_id: "",
+    },
+    profile_document: {
+        document_url: "",
+        document_id: "",
+    },
+    volunteer_subjects: [],
+    consent_and_permissions: {
+        photo_or_video_consent: true,
+        acknowledgement_of_program_policies: true,
+    },
+};

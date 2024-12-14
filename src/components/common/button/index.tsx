@@ -9,7 +9,7 @@ const Button: React.FC<ButtonProps> = ({
     ...props
 }) => {
     const baseStyles =
-        "rounded-2xl px-4 py-4 font-medium transition-all duration-200 active:scale-95";
+        "rounded-2xl px-4 py-4 font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-95";
 
     const variantStyles = {
         primary: "bg-primary text-white hover:bg-primary focus:bg-primary",
