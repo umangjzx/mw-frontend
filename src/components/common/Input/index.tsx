@@ -12,7 +12,7 @@ import ContactInput from "../ContactInput";
 
 const { TextArea } = AntInput;
 
-export const Input: React.FC<InputProps> = props => {
+export const Input: React.FC<InputProps> = (props) => {
     const {
         label,
         sublabel,
@@ -31,7 +31,7 @@ export const Input: React.FC<InputProps> = props => {
         const labelContent = (
             <div>
                 {label}
-                {required && <span className='text-red-500 ml-1'>*</span>}
+                {required && <span className="text-red-500 ml-1">*</span>}
             </div>
         );
 
@@ -67,7 +67,7 @@ export const Input: React.FC<InputProps> = props => {
                         type={props.contentType}
                         placeholder={props.placeholder}
                         value={props.value}
-                        onChange={e => props.onChange(e.target.value)}
+                        onChange={(e) => props.onChange(e.target.value)}
                         disabled={disabled}
                         rootClassName={cn(
                             props.inputClassName ? "w-[49%]" : "",
@@ -86,7 +86,7 @@ export const Input: React.FC<InputProps> = props => {
                         name={name}
                         placeholder={props.placeholder}
                         value={props.value}
-                        onChange={e => props.onChange(e.target.value)}
+                        onChange={(e) => props.onChange(e.target.value)}
                         disabled={disabled}
                         rootClassName={cn(
                             props.inputClassName,
@@ -103,9 +103,9 @@ export const Input: React.FC<InputProps> = props => {
             case "search":
                 return (
                     <AntInput
-                        inputMode='search'
+                        inputMode="search"
                         placeholder={props.placeholder}
-                        onChange={e => props.onChange(e.target.value)}
+                        onChange={(e) => props.onChange(e.target.value)}
                         value={props.value}
                         rootClassName={cn(
                             "hover:!border-stroke border focus:!bg-background-input !border-stroke w-full h-fit focus:!border-stroke focus:!bg-background-input border-stroke",
@@ -115,7 +115,7 @@ export const Input: React.FC<InputProps> = props => {
                             props.inputClassName,
                             `w-full text-sm p-2 rounded-md hover:bg-background-input !bg-background-input`
                         )}
-                        prefix={<IoIosSearch className='text-gray text-xl' />}
+                        prefix={<IoIosSearch className="text-gray text-xl" />}
                     />
                 );
 
@@ -143,11 +143,11 @@ export const Input: React.FC<InputProps> = props => {
                     <div>
                         <DatePicker
                             selected={props.value}
-                            onChange={date => props.onChange(date)}
-                            dateFormat='yyyy-MM-dd'
+                            onChange={(date) => props.onChange(date)}
+                            dateFormat="yyyy-MM-dd"
                             minDate={today}
-                            placeholderText='Click to select date'
-                            className='w-full p-2 border rounded-md mb-4'
+                            placeholderText="Click to select date"
+                            className="w-full p-2 border rounded-md mb-4"
                         />
                     </div>
                 );
@@ -158,7 +158,7 @@ export const Input: React.FC<InputProps> = props => {
                         className={props.inputClassName}
                         name={name}
                         checked={props.value}
-                        onChange={e => props.onChange(e.target.checked)}
+                        onChange={(e) => props.onChange(e.target.checked)}
                         disabled={disabled}
                     >
                         {props.placeholder}
@@ -174,18 +174,18 @@ export const Input: React.FC<InputProps> = props => {
                 return <ContactInput {...props} />;
             case "timerange":
                 return (
-                    <div className='flex items-center gap-2'>
+                    <div className="flex items-center gap-2">
                         <TimePicker
                             name={`${name}-from`}
-                            placeholder={props.fromPlaceholder || "Start Time"}
+                            placeholder={props.fromPlaceholder || "From"}
                             value={props.value?.from}
-                            onChange={time => {
+                            onChange={(time) => {
                                 props.onChange({
                                     from: time,
                                     to: props.value?.to,
                                 });
                             }}
-                            format='h:mm A'
+                            format="h:mm A"
                             use12Hours
                             disabled={disabled}
                             className={cn(
@@ -193,18 +193,18 @@ export const Input: React.FC<InputProps> = props => {
                                 props.inputClassName
                             )}
                         />
-                        <span className='text-gray-500'>to</span>
+                        <span className="text-gray-500">to</span>
                         <TimePicker
                             name={`${name}-to`}
-                            placeholder={props.toPlaceholder || "End Time"}
+                            placeholder={props.toPlaceholder || "To"}
                             value={props.value?.to}
-                            onChange={time => {
+                            onChange={(time) => {
                                 props.onChange({
                                     from: props.value?.from,
                                     to: time,
                                 });
                             }}
-                            format='h:mm A'
+                            format="h:mm A"
                             use12Hours
                             disabled={disabled}
                             className={cn(
@@ -221,7 +221,7 @@ export const Input: React.FC<InputProps> = props => {
         <div className={`mb-4 w-full h-auto flex flex-col gap-2 ${className}`}>
             {renderLabel()}
             {renderInput()}
-            {error && <p className='mt-1 text-sm text-red-500'>{error}</p>}
+            {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
         </div>
     );
 };

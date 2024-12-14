@@ -48,7 +48,7 @@ const LoginPage = () => {
         } else if (data.onboarded_status === "details_pending") {
             router.push("/onboarding");
         } else if (data.onboarded_status === "verification_completed") {
-            router.push(`/${role}`);
+            router.push(`/${role}/schedule`);
         }
     };
 
