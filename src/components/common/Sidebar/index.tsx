@@ -52,7 +52,7 @@ const Sidebar = () => {
     ];
 
     // Combine all links in the desired order
-    const linksData = [...baseLinksData, roleBasedLink, ...remainingLinks];
+    const linksData = [...baseLinksData, roleBasedLink];
 
     const handleSignOut = () => {
         Cookies.remove("role");
