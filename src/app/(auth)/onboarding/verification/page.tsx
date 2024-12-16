@@ -28,9 +28,11 @@ export default function VerificationPage() {
     >({
         queryKey: ["onboardingStatus", id],
         queryFn: () =>
-            GET_API(endpoints.onboarding.getOnboardingStatus(id as string)).then((res) => res.data),
+            GET_API(endpoints.onboarding.getOnboardingStatus(id as string, role as UserRole)).then(
+                (res) => res.data
+            ),
         enabled: !!id,
-        refetchInterval: 10000,
+        refetchInterval: 30000,
     } as UseQueryOptions<OnboardingStatus, Error, OnboardingStatus>);
 
     useEffect(() => {

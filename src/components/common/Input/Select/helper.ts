@@ -21,7 +21,7 @@ export const getOptionValue = (
     if (responseAsValue === null) return item;
     if (Array.isArray(responseAsValue)) {
         const valueMap = new Map();
-        responseAsValue.forEach(value => {
+        responseAsValue.forEach((value) => {
             valueMap.set(value, item[value]);
         });
         return Object.fromEntries(valueMap);
@@ -31,7 +31,7 @@ export const getOptionValue = (
 };
 
 export const customStyles: StylesConfig = {
-    control: (base, state) => ({
+    control: (base: any, state: any) => ({
         ...base,
         backgroundColor: "var(--input-background)",
         borderRadius: "6px",
@@ -43,19 +43,19 @@ export const customStyles: StylesConfig = {
             border: "1px solid var(--border-stroke)",
         },
     }),
-    multiValue: base => ({
+    multiValue: (base: any) => ({
         ...base,
         backgroundColor: "white",
         borderRadius: "20px",
         padding: "2px 8px",
         margin: "2px",
     }),
-    multiValueLabel: base => ({
+    multiValueLabel: (base: any) => ({
         ...base,
         color: "#000",
         padding: "2px",
     }),
-    multiValueRemove: base => ({
+    multiValueRemove: (base: any) => ({
         ...base,
         color: "#000",
         borderRadius: "50%",
@@ -64,23 +64,23 @@ export const customStyles: StylesConfig = {
             color: "#000",
         },
     }),
-    placeholder: base => ({
+    placeholder: (base: any) => ({
         ...base,
         color: "#808080",
         fontFamily: "var(--font-light)",
     }),
-    input: base => ({
+    input: (base: any) => ({
         ...base,
         color: "#000",
         padding: 0,
     }),
-    menu: base => ({
+    menu: (base: any) => ({
         ...base,
         borderRadius: "8px",
         overflow: "hidden",
         boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
     }),
-    option: (base, state) => ({
+    option: (base: any, state: any) => ({
         ...base,
         backgroundColor: state.isSelected ? "#E5E7EB" : state.isFocused ? "#F3F4F6" : "white",
         color: "#000",
