@@ -5,7 +5,7 @@ import { endpoints } from "@/api/constants";
 import { GET_API, POST_API } from "@/api/request";
 import Cookies from "js-cookie";
 import { useQueryState } from "nuqs";
-import Button from "../common/Button";
+import Button from "@/components/common/Button";
 import { useQuery } from "@tanstack/react-query";
 
 const LoginPage = () => {

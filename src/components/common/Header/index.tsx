@@ -1,6 +1,6 @@
 import { Input } from "../Input";
 import { useQueryState } from "nuqs";
-import Button from "../Button";
+import Button from "@/components/common/Button";
 import { cn, formatString } from "@/utils/merge-class";
 import { useComponentStore } from "@/store/useComponenetStore";
 
