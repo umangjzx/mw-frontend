@@ -25,7 +25,18 @@ export const FormField = ({ field, control, errors, parent }: FormFieldProps) =>
 
     const getFieldProperty = (field: any, type: "error" | "name") => {
         const key = parent ? `${parent}.${field.id}` : field.id;
-        return type === "error" ? errors[key] : key;
+        if (type === "error") {
+            if (parent) {
+                const parentKeys = parent.split(".");
+                let currentErrors = errors;
+                for (const parentKey of parentKeys) {
+                    currentErrors = currentErrors?.[parentKey];
+                }
+                return currentErrors?.[field.id]?.message;
+            }
+            return errors?.[field.id]?.message;
+        }
+        return key;
     };
 
     return (
