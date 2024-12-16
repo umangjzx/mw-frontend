@@ -36,7 +36,7 @@ const ParentGuardianFields: FormField[] = [
     },
     {
         id: "",
-        inputType:"parent"
+        inputType: "parent",
     },
     {
         id: "parent_email",
@@ -160,7 +160,7 @@ const DisabilityInfoFields: FormField[] = [
         endpoint: "development_disabilities",
         variant: "single",
         responseAsLabel: "development_disability_name",
-        responseAsValue: ["development_disability_name"],
+        responseAsValue: "development_disability_name",
         placeholder: "Select type",
         gridCols: 1,
     },
@@ -195,9 +195,9 @@ const DisabilityInfoFields: FormField[] = [
         sublabel: "(e.g., verbal, sign language, AAC device)",
         inputType: "async-select",
         endpoint: "communication_styles",
-        variant: "multi",
+        variant: "single",
         responseAsLabel: "communication_style_name",
-        responseAsValue: ["communication_style_id", "communication_style_name"],
+        responseAsValue: "communication_style_name",
         placeholder: "Select style",
         gridCols: 1,
     },
@@ -226,7 +226,7 @@ const DisabilityInfoFields: FormField[] = [
         sublabel: "(visual, auditory, hands-on, etc.)",
         inputType: "async-select",
         endpoint: "learning_styles",
-        variant: "single",
+        variant: "multi",
         responseAsLabel: "learning_style_name",
         responseAsValue: ["learning_style_name"],
         placeholder: "Select aids",
@@ -376,7 +376,6 @@ const ExpectationsGoalsFields: FormField[] = [
         gridCols: 1,
         className: "w-full h-fit mt-4 gap-0 !mb-0",
         inputClassName: "w-full h-full  mt-4",
-
     },
 ];
 
@@ -479,7 +478,6 @@ export const LearnerFormSections: FormSectionConfig[] = [
         fields: AdditionalInfoFields,
     },
 ];
-
 
 export const LearnerThankyouCardConstants = {
     title: "Thank You for Enrolling in Melody Wings!",

@@ -6,11 +6,12 @@ import { CalendarDayOne, CalendarIcon, NotificationIcon } from "@/assets/icons";
 import { IoIosSearch } from "react-icons/io";
 import { getLocalStorage } from "@/utils/localStorage";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 type Props = {};
 
 const Header = (props: Props) => {
-    const role = getLocalStorage("role");
+    const role = Cookies.get("role");
     const router = useRouter();
 
     const handleAddMeeting = () => {

@@ -6,8 +6,10 @@ import { useSendData } from "./useReactQuery";
 import { PUT_API } from "@/api/request";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-import { defaultVolunteerData } from "@/components/onboarding/FormSection/config";
-
+import {
+    defaultLearnerData,
+    defaultVolunteerData,
+} from "@/components/onboarding/FormSection/config";
 
 export const useOnboardingForm = (schema: any) => {
     const role = Cookies.get("role");
@@ -22,7 +24,7 @@ export const useOnboardingForm = (schema: any) => {
                           email: "",
                       },
                   }
-                : {},
+                : defaultLearnerData,
     });
     const router = useRouter();
 
