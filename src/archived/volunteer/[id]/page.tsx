@@ -1,6 +1,6 @@
 
-const VolunteerDetails = () => {
-    return <div>VOLUNTEER PAGE</div>;
-};
+// const VolunteerDetails = () => {
+//     return <div>VOLUNTEER PAGE</div>;
+// };
 
-export default VolunteerDetails;
+// export default VolunteerDetails;

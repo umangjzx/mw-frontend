@@ -30,7 +30,6 @@ type FormField = {
     endpoint?: string;
     responseAsLabel?: string;
     responseAsValue?: string[] | string;
-    variant?: "multi" | "single";
 } & Partial<BaseFormField>;
 
 type BaseFormField = Omit<InputProps, "value" | "onChange" | "inputType"> & {
