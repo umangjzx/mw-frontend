@@ -32,7 +32,4 @@ type UseComponentStoreProps = {
     setHeaderOptions: (options: HeaderOptions) => void;
 };
 
-type UseAppStoreProps = UseVolunteerProps &
-    UseLearnerProps &
-    UseGlobalStoreProps &
-    UseComponentStoreProps;
+type UseAppStoreProps = UseVolunteerProps & UseLearnerProps & UseGlobalStoreProps;

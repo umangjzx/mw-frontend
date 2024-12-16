@@ -1,11 +1,11 @@
-import { useAppStore } from "@/store/useAppStore";
 import { Input } from "../Input";
 import { useQueryState } from "nuqs";
 import Button from "../Button";
 import { cn, formatString } from "@/utils/merge-class";
+import { useComponentStore } from "@/store/useComponenetStore";
 
 const CommonHeader: React.FC = () => {
-    const { headerOptions } = useAppStore();
+    const { headerOptions } = useComponentStore();
     const [searchQuery, setSearchQuery] = useQueryState("query");
     const {
         searchPlaceholder,
@@ -42,7 +42,7 @@ const CommonHeader: React.FC = () => {
                     value={searchQuery ?? ""}
                     inputType="search"
                     name="search"
-                    inputClassName="!bg-transparent mt-4 rounded-full gap-1 items-center"
+                    inputClassName="!bg-transparent mt-4 !rounded-xl gap-1 items-center"
                     className="!bg-transparent !w-fit"
                     onChange={(value: string) => setSearchQuery(value)}
                     placeholder={searchPlaceholder ?? "Search"}
