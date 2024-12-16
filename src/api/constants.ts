@@ -3,7 +3,8 @@ type UserType = "volunteer" | "learner";
 export const endpoints: EndpointProps = {
     onboarding: {
         update: (role: "volunteer" | "learner") => `onboarding/${role}`,
-        getOnboardingStatus: (id: string) => `onboarding/status/${id}`,
+        getOnboardingStatus: (id: string, role: "volunteer" | "learner") =>
+            `onboarding/status/${role}/${id}`,
     },
     auth: {
         oauth2callback: "auth/oauth2callback",
