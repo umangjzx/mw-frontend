@@ -26,6 +26,7 @@ type FormField = {
     children?: FormField[];
     sublabelAlignment?: "right" | "bottom";
     title?: string;
+    fileType?: string;
     endpoint?: string;
     responseAsLabel?: string;
     responseAsValue?: string[] | string;

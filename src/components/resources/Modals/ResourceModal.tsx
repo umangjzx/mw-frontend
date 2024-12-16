@@ -1,5 +1,5 @@
 import { endpoints } from "@/api/constants";
-import { GET_API } from "@/api/request";
+import { GET_API, POST_API } from "@/api/request";
 import { Input } from "@/components/common/Input";
 import CenterModal from "@/components/common/Modals/CenterModal";
 import { ResourceFormConstants } from "@/constants/resources";
@@ -61,8 +61,6 @@ const ResourceModal = ({ isOpen, mode = "view", onClose }: ResourceModalProps) =
     const resourceTitle = mode === "edit" ? "Edit Resource" : "Add new Resource";
 
     const handleSubmit = async () => {
-        console.log(formData?.coverImage, "formData skills");
-
         const payload = {
             resource_title: formData.title,
             resource_description: formData.description,
@@ -72,27 +70,28 @@ const ResourceModal = ({ isOpen, mode = "view", onClose }: ResourceModalProps) =
                     skill_name: "Music theory",
                 })) || [],
             resource_category: {
-                category_name: categoriesData?.find((cat: any) => cat.value === formData.category)
-                    ?.label,
-                category_id: formData.category,
+                category_name: formData.category?.category_name,
+                category_id: formData.category?.category_id,
             },
             resource_notes: formData.notes,
+            difficulty_level: formData.level,
             created_by: "learner",
             resource_image: formData.coverImage
                 ? {
-                      image_url: formData.coverImage.url,
-                      image_id: formData.coverImage.id,
+                      image_url: formData.coverImage.image_url,
+                      image_id: formData.coverImage.image_id,
                   }
                 : null,
         };
-        console.log(payload, "payload resource");
+        console.log("Resource Payload:", payload);
+
         // Uncomment to make the API call
-        // POST_API(endpoints.resources.create, payload).then((res) => {
-        //     console.log(res, "res");
-        //     onClose();
-        // }).catch((err) => {
-        //     console.log(err, "err");
-        // });
+        POST_API(endpoints.resources.create, payload).then((res: any) => {
+            console.log(res, "res");
+            onClose();
+        }).catch((err: Error) => {
+            console.log(err, "err");
+        });
     };
 
     const handleChange = (key: string, value: any) => {
