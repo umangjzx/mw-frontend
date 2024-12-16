@@ -1,7 +1,7 @@
 "use client";
 
 import { endpoints } from "@/api/constants";
-import { GetAPI } from "@/api/request";
+import { GET_API } from "@/api/request";
 import { MessageModal, TestmonialModal } from "@/components/learners/Modals";
 import LearnersTable from "@/components/learners/Table";
 import { getHeaderIcon } from "@/layouts/helper";
@@ -32,7 +32,7 @@ export default function LearnersPage() {
     const [total, setTotal] = useState<number>(0);
 
     const getAllLearners = async ({ page, size }: PaginationParams) => {
-        const response: any = await GetAPI(
+        const response: any = await GET_API(
             `${endpoints.learner.getAllLearners}?page=${page}&size=${size}`
         );
         return response.data;

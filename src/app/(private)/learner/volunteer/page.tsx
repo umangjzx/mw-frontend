@@ -84,7 +84,7 @@ export default function LearnersPage() {
             actionButtonClassName:
                 "!bg-black hover:!border-none !text-white !rounded-xl hover:!bg-black hover:!text-white !h-[35px] !text-xs !py-2 px-4",
             actionButtonPlacement: "right",
-            hideButton: false,
+            showButton: true,
             title: "Volunteer",
             titleIcon: getHeaderIcon(pathname),
         });

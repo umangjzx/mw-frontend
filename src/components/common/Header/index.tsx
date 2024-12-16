@@ -13,7 +13,7 @@ const CommonHeader: React.FC = () => {
         actionButtonClassName,
         actionButtonPlacement,
         actionButtonTitle,
-        hideButton,
+        showButton,
         titleIcon,
         title,
         titleIconClick,
@@ -47,7 +47,7 @@ const CommonHeader: React.FC = () => {
                     onChange={(value: string) => setSearchQuery(value)}
                     placeholder={searchPlaceholder ?? "Search"}
                 />
-                {!hideButton && (
+                {showButton && (
                     <Button
                         title={actionButtonTitle}
                         onClick={actionButtonOnClick}
