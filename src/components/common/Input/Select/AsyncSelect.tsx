@@ -44,11 +44,13 @@ const AsyncSelect = ({
             props.onChange?.(selectedItems);
         } else {
             // For single select
-            const selectedItem = data.find(
-                (d: any) =>
-                    d[valueKey] ===
-                    (typeof valueKey === "string" ? value.value : value.value[valueKey])
-            );
+            // const selectedItem = data.find(
+            //     (d: any) =>
+            //         d[valueKey] ===
+            //         (typeof valueKey === "string" ? value.value : value.value[valueKey])
+            // );
+            const selectedItem = value?.value; // Hard Code
+
             const transformedValue = selectedItem
                 ? getOptionValue(selectedItem, responseAsValue)
                 : null;

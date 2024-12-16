@@ -4,6 +4,7 @@ export const ResourceFormConstants: FormField[] = [
         label: "Add Cover Image",
         inputType: "upload",
         maxFiles: 1,
+        fileType: "image/*",
     },
     {
         name: "title",
@@ -36,7 +37,7 @@ export const ResourceFormConstants: FormField[] = [
     },
     {
         name: "skills",
-        label: "Skills you gain (Optional)",
+        label: "Skills you gain",
         inputType: "async-select",
         placeholder: "Select the skills",
         endpoint: "skills",
@@ -52,7 +53,7 @@ export const ResourceFormConstants: FormField[] = [
         endpoint: "categories",
         variant: "single",
         responseAsLabel: "category_name",
-        responseAsValue: ["category_id", "category_name"],
+        responseAsValue: "payload",
     },
     {
         name: "notes",
