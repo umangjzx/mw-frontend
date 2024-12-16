@@ -30,7 +30,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
         date: "",
     });
     const [previewPosition, setPreviewPosition] = useState({ x: 0, y: 0 });
-    const [showPreview, setShowPreview] = useState(false);
+    const [showPreview, setShowPreview] = useState(true);
     const [selectedEvent, setSelectedEvent] = useState<EventApi | null>(null);
     const [selectedEventForFeedback, setSelectedEventForFeedback] = useState<EventApi | null>(null);
     const calendarRef = useRef<any>(null);
@@ -159,7 +159,36 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
 
     useEffect(() => {}, [currentDate]);
 
-    console.log(events, "events from calender page");
+    const handleEventMouseEnter = (mouseEnterInfo: any) => {
+        const rect = mouseEnterInfo.el.getBoundingClientRect();
+
+        // Calculate position relative to viewport
+        let xPosition = rect.left;
+        let yPosition = rect.bottom + 10;
+
+        // Adjust for viewport edges
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const modalWidth = 405;
+        const modalHeight = 315;
+
+        if (xPosition + modalWidth > viewportWidth) {
+            xPosition = viewportWidth - modalWidth - 10;
+        }
+
+        if (yPosition + modalHeight > viewportHeight) {
+            yPosition = rect.top - modalHeight - 10;
+        }
+
+        setPreviewPosition({ x: xPosition, y: yPosition });
+        setSelectedEvent(mouseEnterInfo.event);
+        setSelectedEventForFeedback(mouseEnterInfo.event);
+        setShowPreview(true);
+    };
+
+    const handleEventMouseLeave = () => {
+        setShowPreview(false);
+    };
 
     return (
         <>
@@ -174,6 +203,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
                     top: `${previewPosition.y}px`,
                     zIndex: 1000,
                 }}
+                onMouseLeave={handleEventMouseLeave}
             />
             <AlertModal
                 isOpen={showModal === "alert"}
@@ -201,7 +231,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
                     editable={false}
                     selectable={false}
                     selectMirror={false}
-                    eventClick={handleEventClick}
+                    eventMouseEnter={handleEventMouseEnter}
                     dayMaxEvents={true}
                     weekends={true}
                     headerToolbar={false}

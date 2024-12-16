@@ -1,15 +1,15 @@
 "use client";
 import { endpoints } from "@/api/constants";
+import { GET_API, POST_API } from "@/api/request";
 import { Input } from "@/components/common/Input";
 import SideModal from "@/components/common/Modals/SideModal";
 import {
     LearnerScheduleModalConstants,
     LearnerScheduleModalDescriptionConstants,
 } from "@/constants/schedule";
-import { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import moment from "moment";
-import { GET_API, POST_API } from "@/api/request";
-import { Radio } from "antd";
+import { useEffect, useState } from "react";
 import AvailableSlots from "../AvailableSlots/AvailableSlots";
 
 interface FormData {
@@ -41,6 +41,7 @@ const AddNewMeetingModal: React.FC<AddNewMeetingModalProps> = ({ isOpen, onClose
     });
     const [availableSlots, setAvailableSlots] = useState<any[]>([]);
     const [volunteers, setVolunteers] = useState<Array<{ label: string; value: string }>>([]);
+    const queryClient = useQueryClient();
 
     // Fetch volunteers when modal opens
     useEffect(() => {
@@ -146,6 +147,7 @@ const AddNewMeetingModal: React.FC<AddNewMeetingModalProps> = ({ isOpen, onClose
                 });
                 setAvailableSlots([]);
                 onClose();
+                queryClient.invalidateQueries({ queryKey: ["events"] });
             })
             .catch((err) => {
                 console.log(err, "err");
