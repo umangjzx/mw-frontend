@@ -1,6 +1,7 @@
 import moment from "moment";
 import { GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
+import Cookies from "js-cookie";
 
 interface EventResponse {
     session_title: string;
@@ -27,7 +28,9 @@ export const getCalendarEvents = async (
         ? moment(currentMonth).format("YYYY-MM")
         : moment().format("YYYY-MM");
 
-    const endpoint = endpoints.session.getCalendarEvents(userId, monthParam);
+    const role = Cookies.get("role");
+
+    const endpoint = endpoints.session.getCalendarEvents(userId, role as UserType, monthParam);
 
     const response = await GET_API(endpoint);
 

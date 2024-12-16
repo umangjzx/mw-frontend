@@ -1,3 +1,5 @@
+type UserType = "volunteer" | "learner";
+
 export const endpoints: EndpointProps = {
     onboarding: {
         update: (role: "volunteer" | "learner") => `onboarding/${role}`,
@@ -30,8 +32,8 @@ export const endpoints: EndpointProps = {
         cancelSession: (id: string) => `session/${id}`,
         getApprovalNotifications: (id: string, status: string) =>
             `session/volunteer/${id}?status=${status}`,
-        getCalendarEvents: (id: string, month?: string, status?: string) =>
-            `session/volunteer/${id}${month ? `?month=${month}` : ""}${
+        getCalendarEvents: (id: string, userType: UserType, month?: string, status?: string) =>
+            `session/${userType}/${id}${month ? `?month=${month}` : ""}${
                 status ? `?status=${status}` : ""
             }`,
         updateNotificationStatus: (id: string) => `session/${id}`,

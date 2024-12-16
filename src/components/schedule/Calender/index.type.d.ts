@@ -4,6 +4,7 @@ type EventCardProps = {
     onEventClick?: (event: any) => void;
     className?: string;
     status?: string;
+    style?: any;
 };
 
 type DayCellContentProps = {
