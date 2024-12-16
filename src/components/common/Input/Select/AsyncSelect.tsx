@@ -83,52 +83,50 @@ const AsyncSelect = ({
 
         if (variant === "multi" && Array.isArray(props.value) && responseAsValue) {
             // For multi-select
-            return props.value.map((val: any) => {
-                const matchingItem = data.find((d: any) => {
-                    if (Array.isArray(responseAsValue)) {
-                        // Match all keys if responseAsValue is array
-                        return responseAsValue.every(key => d[key] === val[key]);
-                    }
-                    // Match single key if responseAsValue is string
-                    return d[responseAsValue] === val;
-                });
+            return props.value
+                .map((val: any) => {
+                    const matchingItem = data.find((d: any) => {
+                        if (Array.isArray(responseAsValue)) {
+                            // Match all keys if responseAsValue is array
+                            return responseAsValue.every((key) => d[key] === val[key]);
+                        }
+                        // Match single key if responseAsValue is string
+                        return d[responseAsValue] === val;
+                    });
 
-                if (!matchingItem) return null;
+                    if (!matchingItem) return null;
 
-                return {
-                    value: Array.isArray(responseAsValue)
-                        ? matchingItem
-                        : matchingItem[responseAsValue],
-                    label: matchingItem[responseAsLabel]
-                };
-            }).filter(Boolean);
+                    return {
+                        value: Array.isArray(responseAsValue)
+                            ? matchingItem
+                            : matchingItem[responseAsValue],
+                        label: matchingItem[responseAsLabel],
+                    };
+                })
+                .filter(Boolean);
         }
 
         // For single select
         const matchingItem = data.find((d: any) => {
-
-            if(!responseAsValue) return d === props.value;
+            if (!responseAsValue) return d === props.value;
 
             if (Array.isArray(responseAsValue)) {
-                return responseAsValue.every(key =>
-                    d[key] === props.value[key]
-                );
+                return responseAsValue.every((key) => d[key] === props.value[key]);
             }
             return d[responseAsValue] === props.value;
         });
 
         if (!matchingItem) return null;
 
-        if(!responseAsValue) return {
-            value: props.value,
-            label: props.value
-        };
+        if (!responseAsValue)
+            return {
+                value: props.value,
+                label: props.value,
+            };
 
         return {
-            value: Array.isArray(responseAsValue)
-                ? matchingItem
-                : matchingItem[responseAsValue],
-            label: matchingItem[responseAsLabel]
+            value: Array.isArray(responseAsValue) ? matchingItem : matchingItem[responseAsValue],
+            label: matchingItem[responseAsLabel],
         };
     }, [data, props.value, responseAsValue, responseAsLabel, variant]);
 
@@ -145,7 +143,7 @@ const AsyncSelect = ({
     );
     console.log("getValue", getValue);
     return (
-        <div className='flex flex-col gap-2 w-full'>
+        <div className="flex flex-col gap-2 w-full">
             <CreatableSelect
                 {...props}
                 isMulti={variant === "multi"}
@@ -155,15 +153,15 @@ const AsyncSelect = ({
                 onCreateOption={handleCreate}
                 isLoading={isLoading}
                 isClearable
-                classNamePrefix='select'
+                classNamePrefix="select"
                 isDisabled={props.disabled}
                 placeholder={props.placeholder || "Search and Select"}
-                formatCreateLabel={inputValue => `Create "${inputValue}"`}
+                formatCreateLabel={(inputValue: string) => `Create "${inputValue}"`}
                 hideSelectedOptions={variant === "multi"}
                 loadingMessage={() => "Loading..."}
                 styles={customStyles}
                 components={{
-                    DropdownIndicator: () => <BiCaretDown className='text-black mr-1' />,
+                    DropdownIndicator: () => <BiCaretDown className="text-black mr-1" />,
                     ClearIndicator: () => null,
                     MultiValueContainer: () => null,
                 }}
@@ -182,7 +180,7 @@ const AsyncSelect = ({
                             }
                             text={item.label}
                             isClose={true}
-                            className='!bg-black !text-white p-1 px-4'
+                            className="!bg-black !text-white p-1 px-4"
                         />
                     ))}
                 </div>
