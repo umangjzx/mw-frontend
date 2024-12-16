@@ -61,6 +61,7 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
     const endTime = moment(event.end).local().format("h:mm A");
     const { title, extendedProps } = eventData;
     const { meetLink, learner, status, sessionId } = extendedProps;
+    console.log(extendedProps, "extendedProps from meeting preview modal");
 
     const handleNotificationStatus = (status: string, sessionId: string) => {
         PUT_API(endpoints.session.updateNotificationStatus(sessionId), {
@@ -159,7 +160,7 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                         )}
                     </div>
                 )}
-                {status === "pending" && (
+                {status === "pending" && role === "volunteer" && (
                     <div className="flex items-center gap-2 w-full">
                         <Button
                             onClick={() => handleNotificationStatus("rejected", sessionId)}

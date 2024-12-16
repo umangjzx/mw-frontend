@@ -11,8 +11,6 @@ type HeaderOptions = {
 } | null;
 
 type UseVolunteerProps = {
-    headerOptions: Partial<HeaderOptions>;
-    setHeaderOptions: (options: HeaderOptions) => void;
     volunteerName: string;
     setVolunteerName: (name: string) => void;
 };
@@ -29,4 +27,12 @@ type UseGlobalStoreProps = {
     setEventDetails: (details: any) => void;
 };
 
-type UseAppStoreProps = UseVolunteerProps & UseLearnerProps & UseGlobalStoreProps;
+type UseComponentStoreProps = {
+    headerOptions: Partial<HeaderOptions>;
+    setHeaderOptions: (options: HeaderOptions) => void;
+};
+
+type UseAppStoreProps = UseVolunteerProps &
+    UseLearnerProps &
+    UseGlobalStoreProps &
+    UseComponentStoreProps;

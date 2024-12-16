@@ -1,6 +1,6 @@
 import { cn } from "@/utils/merge-class";
 
-const EventCard = ({ title, time, onEventClick, className, status }: EventCardProps) => {
+const EventCard = ({ title, time, onEventClick, className, status, style }: EventCardProps) => {
     const statusStyles = {
         accepted: {
             bg: "bg-[#DCFCE7] border-[#86EFAC] text-[#15803D]",
