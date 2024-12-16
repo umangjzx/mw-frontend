@@ -24,8 +24,8 @@ const Button: React.FC<ButtonProps> = ({
             rootClassName={`${baseStyles} ${
                 variantStyles[btnVariant as keyof typeof variantStyles]
             } ${customClassName}`}
-            icon={props.icon}
             {...props}
+            icon={props.icon}
         >
             {title && title}
             {children}

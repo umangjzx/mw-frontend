@@ -187,18 +187,18 @@ export const learnerFormSchema = z.object({
         .object({
             current_school: z.string().nullable().optional().default(null),
             iep_plan_key: z.string().nullable().optional().default(null),
-            academic_strengths: z.string().nullable().optional().default(null),
-            academic_challenges: z.string().nullable().optional().default(null),
+            academic_strengths: z.array(z.any()).optional().default([]),
+            academic_challenges: z.array(z.any()).optional().default([]),
         })
         .optional(),
 
     //Social skills - Optional
     social_skills: z
         .object({
-            communication_preferences: z.string().nullable().optional().default(null),
-            social_interaction_styles: z.string().nullable().optional().default(null),
-            behavioral_concerns: z.string().nullable().optional().default(null),
-            techniques_to_calm: z.string().nullable().optional().default(null),
+            communication_preferences: z.array(z.any()).optional().default([]),
+            social_interaction_styles: z.array(z.any()).optional().default([]),
+            behavioral_concerns: z.array(z.any()).optional().default([]),
+            techniques_to_calm: z.array(z.any()).optional().default([]),
         })
         .optional(),
 
@@ -206,17 +206,17 @@ export const learnerFormSchema = z.object({
     current_interests: z
         .object({
             interests: z.array(z.any()).optional().default([]),
-            extra_curricular_activities: z.string().optional().nullable().default(null),
-            favorite_activities: z.string().optional().nullable().default(null),
+            extra_curricular_activities: z.array(z.any()).optional().default([]),
+            favorite_activities: z.array(z.any()).optional().default([]),
         })
         .optional(),
 
     //Learner goals - Optional
     learner_goals: z
         .object({
-            expected_goals: z.string().nullable().optional().default(null),
-            subjects_to_focus_on: z.string().nullable().optional().default(null),
-            preferred_volunteer_qualities: z.string().nullable().optional().default(null),
+            expected_goals: z.array(z.any()).optional().default([]),
+            subjects_to_focus_on: z.array(z.any()).optional().default([]),
+            preferred_volunteer_qualities: z.array(z.any()).optional().default([]),
             skill_level: z.string().nullable().optional().default(null),
         })
         .optional(),
