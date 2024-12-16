@@ -5,7 +5,7 @@ import SingleImageUpload from "./SingleUpload";
 import { useSendData } from "@/hooks/useReactQuery";
 import { getFileData, handleConvertBasedOnContentType } from "./helper";
 
-const Uploader = ({ maxFiles = 1, ...props }: UploaderProps) => {
+const Uploader = ({ maxFiles = 1, ...props }: UploadProps) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleSuccess = (data: any) => {

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { convertToOptions, customStyles, getOptionValue } from "./helper";
+import { convertToOptions, customStyles } from "./helper";
 import { GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import CreatableSelect from "react-select/creatable";
@@ -36,56 +36,101 @@ const AsyncSelect = ({
     const handleChange = (value: any) => {
         if (!data) return;
 
-        const valueKey: any = Array.isArray(responseAsValue) ? responseAsValue[0] : responseAsValue;
-
         if (variant === "multi") {
-            // For multi-select, value will be an array of selected values
-            const selectedItems = value.map((selectedValue: any) => selectedValue.value);
-            props.onChange?.(selectedItems);
+            if (!value) {
+                props.onChange?.([]);
+                return;
+            }
+
+            // For multi-select, handle array of values
+            const selectedValues = value.map((selectedOption: any) => {
+                if (Array.isArray(responseAsValue)) {
+                    // If responseAsValue is array, return object with multiple keys
+                    const obj: any = {};
+                    responseAsValue.forEach((key: string) => {
+                        obj[key] = selectedOption.value[key];
+                    });
+                    return obj;
+                }
+                // If responseAsValue is string, return string value
+                return selectedOption.value;
+            });
+
+            props.onChange?.(selectedValues);
         } else {
             // For single select
-            // const selectedItem = data.find(
-            //     (d: any) =>
-            //         d[valueKey] ===
-            //         (typeof valueKey === "string" ? value.value : value.value[valueKey])
-            // );
-            const selectedItem = value?.value; // Hard Code
+            if (!value) {
+                props.onChange?.(null);
+                return;
+            }
 
-            const transformedValue = selectedItem
-                ? getOptionValue(selectedItem, responseAsValue)
-                : null;
-            props.onChange?.(transformedValue);
+            if (Array.isArray(responseAsValue)) {
+                // If responseAsValue is array, return object with multiple keys
+                const obj: any = {};
+                responseAsValue.forEach((key: string) => {
+                    obj[key] = value.value[key];
+                });
+                props.onChange?.(obj);
+            } else {
+                // If responseAsValue is string, return string value
+                props.onChange?.(value.value);
+            }
         }
     };
 
     const getValue = useMemo(() => {
-        if (!data || !props.value) return variant === "multi" ? [] : undefined;
+        if (!data || !props.value) return variant === "multi" ? [] : null;
 
-        const valueKey: any = Array.isArray(responseAsValue) ? responseAsValue[0] : responseAsValue;
+        if (variant === "multi" && Array.isArray(props.value) && responseAsValue) {
+            // For multi-select
+            return props.value.map((val: any) => {
+                const matchingItem = data.find((d: any) => {
+                    if (Array.isArray(responseAsValue)) {
+                        // Match all keys if responseAsValue is array
+                        return responseAsValue.every(key => d[key] === val[key]);
+                    }
+                    // Match single key if responseAsValue is string
+                    return d[responseAsValue] === val;
+                });
 
-        if (variant === "multi" && Array.isArray(props.value)) {
-            // For multi-select, convert each value to its corresponding option value
-            return convertToOptions(
-                data.filter((d: any) => {
-                    const values = props.value.map((v: any) => v[valueKey]);
-                    return values.includes(d[valueKey]);
-                }),
-                responseAsValue,
-                responseAsLabel,
-                isLoading
-            );
+                if (!matchingItem) return null;
+
+                return {
+                    value: Array.isArray(responseAsValue)
+                        ? matchingItem
+                        : matchingItem[responseAsValue],
+                    label: matchingItem[responseAsLabel]
+                };
+            }).filter(Boolean);
         }
 
         // For single select
         const matchingItem = data.find((d: any) => {
-            const dValue = getOptionValue(d, responseAsValue);
-            return (
-                dValue[valueKey] ===
-                (typeof props.value === "string" ? props.value : props.value[valueKey])
-            );
+
+            if(!responseAsValue) return d === props.value;
+
+            if (Array.isArray(responseAsValue)) {
+                return responseAsValue.every(key =>
+                    d[key] === props.value[key]
+                );
+            }
+            return d[responseAsValue] === props.value;
         });
-        return matchingItem ? matchingItem[valueKey] : undefined;
-    }, [data, props.value, responseAsValue, variant]);
+
+        if (!matchingItem) return null;
+
+        if(!responseAsValue) return {
+            value: props.value,
+            label: props.value
+        };
+
+        return {
+            value: Array.isArray(responseAsValue)
+                ? matchingItem
+                : matchingItem[responseAsValue],
+            label: matchingItem[responseAsLabel]
+        };
+    }, [data, props.value, responseAsValue, responseAsLabel, variant]);
 
     // Add createOption handler
     const handleCreate = (inputValue: string) => {
@@ -127,13 +172,13 @@ const AsyncSelect = ({
                 }}
                 backspaceRemovesValue={false}
             />
-            {variant === "multi" && (
+            {variant === "multi" && Array.isArray(getValue) && (
                 <div className={cn("flex-wrap gap-1", getValue?.length > 0 ? "flex" : "hidden")}>
                     {getValue?.map((item: any) => (
                         <TagComponent
-                            key={item}
+                            key={item.value}
                             onClose={() =>
-                                handleChange(getValue.filter((v: any) => v.value !== item.value))
+                                handleChange(getValue?.filter((v: any) => v.value !== item.value))
                             }
                             text={item.label}
                             isClose={true}

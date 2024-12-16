@@ -1,6 +1,6 @@
 import Button from "../../Button";
 
-const FileUpload = ({ ...props }: UploaderProps) => {
+const FileUpload = ({ ...props }: BaseUploaderProps) => {
     const { handleClick, handleRemove, value = null, isLoading = false } = props;
 
     const getTitle = () => {

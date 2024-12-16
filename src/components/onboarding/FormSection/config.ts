@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const volunteerFormSchema = z.object({
-    volunteer_education: z.string().optional(),
+    volunteer_education: z.string().optional().default(""),
     volunteer_first_name: z.string().optional(),
     volunteer_last_name: z.string().optional(),
     volunteer_birth_date: z.any().optional(),
@@ -29,7 +29,7 @@ export const volunteerFormSchema = z.object({
             contact_number: z
                 .object({
                     number: z.string().optional(),
-                    country_code: z.string().optional(),
+                    country_code: z.string().optional().default("+91"),
                 })
                 .optional(),
             zip_code: z.string().optional(),
@@ -42,55 +42,55 @@ export const volunteerFormSchema = z.object({
             //1.Criminal Background Check Details
             criminal_background_check_details: z
                 .object({
-                    convicted_of_a_felony: z.boolean().optional(),
-                    involved_in_criminal_activity: z.boolean().optional(),
-                    convicted_of_a_crime: z.boolean().optional(),
-                    description: z.string().optional(),
+                    convicted_of_a_felony: z.boolean().optional().default(false),
+                    involved_in_criminal_activity: z.boolean().optional().default(false),
+                    convicted_of_a_crime: z.boolean().optional().default(false),
+                    description: z.string().optional().default(""),
                 })
                 .optional(),
 
             //2. Sex Offender Check Details
             sex_offender_check_details: z
                 .object({
-                    checked_for_sex_offender: z.boolean().optional(),
-                    description: z.string().optional(),
+                    checked_for_sex_offender: z.boolean().optional().default(false),
+                    description: z.string().optional().default(""),
                 })
                 .optional(),
 
             //3. Disciplinary Check Details
             disciplinary_check_details: z
                 .object({
-                    terminated_from_volunteer_position: z.boolean().optional(),
-                    involved_in_disputes: z.boolean().optional(),
-                    dismissed_from_institution: z.boolean().optional(),
-                    description: z.string().optional(),
+                    terminated_from_volunteer_position: z.boolean().optional().default(false),
+                    involved_in_disputes: z.boolean().optional().default(false),
+                    dismissed_from_institution: z.boolean().optional().default(false),
+                    description: z.string().optional().default(""),
                 })
                 .optional(),
 
             //4. Health and Safety Check Details
             health_and_safety_check_details: z
                 .object({
-                    having_health_issues: z.boolean().optional(),
-                    description: z.string().optional(),
+                    having_health_issues: z.boolean().optional().default(false),
+                    description: z.string().optional().default(""),
                 })
                 .optional(),
 
             //5. Other Consents Details
             other_consents_details: z
                 .object({
-                    consent_to_background_checks: z.boolean().optional(),
-                    agree_to_follow_organization_policies: z.boolean().optional(),
-                    agree_to_understand_termination_of_volunteer_agreement: z.boolean().optional(),
-                    description: z.string().optional(),
+                    consent_to_background_checks: z.boolean().optional().default(false),
+                    agree_to_follow_organization_policies: z.boolean().optional().default(false),
+                    agree_to_understand_termination_of_volunteer_agreement: z.boolean().optional().default(false),
+                    description: z.string().optional().default(""),
                 })
                 .optional(),
 
             //6. Volunteer Experience Details
             volunteer_experience_details: z
                 .object({
-                    previously_volunteered: z.boolean().optional(),
-                    invloved_in_complaints: z.boolean().optional(),
-                    description: z.string().optional(),
+                    previously_volunteered: z.boolean().optional().default(false),
+                    invloved_in_complaints: z.boolean().optional().default(false),
+                    description: z.string().optional().default(""),
                 })
                 .optional(),
         })
@@ -99,8 +99,8 @@ export const volunteerFormSchema = z.object({
     //Consent and Permissions
     consent_and_permissions: z
         .object({
-            photo_or_video_consent: z.boolean().optional(),
-            acknowledgement_of_program_policies: z.boolean().optional(),
+            photo_or_video_consent: z.boolean().optional().default(false),
+            acknowledgement_of_program_policies: z.boolean().optional().default(false),
         })
         .optional(),
 
@@ -142,12 +142,12 @@ export const learnerFormSchema = z.object({
         learner_date_of_birth: z.any(),
         learner_gender: z.string(),
         learner_preferred_pronoun: z.string(),
-        learner_primary_language: z.string(),
+        learner_primary_language: z.string().default("English"),
         learner_contact_details: z.object({
             email: z.string().email("Invalid email"),
             contact_number: z.object({
                 number: z.string(),
-                country_code: z.string(),
+                country_code: z.string().default("+91"),
             }),
         }),
     }),
@@ -158,10 +158,10 @@ export const learnerFormSchema = z.object({
         parent_last_name: z.string(),
         parent_email: z.string().email("Invalid email"),
         parent_contact_number: z.object({
-            number: z.string(),
+            number: z.string().default(""),
             country_code: z.string().default("+91"),
         }),
-        parent_address: z.string(),
+        parent_address: z.string().default(""),
         emergency_contact_number: z.object({
             number: z.string(),
             country_code: z.string(),
@@ -172,23 +172,23 @@ export const learnerFormSchema = z.object({
     //Learner special needs - Optional
     learner_special_needs: z
         .object({
-            type_of_developmental_disability: z.string().nullable().optional().default(null),
-            level_of_support_needed: z.string().nullable().optional().default(null),
-            assistive_device_used: z.string().nullable().optional().default(null),
-            communication_style: z.string().nullable().optional().default(null),
-            description: z.string().nullable().optional().default(null),
-            areas_of_support_needed: z.array(z.any()).optional().default([]),
-            learning_styles: z.array(z.any()).optional().default([]),
+            type_of_developmental_disability: z.string().nullable().optional().default(""),
+            level_of_support_needed: z.string().nullable().optional().default(""),
+            assistive_device_used: z.string().nullable().optional().default(""),
+            communication_style: z.string().nullable().optional().default(""),
+            description: z.string().nullable().optional().default(""),
+            areas_of_support_needed: z.array(z.string()).optional().default([]),
+            learning_styles: z.array(z.string()).optional().default([]),
         })
         .optional(),
 
     //Education - Optional
     education: z
         .object({
-            current_school: z.string().nullable().optional().default(null),
-            iep_plan_key: z.string().nullable().optional().default(null),
-            academic_strengths: z.array(z.any()).optional().default([]),
-            academic_challenges: z.array(z.any()).optional().default([]),
+            current_school: z.string().nullable().optional().default(""),
+            iep_plan_key: z.string().nullable().optional().default(""),
+            academic_strengths: z.array(z.string()).optional().default([]),
+            academic_challenges: z.array(z.string()).optional().default([]),
         })
         .optional(),
 
@@ -217,16 +217,16 @@ export const learnerFormSchema = z.object({
             expected_goals: z.array(z.any()).optional().default([]),
             subjects_to_focus_on: z.array(z.any()).optional().default([]),
             preferred_volunteer_qualities: z.array(z.any()).optional().default([]),
-            skill_level: z.string().nullable().optional().default(null),
+            skill_level: z.string().nullable().optional().default(""),
         })
         .optional(),
 
     //Additional info - Optional
     additional_info: z
         .object({
-            cultural_consideration: z.string().nullable().optional().default(null),
-            other_concerns_or_requests: z.string().nullable().optional().default(null),
-            what_motivates_to_learn: z.string().nullable().optional().default(null),
+            cultural_consideration: z.string().nullable().optional().default(""),
+            other_concerns_or_requests: z.string().nullable().optional().default(""),
+            what_motivates_to_learn: z.string().nullable().optional().default(""),
         })
         .optional(),
 
