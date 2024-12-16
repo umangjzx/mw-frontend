@@ -64,7 +64,7 @@ export default function ResourcesPage () {
             actionButtonClassName:
                 "!bg-black !text-white !rounded-xl hover:!bg-black hover:!text-white !h-[35px] !text-xs !py-2 px-4",
             actionButtonPlacement: "left",
-            hideButton: category !== null,
+            showButton: category === null,
             title: headerTitle,
             titleIcon,
             titleIconClick: category !== null ? handleBackClick : undefined,

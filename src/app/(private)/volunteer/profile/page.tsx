@@ -20,7 +20,7 @@ export default function ProfilePage() {
             title: "Profile",
             titleIcon: <IoIosArrowBack className="text-lg" />,
             titleIconClick: handleBackClick,
-            hideButton: true,
+            showButton: false,
         });
     }, []);
 

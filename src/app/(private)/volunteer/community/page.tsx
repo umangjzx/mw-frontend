@@ -32,7 +32,7 @@ export default function CommunityPage () {
             actionButtonClassName:
                 "!bg-background-secondary hover:!border-none !text-black !rounded-xl hover:!bg-background-secondary hover:!text-black !h-[35px] !text-xs !py-2 px-4",
             actionButtonPlacement: "right",
-            hideButton: false,
+            showButton: true,
             title: "Community",
             titleIcon: getHeaderIcon(pathname),
         });

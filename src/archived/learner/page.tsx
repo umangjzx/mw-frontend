@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { PutAPI } from "@/api/request";
 import { endpoints } from "@/api/constants";
+import { PUT_API } from "@/api/request";
 
 const Learner = () => {
     const [name, setName] = useState("");
@@ -62,7 +62,7 @@ const Learner = () => {
             learner_gender: gender,
             learner_preferred_language: preferredLanguage,
         };
-        PutAPI(endpoints.learner.update(id as string), payload).then((res: any) => {
+        PUT_API(endpoints.learner.update(id as string), payload).then((res: any) => {
             console.log(res, "res");
         });
     };
