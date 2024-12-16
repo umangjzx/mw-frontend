@@ -21,6 +21,7 @@ interface MeetingPreviewModalProps {
     onClose: () => void;
     event: any;
     style?: React.CSSProperties;
+    onMouseLeave?: () => void;
 }
 
 const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
@@ -28,6 +29,7 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
     onClose,
     event,
     style,
+    onMouseLeave,
 }) => {
     const [isAnimating, setIsAnimating] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
@@ -90,6 +92,7 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                 zIndex: 9999,
             }}
             onClick={(e) => e.stopPropagation()}
+            onMouseLeave={onMouseLeave}
         >
             <div className="flex flex-col gap-6 p-5">
                 <div className="flex justify-between gap-3">

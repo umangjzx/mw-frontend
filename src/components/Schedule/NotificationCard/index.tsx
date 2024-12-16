@@ -46,6 +46,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ data }) => {
         })
             .then(() => {
                 queryClient.invalidateQueries({ queryKey: ["approval-notifications"] });
+                queryClient.invalidateQueries({ queryKey: ["events"] });
             })
             .catch((err) => {
                 console.log("Error: ", err);
