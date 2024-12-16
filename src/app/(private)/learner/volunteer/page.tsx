@@ -1,7 +1,6 @@
 "use client";
 
 import { getHeaderIcon } from "@/layouts/helper";
-import { useAppStore } from "@/store/useAppStore";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import VolunteerCard from "@/components/leaner/VolunteerCard";
@@ -9,6 +8,7 @@ import VolunteerViewModal from "@/components/leaner/VolunteerViewModal";
 import { useQuery } from "@tanstack/react-query";
 import { GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
+import { useComponentStore } from "@/store/useComponenetStore";
 
 interface VolunteerCardData {
     volunteerId: string;
@@ -22,7 +22,7 @@ interface VolunteerCardData {
 }
 
 export default function LearnersPage() {
-    const { setHeaderOptions } = useAppStore();
+    const { setHeaderOptions } = useComponentStore();
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
     const router = useRouter();

@@ -4,7 +4,7 @@ import { BiPlus } from "react-icons/bi";
 import { cn } from "@/utils/merge-class";
 import Button from "../../Button";
 
-const ImageUpload: React.FC<UploaderProps> = ({ ...props }) => {
+const ImageUpload: React.FC<BaseUploaderProps> = ({ ...props }) => {
     const { value = [], maxFiles = 1, disabled = false, handleRemove, handleClick } = props;
 
     return (

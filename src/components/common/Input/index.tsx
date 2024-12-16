@@ -147,7 +147,11 @@ export const Input: React.FC<InputProps> = (props) => {
                             dateFormat="yyyy-MM-dd"
                             minDate={today}
                             placeholderText="Click to select date"
-                            className="w-full p-2 border rounded-md mb-4"
+                            className={cn(
+                                "w-full text-sm p-2 rounded-lg border border-stroke focus:!border-stroke focus:!bg-background-input placeholder:text-sm hover:bg-background-input bg-background-input",
+                                props.inputClassName
+                            )}
+                            wrapperClassName="w-full focus:!border-stroke"
                         />
                     </div>
                 );
@@ -169,7 +173,7 @@ export const Input: React.FC<InputProps> = (props) => {
                 return <RadioInput {...props} />;
 
             case "upload":
-                return <Uploader {...props} />;
+                return <Uploader {...props}   />;
             case "contact-input":
                 return <ContactInput {...props} />;
             case "timerange":

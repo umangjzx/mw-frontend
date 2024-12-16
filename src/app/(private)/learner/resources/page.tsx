@@ -7,7 +7,7 @@ import { ResourceModal } from "@/components/resources/Modals";
 import SectionWrapper from "@/components/resources/SectionWrapper";
 import TopicCard from "@/components/resources/TopicCard";
 import { getHeaderIcon } from "@/layouts/helper";
-import { useAppStore } from "@/store/useAppStore";
+import { useComponentStore } from "@/store/useComponenetStore";
 import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { useEffect } from "react";
@@ -29,7 +29,7 @@ const ResourceData = [
 ];
 
 export default function ResourcesPage() {
-    const { setHeaderOptions } = useAppStore();
+    const { setHeaderOptions } = useComponentStore();
     const [category, setCategory] = useQueryState("category");
     const [_, setId] = useQueryState("id");
     const [mode, setMode] = useQueryState("mode");

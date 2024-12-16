@@ -2,7 +2,7 @@ import Image from "next/image";
 import { BiPlus } from "react-icons/bi";
 import Button from "../../Button";
 
-const SingleImageUpload = ({ ...props }: UploaderProps) => {
+const SingleImageUpload = ({ ...props }: BaseUploaderProps) => {
     const { value, handleRemove, handleClick } = props;
     return (
         <div className='w-full h-full bg-background-input p-2 rounded-xl border border-stroke flex items-center justify-between'>

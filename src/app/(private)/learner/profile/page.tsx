@@ -1,14 +1,14 @@
 "use client";
 
-import { useAppStore } from "@/store/useAppStore";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import Bio from "@/components/profile/Bio";
 import Overview from "@/components/profile/Overview";
+import { useComponentStore } from "@/store/useComponenetStore";
 
 export default function ProfilePage() {
-    const { setHeaderOptions } = useAppStore();
+    const { setHeaderOptions } = useComponentStore();
     const router = useRouter();
 
     const handleBackClick = () => {

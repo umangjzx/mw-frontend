@@ -6,25 +6,25 @@ import { useSendData } from "./useReactQuery";
 import { PUT_API } from "@/api/request";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-import {
-    defaultLearnerData,
-    defaultVolunteerData,
-} from "@/components/onboarding/FormSection/config";
 
 export const useOnboardingForm = (schema: any) => {
     const role = Cookies.get("role");
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
-        defaultValues:
-            role === "volunteer"
-                ? {
-                      ...defaultVolunteerData,
-                      volunteer_contact_details: {
-                          ...defaultVolunteerData?.volunteer_contact_details,
-                          email: "",
-                      },
-                  }
-                : defaultLearnerData,
+        defaultValues: {
+            profile_picture: {
+                image_url: "image_url",
+                image_id: "image_id",
+            },
+            profile_video: {
+                video_url: "video_url",
+                video_id: "video_id",
+            },
+            profile_document: {
+                document_url: "document_url",
+                document_id: "document_id",
+            },
+        },
     });
     const router = useRouter();
 

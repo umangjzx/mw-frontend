@@ -7,13 +7,13 @@ import { PostModal } from "@/components/community/Modals";
 import NotificationCard from "@/components/community/NotificationCard";
 import { getCurrentTab } from "@/constants/community";
 import { getHeaderIcon } from "@/layouts/helper";
-import { useAppStore } from "@/store/useAppStore";
+import { useComponentStore } from "@/store/useComponenetStore";
 import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { useEffect } from "react";
 
 export default function CommunityPage () {
-    const { setHeaderOptions } = useAppStore();
+    const { setHeaderOptions } = useComponentStore();
     const pathname = usePathname();
     const [mode, setMode] = useQueryState("mode");
     const [_, setId] = useQueryState("id");

@@ -5,7 +5,7 @@ import { GET_API } from "@/api/request";
 import { MessageModal, TestmonialModal } from "@/components/learners/Modals";
 import LearnersTable from "@/components/learners/Table";
 import { getHeaderIcon } from "@/layouts/helper";
-import { useAppStore } from "@/store/useAppStore";
+import { useComponentStore } from "@/store/useComponenetStore";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
@@ -63,7 +63,7 @@ export default function LearnersPage() {
         });
     };
 
-    const { setHeaderOptions } = useAppStore();
+    const { setHeaderOptions } = useComponentStore();
     const pathname = usePathname();
 
     const [_, setLearnerId] = useQueryState("id", {
