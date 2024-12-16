@@ -67,22 +67,14 @@ export const LearnerScheduleModalConstants = [
         placeholder: "Select a date",
         required: true,
     },
-    // {
-    //     name: "select_time",
-    //     label: "Available Time",
-    //     inputType: "timerange",
-    //     placeholder: "Select time here",
-    // },
-    // {
-    //     name: "google_meet_link",
-    //     label: "Google meet Link",
-    //     inputType: "text",
-    //     placeholder: "Enter meeting link here",
-    // },
+];
+
+export const LearnerScheduleModalDescriptionConstants = [
     {
         name: "description",
         label: "Description",
         inputType: "textarea",
         placeholder: "Enter meeting description here",
+        required: true,
     },
 ];

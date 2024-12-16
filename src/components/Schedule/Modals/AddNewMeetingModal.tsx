@@ -2,11 +2,15 @@
 import { endpoints } from "@/api/constants";
 import { Input } from "@/components/common/Input";
 import SideModal from "@/components/common/Modals/SideModal";
-import { LearnerScheduleModalConstants } from "@/constants/schedule";
+import {
+    LearnerScheduleModalConstants,
+    LearnerScheduleModalDescriptionConstants,
+} from "@/constants/schedule";
 import { useState, useEffect } from "react";
 import moment from "moment";
 import { GET_API, POST_API } from "@/api/request";
 import { Radio } from "antd";
+import AvailableSlots from "../AvailableSlots/AvailableSlots";
 
 interface FormData {
     title_of_the_meeting: string;
@@ -157,45 +161,23 @@ const AddNewMeetingModal: React.FC<AddNewMeetingModalProps> = ({ isOpen, onClose
                         {...getFieldProps(field)}
                         onChange={(value: any) => handleChange(field.name, value)}
                         value={formData[field.name as keyof FormData]}
+                        required={field.required}
                     />
                 ))}
-                {availableSlots.length > 0 ? (
-                    <div className="mt-4">
-                        <p className="text-sm font-medium mb-2">Available Slots:</p>
-                        <Radio.Group
-                            size="small"
-                            onChange={(e) => {
-                                const selectedSlot = availableSlots.find(
-                                    (slot) => slot.volunteer_slot_id === e.target.value
-                                );
-                                if (selectedSlot) {
-                                    handleSlotSelection(
-                                        e.target.value,
-                                        selectedSlot.start_time,
-                                        selectedSlot.end_time
-                                    );
-                                }
-                            }}
-                            value={formData.selected_slot}
-                        >
-                            <div className="flex gap-3 flex-wrap">
-                                {availableSlots.map((slot) => (
-                                    <Radio
-                                        key={slot.volunteer_slot_id}
-                                        value={slot.volunteer_slot_id}
-                                        className="text-sm !text-[#16A34A] font-medium underline whitespace-nowrap"
-                                    >
-                                        {`${slot.start_time} - ${slot.end_time}`}
-                                    </Radio>
-                                ))}
-                            </div>
-                        </Radio.Group>
-                    </div>
-                ) : (
-                    <p className="text-xs font-normal mb-2 text-gray-400">
-                        To see available slots, select a volunteer and date.
-                    </p>
-                )}
+                <AvailableSlots
+                    availableSlots={availableSlots}
+                    selectedSlot={formData.selected_slot || ""}
+                    onSlotSelect={handleSlotSelection}
+                />
+                {LearnerScheduleModalDescriptionConstants.map((field: any) => (
+                    <Input
+                        key={field.name}
+                        {...getFieldProps(field)}
+                        onChange={(value: any) => handleChange(field.name, value)}
+                        value={formData[field.name as keyof FormData]}
+                        required={field.required}
+                    />
+                ))}
             </div>
         </SideModal>
     );

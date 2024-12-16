@@ -192,10 +192,6 @@ export const Input: React.FC<InputProps> = (props) => {
                             format="h:mm A"
                             use12Hours
                             disabled={disabled}
-                            className={cn(
-                                "w-full text-sm hover:bg-background-input bg-background-input",
-                                props.inputClassName
-                            )}
                         />
                         <span className="text-gray-500">to</span>
                         <TimePicker
@@ -211,10 +207,6 @@ export const Input: React.FC<InputProps> = (props) => {
                             format="h:mm A"
                             use12Hours
                             disabled={disabled}
-                            className={cn(
-                                "w-full text-sm hover:bg-background-input bg-background-input",
-                                props.inputClassName
-                            )}
                         />
                     </div>
                 );
