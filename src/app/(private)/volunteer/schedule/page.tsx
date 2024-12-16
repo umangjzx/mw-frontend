@@ -16,7 +16,7 @@ import { getCalendarEvents } from "@/utils/calender";
 export default function SchedulePage() {
     const [isOpenSchedule, setIsOpenSchedule] = useState(false);
     const [isOpenApproval, setIsOpenApproval] = useState(false);
-    const [isOpenFeedback, setIsOpenFeedback] = useState(true);
+    const [isOpenFeedback, setIsOpenFeedback] = useState(false);
 
     const router = useRouter();
     const searchParams = useSearchParams();

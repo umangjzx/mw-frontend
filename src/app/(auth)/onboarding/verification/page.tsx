@@ -29,7 +29,7 @@ export default function VerificationPage() {
         queryKey: ["onboardingStatus", id],
         queryFn: () =>
             GET_API(endpoints.onboarding.getOnboardingStatus(id as string)).then((res) => res.data),
-        enabled: !!id && role === "volunteer",
+        enabled: !!id,
         refetchInterval: 10000,
     } as UseQueryOptions<OnboardingStatus, Error, OnboardingStatus>);
 

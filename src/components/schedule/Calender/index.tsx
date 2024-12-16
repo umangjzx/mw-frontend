@@ -201,6 +201,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
                     editable={false}
                     selectable={false}
                     selectMirror={false}
+                    eventClick={handleEventClick}
                     dayMaxEvents={true}
                     weekends={true}
                     headerToolbar={false}
