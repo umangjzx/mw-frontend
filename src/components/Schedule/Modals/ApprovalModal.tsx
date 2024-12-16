@@ -4,6 +4,7 @@ import NotificationCard from "@/components/schedule/NotificationCard";
 import { useQuery } from "@tanstack/react-query";
 import { GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
+import Cookies from "js-cookie";
 
 interface NotificationData {
     learner_first_name: string;
@@ -20,13 +21,11 @@ interface NotificationData {
 
 const ApprovalModal: React.FC<ApprovalModalProps> = ({ isOpen, onClose }) => {
     const [notificationsData, setNotificationsData] = useState<NotificationData[]>([]);
+    const volunteerId = Cookies.get("volunteer_id");
 
     const getNotifications = async () => {
         const response: any = await GET_API(
-            endpoints.session.getApprovalNotifications(
-                "0fd651c9-f10c-4e40-ad7c-13c1c4932fe3",
-                "pending"
-            )
+            endpoints.session.getApprovalNotifications(volunteerId as string, "pending")
         );
         console.log(response?.data, "Response from getApprovalNotifications");
         return response?.data;

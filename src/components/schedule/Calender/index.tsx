@@ -88,7 +88,6 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
         const endTime = moment(eventInfo.event.end).format("h:mm A");
         return (
             <EventCard
-                style={eventInfo.event._def.ui}
                 title={eventInfo.event.title}
                 time={`${startTime} - ${endTime}`}
                 status={eventInfo.event._def.extendedProps.status}
@@ -160,6 +159,8 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
 
     useEffect(() => {}, [currentDate]);
 
+    console.log(events, "events from calender page");
+
     return (
         <>
             <MeetingPreviewModal
@@ -204,7 +205,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
                     weekends={true}
                     headerToolbar={false}
                     dayHeaderContent={customDayHeaderContent}
-                    eventContent={renderEventContent}
+                    eventContent={(eventInfo) => renderEventContent(eventInfo)}
                     dayCellClassNames={dayCellClassNames}
                     events={events || []}
                     moreLinkClassNames={["!text-primary", "hover:!bg-transparent"]}

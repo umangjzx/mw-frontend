@@ -8,10 +8,11 @@ import { VolunteerThankyouCardConstants } from "@/constants/volunteer";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 type UserRole = "volunteer" | "learner";
 type OnboardingStatus = {
-    status: "verification_pending" | "verification_completed";
+    onboarded_status: "verification_pending" | "verification_completed";
 };
 
 export default function VerificationPage() {
@@ -28,14 +29,15 @@ export default function VerificationPage() {
         queryKey: ["onboardingStatus", id],
         queryFn: () =>
             GET_API(endpoints.onboarding.getOnboardingStatus(id as string)).then((res) => res.data),
-        enabled: !!id,
-        refetchInterval: 30000,
-        onSuccess: (data: OnboardingStatus) => {
-            if (data?.status === "verification_completed") {
-                router.push(`/${role}/schedule`);
-            }
-        },
+        enabled: !!id && role === "volunteer",
+        refetchInterval: 10000,
     } as UseQueryOptions<OnboardingStatus, Error, OnboardingStatus>);
+
+    useEffect(() => {
+        if (onboardingStatus?.onboarded_status === "verification_completed") {
+            router.push(`/${role}/schedule`);
+        }
+    }, [onboardingStatus]);
 
     if (!id) {
         router.push("/login");

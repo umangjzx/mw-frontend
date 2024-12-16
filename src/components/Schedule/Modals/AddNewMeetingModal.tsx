@@ -77,6 +77,7 @@ const AddNewMeetingModal: React.FC<AddNewMeetingModalProps> = ({ isOpen, onClose
                 );
                 setAvailableSlots(response.data.slots);
             } catch (error) {
+                setAvailableSlots([]);
                 console.error("Error fetching available slots:", error);
             }
         }
