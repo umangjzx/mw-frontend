@@ -25,13 +25,13 @@ export const FormField = ({ field, control, errors, parent }: FormFieldProps) =>
 
     const getFieldProperty = (field: any, type: "error" | "name") => {
         const key = parent ? `${parent}.${field.id}` : field.id;
-        return type === "error" ? errors[key]?.message : key;
+        return type === "error" ? errors[key] : key;
     };
 
     return (
         <div className={`${field.gridCols === 2 ? "col-span-2 w-full" : "col-span-1 w-full"}`}>
             <Controller
-                name={getFieldProperty(field, "name") as keyof VolunteerFormData}
+                name={getFieldProperty(field, "name")}
                 control={control}
                 render={({ field: { onChange } }) => (
                     <Input
