@@ -8,7 +8,6 @@ import { BiCaretDown } from "react-icons/bi";
 import TagComponent from "../../Tag";
 import { cn } from "@/utils/merge-class";
 
-
 const AsyncSelect = ({
     variant,
     creatable,
@@ -18,7 +17,7 @@ const AsyncSelect = ({
     onError,
     ...props
 }: AsyncSelectProps) => {
-
+    console.log("props", variant, props.name);
     const { data, isLoading, error } = useQuery({
         queryKey: ["async-select", props.name, endpoint],
         queryFn: async () => {
@@ -45,7 +44,11 @@ const AsyncSelect = ({
             props.onChange?.(selectedItems);
         } else {
             // For single select
-            const selectedItem = data.find((d: any) => d[valueKey] === value);
+            const selectedItem = data.find(
+                (d: any) =>
+                    d[valueKey] ===
+                    (typeof valueKey === "string" ? value.value : value.value[valueKey])
+            );
             const transformedValue = selectedItem
                 ? getOptionValue(selectedItem, responseAsValue)
                 : null;
@@ -74,7 +77,10 @@ const AsyncSelect = ({
         // For single select
         const matchingItem = data.find((d: any) => {
             const dValue = getOptionValue(d, responseAsValue);
-            return dValue[valueKey] === props.value[valueKey];
+            return (
+                dValue[valueKey] ===
+                (typeof props.value === "string" ? props.value : props.value[valueKey])
+            );
         });
         return matchingItem ? matchingItem[valueKey] : undefined;
     }, [data, props.value, responseAsValue, variant]);
@@ -115,23 +121,25 @@ const AsyncSelect = ({
                     MultiValueContainer: () => null,
                 }}
                 classNames={{
-                    container: () => props.inputClassName ? "w-[49%]" : "w-full"
+                    container: () => (props.inputClassName ? "w-[49%]" : "w-full"),
                 }}
                 backspaceRemovesValue={false}
             />
-            <div className={cn("flex flex-wrap gap-1", getValue?.length > 0 ? "flex" : "hidden")}>
-                {getValue?.map((item: any) => (
-                    <TagComponent
-                        key={item}
-                        onClose={() =>
-                            handleChange(getValue.filter((v: any) => v.value !== item.value))
-                        }
-                        text={item.label}
-                        isClose={true}
-                        className='!bg-black !text-white p-1 px-4'
-                    />
-                ))}
-            </div>
+            {variant === "multi" && (
+                <div className={cn("flex-wrap gap-1", getValue?.length > 0 ? "flex" : "hidden")}>
+                    {getValue?.map((item: any) => (
+                        <TagComponent
+                            key={item}
+                            onClose={() =>
+                                handleChange(getValue.filter((v: any) => v.value !== item.value))
+                            }
+                            text={item.label}
+                            isClose={true}
+                            className='!bg-black !text-white p-1 px-4'
+                        />
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

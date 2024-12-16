@@ -135,119 +135,106 @@ export const volunteerFormSchema = z.object({
 export type VolunteerFormData = z.infer<typeof volunteerFormSchema>;
 
 export const learnerFormSchema = z.object({
-    //Learner personal info
-    learner_personal_info: z
-        .object({
-            learner_first_name: z.string().optional(),
-            learner_last_name: z.string().optional(),
-            learner_date_of_birth: z.string().optional(),
-            learner_gender: z.string().optional(),
-            learner_preferred_pronoun: z.string().optional(),
-            learner_primary_language: z.string().optional(),
-            learner_contact_details: z
-                .object({
-                    email: z.string().email("Invalid email").optional(),
-                    contact_number: z
-                        .object({
-                            number: z.string().optional(),
-                            country_code: z.string().optional(),
-                        })
-                        .optional(),
-                    zip_code: z.string().optional(),
-                })
-                .optional(),
-        })
-        .optional(),
+    //Learner personal info - Required section
+    learner_personal_info: z.object({
+        learner_first_name: z.string(),
+        learner_last_name: z.string(),
+        learner_date_of_birth: z.any(),
+        learner_gender: z.string(),
+        learner_preferred_pronoun: z.string(),
+        learner_primary_language: z.string(),
+        learner_contact_details: z.object({
+            email: z.string().email("Invalid email"),
+            contact_number: z.object({
+                number: z.string(),
+                country_code: z.string(),
+            }),
+        }),
+    }),
 
-    //Learner special needs
+    //Parent info - Required section
+    parent_info: z.object({
+        parent_first_name: z.string(),
+        parent_last_name: z.string(),
+        parent_email: z.string().email("Invalid email"),
+        parent_contact_number: z.object({
+            number: z.string(),
+            country_code: z.string().default("+91"),
+        }),
+        parent_address: z.string(),
+        emergency_contact_number: z.object({
+            number: z.string(),
+            country_code: z.string(),
+        }),
+        relationship_to_learner: z.string(),
+    }),
+
+    //Learner special needs - Optional
     learner_special_needs: z
         .object({
-            type_of_developmental_disability: z.string().optional(),
-            level_of_support_needed: z.string().optional(),
-            assistive_device_used: z.string().optional(),
-            communication_style: z.string().optional(),
-            description: z.string().optional(),
-            areas_of_support_needed: z.array(z.any()).optional(),
-            learning_styles: z.array(z.any()).optional(),
+            type_of_developmental_disability: z.string().nullable().optional().default(null),
+            level_of_support_needed: z.string().nullable().optional().default(null),
+            assistive_device_used: z.string().nullable().optional().default(null),
+            communication_style: z.string().nullable().optional().default(null),
+            description: z.string().nullable().optional().default(null),
+            areas_of_support_needed: z.array(z.any()).optional().default([]),
+            learning_styles: z.array(z.any()).optional().default([]),
         })
         .optional(),
 
-    //Parent info
-    parent_info: z
-        .object({
-            parent_first_name: z.string().optional(),
-            parent_last_name: z.string().optional(),
-            parent_email: z.string().email("Invalid email").optional(),
-            parent_contact_number: z
-                .object({
-                    number: z.string().optional(),
-                    country_code: z.string().optional(),
-                })
-                .optional(),
-            parent_address: z.string().optional(),
-            emergency_contact_number: z
-                .object({
-                    number: z.string().optional(),
-                    country_code: z.string().optional(),
-                })
-                .optional(),
-            relationship_to_learner: z.string().optional(),
-        })
-        .optional(),
-
-    //Education
+    //Education - Optional
     education: z
         .object({
-            current_school: z.string().optional(),
-            iep_plan_key: z.string().optional(),
-            academic_strengths: z.array(z.any()).optional(),
-            academic_challenges: z.array(z.any()).optional(),
+            current_school: z.string().nullable().optional().default(null),
+            iep_plan_key: z.string().nullable().optional().default(null),
+            academic_strengths: z.string().nullable().optional().default(null),
+            academic_challenges: z.string().nullable().optional().default(null),
         })
         .optional(),
 
-    //Social skills
+    //Social skills - Optional
     social_skills: z
         .object({
-            communication_preferences: z.array(z.any()).optional(),
-            social_interaction_styles: z.array(z.any()).optional(),
-            behavioral_concerns: z.array(z.any()).optional(),
-            techniques_to_calm: z.array(z.any()).optional(),
+            communication_preferences: z.string().nullable().optional().default(null),
+            social_interaction_styles: z.string().nullable().optional().default(null),
+            behavioral_concerns: z.string().nullable().optional().default(null),
+            techniques_to_calm: z.string().nullable().optional().default(null),
         })
         .optional(),
 
-    //Current interests
+    //Current interests - Optional
     current_interests: z
         .object({
-            interests: z.array(z.any()).optional(),
-            extra_curricular_activities: z.array(z.any()).optional(),
-            favorite_activities: z.array(z.any()).optional(),
+            interests: z.array(z.any()).optional().default([]),
+            extra_curricular_activities: z.string().optional().nullable().default(null),
+            favorite_activities: z.string().optional().nullable().default(null),
         })
         .optional(),
 
-    //Learner goals
+    //Learner goals - Optional
     learner_goals: z
         .object({
-            expected_goals: z.array(z.string()).optional(),
-            subjects_to_focus_on: z.array(z.string()).optional(),
-            preferred_volunteer_qualities: z.array(z.string()).optional(),
-            skill_level: z.string().optional(),
+            expected_goals: z.string().nullable().optional().default(null),
+            subjects_to_focus_on: z.string().nullable().optional().default(null),
+            preferred_volunteer_qualities: z.string().nullable().optional().default(null),
+            skill_level: z.string().nullable().optional().default(null),
         })
         .optional(),
 
-    //Additional info
+    //Additional info - Optional
     additional_info: z
         .object({
-            cultural_consideration: z.string().optional(),
-            other_concerns_or_requests: z.string().optional(),
-            what_motivates_to_learn: z.string().optional(),
+            cultural_consideration: z.string().nullable().optional().default(null),
+            other_concerns_or_requests: z.string().nullable().optional().default(null),
+            what_motivates_to_learn: z.string().nullable().optional().default(null),
         })
         .optional(),
 
-    //Consent and permissions
+    //Consent and permissions - Optional
     consent_and_permissions: z
         .object({
-            photo_or_video_consent: z.boolean().optional(),
-            acknowledgement_of_program_policies: z.boolean().optional(),
+            photo_or_video_consent: z.boolean().optional().default(false),
+            acknowledgement_of_program_policies: z.boolean().optional().default(false),
         })
         .optional(),
 });

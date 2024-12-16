@@ -28,7 +28,7 @@ type FormField = {
     title?: string;
     endpoint?: string;
     responseAsLabel?: string;
-    responseAsValue?: string[];
+    responseAsValue?: string[] | string;
     variant?: "multi" | "single";
 } & Partial<BaseFormField>;
 

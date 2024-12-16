@@ -127,7 +127,7 @@ const LearnerPersonalFields: FormField[] = [
         endpoint: "languages",
         variant: "single",
         responseAsLabel: "language_name",
-        responseAsValue: ["language_id", "language_name"],
+        responseAsValue: "language_name",
         placeholder: "Select language",
         gridCols: 1,
     },
