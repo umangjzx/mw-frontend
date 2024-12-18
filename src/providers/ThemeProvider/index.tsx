@@ -5,6 +5,7 @@ import { getTheme } from "@/utils/theme";
 import { ConfigProvider, ThemeConfig } from "antd";
 import { Poppins } from "next/font/google";
 import Cookies from "js-cookie";
+import { Toaster } from "react-hot-toast";
 
 const poppins = Poppins({
     weight: ["300", "400", "500", "600", "700"],
@@ -114,5 +115,8 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
         return () => window.removeEventListener("storage", handleStorageChange);
     }, []);
 
-    return <ConfigProvider theme={theme}>{children}</ConfigProvider>;
+    return <ConfigProvider theme={theme}>
+        {children}
+        <Toaster />
+    </ConfigProvider>;
 };

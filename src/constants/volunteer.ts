@@ -30,6 +30,7 @@ const ProfileDetailsFields: FormField[] = [
         inputType: "text",
         placeholder: "Eg. John",
         gridCols: 1,
+        required: true,
     },
     {
         id: "volunteer_last_name",
@@ -37,14 +38,17 @@ const ProfileDetailsFields: FormField[] = [
         inputType: "text",
         placeholder: "Eg. John",
         gridCols: 1,
+        required: true,
     },
     {
         id: "volunteer_birth_date",
         label: "Enter your birthday",
-        inputType: "datepicker",
+        inputType: "birthdatepicker",
         placeholder: "MM/DD/YYYY",
         sublabel: "Minors must be at least 14 years of age to begin volunteering",
         gridCols: 1,
+        required: true,
+        birthDatePicker: { minAge: 14, maxAge: 60 }
     },
     {
         id: "consented_from_parent",
@@ -53,6 +57,7 @@ const ProfileDetailsFields: FormField[] = [
         placeholder: "I've consent from my parent or guardian to be a volunteer.",
         gridCols: 1,
         inputClassName: "w-fit",
+        required: true,
     },
     {
         id: "volunteer_parent_email",
@@ -61,6 +66,7 @@ const ProfileDetailsFields: FormField[] = [
         placeholder: "Enter Email ID",
         gridCols: 2,
         inputClassName: "!w-[49%]",
+        required: true,
     },
     {
         id: "volunteer_gender",
@@ -72,6 +78,7 @@ const ProfileDetailsFields: FormField[] = [
             { label: "Do not wish to reveal", value: "not_specified" },
         ],
         gridCols: 2,
+        required: true,
     },
     {
         id: "volunteer_higher_education",
@@ -86,6 +93,7 @@ const ProfileDetailsFields: FormField[] = [
         ],
         gridCols: 1,
         inputClassName: "!w-full",
+        required: true,
     },
     {
         id: "volunteer_languages",
@@ -98,13 +106,15 @@ const ProfileDetailsFields: FormField[] = [
         responseAsValue: ["language_id", "language_name"],
         gridCols: 2,
         inputClassName: "!w-[49%]",
+        required: true,
     },
     {
-        id: "education_details",
+        id: "volunteer_education",
         label: "Education",
         inputType: "text",
         placeholder: "Type here",
         gridCols: 2,
+        required: true,
     },
     {
         id: "volunteer_experience",
@@ -112,6 +122,7 @@ const ProfileDetailsFields: FormField[] = [
         inputType: "text",
         placeholder: "Type here",
         gridCols: 2,
+        required: true,
     },
     {
         id: "volunteer_skills",
@@ -124,6 +135,7 @@ const ProfileDetailsFields: FormField[] = [
         responseAsLabel: "skill_name",
         responseAsValue: ["skill_id", "skill_name"],
         variant: "multi",
+        required: true,
     },
 ];
 
@@ -134,7 +146,8 @@ export const ContactDetailsFields: FormField[] = [
         inputType: "text",
         placeholder: "Enter Email ID",
         gridCols: 1,
-        disabled: false,
+        disabled: true,
+        required: true,
     },
     {
         id: "contact_number",
@@ -145,6 +158,7 @@ export const ContactDetailsFields: FormField[] = [
         sublabelAlignment: "right",
         gridCols: 1,
         disabled: false,
+        required: true,
     },
     {
         id: "zip_code",
@@ -152,6 +166,7 @@ export const ContactDetailsFields: FormField[] = [
         inputType: "text",
         placeholder: "Enter Zip Code",
         gridCols: 1,
+        required: true,
     },
 ];
 
@@ -197,7 +212,7 @@ const CriminalBackgroundCheckFields: FormField[] = [
 
 const SexOffenderCheckFields: FormField[] = [
     {
-        id: "sex_offender_check_details",
+        id: "checked_for_sex_offender",
         label: "Are you listed on any state or national sex offender registries?",
         inputType: "radio",
         options: [

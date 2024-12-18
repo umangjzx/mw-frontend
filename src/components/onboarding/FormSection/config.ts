@@ -1,243 +1,234 @@
 import { z } from "zod";
 
 export const volunteerFormSchema = z.object({
-    volunteer_education: z.string().optional().default(""),
-    volunteer_first_name: z.string().optional(),
-    volunteer_last_name: z.string().optional(),
-    volunteer_birth_date: z.any().optional(),
-    volunteer_description: z.string().optional(),
-    volunteer_parent_email: z.string().email("Invalid email").optional(),
-    volunteer_gender: z.string().optional(),
-    volunteer_higher_education: z.string().optional(),
-    volunteer_languages: z.array(z.any()).optional(),
-    education_details: z.string().optional(),
-    volunteer_experience: z.string().optional(),
-    consented_from_parent: z.boolean().optional(),
+    volunteer_first_name: z.string({ required_error: "First Name is required" }),
+    volunteer_last_name: z.string({ required_error: "Last Name is required" }),
+    volunteer_birth_date: z.any({ required_error: "Please select your birthday" }),
+    consented_from_parent: z.boolean({ required_error: "Parent consent is required" }).refine((val) => val === true, { message: "Parent consent must be provided" }),
+    volunteer_parent_email: z
+        .string({ required_error: "Parent email is required" })
+        .email("Please enter a valid email address"),
+    volunteer_gender: z.string({ required_error: "Please select your gender" }),
+    volunteer_education: z.string({ required_error: "Please provide your education details" }),
+    volunteer_higher_education: z.string({ required_error: "Higher education details are required" }),
+    volunteer_languages: z
+        .array(z.any(), { required_error: "Please specify the languages you know" })
+        .nonempty("Please add at least one language"),
+    volunteer_experience: z.string({ required_error: "Experience details are required" }),
     volunteer_skills: z
         .array(
             z.object({
-                skill_name: z.string().optional(),
-                skill_id: z.string().optional(),
-            })
+                skill_name: z.string({ required_error: "Skill name is required" }),
+                skill_id: z.string({ required_error: "Skill ID is required" }),
+            }),
+            { required_error: "Please add at least one skill" }
         )
-        .optional(),
+        .nonempty("Please add at least one skill"),
+    volunteer_description: z.string({ required_error: "Description is required" }),
 
     // Contact Details validations
     volunteer_contact_details: z
         .object({
-            email: z.string().email("Invalid email").optional(),
-            contact_number: z
-                .object({
-                    number: z.string().optional(),
-                    country_code: z.string().optional().default("+91"),
-                })
-                .optional(),
-            zip_code: z.string().optional(),
-        })
-        .optional(),
+            email: z
+                .string({ required_error: "Email is required" })
+                .email("Please enter a valid email address"),
+            contact_number: z.object({
+                number: z.string({ required_error: "Contact number is required" }),
+                country_code: z.string({ required_error: "Country code is required" }),
+            }),
+            zip_code: z.string({ required_error: "Zip code is required" }),
+        }),
 
     // Legal and Safety Info validations
-    legal_and_safety_info: z
-        .object({
-            //1.Criminal Background Check Details
-            criminal_background_check_details: z
-                .object({
-                    convicted_of_a_felony: z.boolean().optional().default(false),
-                    involved_in_criminal_activity: z.boolean().optional().default(false),
-                    convicted_of_a_crime: z.boolean().optional().default(false),
-                    description: z.string().optional().default(""),
-                })
-                .optional(),
+    legal_and_safety_info: z.object({
+        criminal_background_check_details: z.object({
+            convicted_of_a_felony: z
+                .boolean({ required_error: "Please specify if you were convicted of a felony" }),
+            involved_in_criminal_activity: z
+                .boolean({ required_error: "Please specify if you were involved in criminal activity" }),
+            convicted_of_a_crime: z
+                .boolean({ required_error: "Please specify if you were convicted of a crime" }),
+            description: z.string({ required_error: "Please provide a description" }),
+        }),
+        sex_offender_check_details: z.object({
+            checked_for_sex_offender: z
+                .boolean({ required_error: "Please specify if you were checked for a sex offender" }),
+            description: z.string({ required_error: "Please provide a description" }),
+        }),
+        disciplinary_check_details: z.object({
+            terminated_from_volunteer_position: z
+                .boolean({ required_error: "Please specify if you were terminated from a position" }),
+            involved_in_disputes: z
+                .boolean({ required_error: "Please specify if you were involved in disputes" }),
+            dismissed_from_institution: z
+                .boolean({ required_error: "Please specify if you were dismissed from an institution" }),
+            description: z.string({ required_error: "Please provide a description" }),
+        }),
+        health_and_safety_check_details: z.object({
+            having_health_issues: z
+                .boolean({ required_error: "Please specify if you have health issues" }),
+            description: z.string({ required_error: "Please provide a description" }),
+        }),
+        other_consents_details: z.object({
+            consent_to_background_checks: z
+                .boolean({ required_error: "Please confirm your consent to background checks" }),
+            agree_to_follow_organization_policies: z
+                .boolean({ required_error: "Please confirm that you agree to follow policies" }),
+            agree_to_understand_termination_of_volunteer_agreement: z
+                .boolean({ required_error: "Please confirm that you understand the agreement" }),
+            description: z.string({ required_error: "Please provide a description" }),
+        }),
+        volunteer_experience_details: z.object({
+            previously_volunteered: z
+                .boolean({ required_error: "Please specify if you previously volunteered" }),
+            invloved_in_complaints: z
+                .boolean({ required_error: "Please specify if you were involved in complaints" }),
+            description: z.string({ required_error: "Please provide a description" }),
+        }),
+    }),
 
-            //2. Sex Offender Check Details
-            sex_offender_check_details: z
-                .object({
-                    checked_for_sex_offender: z.boolean().optional().default(false),
-                    description: z.string().optional().default(""),
-                })
-                .optional(),
+    // Consent and Permissions
+    consent_and_permissions: z.object({
+        photo_or_video_consent: z.boolean({ required_error: "Photo or video consent is required" }),
+        acknowledgement_of_program_policies: z
+            .boolean({ required_error: "Acknowledgement of policies is required" }),
+    }),
 
-            //3. Disciplinary Check Details
-            disciplinary_check_details: z
-                .object({
-                    terminated_from_volunteer_position: z.boolean().optional().default(false),
-                    involved_in_disputes: z.boolean().optional().default(false),
-                    dismissed_from_institution: z.boolean().optional().default(false),
-                    description: z.string().optional().default(""),
-                })
-                .optional(),
+    // Profile Picture
+    profile_picture: z.object({
+        image_url: z.string({ required_error: "Profile picture URL is required" }),
+        image_id: z.string({ required_error: "Profile picture ID is required" }),
+    }),
 
-            //4. Health and Safety Check Details
-            health_and_safety_check_details: z
-                .object({
-                    having_health_issues: z.boolean().optional().default(false),
-                    description: z.string().optional().default(""),
-                })
-                .optional(),
+    // Profile Video
+    profile_video: z.object({
+        video_url: z.string({ required_error: "Profile video URL is required" }),
+        video_id: z.string({ required_error: "Profile video ID is required" }),
+    }),
 
-            //5. Other Consents Details
-            other_consents_details: z
-                .object({
-                    consent_to_background_checks: z.boolean().optional().default(false),
-                    agree_to_follow_organization_policies: z.boolean().optional().default(false),
-                    agree_to_understand_termination_of_volunteer_agreement: z.boolean().optional().default(false),
-                    description: z.string().optional().default(""),
-                })
-                .optional(),
+    // Profile Document
+    profile_document: z.object({
+        document_url: z.string({ required_error: "Document URL is required" }),
+        document_id: z.string({ required_error: "Document ID is required" }),
+    }),
 
-            //6. Volunteer Experience Details
-            volunteer_experience_details: z
-                .object({
-                    previously_volunteered: z.boolean().optional().default(false),
-                    invloved_in_complaints: z.boolean().optional().default(false),
-                    description: z.string().optional().default(""),
-                })
-                .optional(),
-        })
-        .optional(),
-
-    //Consent and Permissions
-    consent_and_permissions: z
-        .object({
-            photo_or_video_consent: z.boolean().optional().default(false),
-            acknowledgement_of_program_policies: z.boolean().optional().default(false),
-        })
-        .optional(),
-
-    //Profile Picture
-    profile_picture: z
-        .object({
-            image_url: z.string().optional(),
-            image_id: z.string().optional(),
-        })
-        .optional(),
-
-    //Profile Video
-    profile_video: z
-        .object({
-            video_url: z.string().optional(),
-            video_id: z.string().optional(),
-        })
-        .optional(),
-
-    //Profile Document
-    profile_document: z
-        .object({
-            document_url: z.string().optional(),
-            document_id: z.string().optional(),
-        })
-        .optional(),
-
-    //Volunteer Subjects
-    volunteer_subjects: z.array(z.any()).optional(),
+    // Volunteer Subjects
+    volunteer_subjects: z
+        .array(z.any(), { required_error: "Please add at least one subject" })
+        .nonempty("Please add at least one subject"),
 });
 
 export type VolunteerFormData = z.infer<typeof volunteerFormSchema>;
 
 export const learnerFormSchema = z.object({
-    //Learner personal info - Required section
+    // Learner personal info - Required section
     learner_personal_info: z.object({
-        learner_first_name: z.string(),
-        learner_last_name: z.string(),
-        learner_date_of_birth: z.any(),
-        learner_gender: z.string(),
-        learner_preferred_pronoun: z.string(),
-        learner_primary_language: z.string().default("English"),
+        learner_first_name: z.string({ required_error: "Learner's First Name is required" }),
+        learner_last_name: z.string({ required_error: "Learner's Last Name is required" }),
+        learner_date_of_birth: z.any({ required_error: "Learner's Date of Birth is required" }),
+        learner_gender: z.string({ required_error: "Learner's Gender is required" }),
+        learner_preferred_pronoun: z.string({ required_error: "Learner's Preferred Pronoun is required" }),
+        learner_primary_language: z.string({ required_error: "Learner's Primary Language is required" }),
         learner_contact_details: z.object({
-            email: z.string().email("Invalid email"),
+            email: z
+                .string({ required_error: "Learner's Email is required" })
+                .email("Invalid email address"),
             contact_number: z.object({
-                number: z.string(),
-                country_code: z.string().default("+91"),
+                number: z
+                    .string({ required_error: "Learner's Contact Number is required" })
+                    .refine((num) => num.length >= 7 && num.length <= 15, {
+                        message: "Contact number must be between 7 and 15 digits",
+                    }),
+                country_code: z.string({ required_error: "Learner's Country Code is required" }),
             }),
         }),
     }),
 
-    //Parent info - Required section
+    // Parent info - Required section
     parent_info: z.object({
-        parent_first_name: z.string(),
-        parent_last_name: z.string(),
-        parent_email: z.string().email("Invalid email"),
+        parent_first_name: z.string({ required_error: "Parent's First Name is required" }),
+        parent_last_name: z.string({ required_error: "Parent's Last Name is required" }),
+        parent_email: z
+            .string({ required_error: "Parent's Email is required" })
+            .email("Invalid email address"),
         parent_contact_number: z.object({
-            number: z.string().default(""),
-            country_code: z.string().default("+91"),
+            number: z
+                .string({ required_error: "Parent's Contact Number is required" })
+                .refine((num) => num.length >= 7 && num.length <= 15, {
+                    message: "Contact number must be between 7 and 15 digits",
+                }),
+            country_code: z.string({ required_error: "Parent's Country Code is required" }),
         }),
-        parent_address: z.string().default(""),
+        parent_address: z.string({ required_error: "Parent's Address is required" }),
         emergency_contact_number: z.object({
-            number: z.string(),
-            country_code: z.string(),
+            number: z
+                .string({ required_error: "Emergency Contact Number is required" })
+                .refine((num) => num.length >= 7 && num.length <= 15, {
+                    message: "Emergency contact number must be between 7 and 15 digits",
+                }),
+            country_code: z.string({ required_error: "Emergency Contact Country Code is required" }),
         }),
-        relationship_to_learner: z.string(),
+        relationship_to_learner: z.string({ required_error: "Relationship to Learner is required" }),
     }),
 
-    //Learner special needs - Optional
-    learner_special_needs: z
-        .object({
-            type_of_developmental_disability: z.string().nullable().optional().default(""),
-            level_of_support_needed: z.string().nullable().optional().default(""),
-            assistive_device_used: z.string().nullable().optional().default(""),
-            communication_style: z.string().nullable().optional().default(""),
-            description: z.string().nullable().optional().default(""),
-            areas_of_support_needed: z.array(z.string()).optional().default([]),
-            learning_styles: z.array(z.string()).optional().default([]),
-        })
-        .optional(),
+    // Learner special needs - Required
+    learner_special_needs: z.object({
+        type_of_developmental_disability: z.string({ required_error: "Developmental Disability is required" }),
+        level_of_support_needed: z.string({ required_error: "Level of Support Needed is required" }),
+        assistive_device_used: z.string({ required_error: "Assistive Device Used is required" }),
+        communication_style: z.string({ required_error: "Communication Style is required" }),
+        description: z.string({ required_error: "Description of Needs is required" }),
+        areas_of_support_needed: z.array(z.string(), { required_error: "Areas of Support Needed are required" }),
+        learning_styles: z.array(z.string(), { required_error: "Learning Styles are required" }),
+    }),
 
-    //Education - Optional
-    education: z
-        .object({
-            current_school: z.string().nullable().optional().default(""),
-            iep_plan_key: z.string().nullable().optional().default(""),
-            academic_strengths: z.array(z.string()).optional().default([]),
-            academic_challenges: z.array(z.string()).optional().default([]),
-        })
-        .optional(),
+    // Education - Required
+    education: z.object({
+        current_school: z.string({ required_error: "Current School is required" }),
+        iep_plan_key: z.string({ required_error: "IEP Plan Key is required" }),
+        academic_strengths: z.array(z.string(), { required_error: "Academic Strengths are required" }),
+        academic_challenges: z.array(z.string(), { required_error: "Academic Challenges are required" }),
+    }),
 
-    //Social skills - Optional
-    social_skills: z
-        .object({
-            communication_preferences: z.array(z.any()).optional().default([]),
-            social_interaction_styles: z.array(z.any()).optional().default([]),
-            behavioral_concerns: z.array(z.any()).optional().default([]),
-            techniques_to_calm: z.array(z.any()).optional().default([]),
-        })
-        .optional(),
+    // Social skills - Required
+    social_skills: z.object({
+        communication_preferences: z.array(z.string(), { required_error: "Communication Preferences are required" }),
+        social_interaction_styles: z.array(z.string(), { required_error: "Social Interaction Styles are required" }),
+        behavioral_concerns: z.array(z.string(), { required_error: "Behavioral Concerns are required" }),
+        techniques_to_calm: z.array(z.string(), { required_error: "Techniques to Calm are required" }),
+    }),
 
-    //Current interests - Optional
-    current_interests: z
-        .object({
-            interests: z.array(z.any()).optional().default([]),
-            extra_curricular_activities: z.array(z.any()).optional().default([]),
-            favorite_activities: z.array(z.any()).optional().default([]),
-        })
-        .optional(),
+    // Current interests - Required
+    current_interests: z.object({
+        interests: z.array(z.string(), { required_error: "Interests are required" }),
+        extra_curricular_activities: z.array(z.string(), { required_error: "Extra-curricular Activities are required" }),
+        favorite_activities: z.array(z.string(), { required_error: "Favorite Activities are required" }),
+    }),
 
-    //Learner goals - Optional
-    learner_goals: z
-        .object({
-            expected_goals: z.array(z.any()).optional().default([]),
-            subjects_to_focus_on: z.array(z.any()).optional().default([]),
-            preferred_volunteer_qualities: z.array(z.any()).optional().default([]),
-            skill_level: z.string().nullable().optional().default(""),
-        })
-        .optional(),
+    // Learner goals - Required
+    learner_goals: z.object({
+        expected_goals: z.array(z.string(), { required_error: "Expected Goals are required" }),
+        subjects_to_focus_on: z.array(z.string(), { required_error: "Subjects to Focus On are required" }),
+        preferred_volunteer_qualities: z.array(z.string(), { required_error: "Preferred Volunteer Qualities are required" }),
+        skill_level: z.string({ required_error: "Skill Level is required" }),
+    }),
 
-    //Additional info - Optional
-    additional_info: z
-        .object({
-            cultural_consideration: z.string().nullable().optional().default(""),
-            other_concerns_or_requests: z.string().nullable().optional().default(""),
-            what_motivates_to_learn: z.string().nullable().optional().default(""),
-        })
-        .optional(),
+    // Additional info - Required
+    additional_info: z.object({
+        cultural_consideration: z.string({ required_error: "Cultural Consideration is required" }),
+        other_concerns_or_requests: z.string({ required_error: "Other Concerns or Requests are required" }),
+        what_motivates_to_learn: z.string({ required_error: "What Motivates the Learner is required" }),
+    }),
 
-    //Consent and permissions - Optional
-    consent_and_permissions: z
-        .object({
-            photo_or_video_consent: z.boolean().optional().default(false),
-            acknowledgement_of_program_policies: z.boolean().optional().default(false),
-        })
-        .optional(),
+    // Consent and permissions - Required
+    consent_and_permissions: z.object({
+        photo_or_video_consent: z.boolean({ required_error: "Photo or Video Consent is required" }),
+        acknowledgement_of_program_policies: z.boolean({
+            required_error: "Acknowledgement of Program Policies is required",
+        }),
+    }),
 });
+
 
 export type LearnerFormData = z.infer<typeof learnerFormSchema>;
 
@@ -317,10 +308,10 @@ export type LearnerFormData = z.infer<typeof learnerFormSchema>;
 
 export const defaultVolunteerData: Volunteer = {
     volunteer_description: "some description",
-    volunteer_education: "some education",
+    volunteer_education: "BE - CSE",
     volunteer_first_name: "Iwin",
     volunteer_last_name: "T",
-    volunteer_birth_date: "2024-12-25T18:30:00.000Z",
+    volunteer_birth_date: "2000-12-25",
     volunteer_parent_email: "iwinissacofficial@gmail.com",
     volunteer_gender: "male",
     volunteer_higher_education: "bachelors",
@@ -330,7 +321,6 @@ export const defaultVolunteerData: Volunteer = {
             language_id: "734e54d6-8762-4604-bae6-64d0bde4e0c1",
         },
     ],
-    education_details: "sqs",
     volunteer_experience: "dwdwd",
     consented_from_parent: true,
     volunteer_skills: [
@@ -450,21 +440,21 @@ export const defaultLearnerData: Learner = {
     education: {
         current_school: "current_school",
         iep_plan_key: "iep_plan_key",
-        academic_strengths: ["academic_strengths"],
-        academic_challenges: ["academic_challenges"],
+        academic_strengths: ["math"],
+        academic_challenges: ["difficulty_with_reading"],
     },
 
     social_skills: {
-        communication_preferences: ["communication_preferences"],
-        social_interaction_styles: ["social_interaction_styles"],
-        behavioral_concerns: ["behavioral_concerns"],
-        techniques_to_calm: ["techniques_to_calm"],
+        communication_preferences: ["visual"],
+        social_interaction_styles: ["engaging"],
+        behavioral_concerns: ["difficulty_in_social_interaction"],
+        techniques_to_calm: ["provide_a_quiet_space"],
     },
 
     current_interests: {
         interests: ["interests"],
-        extra_curricular_activities: ["extra_curricular_activities"],
-        favorite_activities: ["favorite_activities"],
+        extra_curricular_activities: ["sports"],
+        favorite_activities: ["drawing_and_coloring"],
     },
 
     learner_goals: {

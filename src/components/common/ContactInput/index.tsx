@@ -2,6 +2,19 @@ import { useState } from "react";
 import { Input } from "../Input";
 import { Select } from "../Input/Select";
 
+const mobileCountryCodes = [
+    { label: "+1", value: "+1" },
+    { label: "+91", value: "+91" },
+    { label: "+86", value: "+86" },
+    { label: "+49", value: "+49" },
+    { label: "+81", value: "+81" },
+    { label: "+55", value: "+55" },
+    { label: "+33", value: "+33" },
+    { label: "+61", value: "+61" },
+    { label: "+27", value: "+27" },
+    { label: "+44", value: "+44" }
+];
+
 const ContactInput = (props: ContactInputProps) => {
     const [formData, setFormData] = useState(props.value);
 
@@ -19,12 +32,7 @@ const ContactInput = (props: ContactInputProps) => {
                 name='country-code'
                 value={formData?.country_code}
                 onChange={e => handleChange(e, "country_code")}
-                options={[
-                    {
-                        label: "+91",
-                        value: "+91",
-                    },
-                ]}
+                options={mobileCountryCodes}
                 inputType='select'
                 placeholder='+91'
                 className='!w-[10%]'

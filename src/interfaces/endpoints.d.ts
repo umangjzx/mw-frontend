@@ -12,6 +12,7 @@ type EndpointProps = {
     learner: {
         update: (id: string) => string;
         getAllLearners: string;
+        getIndividualLearner: (id: string) => string;
     };
     volunteer: {
         update: (id: string) => string;
