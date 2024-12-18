@@ -54,12 +54,12 @@ type EndpointProps = {
     common: (path: CommonPath) => string;
     volunterFeedback: {
         create: string;
-        get: string;
+        get: (id: string) => string;
         update: string;
     };
     learnerFeedback: {
         create: string;
-        get: string;
+        get: (id: string) => string;
         update: string;
     };
 };

@@ -57,12 +57,12 @@ export const endpoints: EndpointProps = {
     },
     volunterFeedback: {
         create: "feedback/volunteer",
-        get: "feedback/volunteer",
+        get: (id: string) => `feedback/volunteer/${id}`,
         update: "feedback/volunteer",
     },
     learnerFeedback: {
         create: "feedback/learner",
-        get: "feedback/learner",
+        get: (id: string) => `feedback/learner/${id}`,
         update: "feedback/learner",
     },
 };

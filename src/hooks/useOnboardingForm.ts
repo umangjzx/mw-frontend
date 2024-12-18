@@ -13,7 +13,7 @@ export const useOnboardingForm = (schema: any) => {
         resolver: zodResolver(schema),
         defaultValues: {
             profile_picture: {
-                image_url: "image_url",
+                image_url: "url",
                 image_id: "image_id",
             },
             profile_video: {

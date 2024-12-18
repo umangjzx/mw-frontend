@@ -20,17 +20,28 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
         { label: "Language", value: languages.join(", ") },
     ];
 
+    console.log(profileImage, "profileImage");
+
     return (
         <div className="bg-white rounded-xl w-full shadow-sm h-fit p-4 flex flex-col gap-4">
             {/* Profile Header */}
             <div className="flex items-center gap-4">
                 <div className="w-[64px] h-[64px] rounded-full relative">
-                    <Image
-                        src={DummyProfileImg}
-                        alt="avatar"
-                        fill
-                        className="w-full h-full object-cover rounded-full"
-                    />
+                    {profileImage !== "image_url" ? (
+                        <Image
+                            src={profileImage}
+                            alt="avatar"
+                            fill
+                            className="w-full h-full object-cover rounded-full"
+                        />
+                    ) : (
+                        <Image
+                            src={DummyProfileImg}
+                            alt="avatar"
+                            fill
+                            className="w-full h-full object-cover rounded-full"
+                        />
+                    )}
                 </div>
                 <div className="flex flex-col gap-2">
                     <p className="font-medium">{name}</p>

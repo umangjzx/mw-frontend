@@ -16,6 +16,7 @@ import RatingCard from "@/components/profile/Overview/RatingCard";
 import RatingHeader from "@/components/profile/Overview/RatingHeader";
 import { getLocalStorage } from "@/utils/localStorage";
 import { useQuery } from "@tanstack/react-query";
+import Cookies from "js-cookie";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -36,7 +37,7 @@ const ProfileHeader = ({
             <Button
                 onClick={onScheduleMeeting}
                 title="Schedule a meeting"
-                className="text-sm !text-black !bg-[#dff5ff] !border-primary !border"
+                className="text-sm !text-black !bg-primary !border-primary !border"
             />
             <span onClick={onClose} className="cursor-pointer">
                 <ModalCloseIcon />
@@ -70,7 +71,7 @@ const ProfileInfo = ({
         <div className="flex items-center gap-3">
             <div className="relative w-[80px] h-[80px] rounded-full shrink-0">
                 <Image
-                    src={DummyProfileImg}
+                    src={volunteerData?.profile_picture?.image_url}
                     alt="avatar"
                     fill
                     className="object-cover rounded-full w-full h-full"
@@ -99,9 +100,13 @@ const ProfileInfo = ({
 const TabButtons = ({
     activeTab,
     handleTabChange,
+    rating,
+    totalReviews,
 }: {
     activeTab: string;
     handleTabChange: (tab: string) => void;
+    rating: number;
+    totalReviews: number;
 }) => (
     <div className="px-5">
         <div className="flex items-center justify-between border-stroke border-2 rounded-full">
@@ -115,7 +120,7 @@ const TabButtons = ({
                             : "border-2 border-transparent"
                     } transition-all duration-200 cursor-pointer`}
                 >
-                    {tab === "overview" ? "Overview" : "Reviews - 4.5 (120)️️"}
+                    {tab === "overview" ? "Overview" : `Reviews - ${rating} (${totalReviews})`}
                 </div>
             ))}
         </div>
@@ -134,7 +139,7 @@ const OverviewContent = ({ volunteerData }: { volunteerData: VolunteerData }) =>
         },
         {
             title: "Skills",
-            tags: volunteerData?.volunteer_skills.map((skill) => skill.skill_id),
+            tags: volunteerData?.volunteer_skills.map((skill) => skill.skill_name),
         },
     ];
 
@@ -154,11 +159,11 @@ const OverviewContent = ({ volunteerData }: { volunteerData: VolunteerData }) =>
             <div className="px-5 flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                     <p className="font-medium">Bio</p>
-                    <TagComponent
+                    {/* <TagComponent
                         text="Los Angeles, CA"
                         className="text-sm py-1 font-medium px-2"
                         icon={<FaLocationDot />}
-                    />
+                    /> */}
                 </div>
                 <p className="text-sm text-gray-light font-normal">
                     {volunteerData?.volunteer_description}
@@ -184,30 +189,50 @@ const OverviewContent = ({ volunteerData }: { volunteerData: VolunteerData }) =>
     );
 };
 
-const ReviewsContent = ({ ratingCard }: { ratingCard: any }) => (
-    <div className="flex flex-col gap-3">
-        <div className="px-5">
-            <div className="flex flex-col gap-5">
-                <RatingHeader />
-                {[...Array(3)].map((_, index) => (
-                    <RatingCard key={index} {...ratingCard} />
-                ))}
+const ReviewsContent = ({ volunteerFeedback }: { volunteerFeedback: any }) => {
+    const ratingCardData = volunteerFeedback?.feedbacks;
+
+    return (
+        <div className="flex flex-col gap-3">
+            <div className="px-5">
+                <div className="flex flex-col gap-5">
+                    <RatingHeader
+                        rating={volunteerFeedback?.overall_rating}
+                        totalReviews={volunteerFeedback?.feedbacks.length}
+                    />
+                    {ratingCardData?.map((item: any, index: number) => (
+                        <RatingCard
+                            key={index}
+                            name={item?.volunteer_name}
+                            profileImg={item?.volunteer_profile_picture?.image_url}
+                            rating={item?.volunteer_commitment_level}
+                            day={item?.created_at}
+                            review={item?.comment}
+                        />
+                    ))}
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose }) => {
     const [activeTab, setActiveTab] = useState("overview");
     const text = getLocalStorage("role");
     const searchParams = useSearchParams();
     const volunteerId = searchParams.get("volunteerId");
+    const learnerId = Cookies.get("learner_id");
     const router = useRouter();
 
     const getIndividualVolunteer = async () => {
         const response: any = await GET_API(
             endpoints.volunteer.getIndividualVolunteer(volunteerId as string)
         );
+        return response.data;
+    };
+
+    const getVolunterFeedback = async () => {
+        const response: any = await GET_API(endpoints.volunterFeedback.get(volunteerId as string));
         return response.data;
     };
 
@@ -220,6 +245,14 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
         queryFn: getIndividualVolunteer,
         enabled: !!volunteerId,
     });
+
+    const { data: volunteerFeedback } = useQuery({
+        queryKey: ["volunteerFeedback", volunteerId],
+        queryFn: getVolunterFeedback,
+        enabled: !!volunteerId,
+    });
+
+    console.log(volunteerFeedback, "volunteerFeedback ");
 
     const handleTabChange = (tab: string) => {
         setActiveTab(tab);
@@ -248,6 +281,8 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
     const handleScheduleMeeting = () => {
         router.push(`/learner/volunteer?volunteerId=${volunteerId}&modal=add_new_meeting`);
     };
+    const rating = volunteerFeedback?.overall_rating;
+    const totalReviews = volunteerFeedback?.feedbacks.length;
 
     return (
         <ViewModal modalOpen={isOpen} onClose={onClose} width={855}>
@@ -260,7 +295,12 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
                 <Divider />
                 <ProfileInfo text={text} volunteerData={volunteerData} />
                 <Divider />
-                <TabButtons activeTab={activeTab} handleTabChange={handleTabChange} />
+                <TabButtons
+                    activeTab={activeTab}
+                    handleTabChange={handleTabChange}
+                    rating={rating}
+                    totalReviews={totalReviews}
+                />
                 <div className="relative">
                     <div
                         className={`transform transition-all duration-300 ${
@@ -280,7 +320,19 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
                                 : "opacity-0 translate-x-8 absolute top-0 left-0 right-0"
                         }`}
                     >
-                        {activeTab === "reviews" && <ReviewsContent ratingCard={ratingCard} />}
+                        {activeTab === "reviews" && (
+                            <div>
+                                {volunteerFeedback?.feedbacks.length > 0 ? (
+                                    <ReviewsContent volunteerFeedback={volunteerFeedback} />
+                                ) : (
+                                    <div className="flex items-center justify-center h-full">
+                                        <p className="text-sm text-gray-light font-normal">
+                                            No reviews yet
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

@@ -13,11 +13,15 @@ type HeaderOptions = {
 type UseVolunteerProps = {
     volunteerName: string;
     setVolunteerName: (name: string) => void;
+    volunteerImage: string;
+    setVolunteerImage: (image: string) => void;
 };
 
 type UseLearnerProps = {
     learnerName: string;
     setLearnerName: (name: string) => void;
+    learnerImage: string;
+    setLearnerImage: (image: string) => void;
 };
 
 type UseGlobalStoreProps = {
