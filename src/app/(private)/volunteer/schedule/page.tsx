@@ -56,7 +56,7 @@ export default function SchedulePage() {
     }, [modal]);
 
     return (
-        <div className="w-full h-full">
+        <div className="w-full h-full animate-fadeIn">
             <Calendar events={data || []} />
             <MyScheduleModal isOpen={isOpenSchedule} onClose={handleNavigate} />
             <ApprovalModal isOpen={isOpenApproval} onClose={handleNavigate} />

@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 
 interface PaginationParams {
     page: number;
@@ -30,16 +31,21 @@ export default function LearnersPage() {
         size: 10,
     });
     const [total, setTotal] = useState<number>(0);
+    const volunteerId = Cookies.get("volunteer_id");
+    const [size] = useQueryState("size", { defaultValue: "10" });
+    const [page] = useQueryState("page", { defaultValue: "1" });
+    const [query] = useQueryState("query");
 
     const getAllLearners = async ({ page, size }: PaginationParams) => {
-        const response: any = await GET_API(
-            `${endpoints.learner.getAllLearners}?page=${page}&size=${size}`
-        );
+        const endpoint = `${endpoints.volunteer.getConnectedLearners(
+            volunteerId as string
+        )}?query=${query || ""}&page=${page}&size=${size}`;
+        const response: any = await GET_API(endpoint);
         return response.data;
     };
 
     const { data: learners, isLoading } = useQuery({
-        queryKey: ["learners", pagination.page, pagination.size],
+        queryKey: ["learners", pagination.page, pagination.size, query],
         queryFn: () => getAllLearners(pagination),
     });
 
@@ -47,8 +53,8 @@ export default function LearnersPage() {
         if (learners?.items) {
             const transformedData = learners.items.map((learner: any) => ({
                 id: learner.learner_id,
-                name: `${learner.learner_personal_info.learner_first_name} ${learner.learner_personal_info.learner_last_name}`,
-                classesTaken: learner.total_classes_attended,
+                name: `${learner.learner_name}`,
+                classesTaken: learner.total_sessions,
                 subject: "N/A",
             }));
             setLearnerData(transformedData);
@@ -98,7 +104,7 @@ export default function LearnersPage() {
     }, [setHeaderOptions]);
 
     return (
-        <div className="w-full h-full p-6">
+        <div className="w-full h-full p-6 animate-fadeIn">
             <MessageModal isOpen={mode === "message"} onClose={handleClose} />
             <TestmonialModal
                 isOpen={mode === "testimonial"}

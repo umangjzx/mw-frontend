@@ -12,6 +12,7 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import AvailableSlots from "../AvailableSlots/AvailableSlots";
 import { useSearchParams } from "next/navigation";
+import { useSendData } from "@/hooks/useReactQuery";
 
 interface FormData {
     title_of_the_meeting: string;
@@ -128,7 +129,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
         }));
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         const payload = {
             volunteer_id: formData.select_volunteer,
             volunteer_slot_id: formData.selected_slot,
@@ -138,31 +139,39 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
             session_title: formData.title_of_the_meeting,
             session_description: formData.description,
         };
-        POST_API(endpoints.session.bookSession, payload)
-            .then((res) => {
-                console.log(res, "res");
-                // Reset form
-                setFormData({
-                    title_of_the_meeting: "",
-                    select_volunteer: "",
-                    select_date: "",
-                    start_time: "",
-                    end_time: "",
-                    google_meet_link: "",
-                    description: "",
-                    selected_slot: "",
-                });
-                setAvailableSlots([]);
-                onClose();
-                queryClient.invalidateQueries({ queryKey: ["events"] });
-            })
-            .catch((err) => {
-                console.log(err, "err");
-            });
+        return await POST_API(endpoints.session.bookSession, payload);
     };
 
+    const { mutate: onSave, isPending } = useSendData({
+        fn: () => handleSave(),
+        invalidateKey: ["events"],
+        success: () => {
+            setFormData({
+                title_of_the_meeting: "",
+                select_volunteer: "",
+                select_date: "",
+                start_time: "",
+                end_time: "",
+                google_meet_link: "",
+                description: "",
+                selected_slot: "",
+            });
+            setAvailableSlots([]);
+            onClose();
+        },
+        error: (err) => {
+            console.log("Error: ", err);
+        },
+    });
+
     return (
-        <SideModal title="Add New Meeting" onClose={onClose} isOpen={isOpen} onSave={handleSave}>
+        <SideModal
+            title="Add New Meeting"
+            onClose={onClose}
+            isOpen={isOpen}
+            onSave={() => onSave(formData)}
+            isLoading={isPending}
+        >
             <div className="flex flex-col px-5 mt-7">
                 {LearnerScheduleModalConstants.map((field: any) => (
                     <Input

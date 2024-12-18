@@ -14,6 +14,10 @@ const EventCard = ({ title, time, onEventClick, className, status, style }: Even
             bg: "bg-[#FEE2E2] border-[#FCA5A5] text-[#B91C1C]",
             dot: "bg-[#B91C1C]",
         },
+        completed: {
+            bg: "bg-blue-200 border !border-blue-600 text-blue",
+            dot: "bg-blue-600",
+        },
     };
 
     const currentStyle = statusStyles[status as keyof typeof statusStyles] || statusStyles.pending;

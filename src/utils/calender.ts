@@ -17,6 +17,8 @@ interface EventResponse {
     learner_last_name: string;
     learner_picture: string;
     status: string;
+    feedback_collected_from_learner: boolean;
+    feedback_collected_from_volunteer: boolean;
 }
 
 export const getCalendarEvents = async (
@@ -56,6 +58,8 @@ export const getCalendarEvents = async (
                     lastName: item.learner_last_name,
                     picture: item.learner_picture,
                 },
+                feedBackCollected:
+                    item.feedback_collected_from_learner || item.feedback_collected_from_volunteer,
             },
         })) || []
     );

@@ -4,15 +4,54 @@ import TagComponent from "@/components/common/Tag";
 import { getLocalStorage } from "@/utils/localStorage";
 import Image from "next/image";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { GET_API } from "@/api/request";
+import { endpoints } from "@/api/constants";
+import Cookies from "js-cookie";
+import { cookies } from "next/headers";
+import { useState } from "react";
+import { useAppStore } from "@/store/useAppStore";
 
 const Avatar = () => {
-    const text = getLocalStorage("role");
+    const role = Cookies.get("role");
+    const volunteerId = Cookies.get("volunteer_id");
+    const learnerId = Cookies.get("learner_id");
+    const [userName, setUserName] = useState("");
+    const { setLearnerName, setVolunteerName } = useAppStore();
+
+    const getUserName = async () => {
+        const endpoint =
+            role === "volunteer"
+                ? endpoints.volunteer.getIndividualVolunteer(volunteerId as string)
+                : endpoints.learner.getIndividualLearner(learnerId as string);
+        const response = await GET_API(endpoint);
+        if (response.data) {
+            if (role === "learner") {
+                const learnerName =
+                    response.data.learner_personal_info.learner_first_name +
+                    " " +
+                    response.data.learner_personal_info.learner_last_name;
+                setUserName(learnerName);
+                setLearnerName(learnerName);
+            } else {
+                const volunteerName =
+                    response.data.volunteer_first_name + " " + response.data.volunteer_last_name;
+                setUserName(volunteerName);
+                setVolunteerName(volunteerName);
+            }
+        }
+    };
+
+    const { data: volunteerData } = useQuery({
+        queryKey: ["volunteer"],
+        queryFn: () => getUserName(),
+    });
 
     return (
         <Link href={"profile"} className="flex flex-col items-center gap-2 p-2">
             <Image src={DummyProfileImg} alt="avatar" width={80} height={80} />
-            <p className="font-medium">Alexander Harris</p>
-            <TagComponent text={text} />
+            <p className="font-medium">{userName}</p>
+            <TagComponent text={role || ""} />
         </Link>
     );
 };

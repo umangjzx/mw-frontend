@@ -3,8 +3,6 @@ import { useQueryState } from "nuqs";
 import Button from "@/components/common/Button";
 import { cn, formatString } from "@/utils/merge-class";
 import { useComponentStore } from "@/store/useComponenetStore";
-import { useMemo, useEffect } from "react";
-import debounce from "lodash/debounce";
 
 const CommonHeader: React.FC = () => {
     const { headerOptions } = useComponentStore();
@@ -21,26 +19,8 @@ const CommonHeader: React.FC = () => {
         titleIconClick,
     } = headerOptions || {};
 
-    const debouncedSetQuery = useMemo(
-        () =>
-            debounce((value: string) => {
-                setSearchQuery(value === "" ? "" : value);
-            }, 500),
-        [setSearchQuery]
-    );
-
-    useEffect(() => {
-        return () => {
-            debouncedSetQuery.cancel();
-        };
-    }, [debouncedSetQuery]);
-
     const handleSearch = (value: string) => {
-        const inputElement = document.querySelector('input[name="search"]') as HTMLInputElement;
-        if (inputElement) {
-            inputElement.value = value;
-        }
-        debouncedSetQuery(value);
+        setSearchQuery(value === "" ? "" : value);
     };
 
     return (

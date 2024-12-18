@@ -58,7 +58,7 @@ export default function CommunityPage() {
     };
 
     return (
-        <div className="grid grid-cols-12 p-6 w-full h-full overflow-hidden">
+        <div className="grid grid-cols-12 p-6 w-full h-full overflow-hidden animate-fadeIn">
             <PostModal isOpen={mode === "add"} onClose={handleCloseModal} />
             <FeedViewModal isOpen={mode === "view"} onClose={handleCloseModal} />
             <div className="col-span-12 flex justify-between gap-4 overflow-hidden h-full w-full">

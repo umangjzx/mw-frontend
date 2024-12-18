@@ -25,7 +25,7 @@ export default function ProfilePage() {
     }, []);
 
     return (
-        <div className="h-full">
+        <div className="h-full animate-fadeIn">
             <div className="h-full w-full grid grid-cols-[1fr,2fr] gap-10 p-5">
                 <Bio />
                 <Overview />

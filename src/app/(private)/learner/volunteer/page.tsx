@@ -110,7 +110,7 @@ export default function LearnersPage() {
     }, [pathname, setHeaderOptions]);
 
     return (
-        <div className="grid grid-cols-3 gap-4 px-10 py-10">
+        <div className="grid grid-cols-3 gap-4 px-10 py-10 animate-fadeIn">
             <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleModal} />
             <VolunteerViewModal isOpen={isOpen} onClose={handleModal} />
             {isLoading ? (

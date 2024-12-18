@@ -15,12 +15,13 @@ export const endpoints: EndpointProps = {
     learner: {
         update: (id: string) => `learner/${id}`,
         getAllLearners: "learner",
-        getIndividualLearner: (id: string) => `learner/${id}`
+        getIndividualLearner: (id: string) => `learner/${id}`,
     },
     volunteer: {
         update: (id: string) => `volunteers/${id}`,
         getAllVolunteers: "volunteers",
         getIndividualVolunteer: (id: string) => `volunteers/${id}`,
+        getConnectedLearners: (id: string) => `volunteers/${id}/connected_learners`,
     },
     volunteer_slot: {
         update: "volunteer_slots",
@@ -39,6 +40,7 @@ export const endpoints: EndpointProps = {
                 status ? `?status=${status}` : ""
             }`,
         updateNotificationStatus: (id: string) => `session/${id}`,
+        markAsCompleted: (id: string) => `session/${id}/mark_as_completed`,
     },
     post: {
         createPost: "post",

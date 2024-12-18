@@ -134,7 +134,7 @@ const OverviewContent = ({ volunteerData }: { volunteerData: VolunteerData }) =>
         },
         {
             title: "Skills",
-            tags: volunteerData?.volunteer_skills.map((skill) => skill.skill_name),
+            tags: volunteerData?.volunteer_skills.map((skill) => skill.skill_id),
         },
     ];
 
@@ -203,8 +203,6 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
     const searchParams = useSearchParams();
     const volunteerId = searchParams.get("volunteerId");
     const router = useRouter();
-
-    console.log(volunteerId, "volunteerId Modal");
 
     const getIndividualVolunteer = async () => {
         const response: any = await GET_API(

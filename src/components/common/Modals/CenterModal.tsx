@@ -35,8 +35,8 @@ const CenterModal: React.FC<CenterModalProps> = ({
     };
 
     const buttons = [
-        <Button {...defaultButtonStyles.primaryActionProps} />,
         <Button {...defaultButtonStyles.secondaryActionProps} />,
+        <Button {...defaultButtonStyles.primaryActionProps} />,
     ];
 
     const footer = buttons.filter((button) => button);
@@ -71,7 +71,9 @@ const CenterModal: React.FC<CenterModalProps> = ({
             <div className={`flex w-full h-full flex-col`}>
                 {header}
                 {/* Modal Content */}
-                <div className="flex-1 overflow-y-auto max-h-[50vh] mb-4 pr-2 no-scrollbar">{children}</div>
+                <div className="flex-1 overflow-y-auto max-h-[50vh] mb-4 pr-2 no-scrollbar">
+                    {children}
+                </div>
             </div>
         </Modal>
     );
