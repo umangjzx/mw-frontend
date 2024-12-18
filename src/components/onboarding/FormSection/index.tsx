@@ -7,6 +7,12 @@ import CardWrapper from "../CardWrapper";
 import Button from "@/components/common/Button";
 import Link from "next/link";
 import { z } from "zod";
+import { useQuery } from "@tanstack/react-query";
+import { GET_API } from "@/api/request";
+import { endpoints } from "@/api/constants";
+import Cookies from "js-cookie";
+import { showToast } from "@/components/common/Toast";
+import { defaultLearnerData, defaultVolunteerData } from "./config";
 
 type FormSectionProps = {
     schema: z.ZodSchema;
@@ -17,15 +23,42 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
     const { form, onSubmit, isLoading } = useOnboardingForm(schema);
     const {
         control,
-        formState: { errors, isValid, dirtyFields },
+        formState: { errors, isValid, dirtyFields }
     } = form;
 
+    const role = Cookies.get("role");
+    const isVolunteer = role === "volunteer";
 
-    console.log(dirtyFields, errors, "dirtyFields" , control._formValues);
+    const userId = Cookies.get(isVolunteer ? "volunteer_id" : "learner_id") || "";
+    const endpoint = isVolunteer ? endpoints.volunteer.getIndividualVolunteer(userId) : endpoints.learner.getIndividualLearner(userId)
+
+    const { data: userData } = useQuery({
+        queryKey: [role],
+        queryFn: async () => {
+            const res = await GET_API(endpoint);
+            return res.data;
+        },
+    })
+    form.setValue(isVolunteer ? "volunteer_contact_details.email" : "learner_personal_info.learner_contact_details.email", userData?.email)
+    
+    const validateForm = () => isValid ? showToast({ type: "success", message: "Form Submitted" }) : showToast({ type: "error", message: "Fill required fields!" });
+
+    console.log(dirtyFields, errors, "dirtyFields", control._formValues);
 
     return (
         <form onSubmit={onSubmit} className='w-full pb-16'>
             <div className='max-w-7xl p-10 bg-white rounded-3xl mx-auto px-4 sm:px-6 lg:px-8'>
+                {/* Auto Form Fill - Only for Dev */}
+                <div className="flex items-end justify-end">
+                    <Button
+                        loading={isLoading}
+                        onClick={() => { form.reset(isVolunteer ? defaultVolunteerData : defaultLearnerData) }}
+                        title='Fill Form'
+                        size='large'
+                        customClassName='w-fit hover:!bg-green-700 !text-sm !bg-green-700 !text-white !rounded-lg !shadow-2xl !font-bold'
+                    />
+                </div>
+
                 {formData.map((section, sectionIndex) => (
                     <div key={section.title} className={sectionIndex > 0 ? "mt-12" : ""}>
                         {section.title && (
@@ -80,6 +113,7 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
                     <Button
                         loading={isLoading}
                         htmlType='submit'
+                        onClick={validateForm}
                         title='Submit Application'
                         size='large'
                         customClassName='w-fit hover:!bg-background-secondary !text-sm !bg-background-secondary !text-black !rounded-lg !shadow-2xl !font-normal'

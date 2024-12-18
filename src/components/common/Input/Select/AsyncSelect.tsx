@@ -146,6 +146,7 @@ const AsyncSelect = ({
         <div className="flex flex-col gap-2 w-full">
             <CreatableSelect
                 {...props}
+                required={false}
                 isMulti={variant === "multi"}
                 options={options}
                 value={getValue}

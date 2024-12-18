@@ -7,6 +7,7 @@ type FormField = {
         | "radio"
         | "checkbox"
         | "datepicker"
+        | "birthdatepicker"
         | "textarea"
         | "parent"
         | "multiselect"
@@ -30,6 +31,7 @@ type FormField = {
     endpoint?: string;
     responseAsLabel?: string;
     responseAsValue?: string[] | string;
+    birthDatePicker?: { minAge: number, maxAge: number };
 } & Partial<BaseFormField>;
 
 type BaseFormField = Omit<InputProps, "value" | "onChange" | "inputType"> & {

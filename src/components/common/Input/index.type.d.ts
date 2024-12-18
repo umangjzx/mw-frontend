@@ -61,6 +61,14 @@ type DatePickerInputProps = BaseInputProps & {
     placeholder?: string;
 };
 
+type BirthDatePickerInputProps = BaseInputProps & {
+    inputType: "birthdatepicker";
+    value?: Date | string | null;
+    onChange: (value: Date | string | string[] | null) => void;
+    placeholder?: string;
+    birthDatePicker: { minAge: number | 0, maxAge: number | 100 }
+};
+
 type CheckboxInputProps = BaseInputProps & {
     inputType: "checkbox";
     value: boolean;
@@ -110,6 +118,7 @@ type BaseAsyncSelectProps = BaseInputProps & {
     inputType: "async-select";
     variant: "multi" | "single";
     creatable?: boolean;
+    allowCreate: boolean;
     endpoint: CommonPath;
     responseAsLabel: string;
     responseAsValue: string | string[] | "payload" | null;
@@ -150,6 +159,7 @@ type InputProps =
     | SelectInputProps
     | MultiSelectInputProps
     | DatePickerInputProps
+    | BirthDatePickerInputProps
     | CheckboxInputProps
     | RadioInputProps
     | UploadProps

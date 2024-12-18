@@ -18,7 +18,7 @@ type Volunteer = {
     volunteer_subjects: Volunteersubject[];
     volunteer_skills: Volunteerskill[];
     volunteer_education: string;
-    education_details: string;
+    education_details?: string;
 };
 
 type Consentandpermissions = {

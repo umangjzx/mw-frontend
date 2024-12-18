@@ -1,5 +1,5 @@
 import React from "react";
-import { Input as AntInput, Checkbox, TimePicker } from "antd";
+import { Input as AntInput, Checkbox, TimePicker, DatePicker as AntDatePicker } from "antd";
 import { cn } from "@/utils/merge-class";
 import { IoIosSearch } from "react-icons/io";
 import RadioInput from "./RadioButton";
@@ -9,6 +9,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { AsyncSelect, MultiSelect } from "./Select";
 import { Select } from "./Select";
 import ContactInput from "../ContactInput";
+import dayjs from "dayjs";
 
 const { TextArea } = AntInput;
 
@@ -47,9 +48,8 @@ export const Input: React.FC<InputProps> = (props) => {
         return (
             <label htmlFor={name} className={`text-sm font-medium text-gray-700 ${labelClassName}`}>
                 <div
-                    className={`flex ${
-                        sublabelAlignment === "right" ? "items-center" : "flex-col items-start"
-                    } gap-1`}
+                    className={`flex ${sublabelAlignment === "right" ? "items-center" : "flex-col items-start"
+                        } gap-1`}
                 >
                     {labelContent}
                     {sublabelContent}
@@ -155,7 +155,27 @@ export const Input: React.FC<InputProps> = (props) => {
                         />
                     </div>
                 );
+            case "birthdatepicker":
+                const { birthDatePicker } = props;
+                const startDate = dayjs().subtract(birthDatePicker?.maxAge || 100, 'year')
+                const endDate = dayjs().subtract(birthDatePicker?.minAge || 0, 'year')
+                const disabledDate = (current: any) => current && (current.isBefore(startDate, 'day') || current.isAfter(endDate, 'day'));
 
+                return (
+                    <div>
+                        <AntDatePicker
+                            value={props.value ? dayjs(props.value) : null}
+                            disabledDate={disabledDate}
+                            onChange={(date, dateString) => props.onChange(dateString)}
+                            format="YYYY-MM-DD"
+                            placeholder="Click to select date"
+                            className={cn(
+                                "w-full text-sm p-2 rounded-lg border border-stroke focus:!border-stroke focus:!bg-background-input placeholder:text-sm hover:bg-background-input bg-background-input",
+                                props.inputClassName
+                            )}
+                        />
+                    </div>
+                );
             case "checkbox":
                 return (
                     <Checkbox
@@ -173,7 +193,7 @@ export const Input: React.FC<InputProps> = (props) => {
                 return <RadioInput {...props} />;
 
             case "upload":
-                return <Uploader {...props}   />;
+                return <Uploader {...props} />;
             case "contact-input":
                 return <ContactInput {...props} />;
             case "timerange":
@@ -217,7 +237,7 @@ export const Input: React.FC<InputProps> = (props) => {
         <div className={`mb-4 w-full h-auto flex flex-col gap-2 ${className}`}>
             {renderLabel()}
             {renderInput()}
-            {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+            {error && <p className="text-xs text-red-500">{error}</p>}
         </div>
     );
 };

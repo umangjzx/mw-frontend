@@ -12,8 +12,7 @@ import Cookies from "js-cookie";
 export default function OnboardingPage () {
     const role = Cookies.get("role");
 
-    const titleSectionConstants =
-        role === "volunteer" ? VolunteerOnboardingConstants : LearnerOnboardingConstants;
+    const titleSectionConstants = role === "volunteer" ? VolunteerOnboardingConstants : LearnerOnboardingConstants;
     const formData = role === "volunteer" ? VolunteerFormSections : LearnerFormSections;
     const schema = role === "volunteer" ? volunteerFormSchema : learnerFormSchema;
 
