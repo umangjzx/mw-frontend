@@ -13,7 +13,6 @@ import { useQueryState } from "nuqs";
 import { useEffect } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 
-
 //TODO: Needs to be deleted
 const TopicData = [
     {
@@ -29,8 +28,7 @@ const ResourceData = [
     },
 ];
 
-
-export default function ResourcesPage () {
+export default function ResourcesPage() {
     const { setHeaderOptions } = useComponentStore();
     const [category, setCategory] = useQueryState("category");
     const [_, setId] = useQueryState("id");
@@ -54,7 +52,7 @@ export default function ResourcesPage () {
     useEffect(() => {
         const headerTitle = category || "Resources";
         const titleIcon =
-            category !== null ? <IoIosArrowBack className='text-lg' /> : getHeaderIcon(pathname);
+            category !== null ? <IoIosArrowBack className="text-lg" /> : getHeaderIcon(pathname);
 
         //* Used zustand to update the props of common header component
         setHeaderOptions({
@@ -86,8 +84,7 @@ export default function ResourcesPage () {
     };
 
     return (
-        <div className='w-full h-full pt-8 flex flex-col gap-2 p-4'>
-
+        <div className="w-full h-full pt-8 flex flex-col gap-2 p-4 animate-fadeIn">
             {/* Resource Modal */}
             <ResourceModal
                 isOpen={mode !== null && mode !== "view"}
@@ -96,16 +93,13 @@ export default function ResourcesPage () {
             />
 
             {/* Detail Modal */}
-            <DetailModal
-                isOpen={mode === "view"}
-                onClose={handleCloseModal}
-            />
+            <DetailModal isOpen={mode === "view"} onClose={handleCloseModal} />
 
             {/* Topics */}
             <SectionWrapper
                 hideSectionHeader={category !== null}
                 data={TopicData}
-                title='Topics'
+                title="Topics"
                 renderItem={(item, index) => (
                     <TopicCard
                         onClick={() => handleTopicClick(item.title)}
@@ -122,7 +116,7 @@ export default function ResourcesPage () {
                 data={ResourceData}
                 title={category !== null ? undefined : "Resources"}
                 renderItem={(item, index) => (
-                    <Card onClick={() => handleViewOrEditResource("view",item?.id)} />
+                    <Card onClick={() => handleViewOrEditResource("view", item?.id)} />
                 )}
             />
         </div>

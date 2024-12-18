@@ -33,6 +33,7 @@ const SectionCard = ({ href, text, icon, textColor, onClick }: SectionCardProps)
                     {icon}
                 </span>
                 <p
+                    style={textColor ? { color: textColor } : undefined}
                     className={`!text-[${textColor}] transition-all duration-300 font-medium ${
                         isActive && !textColor ? "text-primary" : ""
                     }`}

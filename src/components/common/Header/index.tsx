@@ -19,6 +19,10 @@ const CommonHeader: React.FC = () => {
         titleIconClick,
     } = headerOptions || {};
 
+    const handleSearch = (value: string) => {
+        setSearchQuery(value === "" ? "" : value);
+    };
+
     return (
         <div className="w-full h-full p-2 px-3 flex items-center justify-between">
             <div className="flex capitalize items-center">
@@ -44,7 +48,7 @@ const CommonHeader: React.FC = () => {
                     name="search"
                     inputClassName="!bg-transparent mt-4 !rounded-xl gap-1 items-center"
                     className="!bg-transparent !w-fit"
-                    onChange={(value: string) => setSearchQuery(value)}
+                    onChange={handleSearch}
                     placeholder={searchPlaceholder ?? "Search"}
                 />
                 {showButton && (

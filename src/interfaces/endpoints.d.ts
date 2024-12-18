@@ -18,6 +18,7 @@ type EndpointProps = {
         update: (id: string) => string;
         getAllVolunteers: string;
         getIndividualVolunteer: (id: string) => string;
+        getConnectedLearners: (id: string) => string;
     };
     volunteer_slot: {
         update: string;
@@ -36,6 +37,7 @@ type EndpointProps = {
             month?: string,
             status?: string
         ) => string;
+        markAsCompleted: (id: string) => string;
     };
     resources: {
         create: string;
@@ -52,12 +54,12 @@ type EndpointProps = {
     common: (path: CommonPath) => string;
     volunterFeedback: {
         create: string;
-        get: string;
+        get: (id: string) => string;
         update: string;
     };
     learnerFeedback: {
         create: string;
-        get: string;
+        get: (id: string) => string;
         update: string;
     };
 };

@@ -11,6 +11,7 @@ import { endpoints } from "@/api/constants";
 import { useQuery } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 import { getCalendarEvents } from "@/utils/calender";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function LearnerSchedulePage() {
     const [isOpenSchedule, setIsOpenSchedule] = useState(false);
@@ -19,6 +20,7 @@ export default function LearnerSchedulePage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { eventDetails, currentMonth } = useAppStore();
+    const queryClient = useQueryClient();
 
     const modal = searchParams.get("modal");
     const learnerId = Cookies.get("learner_id");
@@ -34,18 +36,16 @@ export default function LearnerSchedulePage() {
         router.push(`/learner/schedule?current_month=${currentMonth}`);
     };
 
-    const handleSubmitFeedback = async (formData: any) => {
-        try {
-            const payload = {
-                comment: formData?.notes,
-                volunteer_commitment_level: formData?.rating || 0,
-                ...eventDetails,
-            };
-            await POST_API(endpoints.learnerFeedback.create, payload);
+    const handleSubmitFeedback = (formData: any) => {
+        const payload = {
+            comment: formData?.notes,
+            volunteer_commitment_level: formData?.rating || 0,
+            ...eventDetails,
+        };
+        POST_API(endpoints.learnerFeedback.create, payload).then(() => {
             handleNavigate();
-        } catch (err) {
-            console.log(err, "err for feedback");
-        }
+            queryClient.invalidateQueries({ queryKey: ["events", currentMonth] });
+        });
     };
 
     useEffect(() => {
@@ -54,7 +54,7 @@ export default function LearnerSchedulePage() {
     }, [modal]);
 
     return (
-        <div className="w-full h-full">
+        <div className="w-full h-full animate-fadeIn">
             <Calendar events={data || []} />
             <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleNavigate} />
             <FeedbackModal

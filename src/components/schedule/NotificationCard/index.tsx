@@ -87,7 +87,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ data }) => {
                     onClick={() => handleNotificationStatus("rejected", data.session_id)}
                     btnVariant="error"
                     icon={<MdClose className="text-[1.1rem]" />}
-                    className="w-full text-sm h-9 border-error-light rounded-xl py-2"
+                    className="w-full text-sm  h-9 !bg-error-light !border-error-light rounded-xl py-2 hover:!text-error"
                 >
                     Decline
                 </Button>
@@ -95,7 +95,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ data }) => {
                     onClick={() => handleNotificationStatus("accepted", data.session_id)}
                     btnVariant="success"
                     icon={<IoMdCheckmark className="text-[1.1rem]" />}
-                    className="w-full text-sm h-9 border-success-light rounded-xl py-2"
+                    className="w-full text-sm h-9 !bg-success-light !border-success-light rounded-xl py-2 hover:!text-success "
                 >
                     Accept
                 </Button>

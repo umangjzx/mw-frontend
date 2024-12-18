@@ -39,28 +39,28 @@ const LearnersTable: React.FC<LearnersTableProps> = ({
             dataIndex: "name",
             key: "name",
             sorter: true,
-            className: "px-6 py-4 text-sm w-1/5 font-medium text-gray-900",
+            className: "!pl-7 px-6 py-4 text-sm w-1/5 font-medium text-gray-900",
         },
         {
             title: "Classes Taken",
             dataIndex: "classesTaken",
             key: "classesTaken",
             sorter: true,
-            className: "px-6 py-4 text-sm w-1/5 bg-gray-50 text-gray-900",
+            className: "!pl-7 px-6 py-4 text-sm w-1/5 bg-gray-50 text-gray-900",
         },
         {
             title: "Subject",
             dataIndex: "subject",
             key: "subject",
             sorter: false,
-            className: "px-6 py-4 w-1/5 text-sm text-gray-900",
+            className: "!pl-7 px-6 py-4 w-1/5 text-sm text-gray-900",
         },
         {
             title: "Actions",
             key: "actions",
             render: (_: any, record: Learner) => (
                 <div className="flex items-center gap-2">
-                    <Button
+                    {/* <Button
                         onClick={() => handleMessageLearner(record.id)}
                         btnVariant="link"
                         title="Message Learner"
@@ -69,7 +69,7 @@ const LearnersTable: React.FC<LearnersTableProps> = ({
                         onClick={() => handleUploadTestimonial(record.id)}
                         btnVariant="link"
                         title="Upload Testimonial"
-                    />
+                    /> */}
                 </div>
             ),
             className: "px-6 py-4",

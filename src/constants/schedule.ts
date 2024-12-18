@@ -36,12 +36,12 @@ export const LearnerFeedbackFormConstants: FormField[] = [
         inputType: "textarea",
         placeholder: "Enter comments here",
     },
-    {
-        name: "uploadPictures",
-        label: "Do you want to upload any pictures to share in the community/forum?",
-        inputType: "upload",
-        maxFiles: 5,
-    },
+    // {
+    //     name: "uploadPictures",
+    //     label: "Do you want to upload any pictures to share in the community/forum?",
+    //     inputType: "upload",
+    //     maxFiles: 5,
+    // },
 ];
 
 export const LearnerScheduleModalConstants = [

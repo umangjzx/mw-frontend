@@ -62,8 +62,8 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
     const startTime = moment(event.start).local().format("dddd, MMMM D, h:mm A");
     const endTime = moment(event.end).local().format("h:mm A");
     const { title, extendedProps } = eventData;
-    const { meetLink, learner, status, sessionId } = extendedProps;
-    console.log(extendedProps, "extendedProps from meeting preview modal");
+    const { meetLink, learner, status, sessionId, feedBackCollected } = extendedProps;
+    console.log(feedBackCollected, "extendedProps from meeting preview modal");
 
     const handleNotificationStatus = (status: string, sessionId: string) => {
         PUT_API(endpoints.session.updateNotificationStatus(sessionId), {
@@ -71,6 +71,8 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
         })
             .then(() => {
                 queryClient.invalidateQueries({ queryKey: ["approval-notifications"] });
+                queryClient.invalidateQueries({ queryKey: ["events"] });
+                onClose();
             })
             .catch((err) => {
                 console.log("Error: ", err);
@@ -79,6 +81,45 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
 
     const handleFeedBack = () => {
         router.push(`/${role}/schedule?current_month=${currentMonth}&modal=feedback`);
+    };
+
+    const handleMarkAsCompleted = () => {
+        PUT_API(endpoints.session.markAsCompleted(sessionId), {}).then(() => {
+            queryClient.invalidateQueries({ queryKey: ["events"] });
+            onClose();
+        });
+    };
+
+    const renderFeedback = () => {
+        if (!feedBackCollected) {
+            return (
+                <div>
+                    <div className="flex items-center justify-between gap-3">
+                        <p className="font-medium text-sm text-gray-light">Meeting Completed</p>
+                        <p
+                            onClick={handleFeedBack}
+                            className="text-primary text-sm underline cursor-pointer font-medium"
+                        >
+                            Completed Feedback
+                        </p>
+                    </div>
+                </div>
+            );
+        } else if (feedBackCollected) {
+            return (
+                <div>
+                    <div className="flex items-center justify-between gap-3">
+                        <p className="font-medium text-sm text-success">Feedback Completed</p>
+                        {/* <p
+                            onClick={handleFeedBack}
+                            className="text-primary text-sm underline font-medium"
+                        >
+                            See Feedback
+                        </p> */}
+                    </div>
+                </div>
+            );
+        }
     };
 
     return createPortal(
@@ -139,26 +180,19 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                     </p>
                 </div>
                 <Divider />
-                <div className="flex items-center justify-between gap-3">
-                    <p className="font-medium text-sm text-[#16A34A]">Feedback Completed</p>
-                    <p
-                        onClick={handleFeedBack}
-                        className="text-primary text-sm underline font-medium"
-                    >
-                        See Feedback
-                    </p>
-                </div>
-                <Divider />
-                {status === "rejected" && (
+                {status === "completed" && renderFeedback()}
+                {status === "accepted" && (
                     <div className="flex items-center justify-between gap-3">
                         <p className="text-gray-light font-medium text-sm">Availability Status</p>
-                        {/* <Button
-                            title="Mark as Available"
-                            customClassName="w-fit bg-white !text-[#DC2626] border border-[#DC2626] text-sm rounded-full !py-0 !px-5"
-                        /> */}
-                        {status === "rejected" && (
+                        {status === "accepted" ? (
+                            <Button
+                                onClick={() => handleMarkAsCompleted()}
+                                title="Mark as completed"
+                                customClassName="w-fit bg-white !text-[#DC2626] border border-[#DC2626] text-sm rounded-full !py-0 !px-5"
+                            />
+                        ) : (
                             <p className="text-[#DC2626] font-medium text-xs">
-                                {`${learner.firstName} rejected your meeting request.`}
+                                {`${learner.firstName} completed the meeting`}
                             </p>
                         )}
                     </div>
@@ -169,7 +203,7 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                             onClick={() => handleNotificationStatus("rejected", sessionId)}
                             btnVariant="error"
                             icon={<MdClose className="text-[1.1rem]" />}
-                            className="w-full text-sm h-9 border-error-light rounded-xl py-2"
+                            className="w-full text-sm  h-9 !bg-error-light !border-error-light rounded-xl py-2 hover:!text-error"
                         >
                             Decline
                         </Button>
@@ -177,7 +211,7 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                             onClick={() => handleNotificationStatus("accepted", sessionId)}
                             btnVariant="success"
                             icon={<IoMdCheckmark className="text-[1.1rem]" />}
-                            className="w-full text-sm h-9 border-success-light rounded-xl py-2"
+                            className="w-full text-sm h-9 !bg-success-light !border-success-light rounded-xl py-2 hover:!text-success "
                         >
                             Accept
                         </Button>

@@ -8,6 +8,7 @@ import {
     LearnerIcon,
     ResourceIcon,
     SignOutIcon,
+    VolunteerIcon,
 } from "@/assets/icons";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
@@ -35,7 +36,7 @@ const Sidebar = () => {
             : {
                   href: "/volunteer",
                   text: "Volunteer",
-                  icon: <LearnerIcon />,
+                  icon: <VolunteerIcon />,
               };
 
     const remainingLinks = [

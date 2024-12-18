@@ -3,7 +3,7 @@ import Divider from "@/components/common/Divider";
 import Image from "next/image";
 import React from "react";
 import { IoStarSharp } from "react-icons/io5";
-
+import moment from "moment";
 const RatingCard: React.FC<RatingCardProps> = ({ profileImg, name, rating, day, review }) => {
     return (
         <div className="flex flex-col gap-5">
@@ -25,7 +25,9 @@ const RatingCard: React.FC<RatingCardProps> = ({ profileImg, name, rating, day, 
                             <IoStarSharp className="text-[1rem] text-[#FFD700]" />
                         </div>
                         <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
-                        <p className="font-semibold text-black text-sm">{day}</p>
+                        <p className="font-semibold text-black text-sm">
+                            {moment(day).format("DD MMM YYYY")}
+                        </p>
                     </div>
                     <p className="text-sm font-normal text-gray-light">{review}</p>
                 </div>

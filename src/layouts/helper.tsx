@@ -1,4 +1,4 @@
-import { CommunityIcon, LearnerIcon, ResourceIcon } from "@/assets/icons";
+import { CommunityIcon, LearnerIcon, ResourceIcon, VolunteerIcon } from "@/assets/icons";
 import CommonHeader from "@/components/common/Header";
 import { CalenderHeader } from "@/components/schedule";
 
@@ -16,6 +16,8 @@ export const getHeaderIcon = (pathname: string) => {
             return <ResourceIcon />;
         case "community":
             return <CommunityIcon />;
+        case "volunteer":
+            return <VolunteerIcon />;
         default:
             return null;
     }

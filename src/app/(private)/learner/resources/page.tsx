@@ -84,7 +84,7 @@ export default function ResourcesPage() {
     };
 
     return (
-        <div className="w-full h-full pt-8 flex flex-col gap-2 p-4">
+        <div className="w-full h-full pt-8 flex flex-col gap-2 p-4 animate-fadeIn">
             {/* Resource Modal */}
             <ResourceModal
                 isOpen={mode !== null && mode !== "view"}

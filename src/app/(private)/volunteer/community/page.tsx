@@ -12,7 +12,7 @@ import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { useEffect } from "react";
 
-export default function CommunityPage () {
+export default function CommunityPage() {
     const { setHeaderOptions } = useComponentStore();
     const pathname = usePathname();
     const [mode, setMode] = useQueryState("mode");
@@ -58,11 +58,11 @@ export default function CommunityPage () {
     };
 
     return (
-        <div className='grid grid-cols-12 p-6 w-full h-full overflow-hidden'>
+        <div className="grid grid-cols-12 p-6 w-full h-full overflow-hidden animate-fadeIn">
             <PostModal isOpen={mode === "add"} onClose={handleCloseModal} />
             <FeedViewModal isOpen={mode === "view"} onClose={handleCloseModal} />
-            <div className='col-span-12 flex justify-between gap-4 overflow-hidden h-full w-full'>
-                <div className='col-span-8 w-full bg-white rounded-3xl mb-6 h-full overflow-auto no-scrollbar p-6 flex flex-col gap-4'>
+            <div className="col-span-12 flex justify-between gap-4 overflow-hidden h-full w-full">
+                <div className="col-span-8 w-full bg-white rounded-3xl mb-6 h-full overflow-auto no-scrollbar p-6 flex flex-col gap-4">
                     <h2>{title}</h2>
                     {posts.map((post: any, index: number) =>
                         activeTab === "your_notifications" ? (
@@ -72,7 +72,7 @@ export default function CommunityPage () {
                         )
                     )}
                 </div>
-                <div className='col-span-3'>
+                <div className="col-span-3">
                     <ActionPanel />
                 </div>
             </div>

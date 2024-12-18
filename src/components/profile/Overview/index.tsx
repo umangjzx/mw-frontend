@@ -68,7 +68,7 @@ const Overview = () => {
             </div>
             <Divider />
             <ReviewFilter />
-            <RatingHeader />
+            <RatingHeader rating={4.5} totalReviews={120} />
             <div className="flex flex-col gap-5 h-[60vh] overflow-y-auto">
                 {ratingCard.map((item, index) => (
                     <RatingCard key={index} {...item} />
