@@ -178,7 +178,7 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                             onClick={() => handleNotificationStatus("rejected", sessionId)}
                             btnVariant="error"
                             icon={<MdClose className="text-[1.1rem]" />}
-                            className="w-full text-sm h-9 border-error-light rounded-xl py-2"
+                            className="w-full text-sm  h-9 !bg-error-light !border-error-light rounded-xl py-2 hover:!text-error"
                         >
                             Decline
                         </Button>
@@ -186,7 +186,7 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                             onClick={() => handleNotificationStatus("accepted", sessionId)}
                             btnVariant="success"
                             icon={<IoMdCheckmark className="text-[1.1rem]" />}
-                            className="w-full text-sm h-9 border-success-light rounded-xl py-2"
+                            className="w-full text-sm h-9 !bg-success-light !border-success-light rounded-xl py-2 hover:!text-success "
                         >
                             Accept
                         </Button>
