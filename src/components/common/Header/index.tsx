@@ -3,6 +3,8 @@ import { useQueryState } from "nuqs";
 import Button from "@/components/common/Button";
 import { cn, formatString } from "@/utils/merge-class";
 import { useComponentStore } from "@/store/useComponenetStore";
+import { useMemo, useEffect } from "react";
+import debounce from "lodash/debounce";
 
 const CommonHeader: React.FC = () => {
     const { headerOptions } = useComponentStore();
@@ -18,6 +20,28 @@ const CommonHeader: React.FC = () => {
         title,
         titleIconClick,
     } = headerOptions || {};
+
+    const debouncedSetQuery = useMemo(
+        () =>
+            debounce((value: string) => {
+                setSearchQuery(value === "" ? "" : value);
+            }, 500),
+        [setSearchQuery]
+    );
+
+    useEffect(() => {
+        return () => {
+            debouncedSetQuery.cancel();
+        };
+    }, [debouncedSetQuery]);
+
+    const handleSearch = (value: string) => {
+        const inputElement = document.querySelector('input[name="search"]') as HTMLInputElement;
+        if (inputElement) {
+            inputElement.value = value;
+        }
+        debouncedSetQuery(value);
+    };
 
     return (
         <div className="w-full h-full p-2 px-3 flex items-center justify-between">
@@ -44,7 +68,7 @@ const CommonHeader: React.FC = () => {
                     name="search"
                     inputClassName="!bg-transparent mt-4 !rounded-xl gap-1 items-center"
                     className="!bg-transparent !w-fit"
-                    onChange={(value: string) => setSearchQuery(value)}
+                    onChange={handleSearch}
                     placeholder={searchPlaceholder ?? "Search"}
                 />
                 {showButton && (

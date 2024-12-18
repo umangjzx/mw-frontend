@@ -14,7 +14,7 @@ const AvailableSlotsRadioGroup: React.FC<AvailableSlotsRadioGroupProps> = ({
     }
 
     return (
-        <div className="mt-4">
+        <div className="mb-4">
             <p className="text-sm font-medium mb-2">Available Slots:</p>
             <Radio.Group
                 size="small"

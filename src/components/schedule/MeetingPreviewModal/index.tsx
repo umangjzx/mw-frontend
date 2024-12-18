@@ -71,6 +71,7 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
         })
             .then(() => {
                 queryClient.invalidateQueries({ queryKey: ["approval-notifications"] });
+                queryClient.invalidateQueries({ queryKey: ["events"] });
             })
             .catch((err) => {
                 console.log("Error: ", err);
@@ -139,30 +140,38 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                     </p>
                 </div>
                 <Divider />
-                <div className="flex items-center justify-between gap-3">
-                    <p className="font-medium text-sm text-[#16A34A]">Feedback Completed</p>
-                    <p
-                        onClick={handleFeedBack}
-                        className="text-primary text-sm underline font-medium"
-                    >
-                        See Feedback
-                    </p>
-                </div>
-                <Divider />
-                {status === "rejected" && (
-                    <div className="flex items-center justify-between gap-3">
-                        <p className="text-gray-light font-medium text-sm">Availability Status</p>
-                        {/* <Button
-                            title="Mark as Available"
-                            customClassName="w-fit bg-white !text-[#DC2626] border border-[#DC2626] text-sm rounded-full !py-0 !px-5"
-                        /> */}
-                        {status === "rejected" && (
-                            <p className="text-[#DC2626] font-medium text-xs">
-                                {`${learner.firstName} rejected your meeting request.`}
+                {status === "completed" && (
+                    <div>
+                        <div className="flex items-center justify-between gap-3">
+                            <p className="font-medium text-sm text-[#16A34A]">Feedback Completed</p>
+                            <p
+                                onClick={handleFeedBack}
+                                className="text-primary text-sm underline font-medium"
+                            >
+                                See Feedback
                             </p>
-                        )}
+                        </div>
+                        <Divider />
                     </div>
                 )}
+                {status === "accepted" ||
+                    (status === "completed" && (
+                        <div className="flex items-center justify-between gap-3">
+                            <p className="text-gray-light font-medium text-sm">
+                                Availability Status
+                            </p>
+                            {status === "accepted" ? (
+                                <Button
+                                    title="Mark as completed"
+                                    customClassName="w-fit bg-white !text-[#DC2626] border border-[#DC2626] text-sm rounded-full !py-0 !px-5"
+                                />
+                            ) : (
+                                <p className="text-[#DC2626] font-medium text-xs">
+                                    {`${learner.firstName} completed the meeting`}
+                                </p>
+                            )}
+                        </div>
+                    ))}
                 {status === "pending" && role === "volunteer" && (
                     <div className="flex items-center gap-2 w-full">
                         <Button

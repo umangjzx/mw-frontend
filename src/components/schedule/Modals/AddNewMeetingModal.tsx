@@ -7,10 +7,11 @@ import {
     LearnerScheduleModalConstants,
     LearnerScheduleModalDescriptionConstants,
 } from "@/constants/schedule";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import AvailableSlots from "../AvailableSlots/AvailableSlots";
+import { useSearchParams } from "next/navigation";
 
 interface FormData {
     title_of_the_meeting: string;
@@ -28,7 +29,9 @@ interface AddNewMeetingModalProps {
     onClose: () => void;
 }
 
-const AddNewMeetingModal: React.FC<AddNewMeetingModalProps> = ({ isOpen, onClose }) => {
+export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingModalProps) {
+    if (!isOpen) return null;
+
     const [formData, setFormData] = useState<FormData>({
         title_of_the_meeting: "",
         select_volunteer: "",
@@ -42,27 +45,31 @@ const AddNewMeetingModal: React.FC<AddNewMeetingModalProps> = ({ isOpen, onClose
     const [availableSlots, setAvailableSlots] = useState<any[]>([]);
     const [volunteers, setVolunteers] = useState<Array<{ label: string; value: string }>>([]);
     const queryClient = useQueryClient();
+    const searchParams = useSearchParams();
+    const volunteerId = searchParams.get("volunteerId");
 
-    // Fetch volunteers when modal opens
-    useEffect(() => {
-        const fetchVolunteers = async () => {
-            try {
-                const response = await GET_API(endpoints.volunteer.getAllVolunteers);
-                console.log(response, "response volunteers");
-                const volunteerOptions = response.data.items.map((volunteer: any) => ({
-                    label: volunteer.volunteer_first_name + " " + volunteer.volunteer_last_name, // Adjust according to your API response structure
-                    value: volunteer.volunteer_id,
-                }));
-                setVolunteers(volunteerOptions);
-            } catch (error) {
-                console.error("Error fetching volunteers:", error);
+    const getVolunteers = async () => {
+        const response = await GET_API(endpoints.volunteer.getAllVolunteers);
+        const volunteerOptions = response.data.items.map((volunteer: any) => ({
+            label: volunteer.volunteer_first_name + " " + volunteer.volunteer_last_name, // Adjust according to your API response structure
+            value: volunteer.volunteer_id,
+        }));
+        if (volunteerId) {
+            const volunteer = volunteerOptions.find(
+                (volunteer: any) => volunteer.value === volunteerId
+            );
+            if (volunteer) {
+                setFormData((prev) => ({ ...prev, select_volunteer: volunteer.value }));
             }
-        };
-
-        if (isOpen) {
-            fetchVolunteers();
         }
-    }, [isOpen]);
+        setVolunteers(volunteerOptions);
+    };
+
+    const { data, isLoading, isError } = useQuery({
+        queryKey: ["volunteers"],
+        queryFn: getVolunteers,
+        enabled: isOpen,
+    });
 
     const handleChange = async (name: string, value: any) => {
         setFormData((prev) => ({
@@ -164,6 +171,7 @@ const AddNewMeetingModal: React.FC<AddNewMeetingModalProps> = ({ isOpen, onClose
                         onChange={(value: any) => handleChange(field.name, value)}
                         value={formData[field.name as keyof FormData]}
                         required={field.required}
+                        disabled={field.name === "select_volunteer" && volunteerId}
                     />
                 ))}
                 <AvailableSlots
@@ -183,6 +191,4 @@ const AddNewMeetingModal: React.FC<AddNewMeetingModalProps> = ({ isOpen, onClose
             </div>
         </SideModal>
     );
-};
-
-export default AddNewMeetingModal;
+}

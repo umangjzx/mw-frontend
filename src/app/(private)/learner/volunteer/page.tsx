@@ -2,13 +2,15 @@
 
 import { getHeaderIcon } from "@/layouts/helper";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import VolunteerCard from "@/components/leaner/VolunteerCard";
 import VolunteerViewModal from "@/components/leaner/VolunteerViewModal";
 import { useQuery } from "@tanstack/react-query";
 import { GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import { useComponentStore } from "@/store/useComponenetStore";
+import AddNewMeetingModal from "@/components/schedule/Modals/AddNewMeetingModal";
+import { useQueryState } from "nuqs";
 
 interface VolunteerCardData {
     volunteerId: string;
@@ -28,15 +30,25 @@ export default function LearnersPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [volunteerCardData, setVolunteerCardData] = useState<VolunteerCardData[]>([]);
+    const [isOpenSchedule, setIsOpenSchedule] = useState(false);
+    const [size] = useQueryState("size", { defaultValue: "10" });
+    const [page] = useQueryState("page", { defaultValue: "1" });
+    const [query] = useQueryState("query");
 
     const getAllVolunteers = async () => {
-        const response: any = await GET_API(endpoints.volunteer.getAllVolunteers);
+        const endpoint = `${endpoints.volunteer.getAllVolunteers}?${new URLSearchParams({
+            query: query || "",
+            page: page,
+            size: size,
+        })}`;
+        const response: any = await GET_API(endpoint);
         return response.data;
     };
 
     const { data, isLoading, isError } = useQuery({
-        queryKey: ["volunteer"],
+        queryKey: ["volunteer", query, page, size],
         queryFn: () => getAllVolunteers(),
+        enabled: true,
     });
 
     useEffect(() => {
@@ -60,7 +72,7 @@ export default function LearnersPage() {
     console.log(volunteerCardData, "Volunteer Data");
 
     const handleModal = () => {
-        isOpen ? router.push("/learner/volunteer") : setIsOpen(!isOpen);
+        router.push("/learner/volunteer");
     };
 
     const handleSeeMoreClick = (volunteerId: string) => {
@@ -69,22 +81,29 @@ export default function LearnersPage() {
 
     useEffect(() => {
         const volunteerId = searchParams.get("volunteerId");
-        if (volunteerId) {
+        const modal = searchParams.get("modal");
+
+        if (modal === "add_new_meeting") {
+            setIsOpenSchedule(true);
+            setIsOpen(false);
+        } else if (volunteerId) {
             setIsOpen(true);
+            setIsOpenSchedule(false);
         } else {
             setIsOpen(false);
+            setIsOpenSchedule(false);
         }
     }, [searchParams]);
 
     useEffect(() => {
         setHeaderOptions({
             searchPlaceholder: "Find your tutor",
-            actionButtonTitle: "My Volunteers",
-            actionButtonOnClick: () => {},
-            actionButtonClassName:
-                "!bg-black hover:!border-none !text-white !rounded-xl hover:!bg-black hover:!text-white !h-[35px] !text-xs !py-2 px-4",
-            actionButtonPlacement: "right",
-            showButton: true,
+            // actionButtonTitle: "My Volunteers",
+            // actionButtonOnClick: () => {},
+            // actionButtonClassName:
+            //     "!bg-black hover:!border-none !text-white !rounded-xl hover:!bg-black hover:!text-white !h-[35px] !text-xs !py-2 px-4",
+            // actionButtonPlacement: "right",
+            // showButton: true,
             title: "Volunteer",
             titleIcon: getHeaderIcon(pathname),
         });
@@ -92,6 +111,7 @@ export default function LearnersPage() {
 
     return (
         <div className="grid grid-cols-3 gap-4 px-10 py-10">
+            <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleModal} />
             <VolunteerViewModal isOpen={isOpen} onClose={handleModal} />
             {isLoading ? (
                 <div>Loading...</div>

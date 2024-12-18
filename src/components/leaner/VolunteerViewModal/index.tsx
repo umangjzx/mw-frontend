@@ -17,15 +17,24 @@ import RatingHeader from "@/components/profile/Overview/RatingHeader";
 import { getLocalStorage } from "@/utils/localStorage";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { FaLocationDot } from "react-icons/fa6";
 
-const ProfileHeader = ({ text, onClose }: { text: string | null; onClose: () => void }) => (
+const ProfileHeader = ({
+    text,
+    onClose,
+    onScheduleMeeting,
+}: {
+    text: string | null;
+    onClose: () => void;
+    onScheduleMeeting: () => void;
+}) => (
     <div className="flex items-center justify-between px-5">
         <p className="font-medium text-xl">Profile</p>
         <div className="flex items-center gap-2">
             <Button
+                onClick={onScheduleMeeting}
                 title="Schedule a meeting"
                 className="text-sm !text-black !bg-[#dff5ff] !border-primary !border"
             />
@@ -61,7 +70,7 @@ const ProfileInfo = ({
         <div className="flex items-center gap-3">
             <div className="relative w-[80px] h-[80px] rounded-full shrink-0">
                 <Image
-                    src={volunteerData?.profile_picture?.image_url}
+                    src={DummyProfileImg}
                     alt="avatar"
                     fill
                     className="object-cover rounded-full w-full h-full"
@@ -193,6 +202,7 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
     const text = getLocalStorage("role");
     const searchParams = useSearchParams();
     const volunteerId = searchParams.get("volunteerId");
+    const router = useRouter();
 
     console.log(volunteerId, "volunteerId Modal");
 
@@ -237,10 +247,18 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
         );
     }
 
+    const handleScheduleMeeting = () => {
+        router.push(`/learner/volunteer?volunteerId=${volunteerId}&modal=add_new_meeting`);
+    };
+
     return (
         <ViewModal modalOpen={isOpen} onClose={onClose} width={855}>
             <div className="flex flex-col gap-4 py-4">
-                <ProfileHeader text={text} onClose={onClose} />
+                <ProfileHeader
+                    text={text}
+                    onClose={onClose}
+                    onScheduleMeeting={handleScheduleMeeting}
+                />
                 <Divider />
                 <ProfileInfo text={text} volunteerData={volunteerData} />
                 <Divider />
