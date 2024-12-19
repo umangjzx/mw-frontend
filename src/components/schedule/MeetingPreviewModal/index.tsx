@@ -94,7 +94,14 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
     const startTime = moment(event.start).local().format("dddd, MMMM D, h:mm A");
     const endTime = moment(event.end).local().format("h:mm A");
     const { title, extendedProps } = eventData;
-    const { meetLink, learner, status, sessionId, feedBackCollected } = extendedProps;
+    const {
+        meetLink,
+        learner,
+        status,
+        sessionId,
+        feedBackCollectedFromLearner,
+        feedBackCollectedFromVolunteer,
+    } = extendedProps;
 
     const handleFeedBack = () => {
         router.push(`/${role}/schedule?current_month=${currentMonth}&modal=feedback`);
@@ -112,8 +119,8 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
         showToast({ type: "success", message: "Link copied to clipboard" });
     };
 
-    const renderFeedback = () => {
-        if (!feedBackCollected) {
+    const renderFeedbackForVolunter = () => {
+        if (!feedBackCollectedFromVolunteer) {
             return (
                 <div>
                     <div className="flex items-center justify-between gap-3">
@@ -127,7 +134,7 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                     </div>
                 </div>
             );
-        } else if (feedBackCollected) {
+        } else if (feedBackCollectedFromVolunteer) {
             return (
                 <div>
                     <div className="flex items-center justify-between gap-3">
@@ -141,6 +148,46 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                     </div>
                 </div>
             );
+        }
+    };
+
+    const renderFeedbackForLearner = () => {
+        if (!feedBackCollectedFromLearner) {
+            return (
+                <div>
+                    <div className="flex items-center justify-between gap-3">
+                        <p className="font-medium text-sm text-gray-light">Meeting Completed</p>
+                        <p
+                            onClick={handleFeedBack}
+                            className="text-primary text-sm underline cursor-pointer font-medium"
+                        >
+                            Complete Feedback
+                        </p>
+                    </div>
+                </div>
+            );
+        } else if (feedBackCollectedFromLearner) {
+            return (
+                <div>
+                    <div className="flex items-center justify-between gap-3">
+                        <p className="font-medium text-sm text-success">Feedback Completed</p>
+                        {/* <p
+                            onClick={handleFeedBack}
+                            className="text-primary text-sm underline font-medium"
+                        >
+                            See Feedback
+                        </p> */}
+                    </div>
+                </div>
+            );
+        }
+    };
+
+    const renderFeedback = () => {
+        if (role === "volunteer") {
+            return renderFeedbackForVolunter();
+        } else if (role === "learner") {
+            return renderFeedbackForLearner();
         }
     };
 
