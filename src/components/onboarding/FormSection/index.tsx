@@ -39,9 +39,9 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
             return res.data;
         },
     })
-    form.setValue(isVolunteer ? "volunteer_contact_details.email" : "learner_personal_info.learner_contact_details.email", userData?.email)
+    form.setValue(isVolunteer ? "volunteer_contact_details.email" : "learner_personal_info.learner_contact_details.email", userData?.email || "")
     
-    const validateForm = () => isValid ? showToast({ type: "success", message: "Form Submitted" }) : showToast({ type: "error", message: "Fill required fields!" });
+    const validateForm = () => isValid || showToast({ type: "error", message: "Fill required fields!" });
 
     console.log(dirtyFields, errors, "dirtyFields", control._formValues);
 

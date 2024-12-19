@@ -23,8 +23,9 @@ type BaseInputProps = {
 type TextInputProps = BaseInputProps & {
     inputType: "text";
     value: string;
-    onChange: (value: string) => void;
+    onChange: (value: string | string[]) => void;
     placeholder?: string;
+    responseType?: string;
 };
 
 type TextAreaInputProps = BaseInputProps & {
@@ -143,6 +144,7 @@ type ContactInputProps = BaseInputProps & {
         number: string;
     };
     onChange: (value: { country_code: string; number: string }) => void;
+    changeErrorMsg: (string) => void;
 };
 
 type TimeRangeInputProps = BaseInputProps & {

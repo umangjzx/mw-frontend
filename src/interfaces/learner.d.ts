@@ -30,8 +30,8 @@ interface Learnergoals {
 
 interface Currentinterests {
     interests: string[];
-    extra_curricular_activities: string[];
-    favorite_activities: string[];
+    extra_curricular_activities: string[] | string;
+    favorite_activities: string[] | string;
 }
 
 interface Socialskills {

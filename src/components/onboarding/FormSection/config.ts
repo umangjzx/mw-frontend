@@ -3,10 +3,8 @@ import { z } from "zod";
 export const volunteerFormSchema = z.object({
     volunteer_first_name: z.string({ required_error: "First Name is required" }),
     volunteer_last_name: z.string({ required_error: "Last Name is required" }),
-    volunteer_birth_date: z.any({ required_error: "Please select your birthday" }),
-    consented_from_parent: z
-        .boolean({ required_error: "Parent consent is required" })
-        .refine((val) => val === true, { message: "Parent consent must be provided" }),
+    volunteer_birth_date: z.string({ required_error: "Please select your birthday" }),
+    consented_from_parent: z.boolean({ required_error: "Parent consent is required" }).refine((val) => val === true, { message: "Parent consent must be provided" }),
     volunteer_parent_email: z
         .string({ required_error: "Parent email is required" })
         .email("Please enter a valid email address"),
@@ -365,32 +363,36 @@ export type LearnerFormData = z.infer<typeof learnerFormSchema>;
 // };
 
 export const defaultVolunteerData: Volunteer = {
-    volunteer_description: "some description",
-    volunteer_education: "BE - CSE",
-    volunteer_first_name: "Iwin",
-    volunteer_last_name: "T",
-    volunteer_birth_date: "2000-12-25",
-    volunteer_parent_email: "iwinissacofficial@gmail.com",
+    volunteer_first_name: "Walter",
+    volunteer_last_name: "White",
+    volunteer_birth_date: "1970-03-15",
+    volunteer_parent_email: "walterwhite@gmail.com",
     volunteer_gender: "male",
-    volunteer_higher_education: "bachelors",
+    volunteer_higher_education: "masters",
+    volunteer_education: "MSc Chemistry",
+    volunteer_experience: "20 years",
+    volunteer_description: "I'm a Chemist.",
     volunteer_languages: [
         {
-            language_name: "Abkhazian",
-            language_id: "734e54d6-8762-4604-bae6-64d0bde4e0c1",
+            language_name: "Tamil",
+            language_id: "a695792f-0ecd-4fff-bb46-f0feaf782c2b",
+        },
+        {
+            language_name: "English (United States)",
+            language_id: "a191a4a2-7007-42c6-a8ec-adea8a1fa8ac"
         },
     ],
-    volunteer_experience: "dwdwd",
     consented_from_parent: true,
     volunteer_skills: [
         {
-            skill_name: "bdcbe9a0-3c68-4374-b7d1-5203cb8cbf25",
-            skill_id: "Guitar tuning",
+            skill_name: "Basic rhythm",
+            skill_id: "3eb6efaf-fa76-4765-99c5-e160a303aa34",
         },
     ],
     volunteer_contact_details: {
-        email: "iwinissacofficial@gmail.com",
+        email: "",
         contact_number: {
-            number: "9384913517",
+            number: "9876543210",
             country_code: "+91",
         },
         zip_code: "638451",
@@ -400,32 +402,32 @@ export const defaultVolunteerData: Volunteer = {
             convicted_of_a_felony: false,
             involved_in_criminal_activity: false,
             convicted_of_a_crime: false,
-            description: "criminal_background_check_details",
+            description: "",
         },
         sex_offender_check_details: {
             checked_for_sex_offender: false,
-            description: "sex_offender_check_details",
+            description: "",
         },
         disciplinary_check_details: {
             terminated_from_volunteer_position: false,
             involved_in_disputes: false,
             dismissed_from_institution: false,
-            description: "disciplinary_check_details",
+            description: "",
         },
         health_and_safety_check_details: {
             having_health_issues: false,
-            description: "health_and_safety_check_details",
+            description: "",
         },
         other_consents_details: {
             consent_to_background_checks: false,
             agree_to_follow_organization_policies: false,
             agree_to_understand_termination_of_volunteer_agreement: false,
-            description: "other_consents_details",
+            description: "",
         },
         volunteer_experience_details: {
             previously_volunteered: false,
             invloved_in_complaints: false,
-            description: "volunteer_experience_details",
+            description: "",
         },
     },
     profile_picture: {
@@ -442,8 +444,12 @@ export const defaultVolunteerData: Volunteer = {
     },
     volunteer_subjects: [
         {
-            subject_name: "Mathematics",
-            subject_id: "44b87f07-d623-47e2-b8c7-a895aa5369eb",
+            subject_name: "Chemistry",
+            subject_id: "5b363d32-1aa9-45ba-86ce-598db4739330",
+        },
+        {
+            subject_name: "Physics",
+            subject_id: "4a4cbf72-edd0-4099-aa7f-2e45ea81889d"
         },
     ],
     consent_and_permissions: {
@@ -454,45 +460,45 @@ export const defaultVolunteerData: Volunteer = {
 
 export const defaultLearnerData: Learner = {
     learner_personal_info: {
-        learner_first_name: "Iwin",
-        learner_last_name: "T",
-        learner_date_of_birth: "2024-12-25T18:30:00.000Z",
+        learner_first_name: "Walter",
+        learner_last_name: "Jr",
+        learner_date_of_birth: "2010-12-12",
         learner_gender: "male",
         learner_preferred_pronoun: "he/him",
         learner_primary_language: "English",
         learner_contact_details: {
-            email: "iwinissacofficial@gmail.com",
+            email: "walterjr@gmail.com",
             contact_number: {
-                number: "9384913517",
+                number: "9876543210",
                 country_code: "+91",
             },
             zip_code: "638451",
         },
     },
     parent_info: {
-        parent_first_name: "Test",
-        parent_last_name: "Test",
-        parent_email: "test@gmail.com",
+        parent_first_name: "Walter",
+        parent_last_name: "White",
+        parent_email: "wlaterwhite@gmail.com",
         relationship_to_learner: "father",
         parent_contact_number: {
-            number: "9384913517",
+            number: "9876543210",
             country_code: "+91",
         },
         emergency_contact_number: {
             number: "9384913517",
             country_code: "+91",
         },
-        parent_address: "address",
+        parent_address: "Address",
     },
 
     learner_special_needs: {
-        type_of_developmental_disability: "type_of_developmental_disability",
+        type_of_developmental_disability: "Physical Disability",
         level_of_support_needed: "moderate",
-        assistive_device_used: "assistive_device_used",
-        communication_style: "communication_style",
-        description: "description",
-        areas_of_support_needed: ["areas_of_support_needed"],
-        learning_styles: ["learning_styles"],
+        assistive_device_used: "Wheelchairs",
+        communication_style: "Verbal",
+        description: "Description",
+        areas_of_support_needed: ["Social skills", "Motor skills"],
+        learning_styles: ["Visual", "Verbal"],
     },
 
     education: {
@@ -510,15 +516,15 @@ export const defaultLearnerData: Learner = {
     },
 
     current_interests: {
-        interests: ["interests"],
-        extra_curricular_activities: ["sports"],
-        favorite_activities: ["drawing_and_coloring"],
+        interests: ["Basic chords"],
+        extra_curricular_activities: ["Sports"],
+        favorite_activities: ["Drawing and coloring"],
     },
 
     learner_goals: {
-        expected_goals: ["expected_goals"],
-        subjects_to_focus_on: ["subjects_to_focus_on"],
-        preferred_volunteer_qualities: ["preferred_volunteer_qualities"],
+        expected_goals: ["Encourage Independence"],
+        subjects_to_focus_on: ["Basic chords"],
+        preferred_volunteer_qualities: ["patience"],
         skill_level: "beginner",
     },
 
@@ -530,5 +536,5 @@ export const defaultLearnerData: Learner = {
     consent_and_permissions: {
         photo_or_video_consent: true,
         acknowledgement_of_program_policies: true,
-    },
+    }
 };

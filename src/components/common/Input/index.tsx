@@ -67,7 +67,7 @@ export const Input: React.FC<InputProps> = (props) => {
                         type={props.contentType}
                         placeholder={props.placeholder}
                         value={props.value}
-                        onChange={(e) => props.onChange(e.target.value)}
+                        onChange={(e) => props.onChange(props?.responseType === 'array' ? [e.target.value] : e.target.value)}
                         disabled={disabled}
                         rootClassName={cn(
                             props.inputClassName ? "w-[49%]" : "",
@@ -166,8 +166,9 @@ export const Input: React.FC<InputProps> = (props) => {
                         <AntDatePicker
                             value={props.value ? dayjs(props.value) : null}
                             disabledDate={disabledDate}
-                            onChange={(date, dateString) => props.onChange(dateString)}
+                            onChange={(date, dateString) => props.onChange(dateString as string )}
                             format="YYYY-MM-DD"
+                            allowClear={false}
                             placeholder="Click to select date"
                             className={cn(
                                 "w-full text-sm p-2 rounded-lg border border-stroke focus:!border-stroke focus:!bg-background-input placeholder:text-sm hover:bg-background-input bg-background-input",

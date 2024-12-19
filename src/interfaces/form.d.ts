@@ -29,6 +29,7 @@ type FormField = {
     title?: string;
     fileType?: string;
     endpoint?: string;
+    responseType?: string;
     responseAsLabel?: string;
     responseAsValue?: string[] | string;
     birthDatePicker?: { minAge: number, maxAge: number };
