@@ -102,10 +102,11 @@ const LearnerPersonalFields: FormField[] = [
     {
         id: "learner_date_of_birth",
         label: "Date of Birth",
-        inputType: "datepicker",
+        inputType: "birthdatepicker",
         placeholder: "MM/DD/YYYY",
         gridCols: 1,
         required: true,
+        birthDatePicker: { minAge: 0, maxAge: 100 },
     },
     {
         id: "learner_gender",

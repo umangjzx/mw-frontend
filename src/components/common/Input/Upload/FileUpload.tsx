@@ -16,7 +16,7 @@ const FileUpload = ({ ...props }: BaseUploaderProps) => {
 
     const getValue = () => {
         if (props.fileType === "image/*") {
-            return value?.image_id;
+            return value?.image_id && value?.image_id+".jpg";
         } else if (props.fileType === "video/*") {
             return value?.video_id;
         } else if (props.fileType === "application/*") {
@@ -57,7 +57,7 @@ const FileUpload = ({ ...props }: BaseUploaderProps) => {
                         btnVariant='secondary'
                         customClassName='!text-xs !bg-white !border !border-error !text-red-500'
                         onClick={() => handleRemove(0)}
-                        loading={isLoading}
+                        loading={false}
                     />
                 </div>
             )}

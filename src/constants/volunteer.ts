@@ -48,7 +48,7 @@ const ProfileDetailsFields: FormField[] = [
         sublabel: "Minors must be at least 14 years of age to begin volunteering",
         gridCols: 1,
         required: true,
-        birthDatePicker: { minAge: 14, maxAge: 60 },
+        birthDatePicker: { minAge: 14, maxAge: 100 },
     },
     {
         id: "consented_from_parent",
