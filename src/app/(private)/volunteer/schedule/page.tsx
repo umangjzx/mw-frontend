@@ -7,16 +7,18 @@ import { useRouter, useSearchParams } from "next/navigation";
 import ApprovalModal from "@/components/schedule/Modals/ApprovalModal";
 import { POST_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import FeedbackModal from "@/components/schedule/Modals/FeedbackModal";
 import { useAppStore } from "@/store/useAppStore";
 import Cookies from "js-cookie";
 import { getCalendarEvents } from "@/utils/calender";
+import { useSendData } from "@/hooks/useReactQuery";
 
 export default function SchedulePage() {
     const [isOpenSchedule, setIsOpenSchedule] = useState(false);
     const [isOpenApproval, setIsOpenApproval] = useState(false);
     const [isOpenFeedback, setIsOpenFeedback] = useState(false);
+    const queryClient = useQueryClient();
 
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -36,18 +38,26 @@ export default function SchedulePage() {
     };
 
     const handleSubmitFeedback = async (formData: any) => {
-        try {
-            const payload = {
-                comment: formData?.notes,
-                learner_interest_level: formData?.rating || 0,
-                ...eventDetails,
-            };
-            await POST_API(endpoints.volunterFeedback.create, payload);
-            handleNavigate();
-        } catch (err) {
-            console.log(err, "err for feedback");
-        }
+        const payload = {
+            comment: formData?.notes,
+            learner_interest_level: formData?.rating || 0,
+            ...eventDetails,
+        };
+        return await POST_API(endpoints.volunterFeedback.create, payload);
     };
+
+    const { mutate: onSave, isPending } = useSendData({
+        fn: (formData: any) => handleSubmitFeedback(formData),
+        invalidateKey: ["events"],
+        success: () => {
+            handleNavigate();
+            queryClient.invalidateQueries({ queryKey: ["events", currentMonth] });
+
+        },
+        error: (err) => {
+            console.log("Error: ", err);
+        },
+    });
 
     useEffect(() => {
         setIsOpenSchedule(modal === "my_schedule");
@@ -64,8 +74,9 @@ export default function SchedulePage() {
                 mode="create"
                 isOpen={isOpenFeedback}
                 onClose={handleNavigate}
-                onSubmit={handleSubmitFeedback}
+                onSubmit={onSave}
                 data={eventDetails}
+                Loading={isPending}
             />
         </div>
     );

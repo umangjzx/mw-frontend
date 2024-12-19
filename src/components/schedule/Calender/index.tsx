@@ -97,7 +97,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
 
     const customDayHeaderContent = (args: any) => {
         const dayIcons: { [key: string]: string } = {
-            Mon: "����",
+            Mon: "⛷️",
             Tue: "☕",
             Wed: "🐪",
             Thu: "🧠",

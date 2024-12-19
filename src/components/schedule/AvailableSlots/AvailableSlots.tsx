@@ -1,15 +1,37 @@
-import { Radio } from "antd";
+import { Radio, Skeleton } from "antd";
+import { useState, useEffect } from "react";
 
 const AvailableSlotsRadioGroup: React.FC<AvailableSlotsRadioGroupProps> = ({
     availableSlots,
     selectedSlot,
     onSlotSelect,
+    errors,
+    slotError,
+    fetchingSlots,
 }) => {
-    if (availableSlots.length === 0) {
+    const [isSlotsAvailable, setIsSlotsAvailable] = useState(false);
+
+    console.log(fetchingSlots, "fetchingSlots");
+
+    useEffect(() => {
+        setIsSlotsAvailable(availableSlots.length > 0);
+    }, [availableSlots]);
+
+    if (!isSlotsAvailable) {
         return (
-            <p className="text-xs font-normal mb-2 text-gray-400">
-                To see available slots, select a volunteer and date.
-            </p>
+            <div>
+                {slotError ? (
+                    <p className="text-xs font-normal -mt-2 mb-2 text-red-500">{slotError}</p>
+                ) : (
+                    <p className="text-xs font-normal mb-2 text-gray-400">
+                        {fetchingSlots ? (
+                            <span>Fetching slots...</span>
+                        ) : (
+                            <span>To see available slots, select a volunteer and date.</span>
+                        )}
+                    </p>
+                )}
+            </div>
         );
     }
 
@@ -44,6 +66,7 @@ const AvailableSlotsRadioGroup: React.FC<AvailableSlotsRadioGroupProps> = ({
                     ))}
                 </div>
             </Radio.Group>
+            {isSlotsAvailable && <p className="text-xs text-red-500 mt-1">{errors}</p>}
         </div>
     );
 };

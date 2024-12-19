@@ -14,6 +14,7 @@ interface CenterModalProps {
     primaryActionProps?: ButtonProps;
     secondaryActionProps?: ButtonProps;
     hideFooter?: boolean;
+    loading?: boolean;
 }
 
 interface ViewModalProps {

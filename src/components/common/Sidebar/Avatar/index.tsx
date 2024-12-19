@@ -1,16 +1,13 @@
 "use client";
-import DummyProfileImg from "@/assets/images/DummyProfileImg.png";
+import { endpoints } from "@/api/constants";
+import { GET_API } from "@/api/request";
 import TagComponent from "@/components/common/Tag";
-import { getLocalStorage } from "@/utils/localStorage";
+import { useAppStore } from "@/store/useAppStore";
+import { useQuery } from "@tanstack/react-query";
+import Cookies from "js-cookie";
 import Image from "next/image";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
-import { GET_API } from "@/api/request";
-import { endpoints } from "@/api/constants";
-import Cookies from "js-cookie";
-import { cookies } from "next/headers";
 import { useState } from "react";
-import { useAppStore } from "@/store/useAppStore";
 
 const Avatar = () => {
     const role = Cookies.get("role");

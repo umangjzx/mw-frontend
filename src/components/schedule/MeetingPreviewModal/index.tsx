@@ -14,6 +14,7 @@ import { IoMdCheckmark } from "react-icons/io";
 import { MdClose } from "react-icons/md";
 import "./styles.css";
 import Cookies from "js-cookie";
+import { showToast } from "@/components/common/Toast";
 
 interface MeetingPreviewModalProps {
     data: any;
@@ -63,7 +64,6 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
     const endTime = moment(event.end).local().format("h:mm A");
     const { title, extendedProps } = eventData;
     const { meetLink, learner, status, sessionId, feedBackCollected } = extendedProps;
-    console.log(feedBackCollected, "extendedProps from meeting preview modal");
 
     const handleNotificationStatus = (status: string, sessionId: string) => {
         PUT_API(endpoints.session.updateNotificationStatus(sessionId), {
@@ -90,6 +90,11 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
         });
     };
 
+    const handleLinkCopy = () => {
+        navigator.clipboard.writeText(meetLink);
+        showToast({ type: "success", message: "Link copied to clipboard" });
+    };
+
     const renderFeedback = () => {
         if (!feedBackCollected) {
             return (
@@ -100,7 +105,7 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                             onClick={handleFeedBack}
                             className="text-primary text-sm underline cursor-pointer font-medium"
                         >
-                            Completed Feedback
+                            Complete Feedback
                         </p>
                     </div>
                 </div>
@@ -164,8 +169,8 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                             </div>
                             <Button
                                 title="Copy Link"
-                                customClassName="w-fit bg-white !text-black text-sm rounded-full !py-0 !px-5"
-                                onClick={() => navigator.clipboard.writeText(meetLink)}
+                                customClassName="w-fit !bg-white hover:!bg-white !text-black text-sm rounded-full !py-0 !px-5"
+                                onClick={handleLinkCopy}
                             />
                         </div>
                         <Divider />

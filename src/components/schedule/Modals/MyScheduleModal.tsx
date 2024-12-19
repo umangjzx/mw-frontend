@@ -9,6 +9,7 @@ import { TimePicker } from "antd";
 import cn from "classnames";
 import dayjs from "dayjs";
 import AddSlotIcon from "@/assets/icons/AddSlotIcon";
+import { useSendData } from "@/hooks/useReactQuery";
 
 interface TimeSlot {
     start_time: string;
@@ -187,12 +188,20 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             deleted_slots: deletedSlots,
             slots: formattedData,
         };
+        return await PUT_API(endpoints.volunteer_slot.update, payload);
+    };
 
-        PUT_API(endpoints.volunteer_slot.update, payload).then((res) => {
+    const { mutate: onSave, isPending } = useSendData({
+        fn: () => handleSave(),
+        invalidateKey: ["volunteer_slot"],
+        success: () => {
             setDeletedSlots([]);
             onClose();
-        });
-    };
+        },
+        error: (err) => {
+            console.log("Error: ", err);
+        },
+    });
 
     // Add this CSS class to style the TimePicker input
     const timePickerClass = cn(
@@ -215,9 +224,10 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             saveButtonText="Save Changes"
             cancelButtonText="Cancel"
             isOpen={isOpen}
-            onSave={handleSave}
+            onSave={() => onSave(formData)}
             onCancel={onClose}
             isDisabled={hasErrors()}
+            isLoading={isPending}
         >
             <div>
                 <div className="flex flex-col gap-1 px-5 py-4">

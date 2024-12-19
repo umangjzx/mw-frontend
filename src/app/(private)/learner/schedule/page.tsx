@@ -12,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 import { getCalendarEvents } from "@/utils/calender";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSendData } from "@/hooks/useReactQuery";
 
 export default function LearnerSchedulePage() {
     const [isOpenSchedule, setIsOpenSchedule] = useState(false);
@@ -36,17 +37,26 @@ export default function LearnerSchedulePage() {
         router.push(`/learner/schedule?current_month=${currentMonth}`);
     };
 
-    const handleSubmitFeedback = (formData: any) => {
+    const handleSubmitFeedback = async (formData: any) => {
         const payload = {
             comment: formData?.notes,
             volunteer_commitment_level: formData?.rating || 0,
             ...eventDetails,
         };
-        POST_API(endpoints.learnerFeedback.create, payload).then(() => {
+        return await POST_API(endpoints.learnerFeedback.create, payload);
+    };
+
+    const { mutate: onSave, isPending } = useSendData({
+        fn: (formData: any) => handleSubmitFeedback(formData),
+        invalidateKey: ["events"],
+        success: () => {
             handleNavigate();
             queryClient.invalidateQueries({ queryKey: ["events", currentMonth] });
-        });
-    };
+        },
+        error: (err) => {
+            console.log("Error: ", err);
+        },
+    });
 
     useEffect(() => {
         setIsOpenSchedule(modal === "add_new_meeting");
@@ -63,6 +73,7 @@ export default function LearnerSchedulePage() {
                 onClose={handleNavigate}
                 onSubmit={handleSubmitFeedback}
                 data={eventDetails}
+                Loading={isPending}
             />
         </div>
     );

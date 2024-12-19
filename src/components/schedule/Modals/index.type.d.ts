@@ -4,6 +4,7 @@ type FeedbackModalProps = {
     onClose: () => void;
     onSubmit: (data: any) => void;
     data: EventApi | null;
+    Loading: boolean;
 };
 
 type AllEventsModalProps = {
