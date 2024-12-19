@@ -35,38 +35,13 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
 }) => {
     const [isAnimating, setIsAnimating] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
-    const router = useRouter();
-    const { currentMonth } = useAppStore();
-    const role = Cookies.get("role");
-
-    useEffect(() => {
-        if (isOpen) {
-            setIsAnimating(true);
-            // Small delay to ensure the initial state is applied before transition
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    setIsVisible(true);
-                });
-            });
-        } else {
-            setIsVisible(false);
-            const timer = setTimeout(() => {
-                setIsAnimating(false);
-            }, 300);
-            return () => clearTimeout(timer);
-        }
-    }, [isOpen]);
-
-    if ((!isAnimating && !isOpen) || !event) return null;
-    const queryClient = useQueryClient();
-    const eventData = event._def;
-    // Use event.start and event.end directly
-    const startTime = moment(event.start).local().format("dddd, MMMM D, h:mm A");
-    const endTime = moment(event.end).local().format("h:mm A");
-    const { title, extendedProps } = eventData;
-    const { meetLink, learner, status, sessionId, feedBackCollected } = extendedProps;
     const [loadingAccept, setLoadingAccept] = useState(false);
     const [loadingDecline, setLoadingDecline] = useState(false);
+
+    const router = useRouter();
+    const queryClient = useQueryClient();
+    const { currentMonth } = useAppStore();
+    const role = Cookies.get("role");
 
     const handleNotificationStatus = async (status: string, sessionId: string) => {
         if (status === "accepted") {
@@ -95,6 +70,31 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
             setLoadingDecline(false);
         },
     });
+
+    useEffect(() => {
+        if (isOpen) {
+            setIsAnimating(true);
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    setIsVisible(true);
+                });
+            });
+        } else {
+            setIsVisible(false);
+            const timer = setTimeout(() => {
+                setIsAnimating(false);
+            }, 300);
+            return () => clearTimeout(timer);
+        }
+    }, [isOpen]);
+
+    if ((!isAnimating && !isOpen) || !event) return null;
+
+    const eventData = event._def;
+    const startTime = moment(event.start).local().format("dddd, MMMM D, h:mm A");
+    const endTime = moment(event.end).local().format("h:mm A");
+    const { title, extendedProps } = eventData;
+    const { meetLink, learner, status, sessionId, feedBackCollected } = extendedProps;
 
     const handleFeedBack = () => {
         router.push(`/${role}/schedule?current_month=${currentMonth}&modal=feedback`);
