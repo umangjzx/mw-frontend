@@ -58,8 +58,8 @@ export const getCalendarEvents = async (
                     lastName: item.learner_last_name,
                     picture: item.learner_picture,
                 },
-                feedBackCollected:
-                    item.feedback_collected_from_learner || item.feedback_collected_from_volunteer,
+                feedBackCollectedFromLearner: item.feedback_collected_from_learner,
+                feedBackCollectedFromVolunteer: item.feedback_collected_from_volunteer,
             },
         })) || []
     );

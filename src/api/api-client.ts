@@ -15,12 +15,14 @@ const axiosInstance: AxiosInstance = axios.create({
     withCredentials: true,
     headers: {
         "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "any",
+        "bypass-tunnel-reminder": "yup",
     },
 });
 
 // Request interceptor
 axiosInstance.interceptors.request.use(
-    config => {
+    (config) => {
         const token = Cookies.get("token");
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
@@ -33,12 +35,12 @@ axiosInstance.interceptors.request.use(
 
         return config;
     },
-    error => Promise.reject(error)
+    (error) => Promise.reject(error)
 );
 
 // Response interceptor
 axiosInstance.interceptors.response.use(
-    response => response,
+    (response) => response,
     (error: AxiosError) => {
         const apiError: ApiError = {
             message: "An unexpected error occurred",
@@ -80,7 +82,7 @@ axiosInstance.interceptors.response.use(
     }
 );
 
-export const request = async (options: AxiosRequestConfig) : Promise<AxiosResponse | ApiError> => {
+export const request = async (options: AxiosRequestConfig): Promise<AxiosResponse | ApiError> => {
     try {
         const response = await axiosInstance(options);
         return response;
