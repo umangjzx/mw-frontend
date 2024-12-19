@@ -9,7 +9,14 @@ import { cn } from "@/utils/merge-class";
 import Cookies from "js-cookie";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-const FeedbackModal = ({ isOpen, mode = "view", onClose, onSubmit, data }: FeedbackModalProps) => {
+const FeedbackModal = ({
+    isOpen,
+    mode = "view",
+    onClose,
+    onSubmit,
+    data,
+    Loading,
+}: FeedbackModalProps) => {
     const [formData, setFormData] = useState<any>({});
     const { learnerName, volunteerName } = useAppStore();
     const feedbackTitle = mode === "edit" ? "Edit Feedback" : "Please Fill the Feedback";
@@ -83,12 +90,14 @@ const FeedbackModal = ({ isOpen, mode = "view", onClose, onSubmit, data }: Feedb
             customClassName="max-h-[80vh] !rounded-2xl overflow-hidden"
             secondaryActionProps={buttonProps.secondary}
             primaryActionProps={buttonProps.primary}
+            loading={Loading}
         >
             {mode !== "view" ? (
                 LearnerFeedbackFormConstants.map((field: any) => (
                     <Input
                         key={field.name}
                         {...field}
+                        value={formData[field.name]}
                         onChange={(value: any) => handleChange(field.name, value)}
                     />
                 ))

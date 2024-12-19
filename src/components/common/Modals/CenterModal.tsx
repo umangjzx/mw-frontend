@@ -16,6 +16,7 @@ const CenterModal: React.FC<CenterModalProps> = ({
     titleClassName = "",
     primaryActionProps,
     secondaryActionProps,
+    loading = false,
 }) => {
     const defaultButtonStyles = {
         primaryActionProps: {
@@ -36,7 +37,7 @@ const CenterModal: React.FC<CenterModalProps> = ({
 
     const buttons = [
         <Button {...defaultButtonStyles.secondaryActionProps} />,
-        <Button {...defaultButtonStyles.primaryActionProps} />,
+        <Button {...defaultButtonStyles.primaryActionProps} loading={loading} />,
     ];
 
     const footer = buttons.filter((button) => button);

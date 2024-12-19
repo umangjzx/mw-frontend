@@ -59,6 +59,9 @@ const Sidebar = () => {
         Cookies.remove("role");
         Cookies.remove("token");
         router.push("/");
+        if (typeof window !== "undefined") {
+            localStorage.clear();
+        }
     };
 
     return (

@@ -12,6 +12,7 @@ const LoginPage = () => {
     const router = useRouter();
     const [role, setRole] = useState<UserType>((Cookies.get("role") as UserType) || "volunteer");
     const [code] = useQueryState("code");
+    const [Loading, setLoading] = useState(false);
 
     const handleSignUp = async () => {
         try {
@@ -66,14 +67,21 @@ const LoginPage = () => {
     }, []);
 
     const handleLogin = () => {
-        GET_API(endpoints.auth.oauth2callback).then((res: any) => {
-            console.log("res", res);
-            if (res?.data) {
-                if (typeof window !== "undefined") {
-                    window.location.href = res.data;
+        setLoading(true);
+        GET_API(endpoints.auth.oauth2callback)
+            .then((res: any) => {
+                console.log("res ", res);
+                setLoading(false);
+                if (res?.data) {
+                    if (typeof window !== "undefined") {
+                        window.location.href = res.data;
+                    }
                 }
-            }
-        });
+            })
+            .catch((err) => {
+                console.log("err ", err);
+                setLoading(false);
+            });
     };
 
     const handleSetRole = (newRole: UserType) => {
@@ -112,7 +120,7 @@ const LoginPage = () => {
             <Button
                 onClick={handleLogin}
                 title={`Login as ${role}`}
-                loading={isLoading}
+                loading={isLoading || Loading}
                 rootClassName="bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors duration-300 px-7"
             />
         </div>
