@@ -7,8 +7,7 @@ export const volunteerFormSchema = z.object({
     volunteer_last_name: z
         .string({ required_error: "Last Name is required" })
         .min(1, { message: "Last Name cannot be empty" }),
-    volunteer_birth_date: z
-        .string({ required_error: "Please select your birthday" }),
+    volunteer_birth_date: z.string({ required_error: "Please select your birthday" }),
     consented_from_parent: z
         .boolean({ required_error: "Parent consent is required" })
         .refine((val) => val === true, { message: "Parent consent must be provided" }),
@@ -19,7 +18,9 @@ export const volunteerFormSchema = z.object({
     volunteer_education: z
         .string({ required_error: "Please provide your education details" })
         .min(1, { message: "Education details cannot be empty" }),
-    volunteer_higher_education: z.string({ required_error: "Higher education details are required" }),
+    volunteer_higher_education: z.string({
+        required_error: "Higher education details are required",
+    }),
     volunteer_languages: z
         .array(z.any(), { required_error: "Please specify the languages you know" })
         .nonempty("Please add at least one language"),
@@ -57,124 +58,174 @@ export const volunteerFormSchema = z.object({
 
     // Legal and Safety Info validations
     legal_and_safety_info: z.object({
-        criminal_background_check_details: z.object({
-            convicted_of_a_felony: z.boolean({
-                required_error: "Please specify if you were convicted of a felony",
-            }),
-            involved_in_criminal_activity: z.boolean({
-                required_error: "Please specify if you were involved in criminal activity",
-            }),
-            convicted_of_a_crime: z.boolean({
-                required_error: "Please specify if you were convicted of a crime",
-            }),
-            description: z.string().optional(),
-        }).refine(
-            (fields) => {
-                const { convicted_of_a_crime, involved_in_criminal_activity, convicted_of_a_felony, description } = fields;
-                return !(convicted_of_a_crime || involved_in_criminal_activity || convicted_of_a_felony) || (description && description.trim().length > 0);
-            },
-            {
-                message: "Description is required when any criminal conviction or activity is true",
-                path: ["description"],
-            }
-        ),
-        sex_offender_check_details: z.object({
-            checked_for_sex_offender: z.boolean({
-                required_error: "Please specify if you were checked for a sex offender",
-            }),
-            description: z.string().optional(),
-        }).refine(
-            (fields) => {
-                const { checked_for_sex_offender, description } = fields;
-                return !checked_for_sex_offender || (description && description.trim().length > 0);
-            },
-            {
-                message: "Description is required if checked for a sex offender is true",
-                path: ["description"],
-            }
-        ),
-        disciplinary_check_details: z.object({
-            terminated_from_volunteer_position: z.boolean({
-                required_error: "Please specify if you were terminated from a position",
-            }),
-            involved_in_disputes: z.boolean({
-                required_error: "Please specify if you were involved in disputes",
-            }),
-            dismissed_from_institution: z.boolean({
-                required_error: "Please specify if you were dismissed from an institution",
-            }),
-            description: z.string().optional(),
-        }).refine(
-            (fields) => {
-                const { terminated_from_volunteer_position, involved_in_disputes, dismissed_from_institution, description } = fields;
-                return !(terminated_from_volunteer_position || involved_in_disputes || dismissed_from_institution) || (description && description.trim().length > 0);
-            },
-            {
-                message: "Description is required if terminated, involved in disputes, or dismissed is true",
-                path: ["description"],
-            }
-        ),
-        health_and_safety_check_details: z.object({
-            having_health_issues: z.boolean({
-                required_error: "Please specify if you have health issues",
-            }),
-            description: z.string().optional(),
-        }).refine(
-            (fields) => {
-                const { having_health_issues, description } = fields;
-                return !having_health_issues || (description && description.trim().length > 0);
-            },
-            {
-                message: "Description is required if having health issues is true",
-                path: ["description"],
-            }
-        ),
-        other_consents_details: z.object({
-            consent_to_background_checks: z.boolean({
-                required_error: "Please confirm your consent to background checks",
-            }),
-            agree_to_follow_organization_policies: z.boolean({
-                required_error: "Please confirm that you agree to follow policies",
-            }),
-            agree_to_understand_termination_of_volunteer_agreement: z.boolean({
-                required_error: "Please confirm that you understand the agreement",
-            }),
-            description: z.string().optional(),
-        }).refine(
-            (fields) => {
-                const {
-                    consent_to_background_checks,
-                    agree_to_follow_organization_policies,
-                    agree_to_understand_termination_of_volunteer_agreement,
-                    description,
-                } = fields;
-                return !(consent_to_background_checks || agree_to_follow_organization_policies || agree_to_understand_termination_of_volunteer_agreement) || (description && description.trim().length > 0);
-            },
-            {
-                message: "Description is required if any consent agreement is true",
-                path: ["description"],
-            }
-        ),
-        volunteer_experience_details: z.object({
-            previously_volunteered: z.boolean({
-                required_error: "Please specify if you previously volunteered",
-            }),
-            invloved_in_complaints: z.boolean({
-                required_error: "Please specify if you were involved in complaints",
-            }),
-            description: z.string().optional(),
-        }).refine(
-            (fields) => {
-                const { previously_volunteered, invloved_in_complaints, description } = fields;
-                return !(previously_volunteered || invloved_in_complaints) || (description && description.trim().length > 0);
-            },
-            {
-                message: "Description is required if previously volunteered or involved in complaints is true",
-                path: ["description"],
-            }
-        ),
+        criminal_background_check_details: z
+            .object({
+                convicted_of_a_felony: z.boolean({
+                    required_error: "Please specify if you were convicted of a felony",
+                }),
+                involved_in_criminal_activity: z.boolean({
+                    required_error: "Please specify if you were involved in criminal activity",
+                }),
+                convicted_of_a_crime: z.boolean({
+                    required_error: "Please specify if you were convicted of a crime",
+                }),
+                description: z.string().optional(),
+            })
+            .refine(
+                (fields) => {
+                    const {
+                        convicted_of_a_crime,
+                        involved_in_criminal_activity,
+                        convicted_of_a_felony,
+                        description,
+                    } = fields;
+                    return (
+                        !(
+                            convicted_of_a_crime ||
+                            involved_in_criminal_activity ||
+                            convicted_of_a_felony
+                        ) ||
+                        (description && description.trim().length > 0)
+                    );
+                },
+                {
+                    message:
+                        "Description is required when any criminal conviction or activity is true",
+                    path: ["description"],
+                }
+            ),
+        sex_offender_check_details: z
+            .object({
+                checked_for_sex_offender: z.boolean({
+                    required_error: "Please specify if you were checked for a sex offender",
+                }),
+                description: z.string().optional(),
+            })
+            .refine(
+                (fields) => {
+                    const { checked_for_sex_offender, description } = fields;
+                    return (
+                        !checked_for_sex_offender || (description && description.trim().length > 0)
+                    );
+                },
+                {
+                    message: "Description is required if checked for a sex offender is true",
+                    path: ["description"],
+                }
+            ),
+        disciplinary_check_details: z
+            .object({
+                terminated_from_volunteer_position: z.boolean({
+                    required_error: "Please specify if you were terminated from a position",
+                }),
+                involved_in_disputes: z.boolean({
+                    required_error: "Please specify if you were involved in disputes",
+                }),
+                dismissed_from_institution: z.boolean({
+                    required_error: "Please specify if you were dismissed from an institution",
+                }),
+                description: z.string().optional(),
+            })
+            .refine(
+                (fields) => {
+                    const {
+                        terminated_from_volunteer_position,
+                        involved_in_disputes,
+                        dismissed_from_institution,
+                        description,
+                    } = fields;
+                    return (
+                        !(
+                            terminated_from_volunteer_position ||
+                            involved_in_disputes ||
+                            dismissed_from_institution
+                        ) ||
+                        (description && description.trim().length > 0)
+                    );
+                },
+                {
+                    message:
+                        "Description is required if terminated, involved in disputes, or dismissed is true",
+                    path: ["description"],
+                }
+            ),
+        health_and_safety_check_details: z
+            .object({
+                having_health_issues: z.boolean({
+                    required_error: "Please specify if you have health issues",
+                }),
+                description: z.string().optional(),
+            })
+            .refine(
+                (fields) => {
+                    const { having_health_issues, description } = fields;
+                    return !having_health_issues || (description && description.trim().length > 0);
+                },
+                {
+                    message: "Description is required if having health issues is true",
+                    path: ["description"],
+                }
+            ),
+        other_consents_details: z
+            .object({
+                consent_to_background_checks: z.boolean({
+                    required_error: "Please confirm your consent to background checks",
+                }),
+                agree_to_follow_organization_policies: z.boolean({
+                    required_error: "Please confirm that you agree to follow policies",
+                }),
+                agree_to_understand_termination_of_volunteer_agreement: z.boolean({
+                    required_error: "Please confirm that you understand the agreement",
+                }),
+                description: z.string().optional(),
+            })
+            .refine(
+                (fields) => {
+                    const {
+                        consent_to_background_checks,
+                        agree_to_follow_organization_policies,
+                        agree_to_understand_termination_of_volunteer_agreement,
+                        description,
+                    } = fields;
+                    return (
+                        !(
+                            consent_to_background_checks ||
+                            agree_to_follow_organization_policies ||
+                            agree_to_understand_termination_of_volunteer_agreement
+                        ) ||
+                        (description && description.trim().length > 0)
+                    );
+                },
+                {
+                    message: "Description is required if any consent agreement is true",
+                    path: ["description"],
+                }
+            ),
+        volunteer_experience_details: z
+            .object({
+                previously_volunteered: z.boolean({
+                    required_error: "Please specify if you previously volunteered",
+                }),
+                invloved_in_complaints: z.boolean({
+                    required_error: "Please specify if you were involved in complaints",
+                }),
+                description: z.string().optional(),
+            })
+            .refine(
+                (fields) => {
+                    const { previously_volunteered, invloved_in_complaints, description } = fields;
+                    return (
+                        !(previously_volunteered || invloved_in_complaints) ||
+                        (description && description.trim().length > 0)
+                    );
+                },
+                {
+                    message:
+                        "Description is required if previously volunteered or involved in complaints is true",
+                    path: ["description"],
+                }
+            ),
     }),
-
 
     // Consent and Permissions
     consent_and_permissions: z.object({
@@ -185,10 +236,16 @@ export const volunteerFormSchema = z.object({
     }),
 
     // Profile Picture
-    profile_picture: z.object({
-        image_url: z.string({ required_error: "Profile picture URL is required" }),
-        image_id: z.string({ required_error: "Profile picture ID is required" }),
-    }),
+    profile_picture: z
+        .object({
+            image_url: z.string({ required_error: "Profile picture URL is required" }).min(1, {
+                message: "Profile picture cannot be empty",
+            }),
+            image_id: z.string({ required_error: "Profile picture ID is required" }).min(1, {
+                message: "Profile picture cannot be empty",
+            }),
+        })
+        .required(),
 
     // Profile Video
     profile_video: z.object({
@@ -355,10 +412,16 @@ export const learnerFormSchema = z.object({
             required_error: "Acknowledgement of Program Policies is required",
         }),
     }),
-    profile_picture: z.object({
-        image_url: z.string({ required_error: "Profile picture URL is required" }),
-        image_id: z.string({ required_error: "Profile picture ID is required" }),
-    }),
+    profile_picture: z
+        .object({
+            image_url: z.string({ required_error: "Profile picture URL is required" }).min(1, {
+                message: "Profile picture cannot be empty",
+            }),
+            image_id: z.string({ required_error: "Profile picture ID is required" }).min(1, {
+                message: "Profile picture cannot be empty",
+            }),
+        })
+        .required(),
 });
 
 export type LearnerFormData = z.infer<typeof learnerFormSchema>;
@@ -454,7 +517,7 @@ export const defaultVolunteerData: Volunteer = {
         },
         {
             language_name: "English (United States)",
-            language_id: "a191a4a2-7007-42c6-a8ec-adea8a1fa8ac"
+            language_id: "a191a4a2-7007-42c6-a8ec-adea8a1fa8ac",
         },
     ],
     consented_from_parent: true,
@@ -465,7 +528,7 @@ export const defaultVolunteerData: Volunteer = {
         },
     ],
     volunteer_contact_details: {
-        email: "",
+        // email: "",
         contact_number: {
             number: "9876543210",
             country_code: "+91",
@@ -505,10 +568,7 @@ export const defaultVolunteerData: Volunteer = {
             description: "",
         },
     },
-    profile_picture: {
-        image_url: "",
-        image_id: "",
-    },
+    // profile_picture: null,
     profile_video: {
         video_url: "video_url",
         video_id: "video_id",
@@ -524,7 +584,7 @@ export const defaultVolunteerData: Volunteer = {
         },
         {
             subject_name: "Physics",
-            subject_id: "4a4cbf72-edd0-4099-aa7f-2e45ea81889d"
+            subject_id: "4a4cbf72-edd0-4099-aa7f-2e45ea81889d",
         },
     ],
     consent_and_permissions: {
@@ -611,5 +671,6 @@ export const defaultLearnerData: Learner = {
     consent_and_permissions: {
         photo_or_video_consent: true,
         acknowledgement_of_program_policies: true,
-    }
+    },
+    // profile_picture: null,
 };

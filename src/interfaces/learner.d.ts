@@ -8,6 +8,7 @@ interface Learner {
     learner_goals: Learnergoals;
     additional_info: Additionalinfo;
     consent_and_permissions: Consentandpermissions;
+    profile_picture?: ProfilePicture | null;
 }
 
 interface Consentandpermissions {
@@ -87,4 +88,9 @@ interface Parentinfo {
 interface Parentcontactnumber {
     number: string;
     country_code: string;
+}
+
+interface ProfilePicture {
+    image_url: string;
+    image_id: string;
 }

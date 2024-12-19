@@ -35,7 +35,7 @@ const Uploader = ({ maxFiles = 1, ...props }: UploadProps) => {
         if (!files?.length) return;
 
         await Promise.all(
-            Array.from(files).map(async file => {
+            Array.from(files).map(async (file) => {
                 console.log(file, "file image");
                 return Promise.all([handleUpload(file)]);
             })
@@ -44,7 +44,7 @@ const Uploader = ({ maxFiles = 1, ...props }: UploadProps) => {
 
     const handleRemove = (index: number) => {
         if (maxFiles === 1) {
-            props.onChange(null);
+            props.onChange(undefined);
         } else {
             const updatedFiles = [...props.value];
             updatedFiles.splice(index, 1);
@@ -80,17 +80,20 @@ const Uploader = ({ maxFiles = 1, ...props }: UploadProps) => {
     };
 
     return (
-        <div className='w-full h-fit'>
+        <div className="w-full h-fit">
             {renderUploader()}
             <input
+                name={props.name}
                 title={props.name}
                 ref={fileInputRef}
-                type='file'
+                type="file"
                 accept={props.fileType}
                 multiple
                 onChange={handleFileChange}
-                className='hidden'
+                className="hidden"
                 disabled={props.disabled || isPending}
+                aria-hidden="true"
+                tabIndex={-1}
             />
         </div>
     );
