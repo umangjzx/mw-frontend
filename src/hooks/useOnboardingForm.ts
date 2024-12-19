@@ -6,6 +6,7 @@ import { useSendData } from "./useReactQuery";
 import { PUT_API } from "@/api/request";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { showToast } from "@/components/common/Toast";
 
 export const useOnboardingForm = (schema: any) => {
     const role = Cookies.get("role");
@@ -32,10 +33,11 @@ export const useOnboardingForm = (schema: any) => {
         fn: (data: z.infer<typeof schema>) =>
             PUT_API(endpoints.onboarding.update(role as "volunteer" | "learner"), data),
         success: () => {
+            showToast({ type: "success", message: "Form Submitted!" })
             router.push("/onboarding/verification");
         },
         error: () => {
-            alert("Error submitting form");
+            showToast({ type: "error", message: "Fill required Fields!" })
         },
     });
 
