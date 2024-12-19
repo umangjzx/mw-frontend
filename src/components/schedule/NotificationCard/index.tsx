@@ -68,7 +68,6 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ data }) => {
         error: (err) => {
             console.log("Error: ", err);
         },
-        enabled: !loadingAccept && !loadingDecline,
     });
 
     return (
