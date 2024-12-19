@@ -15,6 +15,7 @@ import { MdClose } from "react-icons/md";
 import "./styles.css";
 import Cookies from "js-cookie";
 import { showToast } from "@/components/common/Toast";
+import { useSendData } from "@/hooks/useReactQuery";
 
 interface MeetingPreviewModalProps {
     data: any;
@@ -64,20 +65,36 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
     const endTime = moment(event.end).local().format("h:mm A");
     const { title, extendedProps } = eventData;
     const { meetLink, learner, status, sessionId, feedBackCollected } = extendedProps;
+    const [loadingAccept, setLoadingAccept] = useState(false);
+    const [loadingDecline, setLoadingDecline] = useState(false);
 
-    const handleNotificationStatus = (status: string, sessionId: string) => {
-        PUT_API(endpoints.session.updateNotificationStatus(sessionId), {
+    const handleNotificationStatus = async (status: string, sessionId: string) => {
+        if (status === "accepted") {
+            setLoadingAccept(true);
+        } else {
+            setLoadingDecline(true);
+        }
+        return await PUT_API(endpoints.session.updateNotificationStatus(sessionId), {
             status: status,
-        })
-            .then(() => {
-                queryClient.invalidateQueries({ queryKey: ["approval-notifications"] });
-                queryClient.invalidateQueries({ queryKey: ["events"] });
-                onClose();
-            })
-            .catch((err) => {
-                console.log("Error: ", err);
-            });
+        });
     };
+
+    const { mutate: onSave, isPending } = useSendData({
+        // @ts-ignore
+        fn: (status: string) => handleNotificationStatus(status, sessionId),
+        invalidateKey: ["events"],
+        success: () => {
+            queryClient.invalidateQueries({ queryKey: ["approval-notifications"] });
+            queryClient.invalidateQueries({ queryKey: ["events"] });
+            setLoadingAccept(false);
+            setLoadingDecline(false);
+        },
+        error: (err) => {
+            console.log("Error: ", err);
+            setLoadingAccept(false);
+            setLoadingDecline(false);
+        },
+    });
 
     const handleFeedBack = () => {
         router.push(`/${role}/schedule?current_month=${currentMonth}&modal=feedback`);
@@ -205,7 +222,9 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                 {status === "pending" && role === "volunteer" && (
                     <div className="flex items-center gap-2 w-full">
                         <Button
-                            onClick={() => handleNotificationStatus("rejected", sessionId)}
+                            disabled={loadingAccept || loadingDecline}
+                            loading={loadingDecline}
+                            onClick={() => onSave("rejected")}
                             btnVariant="error"
                             icon={<MdClose className="text-[1.1rem]" />}
                             className="w-full text-sm  h-9 !bg-error-light !border-error-light rounded-xl py-2 hover:!text-error"
@@ -213,7 +232,9 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                             Decline
                         </Button>
                         <Button
-                            onClick={() => handleNotificationStatus("accepted", sessionId)}
+                            disabled={loadingAccept || loadingDecline}
+                            loading={loadingAccept}
+                            onClick={() => onSave("accepted")}
                             btnVariant="success"
                             icon={<IoMdCheckmark className="text-[1.1rem]" />}
                             className="w-full text-sm h-9 !bg-success-light !border-success-light rounded-xl py-2 hover:!text-success "

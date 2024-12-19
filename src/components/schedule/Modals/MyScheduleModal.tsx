@@ -112,20 +112,39 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             [type]: value ? value : "",
         };
 
-        // Check for overlap only if both from and to times are set
+        // Add validation for end time being after start time
         if (updatedSlot.start_time && updatedSlot.end_time) {
+            const startMinutes = convertTimeToMinutes(updatedSlot.start_time);
+            const endMinutes = convertTimeToMinutes(updatedSlot.end_time);
+
+            if (endMinutes <= startMinutes) {
+                setErrors((prev) => ({
+                    ...prev,
+                    [day]: [
+                        ...(prev[day] || []).filter(
+                            (error) => !error.includes(`Time slot ${slotIndex + 1}`)
+                        ),
+                        `Time slot ${slotIndex + 1}: End time must be after start time`,
+                    ],
+                }));
+                return;
+            }
+
+            // Check for overlap with other slots
             if (isTimeOverlapping(day, updatedSlot.start_time, updatedSlot.end_time, slotIndex)) {
                 setErrors((prev) => ({
                     ...prev,
                     [day]: [
-                        ...(prev[day] || []),
+                        ...(prev[day] || []).filter(
+                            (error) => !error.includes(`Time slot ${slotIndex + 1}`)
+                        ),
                         `Time slot ${slotIndex + 1} overlaps with another slot`,
                     ],
                 }));
                 return;
             }
 
-            // Clear errors if no overlap
+            // Clear errors if no issues
             setErrors((prev) => ({
                 ...prev,
                 [day]: (prev[day] || []).filter(
@@ -247,78 +266,103 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                                             schedule[day].map((slot, slotIndex) => (
                                                 <div
                                                     key={slotIndex}
-                                                    className="flex gap-2 items-center"
+                                                    className="flex flex-col gap-2"
                                                 >
-                                                    <div className="">
-                                                        <TimePicker
-                                                            use12Hours
-                                                            format="h:mm A"
-                                                            value={
-                                                                slot.start_time
-                                                                    ? dayjs(
-                                                                          slot.start_time,
-                                                                          "HH:mm"
-                                                                      )
-                                                                    : null
-                                                            }
-                                                            onChange={(time) =>
-                                                                handleTimeChange(
-                                                                    day,
-                                                                    slotIndex,
-                                                                    "start_time",
-                                                                    time
-                                                                        ? time.format("HH:mm")
-                                                                        : null
-                                                                )
-                                                            }
-                                                            className={cn(
-                                                                timePickerClass,
-                                                                errors[day]?.some((error) =>
-                                                                    error.includes(
-                                                                        `Time slot ${slotIndex + 1}`
-                                                                    )
-                                                                ) && "border-red-500"
-                                                            )}
-                                                        />
-                                                    </div>
-                                                    <p className="text-sm font-medium">to</p>
-                                                    <div className="">
-                                                        <TimePicker
-                                                            use12Hours
-                                                            format="h:mm A"
-                                                            value={
-                                                                slot.end_time
-                                                                    ? dayjs(slot.end_time, "HH:mm")
-                                                                    : null
-                                                            }
-                                                            onChange={(time) =>
-                                                                handleTimeChange(
-                                                                    day,
-                                                                    slotIndex,
-                                                                    "end_time",
-                                                                    time
-                                                                        ? time.format("HH:mm")
-                                                                        : null
-                                                                )
-                                                            }
-                                                            className={cn(
-                                                                timePickerClass,
-                                                                errors[day]?.some((error) =>
-                                                                    error.includes(
-                                                                        `Time slot ${slotIndex + 1}`
-                                                                    )
-                                                                ) && "border-red-500"
-                                                            )}
-                                                        />
-                                                    </div>
-                                                    <span
-                                                        onClick={() =>
-                                                            removeTimeSlot(day, slotIndex)
-                                                        }
-                                                        className="text-red-500 hover:text-red-700 cursor-pointer"
+                                                    <div
+                                                        key={slotIndex}
+                                                        className="flex gap-2 items-center"
                                                     >
-                                                        <TrashIcon />
-                                                    </span>
+                                                        <div className="">
+                                                            <TimePicker
+                                                                use12Hours
+                                                                format="h:mm A"
+                                                                value={
+                                                                    slot.start_time
+                                                                        ? dayjs(
+                                                                              slot.start_time,
+                                                                              "HH:mm"
+                                                                          )
+                                                                        : null
+                                                                }
+                                                                onChange={(time) =>
+                                                                    handleTimeChange(
+                                                                        day,
+                                                                        slotIndex,
+                                                                        "start_time",
+                                                                        time
+                                                                            ? time.format("HH:mm")
+                                                                            : null
+                                                                    )
+                                                                }
+                                                                className={cn(
+                                                                    timePickerClass,
+                                                                    errors[day]?.some((error) =>
+                                                                        error.includes(
+                                                                            `Time slot ${
+                                                                                slotIndex + 1
+                                                                            }`
+                                                                        )
+                                                                    ) && "border-red-500"
+                                                                )}
+                                                            />
+                                                        </div>
+                                                        <p className="text-sm font-medium">to</p>
+                                                        <div className="">
+                                                            <TimePicker
+                                                                use12Hours
+                                                                format="h:mm A"
+                                                                value={
+                                                                    slot.end_time
+                                                                        ? dayjs(
+                                                                              slot.end_time,
+                                                                              "HH:mm"
+                                                                          )
+                                                                        : null
+                                                                }
+                                                                onChange={(time) =>
+                                                                    handleTimeChange(
+                                                                        day,
+                                                                        slotIndex,
+                                                                        "end_time",
+                                                                        time
+                                                                            ? time.format("HH:mm")
+                                                                            : null
+                                                                    )
+                                                                }
+                                                                className={cn(
+                                                                    timePickerClass,
+                                                                    errors[day]?.some((error) =>
+                                                                        error.includes(
+                                                                            `Time slot ${
+                                                                                slotIndex + 1
+                                                                            }`
+                                                                        )
+                                                                    ) && "border-red-500"
+                                                                )}
+                                                            />
+                                                        </div>
+                                                        <span
+                                                            onClick={() =>
+                                                                removeTimeSlot(day, slotIndex)
+                                                            }
+                                                            className="text-red-500 hover:text-red-700 cursor-pointer"
+                                                        >
+                                                            <TrashIcon />
+                                                        </span>
+                                                    </div>
+                                                    {errors[day]?.map(
+                                                        (error, errorIndex) =>
+                                                            error.includes(
+                                                                `Time slot ${slotIndex + 1}`
+                                                            ) && (
+                                                                <p
+                                                                    key={errorIndex}
+                                                                    className="text-xs text-red-500"
+                                                                >
+                                                                    {error}
+                                                                </p>
+                                                            )
+                                                    )}
                                                 </div>
                                             ))
                                         ) : (

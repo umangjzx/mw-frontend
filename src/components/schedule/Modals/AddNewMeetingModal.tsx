@@ -268,6 +268,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
             isOpen={isOpen}
             onSave={handleSubmit}
             isLoading={isPending}
+            onCancel={onClose}
         >
             <div className="flex flex-col px-5 mt-7">
                 {LearnerScheduleModalConstants.map((field: any) => (
