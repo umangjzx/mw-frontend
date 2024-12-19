@@ -1,5 +1,11 @@
 import React from "react";
-import { Input as AntInput, Checkbox, TimePicker, DatePicker as AntDatePicker, InputNumber } from "antd";
+import {
+    Input as AntInput,
+    Checkbox,
+    TimePicker,
+    DatePicker as AntDatePicker,
+    InputNumber,
+} from "antd";
 import { cn } from "@/utils/merge-class";
 import { IoIosSearch } from "react-icons/io";
 import RadioInput from "./RadioButton";
@@ -48,8 +54,9 @@ export const Input: React.FC<InputProps> = (props) => {
         return (
             <label htmlFor={name} className={`text-sm font-medium text-gray-700 ${labelClassName}`}>
                 <div
-                    className={`flex ${sublabelAlignment === "right" ? "items-center" : "flex-col items-start"
-                        } gap-1`}
+                    className={`flex ${
+                        sublabelAlignment === "right" ? "items-center" : "flex-col items-start"
+                    } gap-1`}
                 >
                     {labelContent}
                     {sublabelContent}
@@ -67,7 +74,11 @@ export const Input: React.FC<InputProps> = (props) => {
                         type={props.contentType}
                         placeholder={props.placeholder}
                         value={props.value}
-                        onChange={(e) => props.onChange(props?.responseType === 'array' ? [e.target.value] : e.target.value)}
+                        onChange={(e) =>
+                            props.onChange(
+                                props?.responseType === "array" ? [e.target.value] : e.target.value
+                            )
+                        }
                         disabled={disabled}
                         rootClassName={cn(
                             props.inputClassName ? "w-[49%]" : "",
@@ -151,36 +162,27 @@ export const Input: React.FC<InputProps> = (props) => {
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
                 return (
-                    // <DatePicker
-                    //     name={name}
-                    //     placeholder={props.placeholder}
-                    //     value={dayjs(props.value).format("DD-MM-YYYY")}
-                    //     onChange={e => props.onChange(new Date(e))}
-                    //     disabled={disabled}
-                    //     suffixIcon={<CalendarIcon className='text-black' />}
-                    //     rootClassName='text-sm border-gray-300 bg-background-input rounded-md'
-                    //     className={`w-full text-sm placeholder:text-sm hover:bg-background-input bg-background-input ${inputClassName}`}
-                    // />
                     <div>
-                        <DatePicker
-                            selected={props.value}
-                            onChange={(date) => props.onChange(date)}
-                            dateFormat="yyyy-MM-dd"
-                            minDate={today}
-                            placeholderText="Click to select date"
+                        <AntDatePicker
+                            value={props.value ? dayjs(props.value) : null}
+                            onChange={(date) => props.onChange(date?.toDate())}
+                            format="YYYY-MM-DD"
+                            disabledDate={(current) => current && current.isBefore(today, "day")}
+                            placeholder="Click to select date"
                             className={cn(
                                 "w-full text-sm p-2 rounded-lg border border-stroke focus:!border-stroke focus:!bg-background-input placeholder:text-sm hover:bg-background-input bg-background-input",
                                 props.inputClassName
                             )}
-                            wrapperClassName="w-full focus:!border-stroke"
                         />
                     </div>
                 );
             case "birthdatepicker":
                 const { birthDatePicker } = props;
-                const startDate = dayjs().subtract(birthDatePicker?.maxAge || 100, 'year')
-                const endDate = dayjs().subtract(birthDatePicker?.minAge || 0, 'year')
-                const disabledDate = (current: any) => current && (current.isBefore(startDate, 'day') || current.isAfter(endDate, 'day'));
+                const startDate = dayjs().subtract(birthDatePicker?.maxAge || 100, "year");
+                const endDate = dayjs().subtract(birthDatePicker?.minAge || 0, "year");
+                const disabledDate = (current: any) =>
+                    current &&
+                    (current.isBefore(startDate, "day") || current.isAfter(endDate, "day"));
 
                 return (
                     <div>

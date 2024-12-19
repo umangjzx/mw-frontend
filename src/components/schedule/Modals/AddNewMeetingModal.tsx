@@ -19,9 +19,11 @@ import { z } from "zod";
 const meetingFormSchema = z.object({
     title_of_the_meeting: z.string().min(1, "Meeting title is required"),
     select_volunteer: z.string().min(1, "Please select a volunteer"),
-    select_date: z.union([z.string(), z.date()]).refine((val) => val !== "", {
-        message: "Please select a date",
-    }),
+    select_date: z
+        .union([z.string(), z.date(), z.null()])
+        .refine((val) => val !== null && val !== "", {
+            message: "Please select a date",
+        }),
     start_time: z.string(),
     end_time: z.string(),
     google_meet_link: z.string(),
@@ -83,9 +85,11 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
     });
 
     const handleChange = async (name: string, value: any) => {
+        const processedValue = name === "select_date" && !value ? null : value;
+
         setFormData((prev) => ({
             ...prev,
-            [name]: value,
+            [name]: processedValue,
         }));
 
         // Clear error for the field being changed
@@ -102,12 +106,19 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
                 start_time: "",
                 end_time: "",
             }));
+
+            // Clear available slots and set error when date is cleared
+            if (name === "select_date" && !value) {
+                setAvailableSlots([]);
+                setSlotError("Please select a date first");
+                return;
+            }
         }
 
         // Validate single field
         try {
             const fieldSchema = meetingFormSchema.pick({ [name]: true } as any);
-            fieldSchema.parse({ [name]: value });
+            fieldSchema.parse({ [name]: processedValue });
         } catch (error) {
             if (error instanceof z.ZodError) {
                 const fieldError = error.errors[0];
@@ -185,7 +196,6 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
     };
 
     const handleSlotSelection = (slotId: string, startTime: string, endTime: string) => {
-        console.log(slotId, startTime, endTime, "slotId, startTime, endTime");
         setFormData((prev) => ({
             ...prev,
             selected_slot: slotId,
