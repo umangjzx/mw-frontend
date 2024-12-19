@@ -14,8 +14,8 @@ export const useOnboardingForm = (schema: any) => {
         resolver: zodResolver(schema),
         defaultValues: {
             profile_picture: {
-                image_url: "url",
-                image_id: "image_id",
+                image_url: "",
+                image_id: "",
             },
             profile_video: {
                 video_url: "video_url",
@@ -44,9 +44,11 @@ export const useOnboardingForm = (schema: any) => {
     const onSubmit = async (data: z.infer<typeof schema>) => {
         try {
             updateOnboarding(data);
+            showToast({ type: "success", message: "Form Submitted!" })
             console.log("FORM_DATA", data);
         } catch (error) {
             console.error("Error submitting form:", error);
+            showToast({ type: "error", message: "Fill required Fields!" })
             throw error;
         }
     };

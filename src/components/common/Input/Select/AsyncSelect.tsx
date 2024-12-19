@@ -142,13 +142,21 @@ const AsyncSelect = ({
         [data, responseAsValue, responseAsLabel, isLoading]
     );
     console.log("getValue", getValue);
+
+    const filteredOptions = useMemo(() => {
+        if (variant === "multi" && Array.isArray(getValue) && getValue?.length > 0) {
+            return options.filter((option: any) => !getValue.some(selectValue => selectValue?.label === option?.label))
+        }
+        return options;
+    }, [variant, getValue, options]);
+
     return (
         <div className="flex flex-col gap-2 w-full">
             <CreatableSelect
                 {...props}
                 required={false}
                 isMulti={variant === "multi"}
-                options={options}
+                options={filteredOptions}
                 value={getValue}
                 onChange={handleChange as any}
                 onCreateOption={handleCreate}
@@ -157,7 +165,7 @@ const AsyncSelect = ({
                 classNamePrefix="select"
                 isDisabled={props.disabled}
                 placeholder={props.placeholder || "Search and Select"}
-                formatCreateLabel={(inputValue: string) => `Create "${inputValue}"`}
+                formatCreateLabel={(inputValue: string) => `Not Found - "${inputValue}"`}
                 hideSelectedOptions={variant === "multi"}
                 loadingMessage={() => "Loading..."}
                 styles={customStyles}
@@ -173,9 +181,9 @@ const AsyncSelect = ({
             />
             {variant === "multi" && Array.isArray(getValue) && (
                 <div className={cn("flex-wrap gap-1", getValue?.length > 0 ? "flex" : "hidden")}>
-                    {getValue?.map((item: any) => (
+                    {getValue?.map((item: any, index: number) => (
                         <TagComponent
-                            key={item.value}
+                            key={`${item.value}-${index}`}
                             onClose={() =>
                                 handleChange(getValue?.filter((v: any) => v.value !== item.value))
                             }

@@ -28,6 +28,15 @@ type TextInputProps = BaseInputProps & {
     responseType?: string;
 };
 
+type NumberInputProps = BaseInputProps & {
+    inputType: "number";
+    value: number;
+    onChange: (value: number | null) => void;
+    placeholder?: string;
+    responseType?: string;
+    maxLength?: number;
+};
+
 type TextAreaInputProps = BaseInputProps & {
     inputType: "textarea";
     value: string;
@@ -157,6 +166,7 @@ type TimeRangeInputProps = BaseInputProps & {
 
 type InputProps =
     | TextInputProps
+    | NumberInputProps
     | TextAreaInputProps
     | SelectInputProps
     | MultiSelectInputProps

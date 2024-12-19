@@ -1,5 +1,5 @@
 import React from "react";
-import { Input as AntInput, Checkbox, TimePicker, DatePicker as AntDatePicker } from "antd";
+import { Input as AntInput, Checkbox, TimePicker, DatePicker as AntDatePicker, InputNumber } from "antd";
 import { cn } from "@/utils/merge-class";
 import { IoIosSearch } from "react-icons/io";
 import RadioInput from "./RadioButton";
@@ -76,6 +76,27 @@ export const Input: React.FC<InputProps> = (props) => {
                         className={cn(
                             `text-sm p-2 rounded-md hover:bg-background-input bg-background-input`,
                             props.inputClassName
+                        )}
+                    />
+                );
+            case "number":
+                return (
+                    <InputNumber
+                        {...props}
+                        maxLength={props?.maxLength}
+                        name={name}
+                        type={props.inputType}
+                        placeholder={props.placeholder}
+                        value={props.value}
+                        onChange={(value) => props.onChange(value)}
+                        disabled={disabled}
+                        rootClassName={cn(
+                            props.inputClassName ? "w-[49%]" : "",
+                            "w-full !mb-0 border !border-stroke hover:!border-stroke h-fit focus:!border-stroke focus:!bg-background-input"
+                        )}
+                        className={cn(
+                            props.inputClassName,
+                            `!mb-0 text-sm p-[6px] rounded-md hover:!bg-background-input !bg-background-input`
                         )}
                     />
                 );
@@ -166,7 +187,7 @@ export const Input: React.FC<InputProps> = (props) => {
                         <AntDatePicker
                             value={props.value ? dayjs(props.value) : null}
                             disabledDate={disabledDate}
-                            onChange={(date, dateString) => props.onChange(dateString as string )}
+                            onChange={(date, dateString) => props.onChange(dateString as string)}
                             format="YYYY-MM-DD"
                             allowClear={false}
                             placeholder="Click to select date"

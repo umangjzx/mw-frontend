@@ -1,22 +1,31 @@
 import { z } from "zod";
 
 export const volunteerFormSchema = z.object({
-    volunteer_first_name: z.string({ required_error: "First Name is required" }),
-    volunteer_last_name: z.string({ required_error: "Last Name is required" }),
-    volunteer_birth_date: z.string({ required_error: "Please select your birthday" }),
-    consented_from_parent: z.boolean({ required_error: "Parent consent is required" }).refine((val) => val === true, { message: "Parent consent must be provided" }),
+    volunteer_first_name: z
+        .string({ required_error: "First Name is required" })
+        .min(1, { message: "First Name cannot be empty" }),
+    volunteer_last_name: z
+        .string({ required_error: "Last Name is required" })
+        .min(1, { message: "Last Name cannot be empty" }),
+    volunteer_birth_date: z
+        .string({ required_error: "Please select your birthday" }),
+    consented_from_parent: z
+        .boolean({ required_error: "Parent consent is required" })
+        .refine((val) => val === true, { message: "Parent consent must be provided" }),
     volunteer_parent_email: z
         .string({ required_error: "Parent email is required" })
         .email("Please enter a valid email address"),
     volunteer_gender: z.string({ required_error: "Please select your gender" }),
-    volunteer_education: z.string({ required_error: "Please provide your education details" }),
-    volunteer_higher_education: z.string({
-        required_error: "Higher education details are required",
-    }),
+    volunteer_education: z
+        .string({ required_error: "Please provide your education details" })
+        .min(1, { message: "Education details cannot be empty" }),
+    volunteer_higher_education: z.string({ required_error: "Higher education details are required" }),
     volunteer_languages: z
         .array(z.any(), { required_error: "Please specify the languages you know" })
         .nonempty("Please add at least one language"),
-    volunteer_experience: z.string({ required_error: "Experience details are required" }),
+    volunteer_experience: z
+        .string({ required_error: "Experience details are required" })
+        .min(1, { message: "Experience details cannot be empty" }),
     volunteer_skills: z
         .array(
             z.object({
@@ -26,7 +35,9 @@ export const volunteerFormSchema = z.object({
             { required_error: "Please add at least one skill" }
         )
         .nonempty("Please add at least one skill"),
-    volunteer_description: z.string({ required_error: "Description is required" }),
+    volunteer_description: z
+        .string({ required_error: "Description is required" })
+        .min(1, { message: "Description cannot be empty" }),
 
     // Contact Details validations
     volunteer_contact_details: z.object({
@@ -34,10 +45,14 @@ export const volunteerFormSchema = z.object({
             .string({ required_error: "Email is required" })
             .email("Please enter a valid email address"),
         contact_number: z.object({
-            number: z.string({ required_error: "Contact number is required" }),
+            number: z
+                .string({ required_error: "Contact number is required" })
+                .min(1, { message: "Contact number cannot be empty" }),
             country_code: z.string({ required_error: "Country code is required" }),
         }),
-        zip_code: z.string({ required_error: "Zip code is required" }),
+        zip_code: z
+            .string({ required_error: "Zip code is required" })
+            .min(1, { message: "Zip code cannot be empty" }),
     }),
 
     // Legal and Safety Info validations
@@ -52,14 +67,32 @@ export const volunteerFormSchema = z.object({
             convicted_of_a_crime: z.boolean({
                 required_error: "Please specify if you were convicted of a crime",
             }),
-            description: z.string({ required_error: "Please provide a description" }),
-        }),
+            description: z.string().optional(),
+        }).refine(
+            (fields) => {
+                const { convicted_of_a_crime, involved_in_criminal_activity, convicted_of_a_felony, description } = fields;
+                return !(convicted_of_a_crime || involved_in_criminal_activity || convicted_of_a_felony) || (description && description.trim().length > 0);
+            },
+            {
+                message: "Description is required when any criminal conviction or activity is true",
+                path: ["description"],
+            }
+        ),
         sex_offender_check_details: z.object({
             checked_for_sex_offender: z.boolean({
                 required_error: "Please specify if you were checked for a sex offender",
             }),
-            description: z.string({ required_error: "Please provide a description" }),
-        }),
+            description: z.string().optional(),
+        }).refine(
+            (fields) => {
+                const { checked_for_sex_offender, description } = fields;
+                return !checked_for_sex_offender || (description && description.trim().length > 0);
+            },
+            {
+                message: "Description is required if checked for a sex offender is true",
+                path: ["description"],
+            }
+        ),
         disciplinary_check_details: z.object({
             terminated_from_volunteer_position: z.boolean({
                 required_error: "Please specify if you were terminated from a position",
@@ -70,14 +103,32 @@ export const volunteerFormSchema = z.object({
             dismissed_from_institution: z.boolean({
                 required_error: "Please specify if you were dismissed from an institution",
             }),
-            description: z.string({ required_error: "Please provide a description" }),
-        }),
+            description: z.string().optional(),
+        }).refine(
+            (fields) => {
+                const { terminated_from_volunteer_position, involved_in_disputes, dismissed_from_institution, description } = fields;
+                return !(terminated_from_volunteer_position || involved_in_disputes || dismissed_from_institution) || (description && description.trim().length > 0);
+            },
+            {
+                message: "Description is required if terminated, involved in disputes, or dismissed is true",
+                path: ["description"],
+            }
+        ),
         health_and_safety_check_details: z.object({
             having_health_issues: z.boolean({
                 required_error: "Please specify if you have health issues",
             }),
-            description: z.string({ required_error: "Please provide a description" }),
-        }),
+            description: z.string().optional(),
+        }).refine(
+            (fields) => {
+                const { having_health_issues, description } = fields;
+                return !having_health_issues || (description && description.trim().length > 0);
+            },
+            {
+                message: "Description is required if having health issues is true",
+                path: ["description"],
+            }
+        ),
         other_consents_details: z.object({
             consent_to_background_checks: z.boolean({
                 required_error: "Please confirm your consent to background checks",
@@ -88,8 +139,22 @@ export const volunteerFormSchema = z.object({
             agree_to_understand_termination_of_volunteer_agreement: z.boolean({
                 required_error: "Please confirm that you understand the agreement",
             }),
-            description: z.string({ required_error: "Please provide a description" }),
-        }),
+            description: z.string().optional(),
+        }).refine(
+            (fields) => {
+                const {
+                    consent_to_background_checks,
+                    agree_to_follow_organization_policies,
+                    agree_to_understand_termination_of_volunteer_agreement,
+                    description,
+                } = fields;
+                return !(consent_to_background_checks || agree_to_follow_organization_policies || agree_to_understand_termination_of_volunteer_agreement) || (description && description.trim().length > 0);
+            },
+            {
+                message: "Description is required if any consent agreement is true",
+                path: ["description"],
+            }
+        ),
         volunteer_experience_details: z.object({
             previously_volunteered: z.boolean({
                 required_error: "Please specify if you previously volunteered",
@@ -97,9 +162,19 @@ export const volunteerFormSchema = z.object({
             invloved_in_complaints: z.boolean({
                 required_error: "Please specify if you were involved in complaints",
             }),
-            description: z.string({ required_error: "Please provide a description" }),
-        }),
+            description: z.string().optional(),
+        }).refine(
+            (fields) => {
+                const { previously_volunteered, invloved_in_complaints, description } = fields;
+                return !(previously_volunteered || invloved_in_complaints) || (description && description.trim().length > 0);
+            },
+            {
+                message: "Description is required if previously volunteered or involved in complaints is true",
+                path: ["description"],
+            }
+        ),
     }),
+
 
     // Consent and Permissions
     consent_and_permissions: z.object({
@@ -431,8 +506,8 @@ export const defaultVolunteerData: Volunteer = {
         },
     },
     profile_picture: {
-        image_url: "image_url",
-        image_id: "image_id",
+        image_url: "",
+        image_id: "",
     },
     profile_video: {
         video_url: "video_url",
