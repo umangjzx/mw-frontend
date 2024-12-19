@@ -7,6 +7,7 @@ import { MdClose } from "react-icons/md";
 import { PUT_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSendData } from "@/hooks/useReactQuery";
 
 interface NotificationCardProps {
     data: {
@@ -40,18 +41,24 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ data }) => {
         return `${formatToAMPM(start)} - ${formatToAMPM(end)}`;
     };
 
-    const handleNotificationStatus = (status: string, sessionId: string) => {
-        PUT_API(endpoints.session.updateNotificationStatus(sessionId), {
+    const handleNotificationStatus = async (status: string, sessionId: string) => {
+        return await PUT_API(endpoints.session.updateNotificationStatus(sessionId), {
             status: status,
-        })
-            .then(() => {
-                queryClient.invalidateQueries({ queryKey: ["approval-notifications"] });
-                queryClient.invalidateQueries({ queryKey: ["events"] });
-            })
-            .catch((err) => {
-                console.log("Error: ", err);
-            });
+        });
     };
+
+    const { mutate: onSave, isPending } = useSendData({
+        // @ts-ignore
+        fn: (status: string) => handleNotificationStatus(status, data.session_id),
+        invalidateKey: ["events"],
+        success: () => {
+            queryClient.invalidateQueries({ queryKey: ["approval-notifications"] });
+            queryClient.invalidateQueries({ queryKey: ["events"] });
+        },
+        error: (err) => {
+            console.log("Error: ", err);
+        },
+    });
 
     return (
         <div className="flex flex-col gap-4 border rounded-xl p-4 border-[#E0E0E0] h-fit w-[360px]">
@@ -84,7 +91,8 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ data }) => {
             </div>
             <div className="flex items-center gap-2 w-full">
                 <Button
-                    onClick={() => handleNotificationStatus("rejected", data.session_id)}
+                    loading={isPending}
+                    onClick={() => onSave("rejected")}
                     btnVariant="error"
                     icon={<MdClose className="text-[1.1rem]" />}
                     className="w-full text-sm  h-9 !bg-error-light !border-error-light rounded-xl py-2 hover:!text-error"
@@ -92,7 +100,8 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ data }) => {
                     Decline
                 </Button>
                 <Button
-                    onClick={() => handleNotificationStatus("accepted", data.session_id)}
+                    loading={isPending}
+                    onClick={() => onSave("accepted")}
                     btnVariant="success"
                     icon={<IoMdCheckmark className="text-[1.1rem]" />}
                     className="w-full text-sm h-9 !bg-success-light !border-success-light rounded-xl py-2 hover:!text-success "

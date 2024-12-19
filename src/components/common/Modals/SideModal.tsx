@@ -47,7 +47,7 @@ const SideModal: React.FC<SideModalProps> = ({
                                     className="w-fit px-4 py-2 !text-sm !text-black bg-white !border !border-stroke-light rounded-xl"
                                 />
                                 <Button
-                                    isLoading={isLoading}
+                                    loading={isLoading}
                                     disabled={isDisabled}
                                     onClick={onSave}
                                     title={saveButtonText}

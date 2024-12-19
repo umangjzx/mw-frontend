@@ -54,10 +54,6 @@ const ApprovalModal: React.FC<ApprovalModalProps> = ({ isOpen, onClose }) => {
         }
     }, [data]);
 
-    const handleSave = () => {
-        console.log("save");
-    };
-
     return (
         <SideModal
             title="Approval Notifications"
@@ -70,10 +66,16 @@ const ApprovalModal: React.FC<ApprovalModalProps> = ({ isOpen, onClose }) => {
                     <p>Loading...</p>
                 ) : isError ? (
                     <p>Error loading notifications</p>
-                ) : (
+                ) : notificationsData.length > 0 ? (
                     notificationsData.map((notification) => (
                         <NotificationCard key={notification.session_id} data={notification} />
                     ))
+                ) : (
+                    <div className="flex flex-col gap-4 border rounded-xl p-4 border-[#E0E0E0] h-fit w-[360px] items-center justify-center">
+                        <p className="text-gray-light text-sm font-medium">
+                            No Notifications Available
+                        </p>
+                    </div>
                 )}
             </div>
         </SideModal>

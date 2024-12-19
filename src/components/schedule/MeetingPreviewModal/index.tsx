@@ -100,7 +100,7 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                             onClick={handleFeedBack}
                             className="text-primary text-sm underline cursor-pointer font-medium"
                         >
-                            Completed Feedback
+                            Complete Feedback
                         </p>
                     </div>
                 </div>
