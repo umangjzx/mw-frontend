@@ -11,7 +11,7 @@ type Volunteer = {
     volunteer_contact_details: Volunteercontactdetails;
     legal_and_safety_info: Legalandsafetyinfo;
     consent_and_permissions: Consentandpermissions;
-    profile_picture: Profilepicture;
+    profile_picture?: Profilepicture | null;
     profile_video: Profilevideo;
     profile_document: Profiledocument;
     volunteer_languages: Volunteerlanguage[];
@@ -103,7 +103,7 @@ type Volunteerlanguage = {
 };
 
 type Volunteercontactdetails = {
-    email: string;
+    email?: string;
     contact_number: Contactnumber;
     zip_code: string;
 };

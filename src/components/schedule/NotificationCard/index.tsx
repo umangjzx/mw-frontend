@@ -10,6 +10,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useSendData } from "@/hooks/useReactQuery";
 import { useState } from "react";
 import { cn } from "@/utils/merge-class";
+import { showToast } from "@/components/common/Toast";
 
 interface NotificationCardProps {
     data: {
@@ -52,6 +53,12 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ data }) => {
         }
         return await PUT_API(endpoints.session.updateNotificationStatus(sessionId), {
             status: status,
+        }).then(() => {
+            if (status === "accepted") {
+                showToast({ type: "success", message: "Invitation Accepted" });
+            } else {
+                showToast({ type: "error", message: "Invitation Declined" });
+            }
         });
     };
 

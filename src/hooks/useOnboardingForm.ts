@@ -13,10 +13,6 @@ export const useOnboardingForm = (schema: any) => {
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: {
-            profile_picture: {
-                image_url: "",
-                image_id: "",
-            },
             profile_video: {
                 video_url: "video_url",
                 video_id: "video_id",
@@ -33,22 +29,22 @@ export const useOnboardingForm = (schema: any) => {
         fn: (data: z.infer<typeof schema>) =>
             PUT_API(endpoints.onboarding.update(role as "volunteer" | "learner"), data),
         success: () => {
-            showToast({ type: "success", message: "Form Submitted!" })
+            showToast({ type: "success", message: "Form Submitted!" });
             router.push("/onboarding/verification");
         },
         error: () => {
-            showToast({ type: "error", message: "Fill required Fields!" })
+            showToast({ type: "error", message: "Fill required Fields!" });
         },
     });
 
     const onSubmit = async (data: z.infer<typeof schema>) => {
         try {
-            updateOnboarding(data);
-            showToast({ type: "success", message: "Form Submitted!" })
+            // updateOnboarding(data);
+            showToast({ type: "success", message: "Form Submitted!" });
             console.log("FORM_DATA", data);
         } catch (error) {
             console.error("Error submitting form:", error);
-            showToast({ type: "error", message: "Fill required Fields!" })
+            showToast({ type: "error", message: "Fill required Fields!" });
             throw error;
         }
     };
