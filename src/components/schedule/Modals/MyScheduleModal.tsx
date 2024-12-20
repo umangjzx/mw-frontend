@@ -107,45 +107,41 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
         type: "start_time" | "end_time",
         value: string | null
     ) => {
-        if (type === "start_time" && value) {
-            // When start time is selected, automatically set end time to 1 hour later
-            const startTime = dayjs(value, "HH:mm");
-            const endTime = startTime.add(1, "hour");
+        const updatedSlot = {
+            ...schedule[day][slotIndex],
+            [type]: value ? dayjs(value, "HH:mm").format("HH:mm") : "",
+        };
 
-            const updatedSlot = {
-                ...schedule[day][slotIndex],
-                start_time: startTime.format("HH:mm"),
-                end_time: endTime.format("HH:mm"),
-            };
-
-            // Check for overlap with other slots
-            if (isTimeOverlapping(day, updatedSlot.start_time, updatedSlot.end_time, slotIndex)) {
-                setErrors((prev) => ({
-                    ...prev,
-                    [day]: [
-                        ...(prev[day] || []).filter(
-                            (error) => !error.includes(`Time slot ${slotIndex + 1}`)
-                        ),
-                        `Time slot ${slotIndex + 1} overlaps with another slot`,
-                    ],
-                }));
-                return;
-            }
-
-            // Clear errors if no issues
+        // Check for overlap with other slots
+        if (
+            updatedSlot.start_time &&
+            updatedSlot.end_time &&
+            isTimeOverlapping(day, updatedSlot.start_time, updatedSlot.end_time, slotIndex)
+        ) {
             setErrors((prev) => ({
                 ...prev,
-                [day]: (prev[day] || []).filter(
-                    (error) => !error.includes(`Time slot ${slotIndex + 1}`)
-                ),
+                [day]: [
+                    ...(prev[day] || []).filter(
+                        (error) => !error.includes(`Time slot ${slotIndex + 1}`)
+                    ),
+                    `Time slot ${slotIndex + 1} overlaps with another slot`,
+                ],
             }));
-
-            setSchedule((prev) => ({
-                ...prev,
-                [day]: prev[day].map((slot, index) => (index === slotIndex ? updatedSlot : slot)),
-            }));
+            return;
         }
-        // Ignore end_time changes since it's automatically set
+
+        // Clear errors if no issues
+        setErrors((prev) => ({
+            ...prev,
+            [day]: (prev[day] || []).filter(
+                (error) => !error.includes(`Time slot ${slotIndex + 1}`)
+            ),
+        }));
+
+        setSchedule((prev) => ({
+            ...prev,
+            [day]: prev[day].map((slot, index) => (index === slotIndex ? updatedSlot : slot)),
+        }));
     };
 
     const addTimeSlot = (day: string) => {
@@ -308,10 +304,18 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                                                                           )
                                                                         : null
                                                                 }
-                                                                disabled={true} // Disable end time picker since it's automatically set
+                                                                onChange={(time) =>
+                                                                    handleTimeChange(
+                                                                        day,
+                                                                        slotIndex,
+                                                                        "end_time",
+                                                                        time
+                                                                            ? time.format("HH:mm")
+                                                                            : null
+                                                                    )
+                                                                }
                                                                 className={cn(
                                                                     timePickerClass,
-                                                                    "bg-gray-100", // Add some visual indication that it's disabled
                                                                     errors[day]?.some((error) =>
                                                                         error.includes(
                                                                             `Time slot ${
