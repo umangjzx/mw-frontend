@@ -17,6 +17,8 @@ const CenterModal: React.FC<CenterModalProps> = ({
     primaryActionProps,
     secondaryActionProps,
     loading = false,
+    headerComponent,
+    footerComponent
 }) => {
     const defaultButtonStyles = {
         primaryActionProps: {
@@ -40,9 +42,9 @@ const CenterModal: React.FC<CenterModalProps> = ({
         <Button {...defaultButtonStyles.primaryActionProps} loading={loading} />,
     ];
 
-    const footer = buttons.filter((button) => button);
+    const footer = footerComponent || buttons.filter((button) => button);
 
-    const header = title && (
+    const header = headerComponent || title && (
         <div className="flex gap-2 w-full flex-col border-b border-stroke items-start justify-between mb-4 pb-4">
             <h2 className={`text-xl text-[${titleColor}] font-semibold ${titleClassName}`}>
                 {title}
