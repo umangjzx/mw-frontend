@@ -274,3 +274,11 @@ body {
     animation: fadeIn 0.5s ease-in-out;
     animation-fill-mode: backwards;
 }
+
+.text-gradient {
+    color: #ffa766;
+    background-image: linear-gradient(90deg, #ffa766 24%, #66dbff 64%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
