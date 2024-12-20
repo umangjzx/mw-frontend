@@ -72,7 +72,7 @@ export default function LearnersPage() {
     const { setHeaderOptions } = useComponentStore();
     const pathname = usePathname();
 
-    const [_, setLearnerId] = useQueryState("id", {
+    const [learnerId, setLearnerId] = useQueryState("id", {
         shallow: true,
     });
     const [mode, setMode] = useQueryState("mode", {
@@ -105,7 +105,7 @@ export default function LearnersPage() {
 
     return (
         <div className="w-full h-full p-6 animate-fadeIn">
-            <MessageModal isOpen={mode === "message"} onClose={handleClose} />
+             {mode === "message" && <MessageModal key={learnerId} learnerId={learnerId} isOpen={mode === "message"} onClose={handleClose} /> }
             <TestmonialModal
                 isOpen={mode === "testimonial"}
                 mode={"create"}

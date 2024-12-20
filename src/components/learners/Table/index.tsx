@@ -60,7 +60,7 @@ const LearnersTable: React.FC<LearnersTableProps> = ({
             key: "actions",
             render: (_: any, record: Learner) => (
                 <div className="flex items-center gap-2">
-                    {/* <Button
+                    <Button
                         onClick={() => handleMessageLearner(record.id)}
                         btnVariant="link"
                         title="Message Learner"
@@ -69,7 +69,7 @@ const LearnersTable: React.FC<LearnersTableProps> = ({
                         onClick={() => handleUploadTestimonial(record.id)}
                         btnVariant="link"
                         title="Upload Testimonial"
-                    /> */}
+                    />
                 </div>
             ),
             className: "px-6 py-4",

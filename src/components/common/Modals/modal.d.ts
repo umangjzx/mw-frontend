@@ -3,6 +3,8 @@ interface CenterModalProps {
     onClose: () => void;
     title?: string;
     topContent?: string | React.ReactNode;
+    headerComponent?: React.ReactNode;
+    footerComponent?: React.ReactNode;
     titleColor?: string;
     width?: number | string;
     minWidth?: number | string;
