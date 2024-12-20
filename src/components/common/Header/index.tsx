@@ -11,6 +11,7 @@ const CommonHeader: React.FC = () => {
         searchPlaceholder,
         actionButtonOnClick,
         actionButtonClassName,
+        actionButtonIcon,
         actionButtonPlacement,
         actionButtonTitle,
         showButton,
@@ -57,6 +58,7 @@ const CommonHeader: React.FC = () => {
                         onClick={actionButtonOnClick}
                         rootClassName={actionButtonClassName}
                         size="small"
+                        icon={actionButtonIcon}
                     />
                 )}
             </div>

@@ -164,6 +164,15 @@ type TimeRangeInputProps = BaseInputProps & {
     value: any
 };
 
+type DateRangeInputProps = BaseInputProps & {
+    inputType: "daterange";
+    onChange: (value: any) => void;
+    fromPlaceholder?: string;
+    toPlaceholder?: string;
+    value: any
+};
+
+
 type InputProps =
     | TextInputProps
     | NumberInputProps
@@ -179,4 +188,5 @@ type InputProps =
     | SearchInputProps
     | AsyncSelectProps
     | ContactInputProps
-    | TimeRangeInputProps;
+    | TimeRangeInputProps
+    | DateRangeInputProps;

@@ -11,6 +11,8 @@ import { endpoints } from "@/api/constants";
 import { useComponentStore } from "@/store/useComponenetStore";
 import AddNewMeetingModal from "@/components/schedule/Modals/AddNewMeetingModal";
 import { useQueryState } from "nuqs";
+import VolunteerFilterModal from "@/components/learners/Modals/VolunteerFilter";
+import { RiFilter3Line } from "react-icons/ri";
 
 interface VolunteerCardData {
     volunteerId: string;
@@ -31,6 +33,8 @@ export default function LearnersPage() {
     const searchParams = useSearchParams();
     const [volunteerCardData, setVolunteerCardData] = useState<VolunteerCardData[]>([]);
     const [isOpenSchedule, setIsOpenSchedule] = useState(false);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+
     const [size] = useQueryState("size", { defaultValue: "10" });
     const [page] = useQueryState("page", { defaultValue: "1" });
     const [query] = useQueryState("query");
@@ -98,21 +102,26 @@ export default function LearnersPage() {
     useEffect(() => {
         setHeaderOptions({
             searchPlaceholder: "Find your tutor",
-            // actionButtonTitle: "My Volunteers",
-            // actionButtonOnClick: () => {},
-            // actionButtonClassName:
-            //     "!bg-black hover:!border-none !text-white !rounded-xl hover:!bg-black hover:!text-white !h-[35px] !text-xs !py-2 px-4",
-            // actionButtonPlacement: "right",
-            // showButton: true,
+            actionButtonTitle: "Filers",
+            actionButtonOnClick: () => setIsFilterOpen(true),
+            actionButtonIcon: <RiFilter3Line className="text-lg"/>,
+            actionButtonClassName: "!bg-white !text-balck hover:!bg-black hover:!text-white !h-[35px] !text-xs !py-2 px-4 !rounded-full",
+            actionButtonPlacement: "right",
+            showButton: true,
             title: "Volunteer",
             titleIcon: getHeaderIcon(pathname),
         });
     }, [pathname, setHeaderOptions]);
 
+    const handleFilter = (filters: any) => {
+        console.log(filters);
+    }
+
     return (
         <div className="px-10 py-10 animate-fadeIn">
             <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleModal} />
             <VolunteerViewModal isOpen={isOpen} onClose={handleModal} />
+            <VolunteerFilterModal isFilterApplying={false} isOpen={isFilterOpen} handleFilter={handleFilter} onClose={()=> setIsFilterOpen(false)} />
             {isLoading ? (
                 <div>Loading...</div>
             ) : isError ? (
