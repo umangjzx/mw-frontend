@@ -71,7 +71,7 @@ export default function LearnerSchedulePage() {
                 mode="create"
                 isOpen={isOpenFeedback}
                 onClose={handleNavigate}
-                onSubmit={handleSubmitFeedback}
+                onSubmit={onSave}
                 data={eventDetails}
                 Loading={isPending}
             />
