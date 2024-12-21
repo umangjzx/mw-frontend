@@ -67,6 +67,20 @@ body {
     background: #555; /* Darker color when hovered */
 }
 
+/* Date Rabge Picker */
+:where(.css-dev-only-do-not-override-wz1edx).ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-in-range:not(.ant-picker-cell-disabled):before,
+:where(.css-dev-only-do-not-override-wz1edx).ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-range-start:not(.ant-picker-cell-disabled):before,
+:where(.css-dev-only-do-not-override-wz1edx).ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-range-end:not(.ant-picker-cell-disabled):before {
+    background-color: #d5f1ff !important;
+}
+
+:where(.css-dev-only-do-not-override-wz1edx).ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-selected:not(.ant-picker-cell-disabled) .ant-picker-cell-inner, 
+:where(.css-dev-only-do-not-override-wz1edx).ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-range-start:not(.ant-picker-cell-disabled) .ant-picker-cell-inner, 
+:where(.css-dev-only-do-not-override-wz1edx).ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-range-end:not(.ant-picker-cell-disabled) .ant-picker-cell-inner {
+    color: white !important;
+    background-color: #08547a !important;
+}
+
 /* Rating Radio Button Styles */
 .ant-radio-button-wrapper {
     border: 1px solid var(--border-stroke) !important;

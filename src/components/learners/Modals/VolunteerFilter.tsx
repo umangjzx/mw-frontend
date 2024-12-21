@@ -2,18 +2,17 @@
 
 import { Input } from "@/components/common/Input";
 import SideModal from "@/components/common/Modals/SideModal";
-
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { z } from "zod";
 import { VolunteerFilterModalConstants } from "@/constants/modals";
 
 // Define Zod schema for form validation
 const meetingFormSchema = z.object({
     nationality: z.string(),
-    languages_known: z.string(),
-    subjects: z.string(),
+    languages_known: z.array(z.string()).optional(),
+    subjects: z.array(z.string()).optional(),
     available_time: z.any(),
-    available_days: z.any()
+    available_days: z.any(),
 });
 
 // Infer TypeScript type from schema
@@ -21,24 +20,28 @@ type FormData = z.infer<typeof meetingFormSchema>;
 
 interface VolunteerFilterModalProps {
     isOpen: boolean;
-    handleFilter: (data: any) => void;
+    handleFilter: (data: FormData) => void;
     onClose: () => void;
-    isFilterApplying: boolean; 
+    isFilterApplying: boolean;
 }
 
-const initialFormData = {
+const initialFormData: FormData = {
     nationality: "",
-    languages_known: "",
-    subjects: "",
+    languages_known: [],
+    subjects: [],
     available_time: [],
-    available_days: []
-}
+    available_days: [],
+};
 
 export default function VolunteerFilterModal({ isOpen, isFilterApplying, handleFilter, onClose }: VolunteerFilterModalProps) {
-    if (!isOpen) return null;
     const [formData, setFormData] = useState<FormData>(initialFormData);
 
-    const handleChange = async (name: string, value: any) => {
+    const isFormUnchanged = useMemo(
+        () => JSON.stringify(formData) === JSON.stringify(initialFormData),
+        [formData]
+    );
+
+    const handleChange = (name: keyof FormData, value: any) => {
         setFormData((prev) => ({
             ...prev,
             [name]: value,
@@ -46,36 +49,34 @@ export default function VolunteerFilterModal({ isOpen, isFilterApplying, handleF
     };
 
     const handleSave = () => {
-        const payload = {
-            nationality: formData?.nationality,
-            languages_known: formData?.languages_known,
-            subjects: formData?.subjects,
-            available_time: { from: formData?.available_time?.from?.format('HH-mm'), to: formData?.available_time?.to?.format('HH-mm') },
-            available_days: { from: formData?.available_days[0]?.format('YYYY-MM-DD'), to: formData?.available_days[1]?.format('YYYY-MM-DD') },
-        };
-        handleFilter(payload)
+        handleFilter(formData);
     };
+
+    const handleClear = () => {
+        setFormData(initialFormData);
+    };
+
+    if (!isOpen) return null;
 
     return (
         <SideModal
             title="Volunteer Filters"
             onClose={onClose}
             isOpen={isOpen}
-            saveButtonText = "Apply Filters"
-            cancelButtonText = "Clear All"
+            saveButtonText="Apply Filters"
+            cancelButtonText="Clear All"
             onSave={handleSave}
-            isDisabled={JSON.stringify(formData) === JSON.stringify(initialFormData)}
+            isDisabled={isFormUnchanged}
             isLoading={isFilterApplying}
-            onCancel={()=>setFormData(initialFormData)}
+            onCancel={handleClear}
         >
             <div className="flex flex-col px-5 mt-7">
                 {VolunteerFilterModalConstants.map((field: any) => (
                     <Input
                         key={field.name}
                         {...field}
-                        onChange={(value: any) => handleChange(field.name, value)}
+                        onChange={(value: any) => handleChange(field.name as keyof FormData, value)}
                         value={formData[field.name as keyof FormData]}
-                        required={field.required}
                     />
                 ))}
             </div>

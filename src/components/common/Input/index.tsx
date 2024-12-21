@@ -261,8 +261,7 @@ export const Input: React.FC<InputProps> = (props) => {
                         {...props}
                         format="YYYY-MM-DD"
                         placeholder={['Start Date', 'End Date']}
-                        onChange={(date) => props.onChange(date)}
-                        style={{ width: '100%' }} />
+                        onChange={(date) => props.onChange(date)} />
                 );
         }
     };
