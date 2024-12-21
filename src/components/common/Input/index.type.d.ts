@@ -76,7 +76,7 @@ type BirthDatePickerInputProps = BaseInputProps & {
     value?: Date | string | null;
     onChange: (value: Date | string | string[] | null) => void;
     placeholder?: string;
-    birthDatePicker: { minAge: number | 0, maxAge: number | 100 }
+    birthDatePicker: { minAge: number | 0; maxAge: number | 100 };
 };
 
 type CheckboxInputProps = BaseInputProps & {
@@ -94,6 +94,7 @@ type RadioInputProps = BaseInputProps & {
     onChange: (value: string | number) => void;
     options: InputOption[];
     variant?: RadioVariant;
+    radioButtonClassName?: string;
 };
 
 type UploadProps = BaseInputProps & {
@@ -143,8 +144,7 @@ type CreatableSelectProps = BaseAsyncSelectProps & {
     onCreate: (value: string) => void;
 };
 
-type AsyncSelectProps = BaseAsyncSelectProps | CreatableSelectProps ;
-
+type AsyncSelectProps = BaseAsyncSelectProps | CreatableSelectProps;
 
 type ContactInputProps = BaseInputProps & {
     inputType: "contact-input";
@@ -161,7 +161,7 @@ type TimeRangeInputProps = BaseInputProps & {
     onChange: (value: any) => void;
     fromPlaceholder?: string;
     toPlaceholder?: string;
-    value: any
+    value: any;
 };
 
 type DateRangeInputProps = BaseInputProps & {

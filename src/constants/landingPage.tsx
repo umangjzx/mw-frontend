@@ -8,6 +8,11 @@ import {
     SubjectIcon,
     SignUpIcon,
 } from "@/assets/icons";
+import DummyImage from "@/assets/images/BackgroundImg.jpeg";
+import DonateImg1 from "@/assets/images/DonateImg1.png";
+import DonateImg2 from "@/assets/images/DonateImg2.png";
+import DonateImg3 from "@/assets/images/DonateImg3.png";
+import DonateImg4 from "@/assets/images/DonateImg4.png";
 
 export const gradientInnerTextStyle = {
     color: "#ffa766",
@@ -88,5 +93,139 @@ export const learnerData = [
     {
         icon: <ScheduleIcon />,
         title: "Schedule classes that fit your schedule",
+    },
+];
+
+export const blogData = [
+    {
+        image: DummyImage,
+        category: "Technology",
+        title: "The Future of AI",
+        description:
+            "Discover heartwarming stories from our community that showcase the impact of sharing knowledge and time.",
+        date: "Mar 10, 2024",
+        href: "/blogs/1",
+    },
+    {
+        image: DummyImage,
+        category: "Technology",
+        title: "The Future of AI",
+        description:
+            "Discover heartwarming stories from our community that showcase the impact of sharing knowledge and time.",
+        date: "Mar 10, 2024",
+        href: "/blogs/1",
+    },
+    {
+        image: DummyImage,
+        category: "Technology",
+        title: "The Future of AI",
+        description:
+            "Discover heartwarming stories from our community that showcase the impact of sharing knowledge and time.",
+        date: "Mar 10, 2024",
+        href: "/blogs/1",
+    },
+    {
+        image: DummyImage,
+        category: "Technology",
+        title: "The Future of AI",
+        description:
+            "Discover heartwarming stories from our community that showcase the impact of sharing knowledge and time.",
+        date: "Mar 10, 2024",
+        href: "/blogs/1",
+    },
+    {
+        image: DummyImage,
+        category: "Technology",
+        title: "The Future of AI",
+        description:
+            "Discover heartwarming stories from our community that showcase the impact of sharing knowledge and time.",
+        date: "Mar 10, 2024",
+        href: "/blogs/1",
+    },
+    {
+        image: DummyImage,
+        category: "Technology",
+        title: "The Future of AI",
+        description:
+            "Discover heartwarming stories from our community that showcase the impact of sharing knowledge and time.",
+        date: "Mar 10, 2024",
+        href: "/blogs/1",
+    },
+    {
+        image: DummyImage,
+        category: "Technology",
+        title: "The Future of AI",
+        description:
+            "Discover heartwarming stories from our community that showcase the impact of sharing knowledge and time.",
+        date: "Mar 10, 2024",
+        href: "/blogs/1",
+    },
+    {
+        image: DummyImage,
+        category: "Technology",
+        title: "The Future of AI",
+        description:
+            "Discover heartwarming stories from our community that showcase the impact of sharing knowledge and time.",
+        date: "Mar 10, 2024",
+        href: "/blogs/1",
+    },
+    {
+        image: DummyImage,
+        category: "Technology",
+        title: "The Future of AI",
+        description:
+            "Discover heartwarming stories from our community that showcase the impact of sharing knowledge and time.",
+        date: "Mar 10, 2024",
+        href: "/blogs/1",
+    },
+    {
+        image: DummyImage,
+        category: "Technology",
+        title: "The Future of AI",
+        description:
+            "Discover heartwarming stories from our community that showcase the impact of sharing knowledge and time.",
+        date: "Mar 10, 2024",
+        href: "/blogs/1",
+    },
+    {
+        image: DummyImage,
+        category: "Technology",
+        title: "The Future of AI",
+        description:
+            "Discover heartwarming stories from our community that showcase the impact of sharing knowledge and time.",
+        date: "Mar 10, 2024",
+        href: "/blogs/1",
+    },
+    {
+        image: DummyImage,
+        category: "Technology",
+        title: "The Future of AI",
+        description:
+            "Discover heartwarming stories from our community that showcase the impact of sharing knowledge and time.",
+        date: "Mar 10, 2024",
+        href: "/blogs/1",
+    },
+];
+
+export const donateCardData = [
+    {
+        title: "Learning Resources",
+        subtitle: "Provide tools and materials tailored to each child's unique needs.",
+        image: DonateImg1,
+    },
+    {
+        title: "Volunteer Support",
+        subtitle: "Enable training and resources for our amazing volunteers.",
+        image: DonateImg2,
+    },
+    {
+        title: "Maintain Platform ",
+        subtitle: "Ensure seamless connectivity and access for both volunteers and learners",
+        image: DonateImg3,
+    },
+    {
+        title: "Community Growth",
+        subtitle: "Expand our efforts to reach more children and families worldwide.",
+        image: DonateImg4,
     },
 ];

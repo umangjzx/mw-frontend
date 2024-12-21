@@ -7,12 +7,12 @@ const Header = () => {
     const links = ["Our Mission", "Blogs", "Donate", "Team Up"];
     return (
         <div className="w-full mx-auto bg-white shadow-md ">
-            <div className="w-full mx-auto flex justify-between items-center 2xl:px-[9%] px-[5%] py-5 ">
+            <div className="w-full mx-auto flex justify-between items-center 2xl:px-[4%] px-[5%] py-5 ">
                 <span className="cursor-pointer">
                     <Logo />
                 </span>
-                <div className="flex gap-4 items-center">
-                    <nav className="flex gap-4">
+                <div className="flex 2xl:gap-6 gap-4 items-center">
+                    <nav className="flex 2xl:gap-6 gap-4">
                         {links.map((link, index) => (
                             <Link
                                 href={"/"}

@@ -8,11 +8,13 @@ interface TagComponentProps {
     onClose?: () => void;
     className?: string;
     icon?: any;
+    onClick?: () => void;
 }
 
-const TagComponent = ({ text, isClose, onClose, className, icon }: TagComponentProps) => {
+const TagComponent = ({ text, isClose, onClose, className, icon, onClick }: TagComponentProps) => {
     return (
         <Tag
+            onClick={onClick}
             closeIcon={false}
             onClose={isClose ? onClose : undefined}
             rootClassName={`${className} w-fit flex items-center gap-2 flex-row-reverse`}
