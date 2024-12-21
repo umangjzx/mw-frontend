@@ -35,7 +35,7 @@ export default function Page() {
     }, []);
 
     return (
-        <div className="w-screen bg-background-input">
+        <div className="w-full overflow-x-hidden bg-background-input">
             <Hero />
             <div className="flex flex-col gap-[7rem] py-[7rem] px-[9%]">
                 <div className="reveal">
