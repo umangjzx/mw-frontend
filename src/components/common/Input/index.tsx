@@ -18,6 +18,7 @@ import ContactInput from "../ContactInput";
 import dayjs from "dayjs";
 
 const { TextArea } = AntInput;
+const { RangePicker: DateRangePicker } = AntDatePicker;
 
 export const Input: React.FC<InputProps> = (props) => {
     const {
@@ -253,6 +254,14 @@ export const Input: React.FC<InputProps> = (props) => {
                             disabled={disabled}
                         />
                     </div>
+                );
+            case "daterange":
+                return (
+                    <DateRangePicker 
+                        {...props}
+                        format="YYYY-MM-DD"
+                        placeholder={['Start Date', 'End Date']}
+                        onChange={(date) => props.onChange(date)} />
                 );
         }
     };
