@@ -3,6 +3,7 @@ import { learnerData } from "@/constants/landingPage";
 import ContainerHeader from "../components/ContainerHeader";
 import ContainerWrapper from "../components/ContainerWrapper";
 import StepsChart from "../components/StepsChart";
+import LandingPageButton from "../components/Button";
 
 const ForLearner = () => {
     return (
@@ -13,10 +14,13 @@ const ForLearner = () => {
                 description="Search for a  champion your learner deserves and connect with volunteer to teach for free"
                 titleColor="!text-[#009BCC]"
             />
-            <div className="flex">
-                {learnerData.map((item, index) => (
-                    <StepsChart title={item.title} icon={item.icon} index={index} />
-                ))}
+            <div className="flex flex-col justify-center items-center gap-1">
+                <div className="flex">
+                    {learnerData.map((item, index) => (
+                        <StepsChart title={item.title} icon={item.icon} index={index} />
+                    ))}
+                </div>
+                <LandingPageButton title="Enroll as Learner" type="learner" />
             </div>
         </ContainerWrapper>
     );
