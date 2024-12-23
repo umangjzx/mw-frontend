@@ -1,3 +1,4 @@
+import { formatTime } from "@/utils/calender";
 import { Radio, Skeleton } from "antd";
 import { useState, useEffect } from "react";
 
@@ -61,7 +62,7 @@ const AvailableSlotsRadioGroup: React.FC<AvailableSlotsRadioGroupProps> = ({
                             value={slot.volunteer_slot_id}
                             className="text-sm !text-[#16A34A] font-medium underline whitespace-nowrap"
                         >
-                            {`${slot.start_time} - ${slot.end_time}`}
+                            {`${formatTime(slot.start_time)} - ${formatTime(slot.end_time)}`}
                         </Radio>
                     ))}
                 </div>

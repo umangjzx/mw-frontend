@@ -66,6 +66,13 @@ export const Input: React.FC<InputProps> = (props) => {
         );
     };
 
+    const preventInvalidInputForNumber = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        // Prevent 'e', 'E', '-', and '+' for numeric input
+        if (["e", "E", "-", "+"].includes(event.key)) {
+          event.preventDefault();
+        }
+    };
+
     const renderInput = () => {
         switch (props.inputType) {
             case "text":
@@ -101,6 +108,7 @@ export const Input: React.FC<InputProps> = (props) => {
                         placeholder={props.placeholder}
                         value={props.value}
                         onChange={(value) => props.onChange(value)}
+                        onKeyDown={preventInvalidInputForNumber}
                         disabled={disabled}
                         rootClassName={cn(
                             props.inputClassName ? "w-[49%]" : "",

@@ -12,6 +12,7 @@ interface EventResponse {
     meet_link: string;
     session_id: string;
     volunteer_id: string;
+    volunteer_full_name: string;
     learner_id: string;
     learner_first_name: string;
     learner_last_name: string;
@@ -52,6 +53,7 @@ export const getCalendarEvents = async (
                 meetLink: item.meet_link,
                 sessionId: item.session_id,
                 volunteerId: item.volunteer_id,
+                volunteer_full_name: item.volunteer_full_name,
                 learner: {
                     id: item.learner_id,
                     firstName: item.learner_first_name,
@@ -75,3 +77,6 @@ export const getTime = (date: Date): string => {
 export const formatDateTime = (date: string | Date): string => {
     return moment(date).format("MMMM D, YYYY h:mm A");
 };
+
+// Fun: Converts railway time(24 hrs) to normal time(12 hrs)
+export const formatTime = (railwayTimeString: string) => moment(railwayTimeString, "HH:mm").format("hh:mm A");
