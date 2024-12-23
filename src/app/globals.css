@@ -26,10 +26,15 @@ body {
     color: black;
     background: white;
     /* background-color: #ef4444; */
-    font-family: "Poppins", sans-serif;
+    font-family: "Poppins !important", sans-serif;
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 @layer base {
@@ -273,4 +278,12 @@ body {
 .animate-fadeIn {
     animation: fadeIn 0.5s ease-in-out;
     animation-fill-mode: backwards;
+}
+
+.text-gradient {
+    color: #ffa766;
+    background-image: linear-gradient(90deg, #ffa766 24%, #66dbff 64%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
