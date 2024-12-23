@@ -2,8 +2,9 @@
 
 import { endpoints } from "@/api/constants";
 import { GET_API } from "@/api/request";
-import { MessageModal, TestmonialModal } from "@/components/learners/Modals";
-import LearnersTable from "@/components/learners/Table";
+import { TestmonialModal } from "@/components/volunteers/Modals";
+import { MessageModal } from "@/components/learners/Modals";
+import VolunteerTable from "@/components/volunteers/Table";
 import { getHeaderIcon } from "@/layouts/helper";
 import { useComponentStore } from "@/store/useComponenetStore";
 import { useQuery } from "@tanstack/react-query";
@@ -17,50 +18,50 @@ interface PaginationParams {
     size: number;
 }
 
-interface TableLearner {
+interface TableVolunteer {
     id: string;
     name: string;
     classesTaken: number;
     subject: string;
 }
 
-export default function LearnersPage() {
-    const [learnerData, setLearnerData] = useState<TableLearner[]>([]);
+export default function VolunteerPage() {
+    const [volunteerData, setVolunteerData] = useState<TableVolunteer[]>([]);
     const [pagination, setPagination] = useState<PaginationParams>({
         page: 1,
         size: 10,
     });
     const [total, setTotal] = useState<number>(0);
-    const volunteerId = Cookies.get("volunteer_id");
+    const learner = Cookies.get("learner_id");
     const [size] = useQueryState("size", { defaultValue: "10" });
     const [page] = useQueryState("page", { defaultValue: "1" });
     const [query] = useQueryState("query");
 
-    const getAllLearners = async ({ page, size }: PaginationParams) => {
-        const endpoint = `${endpoints.volunteer.getConnectedLearners(
-            volunteerId as string
+    const getAllVolunteers = async ({ page, size }: PaginationParams) => {
+        const endpoint = `${endpoints.learner.getConnectedVolunteers(
+            learner as string
         )}?query=${query || ""}&page=${page}&size=${size}`;
         const response: any = await GET_API(endpoint);
         return response.data;
     };
 
-    const { data: learners, isLoading } = useQuery({
-        queryKey: ["learners", pagination.page, pagination.size, query],
-        queryFn: () => getAllLearners(pagination),
+    const { data: volunteers, isLoading } = useQuery({
+        queryKey: ["volunteers", pagination.page, pagination.size, query],
+        queryFn: () => getAllVolunteers(pagination),
     });
 
     useEffect(() => {
-        if (learners?.items) {
-            const transformedData = learners.items.map((learner: any) => ({
-                id: learner.learner_id,
-                name: `${learner.learner_name}`,
-                classesTaken: learner.total_sessions,
+        if (volunteers?.items) {
+            const transformedData = volunteers.items.map((volunteer: any) => ({
+                id: volunteer.volunteer_id,
+                name: `${volunteer.volunteer_name}`,
+                classesTaken: volunteer.total_sessions,
                 subject: "N/A",
             }));
-            setLearnerData(transformedData);
-            setTotal(learners.total);
+            setVolunteerData(transformedData);
+            setTotal(volunteers.total);
         }
-    }, [learners]);
+    }, [volunteers]);
 
     const handleTableChange = (pagination: any) => {
         setPagination({
@@ -72,48 +73,48 @@ export default function LearnersPage() {
     const { setHeaderOptions } = useComponentStore();
     const pathname = usePathname();
 
-    const [learnerId, setLearnerId] = useQueryState("id", {
+    const [volunteedId, setVolunteerId] = useQueryState("id", {
         shallow: true,
     });
     const [mode, setMode] = useQueryState("mode", {
         shallow: true,
     });
 
-    const handleMessageLearner = (learnerId: string) => {
-        console.log("Message learner:", learnerId);
-        setLearnerId(learnerId);
+    const handleMessageVolunteer = (volunteedId: string) => {
+        console.log("Message Volunteer:", volunteedId);
+        setVolunteerId(volunteedId);
         setMode("message");
     };
 
-    const handleUploadTestimonial = (learnerId: string) => {
-        console.log("Upload testimonial:", learnerId);
-        setLearnerId(learnerId);
+    const handleUploadTestimonial = (volunteedId: string) => {
+        console.log("Upload testimonial:", volunteedId);
+        setVolunteerId(volunteedId);
         setMode("testimonial");
     };
 
     const handleClose = () => {
-        setLearnerId(null);
+        setVolunteerId(null);
         setMode(null);
     };
 
     useEffect(() => {
         setHeaderOptions({
-            title: "Learners",
+            title: "Volunteers",
             titleIcon: getHeaderIcon(pathname),
         });
     }, [setHeaderOptions]);
 
     return (
         <div className="w-full h-full p-6 animate-fadeIn">
-            <MessageModal key={learnerId} receiverId={learnerId} isOpen={mode === "message"} onClose={handleClose} />
+            <MessageModal key={volunteedId} receiverId={volunteedId} isOpen={mode === "message"} onClose={handleClose} />
             <TestmonialModal
                 isOpen={mode === "testimonial"}
                 mode={"create"}
                 onClose={handleClose}
             />
-            <LearnersTable
-                data={learnerData}
-                handleMessageLearner={handleMessageLearner}
+            <VolunteerTable
+                data={volunteerData}
+                handleMessageVolunteer={handleMessageVolunteer}
                 handleUploadTestimonial={handleUploadTestimonial}
                 loading={isLoading}
                 pagination={{

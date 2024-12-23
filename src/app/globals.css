@@ -72,6 +72,13 @@ html {
     background: #555; /* Darker color when hovered */
 }
 
+/* Custom Tailwind CSS */
+.flex-center{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Date Rabge Picker */
 :where(.css-dev-only-do-not-override-wz1edx).ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-in-range:not(.ant-picker-cell-disabled):before,
 :where(.css-dev-only-do-not-override-wz1edx).ant-picker-dropdown .ant-picker-cell-in-view.ant-picker-cell-range-start:not(.ant-picker-cell-disabled):before,

@@ -13,6 +13,7 @@ type EndpointProps = {
         update: (id: string) => string;
         getAllLearners: string;
         getIndividualLearner: (id: string) => string;
+        getConnectedVolunteers: (id: string) => string;
     };
     volunteer: {
         update: (id: string) => string;
@@ -38,6 +39,14 @@ type EndpointProps = {
             status?: string
         ) => string;
         markAsCompleted: (id: string) => string;
+    };
+    volunteer_chat: {
+        sendMessage: (id: string) => string;
+        getMessages: (id: string) => string;
+    };
+    learner_chat: {
+        sendMessage: (id: string) => string;
+        getMessages: (id: string) => string;
     };
     resources: {
         create: string;
