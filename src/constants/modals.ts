@@ -19,7 +19,7 @@ export const VolunteerFilterModalConstants = [
         placeholder: "Select Language",
         endpoint: "languages",
         responseAsLabel: "language_name",
-        responseAsValue: ["language_id", "language_name"],
+        responseAsValue: "language_id",
         required: true,
     },
     {
@@ -30,7 +30,7 @@ export const VolunteerFilterModalConstants = [
         required: true,
         endpoint: "subjects",
         responseAsLabel: "subject_name",
-        responseAsValue: ["subject_id", "subject_name"],
+        responseAsValue: "subject_id",
         variant: "multi",
     },
     {
@@ -39,8 +39,6 @@ export const VolunteerFilterModalConstants = [
         inputType: "timerange",
         placeholder: "Available Time",
         required: true,
-        responseAsLabel: "available_time",
-        responseAsValue: ["subject_id", "subject_name"],
     },
     {
         name: "available_days",

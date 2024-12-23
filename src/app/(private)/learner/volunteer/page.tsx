@@ -38,19 +38,31 @@ export default function LearnersPage() {
     const [size] = useQueryState("size", { defaultValue: "10" });
     const [page] = useQueryState("page", { defaultValue: "1" });
     const [query] = useQueryState("query");
+    const [language_ids] = useQueryState("language_ids");
+    const [subject_ids] = useQueryState("subject_ids");
+    const [start_date] = useQueryState("start_date");
+    const [end_date] = useQueryState("end_date");
+    const [start_time] = useQueryState("start_time");
+    const [end_time] = useQueryState("end_time");
 
     const getAllVolunteers = async () => {
         const endpoint = `${endpoints.volunteer.getAllVolunteers}?${new URLSearchParams({
             query: query || "",
             page: page,
             size: size,
+            language_ids: language_ids || "",
+            subject_ids: subject_ids || "",
+            start_date: start_date || "",
+            end_date: end_date || "",
+            start_time: start_time || "",
+            end_time: end_time || "",
         })}`;
         const response: any = await GET_API(endpoint);
         return response.data;
     };
 
     const { data, isLoading, isError } = useQuery({
-        queryKey: ["volunteer", query, page, size],
+        queryKey: ["volunteer", query, page, size, language_ids, subject_ids, start_date, end_date, start_time, end_time],
         queryFn: () => getAllVolunteers(),
         enabled: true,
     });
@@ -113,15 +125,11 @@ export default function LearnersPage() {
         });
     }, [pathname, setHeaderOptions]);
 
-    const handleFilter = (filters: any) => {
-        console.log(filters);
-    }
-
     return (
         <div className="px-10 py-10 animate-fadeIn">
             <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleModal} />
             <VolunteerViewModal isOpen={isOpen} onClose={handleModal} />
-            <VolunteerFilterModal isFilterApplying={false} isOpen={isFilterOpen} handleFilter={handleFilter} onClose={()=> setIsFilterOpen(false)} />
+            <VolunteerFilterModal isFilterApplying={false} isOpen={isFilterOpen} onClose={()=> setIsFilterOpen(false)} />
             {isLoading ? (
                 <div>Loading...</div>
             ) : isError ? (
