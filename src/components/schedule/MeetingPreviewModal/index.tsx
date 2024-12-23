@@ -99,6 +99,7 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
         learner,
         status,
         sessionId,
+        volunteer_full_name,
         feedBackCollectedFromLearner,
         feedBackCollectedFromVolunteer,
     } = extendedProps;
@@ -243,9 +244,9 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                 <div className="flex flex-col gap-2">
                     <p className="font-medium text-sm text-gray-light">Guest</p>
                     <p className="text-black font-medium">
-                        {learner
-                            ? `${learner.firstName} ${learner.lastName}`
-                            : "No guest information"}
+                        {role === 'learner'
+                            ? volunteer_full_name
+                            : `${learner.firstName} ${learner.lastName}` }
                     </p>
                 </div>
                 <Divider />
