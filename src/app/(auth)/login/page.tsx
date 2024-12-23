@@ -98,25 +98,35 @@ export default function Page() {
     };
 
     useEffect(() => {
-        // Initialize ScrollReveal with updated configuration
-        const sr = ScrollReveal({
-            origin: "bottom",
-            distance: "30px",
-            duration: 800,
-            delay: 100,
-            easing: "ease-out",
-            reset: true,
-            viewFactor: 0.1,
-            viewOffset: { top: 0, right: 0, bottom: -100, left: 0 },
-        });
+        let sr: any;
 
-        // Apply ScrollReveal to elements
-        sr.reveal(".reveal", {
-            interval: 100,
-        });
+        const setupScrollReveal = async () => {
+            if (typeof window !== "undefined") {
+                const ScrollReveal = (await import("scrollreveal")).default;
+                sr = ScrollReveal({
+                    origin: "bottom",
+                    distance: "30px",
+                    duration: 800,
+                    delay: 100,
+                    easing: "ease-out",
+                    reset: true,
+                    viewFactor: 0.1,
+                    viewOffset: { top: 0, right: 0, bottom: -100, left: 0 },
+                });
 
-        // Clean up
-        return () => sr.destroy();
+                sr.reveal(".reveal", {
+                    interval: 100,
+                });
+            }
+        };
+
+        setupScrollReveal();
+
+        return () => {
+            if (sr) {
+                sr.destroy();
+            }
+        };
     }, []);
 
     return (
