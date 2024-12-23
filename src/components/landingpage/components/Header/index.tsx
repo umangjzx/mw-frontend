@@ -11,7 +11,7 @@ import { GoogleIcon } from "@/assets/icons";
 import ModalCloseIcon from "@/assets/icons/FeedModalCloseIcon";
 
 interface HeaderProps {
-    handleModalLogin: (value: string) => void;
+    handleModalLogin?: (value: string) => void;
 }
 
 const Header = ({ handleModalLogin }: HeaderProps) => {
@@ -21,7 +21,7 @@ const Header = ({ handleModalLogin }: HeaderProps) => {
     console.log(loginAs, "loginAs");
 
     const handleLoginClick = () => {
-        handleModalLogin(loginAs);
+        handleModalLogin && handleModalLogin(loginAs);
     };
 
     const handleLoginModal = () => {

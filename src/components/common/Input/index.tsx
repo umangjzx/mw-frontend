@@ -20,6 +20,12 @@ import dayjs from "dayjs";
 const { TextArea } = AntInput;
 const { RangePicker: DateRangePicker } = AntDatePicker;
 
+const isAvailableDay = (date: any, availableDays: string[]) => {
+    if (!availableDays || !Array.isArray(availableDays)) return true;
+    const dayName = dayjs(date).format("dddd");
+    return availableDays.includes(dayName);
+};
+
 export const Input: React.FC<InputProps> = (props) => {
     const {
         label,
@@ -69,7 +75,7 @@ export const Input: React.FC<InputProps> = (props) => {
     const preventInvalidInputForNumber = (event: React.KeyboardEvent<HTMLInputElement>) => {
         // Prevent 'e', 'E', '-', and '+' for numeric input
         if (["e", "E", "-", "+"].includes(event.key)) {
-          event.preventDefault();
+            event.preventDefault();
         }
     };
 
@@ -168,15 +174,29 @@ export const Input: React.FC<InputProps> = (props) => {
             case "async-select":
                 return <AsyncSelect {...props} />;
             case "datepicker":
-                const today = new Date();
+                let today = new Date();
                 today.setHours(0, 0, 0, 0);
+
                 return (
                     <div>
                         <AntDatePicker
                             value={props.value ? dayjs(props.value) : null}
                             onChange={(date) => props.onChange(date?.toDate())}
                             format="YYYY-MM-DD"
-                            disabledDate={(current) => current && current.isBefore(today, "day")}
+                            disabledDate={(current) => {
+                                // Check if date is before today
+                                const isBeforeToday = current && current.isBefore(today, "day");
+
+                                // Add more detailed logging
+                                const currentDay = current?.format("dddd");
+                                const isAvailable = props.availableDays?.includes(currentDay);
+
+                                const isDayDisabled = props.availableDays
+                                    ? !isAvailableDay(current, props.availableDays)
+                                    : false;
+
+                                return isBeforeToday || isDayDisabled;
+                            }}
                             placeholder="Click to select date"
                             className={cn(
                                 "w-full text-sm p-2 rounded-lg border border-stroke focus:!border-stroke focus:!bg-background-input placeholder:text-sm hover:bg-background-input bg-background-input",
@@ -265,11 +285,12 @@ export const Input: React.FC<InputProps> = (props) => {
                 );
             case "daterange":
                 return (
-                    <DateRangePicker 
+                    <DateRangePicker
                         {...props}
                         format="YYYY-MM-DD"
-                        placeholder={['Start Date', 'End Date']}
-                        onChange={(date) => props.onChange(date)} />
+                        placeholder={["Start Date", "End Date"]}
+                        onChange={(date) => props.onChange(date)}
+                    />
                 );
         }
     };

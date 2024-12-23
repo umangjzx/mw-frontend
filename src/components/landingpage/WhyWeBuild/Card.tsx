@@ -1,5 +1,11 @@
 import React from "react";
 
+interface CardProps {
+    title: string;
+    description: string;
+    index: number;
+}
+
 const Card: React.FC<CardProps> = ({ index, title, description }) => {
     const backgroundLeft =
         "linear-gradient(to right, #ffe1cc, #ffdfd7, #fbe0e1, #f2e1e7, #eae3e9, #e8e3ea, #e6e4eb, #e4e4ec, #e1e4f1, #dce5f6, #d5e6fb, #cce8ff)";

@@ -29,6 +29,7 @@ export const endpoints: EndpointProps = {
         get: `volunteer_slots`,
         availableSlots: (id: string, date: string) =>
             `volunteer_slots/available_slots/${id}/${date}`,
+        availableDays: (id: string) => `volunteer_slots/available_days/${id}`,
     },
     session: {
         bookSession: "session",
