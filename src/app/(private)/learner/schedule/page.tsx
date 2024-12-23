@@ -29,7 +29,7 @@ export default function LearnerSchedulePage() {
     const getEvents = () => getCalendarEvents(learnerId as string, "learner", currentMonth);
 
     const { data } = useQuery({
-        queryKey: ["events", currentMonth],
+        queryKey: ["learner-events", currentMonth],
         queryFn: getEvents,
     });
 

@@ -12,8 +12,6 @@ const AvailableSlotsRadioGroup: React.FC<AvailableSlotsRadioGroupProps> = ({
 }) => {
     const [isSlotsAvailable, setIsSlotsAvailable] = useState(false);
 
-    console.log(fetchingSlots, "fetchingSlots");
-
     useEffect(() => {
         setIsSlotsAvailable(availableSlots.length > 0);
     }, [availableSlots]);
@@ -24,7 +22,7 @@ const AvailableSlotsRadioGroup: React.FC<AvailableSlotsRadioGroupProps> = ({
                 {slotError ? (
                     <p className="text-xs font-normal -mt-2 mb-2 text-red-500">{slotError}</p>
                 ) : (
-                    <p className="text-xs font-normal mb-2 text-gray-400">
+                    <p className="text-xs font-normal mb-2 -mt-2 text-gray-400">
                         {fetchingSlots ? (
                             <span>Fetching slots...</span>
                         ) : (

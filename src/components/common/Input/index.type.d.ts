@@ -69,6 +69,14 @@ type DatePickerInputProps = BaseInputProps & {
     value: Date | null;
     onChange: (value: Date | null) => void;
     placeholder?: string;
+    availableDays?: string[];
+};
+
+type SessionDatePickerInputProps = BaseInputProps & {
+    inputType: "sessionDatePicker";
+    value: Date | null;
+    onChange: (value: Date | null) => void;
+    placeholder?: string;
 };
 
 type BirthDatePickerInputProps = BaseInputProps & {
@@ -172,9 +180,8 @@ type DateRangeInputProps = BaseInputProps & {
     onChange: (value: any) => void;
     fromPlaceholder?: string;
     toPlaceholder?: string;
-    value: any
+    value: any;
 };
-
 
 type InputProps =
     | TextInputProps

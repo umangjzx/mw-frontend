@@ -5,7 +5,7 @@ type ButtonProps = {
     className?: string;
     onClick?: () => void;
     type?: "learner" | "volunteer";
-    loading: boolean;
+    loading?: boolean;
 };
 
 const LandingPageButton = ({ title, type, loading, onClick }: ButtonProps) => {

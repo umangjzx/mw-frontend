@@ -60,6 +60,8 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
     const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
     const [slotError, setSlotError] = useState<string>("");
     const [fetchingSlots, setFetchingSlots] = useState<boolean>(false);
+    const [volunteerAvailableDays, setVolunteerAvailableDays] = useState<string[]>([]);
+    const [selectedVolunteerId, setSelectedVolunteerId] = useState<string>("");
 
     const getVolunteers = async () => {
         const response = await GET_API(endpoints.volunteer.getAllVolunteers);
@@ -82,6 +84,38 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
         queryKey: ["volunteers"],
         queryFn: getVolunteers,
         enabled: isOpen,
+    });
+
+    const getAvailableDays = async () => {
+        try {
+            const response = await GET_API(
+                endpoints.volunteer_slot.availableDays(formData.select_volunteer as string)
+            );
+            console.log("Raw API Response:", response.data);
+
+            // Make sure we're getting the array directly
+            const availableDays = Array.isArray(response.data)
+                ? response.data
+                : response.data.available_days;
+
+            console.log("Processed Available Days:", availableDays);
+            setVolunteerAvailableDays(availableDays);
+            return availableDays;
+        } catch (error) {
+            console.error("Error fetching available days:", error);
+            return [];
+        }
+    };
+
+    const {
+        data: availableDays,
+        isLoading: isLoadingAvailableDays,
+        isError: isErrorAvailableDays,
+        refetch: refetchAvailableDays,
+    } = useQuery({
+        queryKey: ["availableDays"],
+        queryFn: getAvailableDays,
+        enabled: !!selectedVolunteerId,
     });
 
     const handleChange = async (name: string, value: any) => {
@@ -132,6 +166,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
         // Check for date selection and if we have a selected volunteer
         if (name === "select_date" && value && formData.select_volunteer) {
             const formattedDate = moment(value).format("YYYY-MM-DD");
+            setAvailableSlots([]);
             setSlotError("");
             setFetchingSlots(true);
             try {
@@ -140,32 +175,6 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
                         formData.select_volunteer,
                         formattedDate
                     )
-                );
-                if (response.data.slots.length === 0) {
-                    setSlotError("No slots available for this date");
-                    setAvailableSlots([]);
-                    setFetchingSlots(false);
-                } else {
-                    setAvailableSlots(response.data.slots);
-                    setSlotError("");
-                    setFetchingSlots(false);
-                }
-            } catch (error) {
-                setAvailableSlots([]);
-                setSlotError("No slots available for this date");
-                setFetchingSlots(false);
-                console.error("Error fetching available slots:", error);
-            }
-        }
-
-        // When volunteer is selected and we already have a date, fetch available slots
-        if (name === "select_volunteer" && value && formData.select_date) {
-            const formattedDate = moment(formData.select_date).format("YYYY-MM-DD");
-            setSlotError("");
-            setFetchingSlots(true);
-            try {
-                const response = await GET_API(
-                    endpoints.volunteer_slot.availableSlots(value, formattedDate)
                 );
                 if (response.data.slots.length === 0) {
                     setSlotError("No slots available for this date");
@@ -243,7 +252,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
 
     const { mutate: onSave, isPending } = useSendData({
         fn: () => handleSave(),
-        invalidateKey: ["events"],
+        invalidateKey: ["learner-events"],
         success: () => {
             setFormData({
                 title_of_the_meeting: "",
@@ -271,6 +280,22 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
         onSave(formData);
     };
 
+    useEffect(() => {
+        setFormData((prev) => ({
+            ...prev,
+            select_date: "",
+        }));
+        if (formData.select_volunteer) {
+            setSelectedVolunteerId(formData.select_volunteer);
+            setFormData((prev) => ({
+                ...prev,
+                select_date: "",
+            }));
+            setAvailableSlots([]);
+            refetchAvailableDays();
+        }
+    }, [formData.select_volunteer]);
+
     return (
         <SideModal
             title="Add New Meeting"
@@ -281,17 +306,24 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
             onCancel={onClose}
         >
             <div className="flex flex-col px-5 mt-7">
-                {LearnerScheduleModalConstants.map((field: any) => (
-                    <Input
-                        key={field.name}
-                        {...getFieldProps(field)}
-                        onChange={(value: any) => handleChange(field.name, value)}
-                        value={formData[field.name as keyof FormData]}
-                        required={field.required}
-                        disabled={field.name === "select_volunteer" && volunteerId}
-                        error={errors[field.name as keyof FormData]}
-                    />
-                ))}
+                {LearnerScheduleModalConstants.map((field: any) => {
+                    const availableDaysForField =
+                        field.name === "select_date" ? volunteerAvailableDays : undefined;
+                    console.log(`Field ${field.name} availableDays:`, availableDaysForField);
+
+                    return (
+                        <Input
+                            key={field.name}
+                            {...getFieldProps(field)}
+                            onChange={(value: any) => handleChange(field.name, value)}
+                            value={formData[field.name as keyof FormData]}
+                            required={field.required}
+                            disabled={field.name === "select_volunteer" && volunteerId}
+                            error={errors[field.name as keyof FormData]}
+                            availableDays={availableDaysForField}
+                        />
+                    );
+                })}
                 <AvailableSlots
                     availableSlots={availableSlots}
                     selectedSlot={formData.selected_slot || ""}

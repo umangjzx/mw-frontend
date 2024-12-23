@@ -24,6 +24,7 @@ type EndpointProps = {
         update: string;
         get: string;
         availableSlots: (id: string, date: string) => string;
+        availableDays: (id: string) => string;
     };
     session: {
         bookSession: string;
