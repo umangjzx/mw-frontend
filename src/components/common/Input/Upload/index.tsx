@@ -1,16 +1,28 @@
-import { ChangeEvent, useRef } from "react";
+"use client";
+import { ChangeEvent, useRef, useState } from "react";
 import ImageUpload from "./ImageUpload";
 import FileUpload from "./FileUpload";
 import SingleImageUpload from "./SingleUpload";
 import { useSendData } from "@/hooks/useReactQuery";
 import { getFileData, handleConvertBasedOnContentType } from "./helper";
+import { useAppStore } from "@/store/useAppStore";
+import { DELETE_API } from "@/api/request";
+import { endpoints } from "@/api/constants";
 
 const Uploader = ({ maxFiles = 1, ...props }: UploadProps) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const { imageId, setImageId, videoId, setVideoId, documentId, setDocumentId } = useAppStore();
 
     const handleSuccess = (data: any) => {
         const convertedData = handleConvertBasedOnContentType(data, props.fileType);
         if (maxFiles === 1) {
+            if (props.fileType === "image/*") {
+                setImageId(convertedData?.image_id);
+            } else if (props.fileType === "video/*") {
+                setVideoId(convertedData?.video_id);
+            } else if (props.fileType === "application/*") {
+                setDocumentId(convertedData?.document_id);
+            }
             props.onChange(convertedData);
         } else {
             props.onChange([...props.value, convertedData]);
@@ -42,7 +54,20 @@ const Uploader = ({ maxFiles = 1, ...props }: UploadProps) => {
         );
     };
 
-    const handleRemove = (index: number) => {
+    const handleRemove = (index: number, type?: string) => {
+        if (type === "image/*") {
+            DELETE_API(endpoints.media_uploader.deleteImage(imageId as string)).then(() => {
+                setImageId(null);
+            });
+        } else if (type === "video/*") {
+            DELETE_API(endpoints.media_uploader.deleteVideo(videoId as string)).then(() => {
+                setVideoId(null);
+            });
+        } else if (type === "application/*") {
+            DELETE_API(endpoints.media_uploader.deleteDocument(documentId as string)).then(() => {
+                setDocumentId(null);
+            });
+        }
         if (maxFiles === 1) {
             props.onChange(undefined);
         } else {

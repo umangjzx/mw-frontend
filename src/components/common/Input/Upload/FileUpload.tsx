@@ -16,47 +16,45 @@ const FileUpload = ({ ...props }: BaseUploaderProps) => {
 
     const getValue = () => {
         if (props.fileType === "image/*") {
-            return value?.image_id && value?.image_id+".jpg";
+            return value?.image_id && value?.image_id + ".jpg";
         } else if (props.fileType === "video/*") {
             return value?.video_id;
         } else if (props.fileType === "application/*") {
             return value?.document_id;
         }
-        return null
+        return null;
     };
 
     return (
-        <div className='flex w-full flex-wrap gap-4'>
+        <div className="flex w-full flex-wrap gap-4">
             {!getValue() ? (
                 <Button
-                    size='small'
+                    size="small"
                     title={getTitle()}
-                    btnVariant='secondary'
-                    customClassName='!text-xs !text-white !border-black rounded-lg !bg-black'
+                    btnVariant="secondary"
+                    customClassName="!text-xs !text-white !border-black rounded-lg !bg-black"
                     onClick={handleClick}
                     loading={isLoading}
                 />
             ) : (
-                <div className='flex items-center flex-row-reverse gap-2 text-xs'>
-                    {getValue()}
-                </div>
+                <div className="flex items-center flex-row-reverse gap-2 text-xs">{getValue()}</div>
             )}
             {getValue() && (
-                <div className='flex items-center flex-row-reverse gap-2'>
+                <div className="flex items-center flex-row-reverse gap-2">
                     <Button
-                        size='small'
-                        title='Change'
-                        btnVariant='secondary'
-                        customClassName='!text-xs !text-black !border-black !bg-white'
+                        size="small"
+                        title="Change"
+                        btnVariant="secondary"
+                        customClassName="!text-xs !text-black !border-black !bg-white"
                         onClick={handleClick}
                         loading={isLoading}
                     />
                     <Button
-                        size='small'
-                        title='Remove'
-                        btnVariant='secondary'
-                        customClassName='!text-xs !bg-white !border !border-error !text-red-500'
-                        onClick={() => handleRemove(0)}
+                        size="small"
+                        title="Remove"
+                        btnVariant="secondary"
+                        customClassName="!text-xs !bg-white !border !border-error !text-red-500"
+                        onClick={() => handleRemove(0, props.fileType)}
                         loading={false}
                     />
                 </div>

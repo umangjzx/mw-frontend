@@ -463,28 +463,28 @@ export const VolunteerFormSections: FormSectionConfig[] = [
                 variant: "file",
                 fileType: "image/*",
             },
-            // {
-            //     id: "profile_video",
-            //     label: "Profile Video",
-            //     sublabel:
-            //         "Record a Video summarizing your profile and qualifications. This will help the learners to get to know you better!  Feel free to share your hobbies, extracurricular activities, and explain how and why you believe you're well-suited to teach the subject you've chosen to special needs children. You can keep it casual ! Speak from the heart and share what feels natural.",
-            //     inputType: "upload",
-            //     required: false,
-            //     gridCols: 2,
-            //     variant: "file",
-            //     fileType: "video/*",
-            // },
-            // {
-            //     id: "profile_document",
-            //     label: "ID Verification",
-            //     sublabel:
-            //         "Please share an overview of your profile, your areas of expertise and the reasons behind your choice, such as your passion for the subject or past teaching experience.",
-            //     inputType: "upload",
-            //     required: false,
-            //     gridCols: 2,
-            //     variant: "file",
-            //     fileType: "application/*",
-            // },
+            {
+                id: "profile_video",
+                label: "Profile Video",
+                sublabel:
+                    "Record a Video summarizing your profile and qualifications. This will help the learners to get to know you better!  Feel free to share your hobbies, extracurricular activities, and explain how and why you believe you're well-suited to teach the subject you've chosen to special needs children. You can keep it casual ! Speak from the heart and share what feels natural.",
+                inputType: "upload",
+                required: false,
+                gridCols: 2,
+                variant: "file",
+                fileType: "video/*",
+            },
+            {
+                id: "profile_document",
+                label: "ID Verification",
+                sublabel:
+                    "Please share an overview of your profile, your areas of expertise and the reasons behind your choice, such as your passion for the subject or past teaching experience.",
+                inputType: "upload",
+                required: false,
+                gridCols: 2,
+                variant: "file",
+                fileType: "application/*",
+            },
         ],
     },
     {

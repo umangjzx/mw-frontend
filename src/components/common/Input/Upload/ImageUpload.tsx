@@ -28,19 +28,19 @@ const ImageUpload: React.FC<BaseUploaderProps> = ({ ...props }) => {
                         <Image
                             src={file.url}
                             alt={`Upload ${index + 1}`}
-                            className='w-full absolute top-0 left-0 h-full object-cover'
+                            className="w-full absolute top-0 left-0 h-full object-cover"
                             width={400}
                             height={400}
                         />
 
                         <Button
-                            size='small'
-                            title='Remove'
-                            btnVariant='secondary'
-                            customClassName='transition-background max-w-full mx-2 group-hover:flex hidden !focus:bg-gray !hover:bg-gray bg-gray  z-50 p-0 !text-xs'
-                            onClick={() => handleRemove(index)}
+                            size="small"
+                            title="Remove"
+                            btnVariant="secondary"
+                            customClassName="transition-background max-w-full mx-2 group-hover:flex hidden !focus:bg-gray !hover:bg-gray bg-gray  z-50 p-0 !text-xs"
+                            onClick={() => handleRemove(index, props.fileType)}
                         />
-                        <div className='absolute bg-opacity-40 bg-black inset-0 text-white opacity-0 group-hover:opacity-40 transition-opacity flex items-center justify-center'></div>
+                        <div className="absolute bg-opacity-40 bg-black inset-0 text-white opacity-0 group-hover:opacity-40 transition-opacity flex items-center justify-center"></div>
                     </div>
                 ))}
             {value?.length < maxFiles && (
@@ -52,7 +52,7 @@ const ImageUpload: React.FC<BaseUploaderProps> = ({ ...props }) => {
                         props.variant === "cover-image" ? "!h-[250px] active:!scale-100 w-full" : ""
                     )}
                 >
-                    <BiPlus className='text-2xl text-black bg-stroke rounded-full' />
+                    <BiPlus className="text-2xl text-black bg-stroke rounded-full" />
                 </Button>
             )}
         </div>

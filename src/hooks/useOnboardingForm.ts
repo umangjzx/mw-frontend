@@ -7,23 +7,15 @@ import { PUT_API } from "@/api/request";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/components/common/Toast";
+import { useAppStore } from "@/store/useAppStore";
 
 export const useOnboardingForm = (schema: any) => {
     const role = Cookies.get("role");
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
-        defaultValues: {
-            profile_video: {
-                video_url: "video_url",
-                video_id: "video_id",
-            },
-            profile_document: {
-                document_url: "document_url",
-                document_id: "document_id",
-            },
-        },
     });
     const router = useRouter();
+    const { setImageId, setVideoId, setDocumentId } = useAppStore();
 
     const { mutate: updateOnboarding, isPending } = useSendData({
         fn: (data: z.infer<typeof schema>) =>
@@ -31,6 +23,9 @@ export const useOnboardingForm = (schema: any) => {
         success: () => {
             showToast({ type: "success", message: "Form Submitted!" });
             router.push("/onboarding/verification");
+            setImageId(null);
+            setVideoId(null);
+            setDocumentId(null);
         },
         error: () => {
             showToast({ type: "error", message: "Fill required Fields!" });

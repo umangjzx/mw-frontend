@@ -12,8 +12,8 @@ type Volunteer = {
     legal_and_safety_info: Legalandsafetyinfo;
     consent_and_permissions: Consentandpermissions;
     profile_picture?: Profilepicture | null;
-    profile_video: Profilevideo;
-    profile_document: Profiledocument;
+    profile_video?: Profilevideo | null;
+    profile_document?: Profiledocument | null;
     volunteer_languages: Volunteerlanguage[];
     volunteer_subjects: Volunteersubject[];
     volunteer_skills: Volunteerskill[];

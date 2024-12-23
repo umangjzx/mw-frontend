@@ -9,6 +9,9 @@ export const useGlobalStore: StateCreator<UseGlobalStoreProps> = (set, get) => (
         session_id: "",
         learner_id: "",
     },
+    imageId: null,
+    videoId: null,
+    documentId: null,
     setCurrentMonth: (date: string) => set({ currentMonth: date }),
     setEventDetails: (details: any) => {
         const eventDetails = details?._def?.extendedProps;
@@ -20,4 +23,7 @@ export const useGlobalStore: StateCreator<UseGlobalStoreProps> = (set, get) => (
             },
         });
     },
+    setImageId: (id: string | null) => set({ imageId: id }),
+    setVideoId: (id: string | null) => set({ videoId: id }),
+    setDocumentId: (id: string | null) => set({ documentId: id }),
 });

@@ -30,6 +30,12 @@ type UseGlobalStoreProps = {
     setCurrentMonth: (date: string) => void;
     eventDetails: any;
     setEventDetails: (details: any) => void;
+    imageId: string | null;
+    setImageId: (id: string | null) => void;
+    videoId: string | null;
+    setVideoId: (id: string | null) => void;
+    documentId: string | null;
+    setDocumentId: (id: string | null) => void;
 };
 
 type UseComponentStoreProps = {
