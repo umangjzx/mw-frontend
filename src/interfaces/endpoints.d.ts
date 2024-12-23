@@ -13,6 +13,7 @@ type EndpointProps = {
         update: (id: string) => string;
         getAllLearners: string;
         getIndividualLearner: (id: string) => string;
+        getConnectedVolunteers: (id: string) => string;
     };
     volunteer: {
         update: (id: string) => string;

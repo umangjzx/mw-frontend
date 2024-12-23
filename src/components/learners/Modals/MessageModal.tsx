@@ -4,7 +4,7 @@ import Button from "@/components/common/Button";
 import { Input } from "@/components/common/Input";
 import CenterModal from "@/components/common/Modals/CenterModal";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import { formatDateSuffix, formatTime } from "@/utils/calender";
 
@@ -27,6 +27,7 @@ const MessageModal = ({ receiverId, isOpen, onClose }: MessageModalProps) => {
     if (!receiverId) return;
     const [messages, setMessages] = useState<MessageProps[]>([]);
     const [message, setMessage] = useState<string>("");
+    const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const userRole = Cookies.get("role");
     const senderId = userRole === "learner" ? Cookies.get("learner_id") : Cookies.get("volunteer_id");
@@ -68,7 +69,7 @@ const MessageModal = ({ receiverId, isOpen, onClose }: MessageModalProps) => {
         setMessages(data?.items)
         return data;
     }
-    const { data: userMessages } = useQuery({  queryKey: [userRole, "messages"], queryFn: getUserMessages })
+    const { data: userMessages, isLoading } = useQuery({  queryKey: [userRole, "messages"], queryFn: getUserMessages })
 
     const handleSubmit = async () => {
         if (!message) return;
@@ -83,6 +84,12 @@ const MessageModal = ({ receiverId, isOpen, onClose }: MessageModalProps) => {
         setMessages([]);
         onClose()
     };
+
+    useEffect(() => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [messages]);
 
     const headerComponent = <>
         <div className="flex gap-2 w-full border-b border-stroke items-center mb-4 pb-4">
@@ -128,8 +135,10 @@ const MessageModal = ({ receiverId, isOpen, onClose }: MessageModalProps) => {
                 customClassName: "!bg-transparent !text-black text-sm !rounded-xl",
             }}
         >
-            <div className="flex flex-col gap-3 min-h-[40vh]">
-                { messages.length === 0 &&
+            <div className="flex flex-col gap-3 min-h-[40vh] overflow-y-auto">
+                { isLoading ?
+                    <div className="flex-center !h-[40vh] !w-full">Loading...</div>
+                 : messages.length === 0 &&
                     <div className="flex-center !h-[40vh] !w-full">No Message Found</div>
                 }
                 { Array.isArray(messages) &&
@@ -143,6 +152,7 @@ const MessageModal = ({ receiverId, isOpen, onClose }: MessageModalProps) => {
                         </div>
                     </div>
                 ))}
+                <div ref={messagesEndRef} />
             </div>
 
         </CenterModal>
