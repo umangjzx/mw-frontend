@@ -16,6 +16,7 @@ import { AsyncSelect, MultiSelect } from "./Select";
 import { Select } from "./Select";
 import ContactInput from "../ContactInput";
 import dayjs from "dayjs";
+import moment from "moment";
 
 const { TextArea } = AntInput;
 const { RangePicker: DateRangePicker } = AntDatePicker;
@@ -290,6 +291,7 @@ export const Input: React.FC<InputProps> = (props) => {
                         format="YYYY-MM-DD"
                         placeholder={["Start Date", "End Date"]}
                         onChange={(date) => props.onChange(date)}
+                        disabledDate={(current) => current && current < moment().startOf('day')}
                     />
                 );
         }
