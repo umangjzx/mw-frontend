@@ -46,11 +46,11 @@ export const endpoints: EndpointProps = {
     },
     volunteer_chat: {
         sendMessage: (id: string) => `chat/message/learner/${id}`,
-        getMessages: (id: string) => `chat/messages/learner/${id}`
+        getMessages: (id: string) => `chat/messages/learner/${id}`,
     },
     learner_chat: {
         sendMessage: (id: string) => `chat/message/volunteer/${id}`,
-        getMessages: (id: string) => `chat/messages/volunteer/${id}`
+        getMessages: (id: string) => `chat/messages/volunteer/${id}`,
     },
     post: {
         createPost: "post",
@@ -74,5 +74,13 @@ export const endpoints: EndpointProps = {
         create: "feedback/learner",
         get: (id: string) => `feedback/learner/${id}`,
         update: "feedback/learner",
+    },
+    media_uploader: {
+        image: "common/media_uploader/image",
+        video: "common/media_uploader/video",
+        document: "common/media_uploader/document",
+        deleteImage: (id: string) => `common/media_uploader/image/${id}`,
+        deleteVideo: (id: string) => `common/media_uploader/video/${id}`,
+        deleteDocument: (id: string) => `common/media_uploader/document/${id}`,
     },
 };

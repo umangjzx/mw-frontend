@@ -72,6 +72,14 @@ type EndpointProps = {
         get: (id: string) => string;
         update: string;
     };
+    media_uploader: {
+        image: string;
+        video: string;
+        document: string;
+        deleteImage: (id: string) => string;
+        deleteVideo: (id: string) => string;
+        deleteDocument: (id: string) => string;
+    };
 };
 
-type CommonPath = "skills" | "languages" | "subjects" | "media" | "categories" | "media_uploader";
+type CommonPath = "skills" | "languages" | "subjects" | "media" | "categories";

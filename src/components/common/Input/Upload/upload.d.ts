@@ -1,5 +1,5 @@
 type BaseUploaderProps = UploadProps & {
-    handleRemove: (index: number) => void;
+    handleRemove: (index: number, type?: string) => void;
     handleClick: () => void;
     isLoading?: boolean;
 };
