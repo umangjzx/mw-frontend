@@ -89,11 +89,14 @@ type CheckboxInputProps = BaseInputProps & {
 type RadioVariant = "default" | "rating";
 
 type RadioInputProps = BaseInputProps & {
+    name?: string;
+    disabled?: boolean;
     inputType: "radio";
     value: string | number;
     onChange: (value: string | number) => void;
     options: InputOption[];
     variant?: RadioVariant;
+    inputClassName?: string;
     radioButtonClassName?: string;
 };
 

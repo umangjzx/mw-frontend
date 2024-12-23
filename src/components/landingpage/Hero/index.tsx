@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from "react";
-import Header from "../components/Header";
-import Image from "next/image";
-import HeroBannerImg from "@/assets/images/HeroBannerImg.png";
 import { LogoIcon } from "@/assets/icons";
-import Button from "../components/Button";
+import HeroBannerImg from "@/assets/images/HeroBannerImg.png";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 import LandingPageButton from "../components/Button";
+import Header from "../components/Header";
 
-const Hero = () => {
+interface HeroProps {
+    handleSetRole: (newRole: UserType) => void;
+    buttonLoading: string;
+}
+
+const Hero = ({ handleSetRole, buttonLoading }: HeroProps) => {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
@@ -19,7 +23,7 @@ const Hero = () => {
                 isVisible ? "opacity-100" : "opacity-0"
             }`}
         >
-            <Header />
+            <Header handleModalLogin={(value) => handleSetRole(value as UserType)} />
             <div className={`w-full h-[80vh] bg-white relative`}>
                 <div className="w-full h-full relative">
                     <Image src={HeroBannerImg} alt="Hero Banner" fill className="object-cover" />
@@ -33,8 +37,18 @@ const Hero = () => {
                         disabilities
                     </h1>
                     <div className="flex gap-3">
-                        <LandingPageButton title="Enroll as Learner" type="learner" />
-                        <LandingPageButton title="Become a Volunteer" type="volunteer" />
+                        <LandingPageButton
+                            loading={buttonLoading === "learner"}
+                            onClick={() => handleSetRole("learner")}
+                            title="Enroll as Learner"
+                            type="learner"
+                        />
+                        <LandingPageButton
+                            loading={buttonLoading === "volunteer"}
+                            onClick={() => handleSetRole("volunteer")}
+                            title="Become a Volunteer"
+                            type="volunteer"
+                        />
                     </div>
                 </div>
             </div>

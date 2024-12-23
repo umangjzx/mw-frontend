@@ -26,11 +26,15 @@ body {
     color: black;
     background: white;
     /* background-color: #ef4444; */
-    font-family: "Poppins", sans-serif !important;
+    font-family: "Poppins !important", sans-serif;
     box-sizing: border-box;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 @layer base {

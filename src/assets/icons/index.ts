@@ -17,3 +17,4 @@ export { default as LearnerMatchIcon } from "./LearnerMatchIcon";
 export { default as LearnerScheduleIcon } from "./LearnerScheduleIcon";
 export { default as SubjectIcon } from "./SubjectIcon";
 export { default as SignUpIcon } from "./SignUpIcon";
+export { default as GoogleIcon } from "./GoogleIcon";

@@ -5,9 +5,10 @@ type ButtonProps = {
     className?: string;
     onClick?: () => void;
     type?: "learner" | "volunteer";
+    loading: boolean;
 };
 
-const LandingPageButton = ({ title, type }: ButtonProps) => {
+const LandingPageButton = ({ title, type, loading, onClick }: ButtonProps) => {
     const typeClass =
         type === "learner"
             ? "!bg-[#68DBFF] hover:!bg-[#68DBFF] border-0 border-r-2 border-b-2 border-[#009BCC] hover:!border-[#009BCC] text-sm !text-black rounded-[10px] shadow-sm  "
@@ -15,8 +16,11 @@ const LandingPageButton = ({ title, type }: ButtonProps) => {
     return (
         <div>
             <Button
+                disabled={loading}
+                onClick={onClick}
                 size="small"
                 className={`${typeClass} !text-sm !text-black font-medium !py-4 px-3`}
+                loading={loading}
             >
                 {title}
             </Button>

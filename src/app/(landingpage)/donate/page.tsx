@@ -141,6 +141,7 @@ const Donate = () => {
                             radioButtonClassName="bg-white border !border-gray-200 shadow-sm py-[7px]"
                         />
                         <div className="-mb-4 w-full">
+                            {/* @ts-ignore */}
                             <Input
                                 name="custom"
                                 value={customAmount ?? ""}
@@ -162,6 +163,7 @@ const Donate = () => {
                                 {...display}
                                 label="Can we display your name?"
                                 name="displayName"
+                                // @ts-ignore
                                 onChange={handleDisplayName}
                                 value={displayName}
                                 inputType="radio"
@@ -169,6 +171,7 @@ const Donate = () => {
                             />
                         </div>
                         <div className="-mb-4 w-full">
+                            {/* @ts-ignore */}
                             <Input
                                 label="First Name"
                                 name="firstName"
@@ -182,6 +185,7 @@ const Donate = () => {
                             />
                         </div>
                         <div className="-mb-4 w-full">
+                            {/* @ts-ignore */}
                             <Input
                                 label="Last Name"
                                 name="lastName"
@@ -195,6 +199,7 @@ const Donate = () => {
                             />
                         </div>
                         <div className="-mb-4 w-full">
+                            {/* @ts-ignore */}
                             <Input
                                 label="State"
                                 className="w-full"
