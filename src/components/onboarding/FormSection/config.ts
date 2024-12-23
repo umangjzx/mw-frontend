@@ -51,9 +51,15 @@ export const volunteerFormSchema = z.object({
                 .min(1, { message: "Contact number cannot be empty" }),
             country_code: z.string({ required_error: "Country code is required" }),
         }),
+        location: z
+            .string({ required_error: "Location is required" })
+            .min(1, { message: "Location cannot be empty" }),
         zip_code: z
             .string({ required_error: "Zip code is required" })
             .min(1, { message: "Zip code cannot be empty" }),
+        time_zone: z.string({
+            required_error: "Time Zone is required",
+        }),
     }),
 
     // Legal and Safety Info validations
@@ -546,6 +552,8 @@ export const defaultVolunteerData: Volunteer = {
             country_code: "+91",
         },
         zip_code: "638451",
+        location: "USA",
+        time_zone: "UTC+00:00"
     },
     legal_and_safety_info: {
         criminal_background_check_details: {

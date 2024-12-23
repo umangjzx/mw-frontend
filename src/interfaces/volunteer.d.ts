@@ -106,6 +106,8 @@ type Volunteercontactdetails = {
     email?: string;
     contact_number: Contactnumber;
     zip_code: string;
+    location: string;
+    time_zone: string;
 };
 
 type Contactnumber = {
