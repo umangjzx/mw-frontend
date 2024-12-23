@@ -80,3 +80,6 @@ export const formatDateTime = (date: string | Date): string => {
 
 // Fun: Converts railway time(24 hrs) to normal time(12 hrs)
 export const formatTime = (railwayTimeString: string) => moment(railwayTimeString, "HH:mm").format("hh:mm A");
+
+// Fun: Converts date into day with month i.e. 12th Apr
+export const formatDateSuffix = (date: Date | string) => moment(date).format("Do MMM");

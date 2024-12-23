@@ -39,6 +39,14 @@ type EndpointProps = {
         ) => string;
         markAsCompleted: (id: string) => string;
     };
+    volunteer_chat: {
+        sendMessage: (id: string) => string;
+        getMessages: (id: string) => string;
+    };
+    learner_chat: {
+        sendMessage: (id: string) => string;
+        getMessages: (id: string) => string;
+    };
     resources: {
         create: string;
     };

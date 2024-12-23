@@ -42,6 +42,14 @@ export const endpoints: EndpointProps = {
         updateNotificationStatus: (id: string) => `session/${id}`,
         markAsCompleted: (id: string) => `session/${id}/mark_as_completed`,
     },
+    volunteer_chat: {
+        sendMessage: (id: string) => `chat/message/learner/${id}`,
+        getMessages: (id: string) => `chat/messages/learner/${id}`
+    },
+    learner_chat: {
+        sendMessage: (id: string) => `chat/message/volunteer/${id}`,
+        getMessages: (id: string) => `chat/messages/volunteer/${id}`
+    },
     post: {
         createPost: "post",
         getPosts: "post",

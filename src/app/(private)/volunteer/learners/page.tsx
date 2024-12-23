@@ -105,7 +105,7 @@ export default function LearnersPage() {
 
     return (
         <div className="w-full h-full p-6 animate-fadeIn">
-             {mode === "message" && <MessageModal key={learnerId} learnerId={learnerId} isOpen={mode === "message"} onClose={handleClose} /> }
+            <MessageModal key={learnerId} receiverId={learnerId} isOpen={mode === "message"} onClose={handleClose} />
             <TestmonialModal
                 isOpen={mode === "testimonial"}
                 mode={"create"}
