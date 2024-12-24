@@ -28,7 +28,7 @@ export const useOnboardingForm = (schema: any) => {
             setDocumentId(null);
         },
         error: () => {
-            showToast({ type: "error", message: "Fill required Fields!" });
+            showToast({ type: "error", message: "Something went wrong!" });
         },
     });
 

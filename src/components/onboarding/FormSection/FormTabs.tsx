@@ -138,7 +138,7 @@ const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFill
                         </div>
 
                         <div className="mt-5 flex flex-col gap-4">
-                            <div className="flex flex-col gap-1">
+                            <div className="flex flex-col gap-3">
                                 {activeTab === formData.length - 1 ? (
                                     <>
                                         <Button
