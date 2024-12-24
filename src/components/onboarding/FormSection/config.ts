@@ -54,6 +54,12 @@ export const volunteerFormSchema = z.object({
         zip_code: z
             .string({ required_error: "Zip code is required" })
             .min(1, { message: "Zip code cannot be empty" }),
+        nationality: z
+            .string({ required_error: "Nationality is required" })
+            .min(1, { message: "Nationality cannot be empty" }),
+        time_zone: z
+            .string({ required_error: "Time Zone is required" })
+            .min(1, { message: "Time Zone cannot be empty" }),
     }),
 
     // Legal and Safety Info validations
@@ -304,6 +310,12 @@ export const learnerFormSchema = z.object({
                     }),
                 country_code: z.string({ required_error: "Learner's Country Code is required" }),
             }),
+            nationality: z
+                .string({ required_error: "Nationality is required" })
+                .min(1, { message: "Nationality cannot be empty" }),
+            time_zone: z
+                .string({ required_error: "Time Zone is required" })
+                .min(1, { message: "Time Zone cannot be empty" }),
         }),
     }),
 
@@ -546,6 +558,8 @@ export const defaultVolunteerData: Volunteer = {
             country_code: "+91",
         },
         zip_code: "638451",
+        nationality: "india",
+        time_zone: "asia/kolkata"
     },
     legal_and_safety_info: {
         criminal_background_check_details: {
@@ -611,6 +625,8 @@ export const defaultLearnerData: Learner = {
                 country_code: "+91",
             },
             zip_code: "638451",
+            nationality: "india",
+            time_zone: "asia/kolkata"
         },
     },
     parent_info: {

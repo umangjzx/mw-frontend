@@ -1,3 +1,6 @@
+import nationalities from "@/data/nationalities.json"
+import timezones from "@/data/timezones.json"
+
 export const LearnerOnboardingConstants = {
     title: "Enroll a learner",
     description:
@@ -163,6 +166,29 @@ const LearnerPersonalFields: FormField[] = [
         sublabelAlignment: "right",
         gridCols: 1,
         disabled: false,
+        required: true,
+    },
+    {
+        parent: "learner_contact_details",
+        id: "nationality",
+        label: "Nationality",
+        inputType: "select",
+        placeholder: "Select Nationality",
+        options: nationalities,
+        showSearch: true,
+        gridCols: 1,
+        required: true,
+    },
+    {
+        parent: "learner_contact_details",
+        id: "time_zone",
+        label: "Time Zone",
+        inputType: "select",
+        placeholder: "Select time zone",
+        showSearch: true,
+        options: timezones,        
+        gridCols: 1,
+        inputClassName: "!w-full",
         required: true,
     },
 ];

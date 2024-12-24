@@ -19,6 +19,7 @@ type FormField = {
     placeholder?: string;
     required?: boolean;
     sublabel?: string;
+    showSearch?: boolean;
     options?: { label: string; value: any }[];
     gridCols?: number;
     inputClassName?: string;

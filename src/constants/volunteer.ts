@@ -1,3 +1,6 @@
+import nationalities from "@/data/nationalities.json"
+import timezones from "@/data/timezones.json"
+
 export const TestimonialFormConstants: FormField[] = [
     {
         name: "comments",
@@ -166,6 +169,27 @@ export const ContactDetailsFields: FormField[] = [
         inputType: "text",
         placeholder: "Enter Zip Code",
         gridCols: 1,
+        required: true,
+    },
+    {
+        id: "nationality",
+        label: "Nationality",
+        inputType: "select",
+        placeholder: "Select Nationality",
+        options: nationalities,
+        showSearch: true,
+        gridCols: 1,
+        required: true,
+    },
+    {
+        id: "time_zone",
+        label: "Time Zone",
+        inputType: "select",
+        placeholder: "Select time zone",
+        showSearch: true,
+        options: timezones,        
+        gridCols: 1,
+        inputClassName: "!w-full",
         required: true,
     },
 ];
