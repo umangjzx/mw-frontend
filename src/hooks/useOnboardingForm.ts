@@ -34,7 +34,7 @@ export const useOnboardingForm = (schema: any) => {
 
     const onSubmit = async (data: z.infer<typeof schema>) => {
         try {
-            // updateOnboarding(data);
+            updateOnboarding(data);
             console.log("FORM_DATA", data);
         } catch (error) {
             console.error("Error submitting form:", error);
