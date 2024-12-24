@@ -11,14 +11,16 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import FeedbackModal from "@/components/schedule/Modals/FeedbackModal";
 import { useAppStore } from "@/store/useAppStore";
 import Cookies from "js-cookie";
-import { getCalendarEvents } from "@/utils/calender";
+import { checkCalendarScope, getCalendarEvents } from "@/utils/calender";
 import { useSendData } from "@/hooks/useReactQuery";
+import CalendarAccessScreen from "@/components/common/CalendarAccessScreen";
 
 export default function SchedulePage() {
     const [isOpenSchedule, setIsOpenSchedule] = useState(false);
     const [isOpenApproval, setIsOpenApproval] = useState(false);
     const [isOpenFeedback, setIsOpenFeedback] = useState(false);
     const queryClient = useQueryClient();
+    const [isCalendarScope, setIsCalendarScope] = useState(null);
 
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -52,7 +54,6 @@ export default function SchedulePage() {
         success: () => {
             handleNavigate();
             queryClient.invalidateQueries({ queryKey: ["events", currentMonth] });
-
         },
         error: (err) => {
             console.log("Error: ", err);
@@ -65,19 +66,31 @@ export default function SchedulePage() {
         setIsOpenFeedback(modal === "feedback");
     }, [modal]);
 
+    useEffect(() => {
+        checkCalendarScope().then((res) => {
+            setIsCalendarScope(res.data.calendar_access_enabled);
+        });
+    }, []);
+
     return (
         <div className="w-full h-full animate-fadeIn">
-            <Calendar events={data || []} />
-            <MyScheduleModal isOpen={isOpenSchedule} onClose={handleNavigate} />
-            <ApprovalModal isOpen={isOpenApproval} onClose={handleNavigate} />
-            <FeedbackModal
-                mode="create"
-                isOpen={isOpenFeedback}
-                onClose={handleNavigate}
-                onSubmit={onSave}
-                data={eventDetails}
-                Loading={isPending}
-            />
+            {!isCalendarScope ? (
+                <CalendarAccessScreen />
+            ) : (
+                <>
+                    <Calendar events={data || []} />
+                    <MyScheduleModal isOpen={isOpenSchedule} onClose={handleNavigate} />
+                    <ApprovalModal isOpen={isOpenApproval} onClose={handleNavigate} />
+                    <FeedbackModal
+                        mode="create"
+                        isOpen={isOpenFeedback}
+                        onClose={handleNavigate}
+                        onSubmit={onSave}
+                        data={eventDetails}
+                        Loading={isPending}
+                    />
+                </>
+            )}
         </div>
     );
 }

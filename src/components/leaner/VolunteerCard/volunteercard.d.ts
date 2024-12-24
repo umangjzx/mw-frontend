@@ -8,4 +8,6 @@ interface VolunteerCardProps {
     studentConnected: string;
     subjects: string[];
     languages: string[];
+    totalReviews: string;
+    overallRating: string;
 }

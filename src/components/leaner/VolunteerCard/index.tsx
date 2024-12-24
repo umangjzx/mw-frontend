@@ -1,6 +1,10 @@
 "use client";
 import DummyProfileImg from "@/assets/images/DummyProfileImg.png";
 import Image from "next/image";
+import CardChips from "./CardChips";
+import Divider from "@/components/common/Divider";
+import { FaStar } from "react-icons/fa";
+import { SeeMoreIcon } from "@/assets/icons";
 
 const VolunteerCard: React.FC<VolunteerCardProps> = ({
     onSeeMoreClick,
@@ -12,6 +16,8 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
     studentConnected,
     subjects,
     volunteerHrs,
+    totalReviews,
+    overallRating,
 }) => {
     const details = [
         { label: "Volunteer Hrs", value: volunteerHrs },
@@ -20,13 +26,11 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
         { label: "Language", value: languages.join(", ") },
     ];
 
-    console.log(profileImage, "profileImage");
-
     return (
         <div className="bg-white rounded-xl w-full shadow-sm h-fit p-4 flex flex-col gap-4">
             {/* Profile Header */}
             <div className="flex items-center gap-4">
-                <div className="w-[64px] h-[64px] rounded-full relative">
+                <div className="w-[36px] h-[36px] rounded-full relative">
                     {profileImage !== "image_url" ? (
                         <Image
                             src={profileImage}
@@ -43,27 +47,45 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
                         />
                     )}
                 </div>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col">
                     <p className="font-medium">{name}</p>
-                    <p className="font-medium text-sm text-gray-light">Location: {location}</p>
+                    <p className="font-medium text-sm ">
+                        <span className="text-gray-light">From </span> {location}
+                    </p>
                 </div>
             </div>
-
-            {/* Details Grid */}
-            <div className="grid grid-cols-2 gap-4">
-                {details.map(({ label, value }) => (
-                    <div key={label} className="flex flex-col gap-2">
-                        <p className="font-medium text-xs text-gray-light">{label}</p>
-                        <p className="font-medium text-sm">{value}</p>
-                    </div>
-                ))}
+            <div className="flex flex-col gap-2.5">
+                <div className="flex flex-wrap gap-2.5">
+                    <CardChips label="Volunteer Hrs" value={volunteerHrs ? volunteerHrs : "0"} />
+                </div>
+                <div className="flex gap-2.5">
+                    <CardChips label="Student connected" value={studentConnected} />
+                    <CardChips label="Subject" value={subjects.join(", ")} />
+                </div>
+                <div>
+                    <CardChips label="Language" value={languages.join(", ")} />
+                </div>
             </div>
-            <p
-                className="text-sm text-primary font-medium underline cursor-pointer hover:opacity-70 transition-all duration-300"
-                onClick={() => onSeeMoreClick(volunteerId)}
-            >
-                See more
-            </p>
+            <Divider />
+            <div className="flex items-center justify-between">
+                <div className=" border-stroke border w-fit px-3 py-1.5 rounded-full">
+                    <div className="flex items-center gap-2">
+                        {overallRating ? (
+                            <>
+                                <FaStar className="text-[#FFC107]" />
+                                <p className="text-sm font-medium ">
+                                    {overallRating} - {totalReviews} Reviews
+                                </p>
+                            </>
+                        ) : (
+                            <p className="text-sm font-medium ">No Reviews</p>
+                        )}
+                    </div>
+                </div>
+                <span className="cursor-pointer" onClick={() => onSeeMoreClick(volunteerId)}>
+                    <SeeMoreIcon />
+                </span>
+            </div>
         </div>
     );
 };

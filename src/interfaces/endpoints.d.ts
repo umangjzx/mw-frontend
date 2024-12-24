@@ -5,6 +5,8 @@ type EndpointProps = {
     };
     auth: {
         oauth2callback: string;
+        checkCalendarScope: string;
+        revokeGoogleAuth: string;
     };
     user: {
         signIn: string;
