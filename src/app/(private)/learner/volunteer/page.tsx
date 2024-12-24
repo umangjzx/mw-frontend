@@ -62,7 +62,18 @@ export default function LearnersPage() {
     };
 
     const { data, isLoading, isError } = useQuery({
-        queryKey: ["volunteer", query, page, size, language_ids, subject_ids, start_date, end_date, start_time, end_time],
+        queryKey: [
+            "volunteer",
+            query,
+            page,
+            size,
+            language_ids,
+            subject_ids,
+            start_date,
+            end_date,
+            start_time,
+            end_time,
+        ],
         queryFn: () => getAllVolunteers(),
         enabled: true,
     });
@@ -74,7 +85,7 @@ export default function LearnersPage() {
                 profileImage: volunteer.profile_picture.image_url,
                 name: `${volunteer.volunteer_first_name} ${volunteer.volunteer_last_name}`,
                 location: "Not Available", // Add location if available in API
-                volunteerHrs: volunteer.volunteered_hours?.toString(),
+                volunteerHrs: volunteer.total_volunteered_hours?.toString(),
                 studentConnected: volunteer.students_connected?.toString(),
                 subjects: volunteer.volunteer_subjects.map((subject: any) => subject.subject_name),
                 languages: volunteer.volunteer_languages.map(
@@ -116,8 +127,9 @@ export default function LearnersPage() {
             searchPlaceholder: "Find your tutor",
             actionButtonTitle: "Filers",
             actionButtonOnClick: () => setIsFilterOpen(true),
-            actionButtonIcon: <RiFilter3Line className="text-lg"/>,
-            actionButtonClassName: "!bg-white !text-balck hover:!bg-black hover:!text-white !h-[35px] !text-xs !py-2 px-4 !rounded-full",
+            actionButtonIcon: <RiFilter3Line className="text-lg" />,
+            actionButtonClassName:
+                "!bg-white !text-balck hover:!bg-black hover:!text-white !h-[35px] !text-xs !py-2 px-4 !rounded-full",
             actionButtonPlacement: "right",
             showButton: true,
             title: "Volunteer",
@@ -129,7 +141,11 @@ export default function LearnersPage() {
         <div className="px-10 py-10 animate-fadeIn">
             <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleModal} />
             <VolunteerViewModal isOpen={isOpen} onClose={handleModal} />
-            <VolunteerFilterModal isFilterApplying={false} isOpen={isFilterOpen} onClose={()=> setIsFilterOpen(false)} />
+            <VolunteerFilterModal
+                isFilterApplying={false}
+                isOpen={isFilterOpen}
+                onClose={() => setIsFilterOpen(false)}
+            />
             {isLoading ? (
                 <div>Loading...</div>
             ) : isError ? (
