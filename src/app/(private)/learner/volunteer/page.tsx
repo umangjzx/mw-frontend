@@ -13,6 +13,7 @@ import AddNewMeetingModal from "@/components/schedule/Modals/AddNewMeetingModal"
 import { useQueryState } from "nuqs";
 import VolunteerFilterModal from "@/components/learners/Modals/VolunteerFilter";
 import { RiFilter3Line } from "react-icons/ri";
+import CalendarAccessScreen from "@/components/common/CalendarAccessScreen";
 
 interface VolunteerCardData {
     volunteerId: string;
@@ -23,6 +24,8 @@ interface VolunteerCardData {
     studentConnected: string;
     subjects: string[];
     languages: string[];
+    totalReviews: string;
+    overallRating: string;
 }
 
 export default function LearnersPage() {
@@ -91,12 +94,12 @@ export default function LearnersPage() {
                 languages: volunteer.volunteer_languages.map(
                     (language: any) => language.language_name
                 ),
+                totalReviews: volunteer.total_reviews,
+                overallRating: volunteer.overall_rating,
             }));
             setVolunteerCardData(formattedData);
         }
     }, [data]);
-
-    console.log(volunteerCardData, "Volunteer Data");
 
     const handleModal = () => {
         router.push("/learner/volunteer");

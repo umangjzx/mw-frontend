@@ -16,6 +16,8 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
     studentConnected,
     subjects,
     volunteerHrs,
+    totalReviews,
+    overallRating,
 }) => {
     const details = [
         { label: "Volunteer Hrs", value: volunteerHrs },
@@ -68,8 +70,16 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
             <div className="flex items-center justify-between">
                 <div className=" border-stroke border w-fit px-3 py-1.5 rounded-full">
                     <div className="flex items-center gap-2">
-                        <FaStar className="text-[#FFC107]" />
-                        <p className="text-sm font-medium ">4.2 - 110 Reviews</p>
+                        {overallRating ? (
+                            <>
+                                <FaStar className="text-[#FFC107]" />
+                                <p className="text-sm font-medium ">
+                                    {overallRating} - {totalReviews} Reviews
+                                </p>
+                            </>
+                        ) : (
+                            <p className="text-sm font-medium ">No Reviews</p>
+                        )}
                     </div>
                 </div>
                 <span className="cursor-pointer" onClick={() => onSeeMoreClick(volunteerId)}>
