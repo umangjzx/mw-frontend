@@ -11,10 +11,10 @@ type FormTabsProps = {
     formData: FormSectionConfig[];
     control: any;
     errors: any;
-    trigger: (current: any) => any;
-    validateForm: () => any;
-    handleFillForm: () => any;
-    onSubmit: () => any;
+    trigger: (fields: any) => Promise<boolean>;
+    validateForm: () => void;
+    handleFillForm: () => void;
+    onSubmit: () => void;
     isLoading: boolean;
 };
 
@@ -22,15 +22,20 @@ const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFill
     // Form Tabs
     const [activeTab, setActiveTab] = useState(0);
     const [highestTab, setHighestTab] = useState(0);
-
-    const [activeTabFields, setActiveTabFields] = useState(formData[activeTab]);
-
     const tabButtonsRef = useRef<HTMLDivElement>(null);
 
     const validateCurrentSection = async () => {
-        const currentFields = activeTabFields.fields.map(
-            (field) => (field.parent ? `${activeTabFields.parent}.${field.parent}` : field.id)
-        );
+        const currentFields = formData[activeTab].fields.map((field) => {
+            if (field.parent) {
+                return `${formData[activeTab].parent}.${field.parent}`;
+            } else if (formData[activeTab].parent) {
+                return `${formData[activeTab].parent}.${field.id}`
+            } else {
+                return field.id;
+            }
+        });
+
+        console.log("Current Fields: ", currentFields);
 
         const isValidSection = await trigger(currentFields);
         if (!isValidSection) {
@@ -39,32 +44,17 @@ const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFill
         return isValidSection;
     };
 
-    const handleNext = async () => {
-        const isValidSection = await validateCurrentSection();
-        if (isValidSection) {
-            const nextTab = activeTab + 1;
-            setActiveTab(nextTab);
-            setHighestTab(Math.max(highestTab, nextTab));
-        }
-    };
-
-    const handleTabClick = async (index: number) => {
+    const handleNavigation = async (index: number) => {
         if (index > activeTab) {
             const isValidSection = await validateCurrentSection();
-            if (isValidSection) {
-                setActiveTab(index);
-                setHighestTab(Math.max(highestTab, index));
-            }
-        } else {
-            setActiveTab(index);
+            if (!isValidSection) return;
         }
+        setActiveTab(index);
+        setHighestTab(Math.max(highestTab, index));
     };
 
     useEffect(() => {
-        if (tabButtonsRef.current) {
-            tabButtonsRef.current.scrollIntoView({ behavior: "smooth" });
-        }
-        setActiveTabFields(activeTabFields);
+        tabButtonsRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [activeTab]);
 
     return (
@@ -79,36 +69,38 @@ const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFill
                         customClassName="w-fit hover:!bg-green-700 !text-sm !bg-green-700 !text-white !rounded-lg !shadow-2xl !font-bold"
                     />
                 </div>
-                <div ref={tabButtonsRef} />
 
                 {/* Tabs Header */}
-                <div className="flex mb-8 gap-2">
+                <div ref={tabButtonsRef} className="flex mb-8 gap-2">
                     {formData.map((section, index) => (
                         <button
-                            key={section.title}
+                            key={section.title || index}
                             type="button"
-                            onClick={() => handleTabClick(index)}
-                            className={`px-4 py-2 w-full text-sm font-medium`}
+                            onClick={() => handleNavigation(index)}
+                            className={`px-4 py-2 w-full text-sm font-medium ${index > highestTab ? "cursor-not-allowed" : ""}`}
                             disabled={index > highestTab}
                         >
-                            {section?.title || `Step ${index + 1}`}
-                            <div className={`!h-[10px] !w-full mt-1 rounded-xl ${index <= activeTab ? '!bg-background-secondary' : '!bg-gray-light'}`}></div>
+                            {section.title || `Step ${index + 1}`}
+                            <div
+                                className={`!h-[10px] !w-full mt-1 rounded-xl ${index <= activeTab ? "!bg-background-secondary" : "!bg-gray-300"
+                                    }`}
+                            ></div>
                         </button>
                     ))}
                 </div>
 
                 {/* Active Tab Content */}
-                {activeTabFields && (
-                    <div key={activeTabFields.title} className="!bg-white p-10 rounded-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                        {activeTabFields.title && (
-                            <h2 className="text-3xl font-semibold mb-8">{activeTabFields.title}</h2>
+                {formData[activeTab] && (
+                    <div className="!bg-white p-10 rounded-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                        {formData[activeTab].title && (
+                            <h2 className="text-3xl font-semibold mb-8">{formData[activeTab].title}</h2>
                         )}
                         <div className="grid grid-cols-2 w-full gap-6">
-                            {activeTabFields?.fields.map((field, index) => {
-                                if (activeTabFields?.type === "card") {
-                                    const parent = activeTabFields.parent
-                                        ? `${activeTabFields.parent}.${field.parent}`
-                                        : activeTabFields.parent;
+                            {formData[activeTab].fields.map((field, index) => {
+                                if (formData[activeTab]?.type === "card") {
+                                    const parent = formData[activeTab].parent
+                                        ? `${formData[activeTab].parent}.${field.parent}`
+                                        : field.parent;
 
                                     return (
                                         <CardWrapper
@@ -137,15 +129,16 @@ const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFill
                                         errors={errors}
                                         parent={
                                             field.parent
-                                                ? `${activeTabFields.parent}.${field.parent}`
-                                                : activeTabFields.parent
+                                                ? `${formData[activeTab].parent}.${field.parent}`
+                                                : formData[activeTab].parent
                                         }
                                     />
                                 );
                             })}
                         </div>
+
                         <div className="mt-5 flex flex-col gap-4">
-                            <div className="flex gap-4 justify-between">
+                            <div className="flex flex-col gap-1">
                                 {activeTab === formData.length - 1 ? (
                                     <>
                                         <Button
@@ -157,14 +150,14 @@ const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFill
                                             customClassName="w-fit hover:!bg-background-secondary !text-sm !bg-background-secondary !text-black !rounded-lg !shadow-2xl !font-normal"
                                         />
                                         <p className="text-gray-600 text-sm">
-                                            By clicking on the Submit Application above, you agree to our{" "}
+                                            By clicking on the Submit Application above, you agree to our {" "}
                                             <Link
                                                 href="/terms-of-service"
                                                 className="text-black underline hover:underline font-medium"
                                             >
                                                 Terms of Service
                                             </Link>{" "}
-                                            and our{" "}
+                                            and our {" "}
                                             <Link
                                                 href="/privacy-policy"
                                                 className="text-black underline hover:underline font-medium"
@@ -176,7 +169,7 @@ const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFill
                                     </>
                                 ) : (
                                     <Button
-                                        onClick={handleNext}
+                                        onClick={() => handleNavigation(activeTab + 1)}
                                         title="Next"
                                         size="large"
                                         customClassName="w-fit hover:!bg-background-secondary !text-sm !bg-background-secondary !text-black !rounded-lg !shadow-2xl !font-normal"

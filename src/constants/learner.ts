@@ -706,41 +706,47 @@ const AdditionalInfoFields: FormField[] = [
 export const LearnerFormSections: FormSectionConfig[] = [
     {
         parent: "parent_info",
-        title: "Parent/Guardian Information",
+        title: "Parent Information",
         fields: ParentGuardianFields,
     },
     {
         parent: "learner_personal_info",
-        title: "Learner's Personal Information",
+        title: "Learner Information",
         fields: LearnerPersonalFields,
     },
     {
-        parent: "learner_special_needs",
-        title: "Disability-Specific Information",
-        fields: DisabilityInfoFields,
+        title: "Profile Details",
+        fields: [
+            {
+                parent: "learner_special_needs",
+                title: "Disability-Specific Information",
+                fields: DisabilityInfoFields,
+            },
+            {
+                parent: "education",
+                title: "Education and Background",
+                fields: EducationBackgroundFields,
+            },
+            {
+                parent: "social_skills",
+                title: "Behavior and Social Skills",
+                fields: BehaviorSocialFields,
+            },
+            {
+                parent: "current_interests",
+                title: "Current Interests and Hobbies",
+                fields: InterestsHobbiesFields,
+            },
+            {
+                parent: "learner_goals",
+                title: "Expectations and Goals",
+                fields: ExpectationsGoalsFields,
+            }
+        ],
+        type: "card",
     },
     {
-        parent: "education",
-        title: "Education and Background",
-        fields: EducationBackgroundFields,
-    },
-    {
-        parent: "social_skills",
-        title: "Behavior and Social Skills",
-        fields: BehaviorSocialFields,
-    },
-    {
-        parent: "current_interests",
-        title: "Current Interests and Hobbies",
-        fields: InterestsHobbiesFields,
-    },
-    {
-        parent: "learner_goals",
-        title: "Expectations and Goals",
-        fields: ExpectationsGoalsFields,
-    },
-    {
-        title: "Consent and Permissions",
+        title: "Consent",
         parent: "consent_and_permissions",
         fields: [
             {
