@@ -41,8 +41,8 @@ const Header = ({ handleModalLogin }: HeaderProps) => {
         label: "",
         inputType: "radio",
         options: [
-            { label: "Volunteer", value: "volunteer" },
             { label: "Learner", value: "learner" },
+            { label: "Volunteer", value: "volunteer" },
         ],
         gridCols: 5,
         required: true,
@@ -146,17 +146,17 @@ const LoginRadio: React.FC<RadioInputProps> = ({
                 {options.map((option) => (
                     <div
                         key={option.value}
-                        className={`flex  w-full rounded-xl items-center py-2 hover:bg-background-input ${
+                        className={`flex  w-full rounded-xl items-center  hover:bg-background-input ${
                             option.value === "learner"
                                 ? value === option.value
-                                    ? "bg-[#DFF5FF] border-blue-500 border hover:bg-[#DFF5FF]"
-                                    : "bg-[#DFF5FF] border-[#DFF5FF] border hover:bg-[#DFF5FF]"
+                                    ? "bg-[#DFF5FF] border-blue-500 border hover:!bg-[#DFF5FF]"
+                                    : "bg-[#DFF5FF] border-[#DFF5FF] border hover:!bg-[#DFF5FF]"
                                 : value === option.value
-                                ? "bg-[#FFE9D4] border-[#EF4107] border hover:bg-[#FFE9D4]"
-                                : "bg-[#FFE9D4] border-[#FFE9D4] border hover:bg-[#FFE9D4]"
-                        } px-2 py-1 rounded-lg ${radioButtonClassName}`}
+                                ? "bg-[#FFE9D4] border-[#EF4107] border hover:!bg-[#FFE9D4]"
+                                : "bg-[#FFE9D4] border-[#FFE9D4] border hover:!bg-[#FFE9D4]"
+                        }  rounded-lg ${radioButtonClassName}`}
                     >
-                        <Radio value={option.value}>
+                        <Radio value={option.value} className="w-full px-2 py-1.5">
                             <div>
                                 <span>{option.label}</span>
                                 {option.sublabel && (

@@ -5,7 +5,11 @@ import ContainerWrapper from "../components/ContainerWrapper";
 import StepsChart from "../components/StepsChart";
 import LandingPageButton from "../components/Button";
 
-const ForVolunteer = () => {
+interface ForVolunteerProps {
+    onVolunteerLogin: (role: UserType) => void;
+}
+
+const ForVolunteer = ({ onVolunteerLogin }: ForVolunteerProps) => {
     return (
         <ContainerWrapper>
             <ContainerHeader
@@ -21,7 +25,11 @@ const ForVolunteer = () => {
                         <StepsChart title={item.title} icon={item.icon} index={index} />
                     ))}
                 </div>
-                <LandingPageButton title="Become a Volunteer" type="volunteer" />
+                <LandingPageButton
+                    title="Become a Volunteer"
+                    type="volunteer"
+                    onClick={() => onVolunteerLogin("volunteer")}
+                />
             </div>
         </ContainerWrapper>
     );

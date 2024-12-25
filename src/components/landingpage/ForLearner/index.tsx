@@ -5,7 +5,11 @@ import ContainerWrapper from "../components/ContainerWrapper";
 import StepsChart from "../components/StepsChart";
 import LandingPageButton from "../components/Button";
 
-const ForLearner = () => {
+interface ForLearnerProps {
+    onLearnerLogin: (role: UserType) => void;
+}
+
+const ForLearner = ({ onLearnerLogin }: ForLearnerProps) => {
     return (
         <ContainerWrapper>
             <ContainerHeader
@@ -20,7 +24,11 @@ const ForLearner = () => {
                         <StepsChart title={item.title} icon={item.icon} index={index} />
                     ))}
                 </div>
-                <LandingPageButton title="Enroll as Learner" type="learner" />
+                <LandingPageButton
+                    title="Enroll as Learner"
+                    type="learner"
+                    onClick={() => onLearnerLogin("learner")}
+                />
             </div>
         </ContainerWrapper>
     );

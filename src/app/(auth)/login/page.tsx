@@ -105,7 +105,7 @@ export default function Page() {
                 const ScrollReveal = (await import("scrollreveal")).default;
                 sr = ScrollReveal({
                     origin: "bottom",
-                    distance: "30px",
+                    distance: "3px",
                     duration: 800,
                     delay: 100,
                     easing: "ease-out",
@@ -140,10 +140,10 @@ export default function Page() {
                     <Impact />
                 </div>
                 <div className="reveal">
-                    <ForLearner />
+                    <ForLearner onLearnerLogin={handleSetRole} />
                 </div>
                 <div className="reveal">
-                    <ForVolunteer />
+                    <ForVolunteer onVolunteerLogin={handleSetRole} />
                 </div>
                 <div className="reveal">
                     <Community />
