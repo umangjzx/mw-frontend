@@ -616,11 +616,14 @@ const ExpectationsGoalsFields: FormField[] = [
         id: "subjects_to_focus_on",
         label: "Specific Subject/Skill Preferences",
         sublabel: "(areas focus for tutoring or support)",
-        inputType: "async-select",
-        endpoint: "skills",
-        variant: "multi",
-        responseAsLabel: "skill_name",
-        responseAsValue: "skill_name",
+        inputType: "multiselect",
+        options: [
+            { label: "Math", value: "math" },
+            { label: "Science", value: "science" },
+            { label: "History", value: "history" },
+            { label: "English", value: "english" },
+            { label: "Other", value: "other" },
+        ],
         placeholder: "Enter here",
         gridCols: 1,
         required: true,
@@ -706,41 +709,47 @@ const AdditionalInfoFields: FormField[] = [
 export const LearnerFormSections: FormSectionConfig[] = [
     {
         parent: "parent_info",
-        title: "Parent/Guardian Information",
+        title: "Parent Information",
         fields: ParentGuardianFields,
     },
     {
         parent: "learner_personal_info",
-        title: "Learner's Personal Information",
+        title: "Learner Information",
         fields: LearnerPersonalFields,
     },
     {
-        parent: "learner_special_needs",
-        title: "Disability-Specific Information",
-        fields: DisabilityInfoFields,
+        title: "Profile Details",
+        fields: [
+            {
+                parent: "learner_special_needs",
+                title: "Disability-Specific Information",
+                fields: DisabilityInfoFields,
+            },
+            {
+                parent: "education",
+                title: "Education and Background",
+                fields: EducationBackgroundFields,
+            },
+            {
+                parent: "social_skills",
+                title: "Behavior and Social Skills",
+                fields: BehaviorSocialFields,
+            },
+            {
+                parent: "current_interests",
+                title: "Current Interests and Hobbies",
+                fields: InterestsHobbiesFields,
+            },
+            {
+                parent: "learner_goals",
+                title: "Expectations and Goals",
+                fields: ExpectationsGoalsFields,
+            }
+        ],
+        type: "card",
     },
     {
-        parent: "education",
-        title: "Education and Background",
-        fields: EducationBackgroundFields,
-    },
-    {
-        parent: "social_skills",
-        title: "Behavior and Social Skills",
-        fields: BehaviorSocialFields,
-    },
-    {
-        parent: "current_interests",
-        title: "Current Interests and Hobbies",
-        fields: InterestsHobbiesFields,
-    },
-    {
-        parent: "learner_goals",
-        title: "Expectations and Goals",
-        fields: ExpectationsGoalsFields,
-    },
-    {
-        title: "Consent and Permissions",
+        title: "Consent",
         parent: "consent_and_permissions",
         fields: [
             {

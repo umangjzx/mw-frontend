@@ -290,7 +290,7 @@ export const learnerFormSchema = z.object({
     learner_personal_info: z.object({
         learner_first_name: z.string({ required_error: "Learner's First Name is required" }),
         learner_last_name: z.string({ required_error: "Learner's Last Name is required" }),
-        learner_date_of_birth: z.any({ required_error: "Learner's Date of Birth is required" }),
+        learner_date_of_birth: z.string({ required_error: "Learner's Date of Birth is required" }),
         learner_gender: z.string({ required_error: "Learner's Gender is required" }),
         learner_preferred_pronoun: z.string({
             required_error: "Learner's Preferred Pronoun is required",

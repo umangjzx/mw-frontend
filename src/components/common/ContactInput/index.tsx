@@ -27,7 +27,7 @@ const ContactInput = (props: ContactInputProps) => {
 
         const actualLength = mobileCountryCodes.find(num => num?.label === updatedFormData?.country_code)?.phoneLength || 10;
         setMaxNumberLength(actualLength);
-        const message = actualLength != updatedFormData?.number.length ? `Phone Number Length Should be ${actualLength} digits`: ''
+        const message = actualLength != updatedFormData?.number?.length ? `Phone Number Length Should be ${actualLength} digits`: ''
         setErrorMsg(message)
     };
 

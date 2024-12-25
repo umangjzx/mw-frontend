@@ -120,6 +120,18 @@ const ProfileDetailsFields: FormField[] = [
         required: true,
     },
     {
+        id: "volunteer_subjects",
+        label: "Subjects",
+        inputType: "async-select",
+        placeholder: "Select Subjects",
+        required: true,
+        gridCols: 2,
+        endpoint: "subjects",
+        responseAsLabel: "subject_name",
+        responseAsValue: ["subject_id", "subject_name"],
+        variant: "multi",
+    },
+    {
         id: "volunteer_experience",
         label: "Experience",
         inputType: "text",
@@ -411,7 +423,7 @@ export const VolunteerFormSections: FormSectionConfig[] = [
     },
     {
         parent: "legal_and_safety_info",
-        title: "Volunteer Application: Legal and Safety Information",
+        title: "Volunteer Application",
         fields: [
             {
                 parent: "criminal_background_check_details",
@@ -447,42 +459,23 @@ export const VolunteerFormSections: FormSectionConfig[] = [
         type: "card",
     },
     {
-        title: null,
-        parent: null,
-        fields: [
-            {
-                id: "volunteer_description",
-                label: "Please provide two or three professional or personal references who can speak to your character and qualifications as a volunteer.",
-                inputType: "textarea",
-                placeholder: "Mention here",
-                gridCols: 2,
-                required: true,
-            },
-        ],
-    },
-    {
         //TODO: Need Clarification
         title: "Volunteer snapshot",
         fields: [
             {
-                id: "volunteer_subjects",
+                id: "volunteer_description",
                 label: "Why do you want to tutor with us, and what do you hope to gain from this experience? What subjects would you like to teach, and why?",
-                sublabel:
-                    "Please share an overview of your profile, your areas of expertise and the reasons behind your choice, such as your passion for the subject or past teaching experience.",
-                inputType: "async-select",
+                sublabel: "Please share an overview of your profile, your areas of expertise and the reasons behind your choice, such as your passion for the subject or past teaching experience.",
+                inputType: "textarea",
                 placeholder: "Describe here",
                 required: true,
-                gridCols: 2,
-                endpoint: "subjects",
-                responseAsLabel: "subject_name",
-                responseAsValue: ["subject_id", "subject_name"],
-                variant: "multi",
+                gridCols: 2
             },
             {
                 id: "profile_picture",
                 label: "Profile Picture",
                 inputType: "upload",
-                required: false,
+                required: true,
                 gridCols: 1,
                 variant: "file",
                 fileType: "image/*",
@@ -493,7 +486,7 @@ export const VolunteerFormSections: FormSectionConfig[] = [
                 sublabel:
                     "Record a Video summarizing your profile and qualifications. This will help the learners to get to know you better!  Feel free to share your hobbies, extracurricular activities, and explain how and why you believe you're well-suited to teach the subject you've chosen to special needs children. You can keep it casual ! Speak from the heart and share what feels natural.",
                 inputType: "upload",
-                required: false,
+                required: true,
                 gridCols: 2,
                 variant: "file",
                 fileType: "video/*",
@@ -504,7 +497,7 @@ export const VolunteerFormSections: FormSectionConfig[] = [
                 sublabel:
                     "Please share an overview of your profile, your areas of expertise and the reasons behind your choice, such as your passion for the subject or past teaching experience.",
                 inputType: "upload",
-                required: false,
+                required: true,
                 gridCols: 2,
                 variant: "file",
                 fileType: "application/*",
@@ -512,7 +505,7 @@ export const VolunteerFormSections: FormSectionConfig[] = [
         ],
     },
     {
-        title: "Consent and Permissions",
+        title: "Consent",
         parent: "consent_and_permissions",
         fields: [
             {

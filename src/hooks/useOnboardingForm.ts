@@ -28,13 +28,13 @@ export const useOnboardingForm = (schema: any) => {
             setDocumentId(null);
         },
         error: () => {
-            showToast({ type: "error", message: "Fill required Fields!" });
+            showToast({ type: "error", message: "Something went wrong!" });
         },
     });
 
     const onSubmit = async (data: z.infer<typeof schema>) => {
         try {
-            // updateOnboarding(data);
+            updateOnboarding(data);
             console.log("FORM_DATA", data);
         } catch (error) {
             console.error("Error submitting form:", error);
