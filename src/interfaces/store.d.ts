@@ -1,3 +1,12 @@
+type ActionButtons = {
+    buttonTitle?: string;
+    buttonOnClick?: () => void;
+    buttonIcon?: React.ReactNode;
+    buttonClassName?: string;
+    showButton?: boolean;
+    buttonPlacement?: "left" | "right";
+}
+
 type HeaderOptions = {
     actionButtonTitle?: string;
     actionButtonOnClick?: () => void;
@@ -8,6 +17,7 @@ type HeaderOptions = {
     showButton?: boolean;
     titleIcon?: React.ReactNode;
     title?: string;
+    actionButtons?: ActionButtons[];
     titleIconClick?: () => void;
 } | null;
 

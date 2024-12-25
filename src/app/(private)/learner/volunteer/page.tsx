@@ -128,15 +128,26 @@ export default function LearnersPage() {
     useEffect(() => {
         setHeaderOptions({
             searchPlaceholder: "Find your tutor",
-            actionButtonTitle: "Filers",
-            actionButtonOnClick: () => setIsFilterOpen(true),
-            actionButtonIcon: <RiFilter3Line className="text-lg" />,
-            actionButtonClassName:
-                "!bg-white !text-balck hover:!bg-black hover:!text-white !h-[35px] !text-xs !py-2 px-4 !rounded-full",
             actionButtonPlacement: "right",
-            showButton: true,
             title: "Volunteer",
             titleIcon: getHeaderIcon(pathname),
+            actionButtons: [
+                {
+                    buttonTitle: "Volunteers I have worked with",
+                    buttonOnClick: () => router.push("/learner/my-volunteers"),
+                    buttonClassName: "!bg-black !text-white hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4 !rounded-full",
+                    buttonPlacement: "right",
+                    showButton: true,
+                },
+                {
+                    buttonTitle: "Filters",
+                    buttonOnClick: () => setIsFilterOpen(true),
+                    buttonIcon: <RiFilter3Line className="text-lg" />,
+                    buttonClassName: "!bg-white !text-balck hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4 !rounded-full",
+                    buttonPlacement: "right",
+                    showButton: true,
+                }
+            ]
         });
     }, [pathname, setHeaderOptions]);
 

@@ -12,6 +12,7 @@ import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 interface PaginationParams {
     page: number;
@@ -26,6 +27,7 @@ interface TableVolunteer {
 }
 
 export default function VolunteerPage() {
+    const router = useRouter();
     const [volunteerData, setVolunteerData] = useState<TableVolunteer[]>([]);
     const [pagination, setPagination] = useState<PaginationParams>({
         page: 1,
@@ -99,8 +101,10 @@ export default function VolunteerPage() {
 
     useEffect(() => {
         setHeaderOptions({
-            title: "Volunteers",
-            titleIcon: getHeaderIcon(pathname),
+            title: "My Volunteers",
+            titleIcon: getHeaderIcon("backIcon"),
+            titleIconClick: () => router.push("/learner/volunteer"),
+            searchPlaceholder: "Find your tutor"
         });
     }, [setHeaderOptions]);
 

@@ -18,6 +18,7 @@ const CommonHeader: React.FC = () => {
         titleIcon,
         title,
         titleIconClick,
+        actionButtons
     } = headerOptions || {};
 
     const handleSearch = (value: string) => {
@@ -61,6 +62,15 @@ const CommonHeader: React.FC = () => {
                         icon={actionButtonIcon}
                     />
                 )}
+                { actionButtons?.map((button: ActionButtons) => (
+                    <Button
+                        title={button?.buttonTitle}
+                        onClick={button?.buttonOnClick}
+                        rootClassName={button?.buttonClassName}
+                        size="small"
+                        icon={button?.buttonIcon}
+                    />
+                )) }
             </div>
         </div>
     );
