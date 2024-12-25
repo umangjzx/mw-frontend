@@ -1,6 +1,7 @@
 import { CommunityIcon, LearnerIcon, ResourceIcon, VolunteerIcon } from "@/assets/icons";
 import CommonHeader from "@/components/common/Header";
 import { CalenderHeader } from "@/components/schedule";
+import { IoIosArrowBack } from "react-icons/io";
 
 export const getHeaderTitle = (pathname: string) => {
     const path = pathname.split("/")?.[2];
@@ -9,6 +10,7 @@ export const getHeaderTitle = (pathname: string) => {
 
 //TODO: Need Redandunt work here
 export const getHeaderIcon = (pathname: string) => {
+    if(pathname === "backIcon") return <IoIosArrowBack />;
     switch (getHeaderTitle(pathname)) {
         case "learners":
             return <LearnerIcon />;

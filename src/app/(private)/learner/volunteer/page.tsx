@@ -47,6 +47,7 @@ export default function LearnersPage() {
     const [end_date] = useQueryState("end_date");
     const [start_time] = useQueryState("start_time");
     const [end_time] = useQueryState("end_time");
+    const [volunteerId, setVolunteerId] = useQueryState("volunteerId");
 
     const getAllVolunteers = async () => {
         const endpoint = `${endpoints.volunteer.getAllVolunteers}?${new URLSearchParams({
@@ -102,15 +103,14 @@ export default function LearnersPage() {
     }, [data]);
 
     const handleModal = () => {
-        router.push("/learner/volunteer");
+        setVolunteerId(null);
     };
 
     const handleSeeMoreClick = (volunteerId: string) => {
-        router.push(`/learner/volunteer?volunteerId=${volunteerId}`);
+        setVolunteerId(volunteerId);
     };
 
     useEffect(() => {
-        const volunteerId = searchParams.get("volunteerId");
         const modal = searchParams.get("modal");
 
         if (modal === "add_new_meeting") {
@@ -123,20 +123,31 @@ export default function LearnersPage() {
             setIsOpen(false);
             setIsOpenSchedule(false);
         }
-    }, [searchParams]);
+    }, [searchParams, volunteerId]);
 
     useEffect(() => {
         setHeaderOptions({
             searchPlaceholder: "Find your tutor",
-            actionButtonTitle: "Filers",
-            actionButtonOnClick: () => setIsFilterOpen(true),
-            actionButtonIcon: <RiFilter3Line className="text-lg" />,
-            actionButtonClassName:
-                "!bg-white !text-balck hover:!bg-black hover:!text-white !h-[35px] !text-xs !py-2 px-4 !rounded-full",
             actionButtonPlacement: "right",
-            showButton: true,
             title: "Volunteer",
             titleIcon: getHeaderIcon(pathname),
+            actionButtons: [
+                {
+                    buttonTitle: "Volunteers I have worked with",
+                    buttonOnClick: () => router.push("/learner/my-volunteers"),
+                    buttonClassName: "!bg-black !text-white hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4 !rounded-full",
+                    buttonPlacement: "right",
+                    showButton: true,
+                },
+                {
+                    buttonTitle: "Filters",
+                    buttonOnClick: () => setIsFilterOpen(true),
+                    buttonIcon: <RiFilter3Line className="text-lg" />,
+                    buttonClassName: "!bg-white !text-balck hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4 !rounded-full",
+                    buttonPlacement: "right",
+                    showButton: true,
+                }
+            ]
         });
     }, [pathname, setHeaderOptions]);
 
@@ -162,6 +173,7 @@ export default function LearnersPage() {
                             {...volunteer}
                         />
                     ))}
+                    {volunteerCardData.length === 0 && <div>No Volunteer Found</div> }
                 </div>
             )}
         </div>

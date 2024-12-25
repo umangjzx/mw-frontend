@@ -221,7 +221,6 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
     const text = getLocalStorage("role");
     const searchParams = useSearchParams();
     const volunteerId = searchParams.get("volunteerId");
-    const learnerId = Cookies.get("learner_id");
     const router = useRouter();
 
     const getIndividualVolunteer = async () => {
