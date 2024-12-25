@@ -47,6 +47,7 @@ export default function LearnersPage() {
     const [end_date] = useQueryState("end_date");
     const [start_time] = useQueryState("start_time");
     const [end_time] = useQueryState("end_time");
+    const [volunteerId, setVolunteerId] = useQueryState("volunteerId");
 
     const getAllVolunteers = async () => {
         const endpoint = `${endpoints.volunteer.getAllVolunteers}?${new URLSearchParams({
@@ -102,15 +103,14 @@ export default function LearnersPage() {
     }, [data]);
 
     const handleModal = () => {
-        router.push("/learner/volunteer");
+        setVolunteerId(null);
     };
 
     const handleSeeMoreClick = (volunteerId: string) => {
-        router.push(`/learner/volunteer?volunteerId=${volunteerId}`);
+        setVolunteerId(volunteerId);
     };
 
     useEffect(() => {
-        const volunteerId = searchParams.get("volunteerId");
         const modal = searchParams.get("modal");
 
         if (modal === "add_new_meeting") {
@@ -123,7 +123,7 @@ export default function LearnersPage() {
             setIsOpen(false);
             setIsOpenSchedule(false);
         }
-    }, [searchParams]);
+    }, [searchParams, volunteerId]);
 
     useEffect(() => {
         setHeaderOptions({
