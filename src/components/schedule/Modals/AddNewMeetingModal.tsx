@@ -311,6 +311,8 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
                         field.name === "select_date" ? volunteerAvailableDays : undefined;
                     console.log(`Field ${field.name} availableDays:`, availableDaysForField);
 
+                    if(field.name === "select_date" && selectedVolunteerId === "") return null;
+
                     return (
                         <Input
                             key={field.name}
