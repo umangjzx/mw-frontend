@@ -8,16 +8,16 @@ import DummyProfileImg from "@/assets/images/DummyProfileImg.png";
 import ReviewFilter from "./ReviewFilter";
 import Divider from "@/components/common/Divider";
 
-const Overview = () => {
+const Overview = ({ data }: any) => {
     const overViewCard = [
         {
             title: "Hours Volunteered",
-            value: 40,
+            value: data?.total_hours,
             icon: <ClockIcon />,
         },
         {
             title: "Students Connected",
-            value: 40,
+            value: data?.connections,
             icon: <LearnerConnectIcon />,
         },
     ];

@@ -4,7 +4,9 @@ import { StateCreator } from "zustand";
 
 export const useVolunteer: StateCreator<UseVolunteerProps> = (set, get) => ({
     volunteerImage: "",
-    volunteerName: "Iwin T",
     setVolunteerName: (name: string) => set({ volunteerName: name }),
+    volunteerName: "Iwin T",
     setVolunteerImage: (image: string) => set({ volunteerImage: image }),
+    volunteerDetails: {},
+    setVolunteerDetails: (data: object) => set({ volunteerDetails: data }),
 });
