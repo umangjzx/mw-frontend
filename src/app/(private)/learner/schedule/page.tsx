@@ -14,11 +14,12 @@ import { checkCalendarScope, getCalendarEvents } from "@/utils/calender";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSendData } from "@/hooks/useReactQuery";
 import CalendarAccessScreen from "@/components/common/CalendarAccessScreen";
+import LottieLoader from "@/components/common/Loader/Lottie";
 
 export default function LearnerSchedulePage() {
     const [isOpenSchedule, setIsOpenSchedule] = useState(false);
     const [isOpenFeedback, setIsOpenFeedback] = useState(false);
-    const [isCalendarScope, setIsCalendarScope] = useState(null);
+    const [isCalendarScope, setIsCalendarScope] = useState("checking");
 
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -73,22 +74,23 @@ export default function LearnerSchedulePage() {
 
     return (
         <>
-            {!isCalendarScope ? (
-                <CalendarAccessScreen />
-            ) : (
-                <div className="w-full h-full animate-fadeIn">
-                    <Calendar events={data || []} />
-                    <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleNavigate} />
-                    <FeedbackModal
-                        mode="create"
-                        isOpen={isOpenFeedback}
-                        onClose={handleNavigate}
-                        onSubmit={onSave}
-                        data={eventDetails}
-                        Loading={isPending}
-                    />
-                </div>
-            )}
+            { isCalendarScope === "checking" ? <LottieLoader isLoading={true} />
+                : !isCalendarScope ? (
+                    <CalendarAccessScreen />
+                ) : (
+                    <div className="w-full h-full animate-fadeIn">
+                        <Calendar events={data || []} />
+                        <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleNavigate} />
+                        <FeedbackModal
+                            mode="create"
+                            isOpen={isOpenFeedback}
+                            onClose={handleNavigate}
+                            onSubmit={onSave}
+                            data={eventDetails}
+                            Loading={isPending}
+                        />
+                    </div>
+                )}
         </>
     );
 }

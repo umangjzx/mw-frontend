@@ -2,7 +2,7 @@
 
 import { getHeaderIcon } from "@/layouts/helper";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import VolunteerCard from "@/components/leaner/VolunteerCard";
 import VolunteerViewModal from "@/components/leaner/VolunteerViewModal";
 import { useQuery } from "@tanstack/react-query";
@@ -14,7 +14,7 @@ import { useQueryState } from "nuqs";
 import VolunteerFilterModal from "@/components/learners/Modals/VolunteerFilter";
 import { RiFilter3Line } from "react-icons/ri";
 import CalendarAccessScreen from "@/components/common/CalendarAccessScreen";
-import Loader from "@/components/common/Loader";
+import LottieLoader from "@/components/common/Loader/Lottie";
 
 interface VolunteerCardData {
     volunteerId: string;
@@ -155,7 +155,7 @@ export default function LearnersPage() {
     }, [pathname, setHeaderOptions]);
 
     return (
-        <div className="px-10 py-10 animate-fadeIn">
+        <div className="px-10 py-10 animate-fadeIn h-full">
             <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleModal} />
             <VolunteerViewModal isOpen={isOpen} onClose={handleModal} />
             <VolunteerFilterModal
@@ -164,7 +164,7 @@ export default function LearnersPage() {
                 onClose={() => setIsFilterOpen(false)}
             />
             {isLoading ? (
-                <Loader size="large" />
+                <LottieLoader isLoading={true} />
             ) : isError ? (
                 <div>Error loading volunteers</div>
             ) : (

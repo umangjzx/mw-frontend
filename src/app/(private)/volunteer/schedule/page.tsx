@@ -14,7 +14,7 @@ import Cookies from "js-cookie";
 import { checkCalendarScope, getCalendarEvents } from "@/utils/calender";
 import { useSendData } from "@/hooks/useReactQuery";
 import CalendarAccessScreen from "@/components/common/CalendarAccessScreen";
-import Loader from "@/components/common/Loader"
+import LottieLoader from "@/components/common/Loader/Lottie";
 
 export default function SchedulePage() {
     const [isOpenSchedule, setIsOpenSchedule] = useState(false);
@@ -75,7 +75,7 @@ export default function SchedulePage() {
 
     return (
         <div className="w-full h-full animate-fadeIn">
-            { isCalendarScope === "checking" ? <Loader size="large" />
+            { isCalendarScope === "checking" ? <LottieLoader isLoading={true} />
             : !isCalendarScope ? (
                 <CalendarAccessScreen />
             ) : (
