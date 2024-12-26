@@ -80,9 +80,18 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
         setVolunteers(volunteerOptions);
     };
 
-    const { data, isLoading, isError } = useQuery({
+    const getIndividualVolunteer = async() => {
+        const { data } = await GET_API(endpoints.volunteer.getIndividualVolunteer(volunteerId||""))
+        setFormData((prev) => ({ ...prev, select_volunteer: data?.volunteer_id }))
+        setVolunteers([{
+            label: data?.volunteer_first_name + " " + data?.volunteer_last_name,
+            value: data?.volunteer_id,
+         }]);
+    }
+
+    const { data } = useQuery({
         queryKey: ["volunteers"],
-        queryFn: getVolunteers,
+        queryFn: () => (volunteerId)? getIndividualVolunteer() : getVolunteers(),
         enabled: isOpen,
     });
 

@@ -14,6 +14,7 @@ import { useQueryState } from "nuqs";
 import VolunteerFilterModal from "@/components/learners/Modals/VolunteerFilter";
 import { RiFilter3Line } from "react-icons/ri";
 import CalendarAccessScreen from "@/components/common/CalendarAccessScreen";
+import Loader from "@/components/common/Loader";
 
 interface VolunteerCardData {
     volunteerId: string;
@@ -48,6 +49,7 @@ export default function LearnersPage() {
     const [start_time] = useQueryState("start_time");
     const [end_time] = useQueryState("end_time");
     const [volunteerId, setVolunteerId] = useQueryState("volunteerId");
+    const [modalQuery, setModalQuery] = useQueryState("modal");
 
     const getAllVolunteers = async () => {
         const endpoint = `${endpoints.volunteer.getAllVolunteers}?${new URLSearchParams({
@@ -104,6 +106,7 @@ export default function LearnersPage() {
 
     const handleModal = () => {
         setVolunteerId(null);
+        setModalQuery(null);
     };
 
     const handleSeeMoreClick = (volunteerId: string) => {
@@ -161,7 +164,7 @@ export default function LearnersPage() {
                 onClose={() => setIsFilterOpen(false)}
             />
             {isLoading ? (
-                <div>Loading...</div>
+                <Loader size="large" />
             ) : isError ? (
                 <div>Error loading volunteers</div>
             ) : (
