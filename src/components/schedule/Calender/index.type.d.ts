@@ -9,7 +9,7 @@ type EventCardProps = {
 
 type DayCellContentProps = {
     day: string;
-    icon: string;
+    icon?: string;
 };
 
 type ModalType = "events" | "alert" | "feedback" | null;

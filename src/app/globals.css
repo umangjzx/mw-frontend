@@ -93,6 +93,11 @@ html {
     background-color: #08547a !important;
 }
 
+/* Custom Spin Styles */
+.custom-ant-spin .ant-spin-dot-item {
+    background-color: var(--primary-color) !important;
+}  
+
 /* Rating Radio Button Styles */
 .ant-radio-button-wrapper {
     border: 1px solid var(--border-stroke) !important;
