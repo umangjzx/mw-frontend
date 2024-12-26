@@ -105,7 +105,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
             Sat: "🎉",
             Sun: "💆🏻‍♀️",
         };
-        return <DayCellContent day={args.text} icon={dayIcons[args.text]} />;
+        return <DayCellContent day={args.text} icon="" />;
     };
 
     const dayCellClassNames = "min-h-[100px] bg-white hover:bg-gray-50";
@@ -231,7 +231,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
                     editable={false}
                     selectable={false}
                     selectMirror={false}
-                    eventMouseEnter={handleEventMouseEnter}
+                    eventClick={handleEventClick}
                     dayMaxEvents={false}
                     dayMaxEventRows={false}
                     weekends={true}

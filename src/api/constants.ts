@@ -5,6 +5,7 @@ export const endpoints: EndpointProps = {
         update: (role: "volunteer" | "learner") => `onboarding/${role}`,
         getOnboardingStatus: (id: string, role: "volunteer" | "learner") =>
             `onboarding/status/${role}/${id}`,
+        setLearnerOnboardingStatus: (id: string) => `onboarding/update_verification_status/learner/${id}?verification_status=verification_completed`
     },
     auth: {
         oauth2callback: "auth/oauth2callback",
@@ -40,8 +41,7 @@ export const endpoints: EndpointProps = {
         getApprovalNotifications: (id: string, status: string) =>
             `session/volunteer/${id}?status=${status}`,
         getCalendarEvents: (id: string, userType: UserType, month?: string, status?: string) =>
-            `session/${userType}/${id}${month ? `?month=${month}` : ""}${
-                status ? `?status=${status}` : ""
+            `session/${userType}/${id}${month ? `?month=${month}` : ""}${status ? `?status=${status}` : ""
             }`,
         updateNotificationStatus: (id: string) => `session/${id}`,
         markAsCompleted: (id: string) => `session/${id}/mark_as_completed`,
