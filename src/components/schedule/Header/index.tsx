@@ -40,19 +40,19 @@ const Header = (props: Props) => {
                         console.log(date, "date from month year slider");
                     }}
                 />
-                <Button
+                {/* <Button
                     onClick={() => {}}
                     title="Today"
                     icon={<CalendarDayOne />}
                     rootClassName="bg-transparent font-medium rounded-full shadow-none"
-                />
+                /> */}
             </div>
             <div className="flex items-center gap-2">
-                <Button
+                {/* <Button
                     onClick={() => {}}
                     icon={<IoIosSearch className="text-xl" />}
                     customClassName="!bg-transparent font-semibold !text-black rounded-full !py-3 !px-3"
-                />
+                /> */}
                 {role === "learner" ? (
                     <Button
                         onClick={handleAddMeeting}
