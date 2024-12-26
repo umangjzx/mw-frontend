@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 import { getIndividualVolunteer } from "@/api/volunteers";
 import { useAppStore } from "@/store/useAppStore";
+import { endpoints } from "@/api/constants";
 
 export default function ProfilePage() {
     const { setHeaderOptions } = useComponentStore();
@@ -65,7 +66,7 @@ export default function ProfilePage() {
         <div className="h-full animate-fadeIn">
             <div className="h-full w-full grid grid-cols-[1fr,2fr] gap-10 p-5">
                 <Bio data={volunteerData.bio} />
-                <Overview data={volunteerData.overview} />
+                <Overview data={volunteerData.overview} reviewEndpoint={endpoints.volunterFeedback.get(volunteerId)} />
             </div>
         </div>
     );

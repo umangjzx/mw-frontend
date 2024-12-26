@@ -1,16 +1,21 @@
 "use client";
 import DetailCard from "./DetailCard";
-import TagComponent from "@/components/common/Tag";
 import BioHeader from "@/components/profile/Bio/BioHeader";
 import Divider from "@/components/common/Divider";
 import DetailChipCard from "@/components/profile/Bio/DetailChipCard";
+import Cookies from "js-cookie";
+import ContactDetails from "./ContactDetails";
+import { FaPhoneAlt } from "react-icons/fa";
+import { MdEmail } from "react-icons/md";
 
 const index = ({ data }: any) => {
+    const role = Cookies.get("role") || "";
+    const isLearner = role === "learner";
 
     const details = [
-        { title: "Subjects I Teach", tags: data?.subjects },
+        { title: isLearner ? "Subjects to learn" : "Subjects I Teach", tags: data?.subjects },
         { title: "Languages I Speak", tags: data?.languages },
-        { title: "Skills", tags: data?.skills },
+        ( isLearner ? {} :  { title: "Skills", tags: data?.skills })
     ];
 
     const bio = [
@@ -23,6 +28,11 @@ const index = ({ data }: any) => {
             description: data?.education,
         },
     ];
+
+    const contactDetails = [
+        { title: "Phone Number", value: data?.phone_number, icon: <FaPhoneAlt size={15} /> },
+        { title: "Email", value: data?.email, icon: <MdEmail size={15} /> },
+    ]
 
     return (
         <div className="bg-white rounded-3xl w-full flex flex-col gap-6 py-5 h-[83vh]">
@@ -40,11 +50,12 @@ const index = ({ data }: any) => {
                     <TagComponent text="New York, NY" className="text-xs py-1 font-medium px-2" />
                 </div> */}
                 {details.map((detail) => (
-                    <DetailChipCard key={detail.title} tags={detail.tags} title={detail.title} />
+                    <DetailChipCard key={detail.title} tags={detail.tags} title={detail?.title} />
                 ))}
-                {bio.map((item) => (
+                { !isLearner && bio.map((item) => (
                     <DetailCard key={item.title} title={item.title} description={item.description} />
                 ))}
+                { isLearner && <ContactDetails tags={contactDetails} /> }
             </div>
         </div>
     );

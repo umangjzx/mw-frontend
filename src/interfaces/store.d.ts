@@ -35,6 +35,8 @@ type UseLearnerProps = {
     setLearnerName: (name: string) => void;
     learnerImage: string;
     setLearnerImage: (image: string) => void;
+    learnerDetails: object;
+    setLearnerDetails: (data: object) => void;
 };
 
 type UseGlobalStoreProps = {
