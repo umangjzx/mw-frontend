@@ -1,6 +1,5 @@
 import LoginPage from "@/components/auth/Login";
 import TimeAgo from "javascript-time-ago";
-import "intl/locale-data/jsonp/en-US";
 import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
 
