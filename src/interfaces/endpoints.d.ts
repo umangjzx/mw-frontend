@@ -59,10 +59,12 @@ type EndpointProps = {
         getPosts: string;
         createPost: string;
         getSinglePost: (post_id: string) => string;
+        like: (post_id: string) => string;
     };
     comment: {
         createComment: string;
         getPostComments: (post_id: string) => string;
+        commentLikes: (comment_id: string) => string;
     };
     common: (path: CommonPath) => string;
     volunterFeedback: {

@@ -11,6 +11,7 @@ export const LearnerCommunityFormConstants: FormField[] = [
         label: "Do you want to upload any pictures to share in the community/forum?",
         inputType: "upload",
         maxFiles: 5,
+        // fileType: "image/*",
     },
 ];
 
@@ -38,5 +39,5 @@ export const CommunityTabs = [
 ];
 
 export const getCurrentTab = (currentTab: string | null) => {
-    return CommunityTabs.find(tab => tab.route === currentTab);
+    return CommunityTabs.find((tab) => tab.route === currentTab);
 };

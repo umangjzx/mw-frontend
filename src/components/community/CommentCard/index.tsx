@@ -1,17 +1,67 @@
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import DummyProfileImg from "@/assets/images/DummyProfileImg.png";
 import TagComponent from "@/components/common/Tag";
-import HeartIcon from "@/assets/icons/HeartIcon";
+import { HeartLikeIcon, UnlikeHeartIcon } from "@/assets/icons";
+import { DELETE_API, GET_API, POST_API } from "@/api/request";
+import { endpoints } from "@/api/constants";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryClient } from "@/api/query-client";
+import { motion, AnimatePresence } from "framer-motion";
 
-const CommentCard: React.FC<CommentCardProps> = ({ reply }) => {
+const CommentCard: React.FC<CommentCardProps> = ({ reply, comment, onReply }) => {
+    const queryClient = useQueryClient();
+    const [isLiked, setIsLiked] = useState(comment?.is_liked || false);
+    const [likesCount, setLikesCount] = useState(comment?.total_likes || 0);
+
+    // If no comment data is provided, return null or a placeholder
+    if (!comment) return null;
+
+    const handleCommentLikes = async () => {
+        const newLikeStatus = !isLiked;
+        setIsLiked(newLikeStatus);
+        setLikesCount((prev) => (newLikeStatus ? prev + 1 : prev - 1));
+
+        try {
+            if (newLikeStatus) {
+                await POST_API(endpoints.comment.commentLikes(comment.comment_id));
+            } else {
+                await DELETE_API(endpoints.comment.commentLikes(comment.comment_id));
+            }
+            queryClient.invalidateQueries({ queryKey: ["get-post-comments"] });
+        } catch (err) {
+            console.log(err, "ERROR FOR LIKE");
+            // Revert on error
+            setIsLiked(!newLikeStatus);
+            setLikesCount((prev) => (!newLikeStatus ? prev + 1 : prev - 1));
+        }
+    };
+
+    // Format the date
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffTime = Math.abs(now.getTime() - date.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        return `${diffDays}d`;
+    };
+
+    const handleReply = (comment: any) => {
+        // If replying to a reply (nested comment), use parent_comment_id
+        // If replying to a parent comment, use comment_id
+        console.log(comment, "COMMENT DATA");
+        const replyId = reply ? comment.parent_comment_id : comment.comment_id;
+        onReply(comment.author.name, replyId);
+    };
+
     return (
         <div className={`${reply ? "ml-9" : ""}`}>
             <div className="flex justify-between gap-2">
                 <div className="flex gap-1">
                     <div className="w-[32px] h-[32px] relative flex-shrink-0">
                         <Image
-                            src={DummyProfileImg}
+                            src={comment.author.profile_picture.image_url || DummyProfileImg}
                             alt="profile picture"
                             fill
                             className="rounded-full object-cover"
@@ -19,25 +69,75 @@ const CommentCard: React.FC<CommentCardProps> = ({ reply }) => {
                     </div>
                     <div className="ml-1 flex-1 flex flex-col gap-1">
                         <div className="flex items-center gap-2 w-full">
-                            <p className="font-semibold text-black text-sm">Vinoth Kumar</p>
+                            <p className="font-semibold text-black text-sm">
+                                {comment.author.name}
+                            </p>
                             <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
-                            <TagComponent text="Volunteer" className="w-fit text-[12px]" />
+                            <TagComponent
+                                text={comment.created_by}
+                                className="w-fit text-[12px] capitalize"
+                            />
                             <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
-                            <p className="font-semibold text-black text-sm">1d</p>
+                            <p className="font-semibold text-black text-sm">
+                                {formatDate(comment.created_at)}
+                            </p>
                         </div>
-                        <p className="text-[12px] font-normal">
-                            Love this topic! Music theory is so fascinating
-                        </p>
+                        <p className="text-[12px] font-normal">{comment.comment_text}</p>
                     </div>
                 </div>
-                <div className="flex flex-col items-center gap-1">
-                    <HeartIcon />
-                    <p className="text-[12px] font-medium text-[#EF4444]">14</p>
+                <div className="flex flex-col items-center">
+                    <div className="cursor-pointer scale-75">
+                        <AnimatePresence mode="wait">
+                            {isLiked ? (
+                                <motion.div
+                                    key="liked"
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    exit={{ scale: 0 }}
+                                    transition={{
+                                        duration: 0.2,
+                                        ease: "easeInOut",
+                                    }}
+                                    onClick={handleCommentLikes}
+                                >
+                                    <HeartLikeIcon className="w-7 h-7" />
+                                </motion.div>
+                            ) : (
+                                <motion.div
+                                    key="unliked"
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    exit={{ scale: 0 }}
+                                    transition={{
+                                        duration: 0.2,
+                                        ease: "easeInOut",
+                                    }}
+                                    onClick={handleCommentLikes}
+                                >
+                                    <UnlikeHeartIcon className="w-7 h-7" />
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                    <motion.p
+                        className="text-[12px] font-medium text-[#EF4444]"
+                        animate={{
+                            scale: isLiked ? [1, 1.2, 1] : 1,
+                        }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        {likesCount > 0 && likesCount}
+                    </motion.p>
                 </div>
             </div>
             <div className="flex items-center gap-1">
                 <div className="w-[36px] h-[32px]"></div>
-                <p className="text-sm font-medium text-gray-light">Reply</p>
+                <p
+                    onClick={() => handleReply(comment)}
+                    className="text-sm font-medium text-gray-light cursor-pointer"
+                >
+                    Reply
+                </p>
             </div>
         </div>
     );

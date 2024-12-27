@@ -1,7 +1,7 @@
 import * as React from "react";
 
-const SvgIcon = (props) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" viewBox="0 0 32 32">
+const CommentIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" fill="none" viewBox="0 0 32 32">
         <g clipPath="url(#clip0_556_5253)">
             <path
                 fill="#4F4F4F"
@@ -16,4 +16,4 @@ const SvgIcon = (props) => (
     </svg>
 );
 
-export default SvgIcon;
+export default CommentIcon;
