@@ -54,8 +54,7 @@ export default function LearnersPage() {
             const transformedData = learners.items.map((learner: any) => ({
                 id: learner.learner_id,
                 name: `${learner.learner_name}`,
-                classesTaken: learner.total_sessions,
-                subject: "N/A",
+                classesTaken: learner.total_sessions
             }));
             setLearnerData(transformedData);
             setTotal(learners.total);

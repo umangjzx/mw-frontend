@@ -26,7 +26,7 @@ type UseVolunteerProps = {
     setVolunteerName: (name: string) => void;
     volunteerImage: string;
     setVolunteerImage: (image: string) => void;
-    volunteerDetails: object;
+    volunteerDetails: any;
     setVolunteerDetails: (data: object) => void;
 };
 
@@ -35,7 +35,7 @@ type UseLearnerProps = {
     setLearnerName: (name: string) => void;
     learnerImage: string;
     setLearnerImage: (image: string) => void;
-    learnerDetails: object;
+    learnerDetails: any;
     setLearnerDetails: (data: object) => void;
 };
 

@@ -1,5 +1,27 @@
 import { z } from "zod";
 
+const contactNumberValidation = z
+    .object({
+        number: z
+            .string({ required_error: "Phone Number is required" })
+            .refine((num) => num.length >= 7 && num.length <= 15, {
+                message: "Phone number must be between 7 and 15 digits",
+            }),
+        country_code: z
+            .string({ required_error: "Country Code is required" }),
+    })
+    .or(z.undefined())
+    .refine((value) => value?.country_code, {
+        message: "Country Code is required",
+    })
+    .refine((value) => value?.number, {
+        message: "Phone Number is required",
+    })
+    .refine((value) => value !== undefined && value?.number?.length >= 7 && value?.number?.length <= 15, {
+        message: "Phone number must be between 7 and 15 digits",
+    });
+
+
 export const volunteerFormSchema = z.object({
     volunteer_first_name: z
         .string({ required_error: "First Name is required" })
@@ -45,19 +67,14 @@ export const volunteerFormSchema = z.object({
         email: z
             .string({ required_error: "Email is required" })
             .email("Please enter a valid email address"),
-        contact_number: z.object({
-            number: z
-                .string({ required_error: "Contact number is required" })
-                .min(1, { message: "Contact number cannot be empty" }),
-            country_code: z.string({ required_error: "Country code is required" }),
-        }),
+        contact_number: contactNumberValidation,
         zip_code: z
             .string({ required_error: "Zip code is required" })
             .min(1, { message: "Zip code cannot be empty" }),
-        nationality: z
-            .string({ required_error: "Nationality is required" })
-            .min(1, { message: "Nationality cannot be empty" }),
-        time_zone: z
+        country: z
+            .string({ required_error: "Country is required" })
+            .min(1, { message: "Country cannot be empty" }),
+        timezone: z
             .string({ required_error: "Time Zone is required" })
             .min(1, { message: "Time Zone cannot be empty" }),
     }),
@@ -302,18 +319,11 @@ export const learnerFormSchema = z.object({
             email: z
                 .string({ required_error: "Learner's Email is required" })
                 .email("Invalid email address"),
-            contact_number: z.object({
-                number: z
-                    .string({ required_error: "Learner's Contact Number is required" })
-                    .refine((num) => num.length >= 7 && num.length <= 15, {
-                        message: "Contact number must be between 7 and 15 digits",
-                    }),
-                country_code: z.string({ required_error: "Learner's Country Code is required" }),
-            }),
-            nationality: z
-                .string({ required_error: "Nationality is required" })
-                .min(1, { message: "Nationality cannot be empty" }),
-            time_zone: z
+            contact_number: contactNumberValidation,
+            country: z
+                .string({ required_error: "Country is required" })
+                .min(1, { message: "Country cannot be empty" }),
+            timezone: z
                 .string({ required_error: "Time Zone is required" })
                 .min(1, { message: "Time Zone cannot be empty" }),
         }),
@@ -326,25 +336,9 @@ export const learnerFormSchema = z.object({
         parent_email: z
             .string({ required_error: "Parent's Email is required" })
             .email("Invalid email address"),
-        parent_contact_number: z.object({
-            number: z
-                .string({ required_error: "Parent's Contact Number is required" })
-                .refine((num) => num.length >= 7 && num.length <= 15, {
-                    message: "Contact number must be between 7 and 15 digits",
-                }),
-            country_code: z.string({ required_error: "Parent's Country Code is required" }),
-        }),
+        parent_contact_number: contactNumberValidation,
         parent_address: z.string({ required_error: "Parent's Address is required" }),
-        emergency_contact_number: z.object({
-            number: z
-                .string({ required_error: "Emergency Contact Number is required" })
-                .refine((num) => num.length >= 7 && num.length <= 15, {
-                    message: "Emergency contact number must be between 7 and 15 digits",
-                }),
-            country_code: z.string({
-                required_error: "Emergency Contact Country Code is required",
-            }),
-        }),
+        emergency_contact_number: contactNumberValidation,
         relationship_to_learner: z.string({
             required_error: "Relationship to Learner is required",
         }),
@@ -558,8 +552,8 @@ export const defaultVolunteerData: Volunteer = {
             country_code: "+91",
         },
         zip_code: "638451",
-        nationality: "india",
-        time_zone: "asia/kolkata"
+        country: "india",
+        timezone: "asia/kolkata"
     },
     legal_and_safety_info: {
         criminal_background_check_details: {
@@ -625,8 +619,8 @@ export const defaultLearnerData: Learner = {
                 country_code: "+91",
             },
             zip_code: "638451",
-            nationality: "india",
-            time_zone: "asia/kolkata"
+            country: "india",
+            timezone: "asia/kolkata"
         },
     },
     parent_info: {

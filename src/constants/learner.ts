@@ -170,10 +170,10 @@ const LearnerPersonalFields: FormField[] = [
     },
     {
         parent: "learner_contact_details",
-        id: "nationality",
-        label: "Nationality",
+        id: "country",
+        label: "Country",
         inputType: "select",
-        placeholder: "Select Nationality",
+        placeholder: "Select Country",
         options: nationalities,
         showSearch: true,
         gridCols: 1,
@@ -181,7 +181,7 @@ const LearnerPersonalFields: FormField[] = [
     },
     {
         parent: "learner_contact_details",
-        id: "time_zone",
+        id: "timezone",
         label: "Time Zone",
         inputType: "select",
         placeholder: "Select time zone",

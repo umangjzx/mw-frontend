@@ -6,7 +6,9 @@ import CenterModal from "@/components/common/Modals/CenterModal";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
-import { formatDateSuffix, formatTime } from "@/utils/calender";
+import { toUserTimeZone } from "@/utils/timeFunctions";
+import Loader from "@/components/common/Loader";
+import { useAppStore } from "@/store/useAppStore"
 
 type MessageModalProps = {
     receiverId?: string | null;
@@ -25,16 +27,16 @@ type MessageProps = {
 
 const MessageModal = ({ receiverId, isOpen, onClose }: MessageModalProps) => {
     if (!receiverId) return;
+
+    const { learnerDetails, volunteerDetails } = useAppStore();
+
     const [messages, setMessages] = useState<MessageProps[]>([]);
     const [message, setMessage] = useState<string>("");
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const userRole = Cookies.get("role");
+    const userTimezone = userRole === "learner" ? learnerDetails?.learner_personal_info?.learner_contact_details?.timezone : volunteerDetails?.volunteer_contact_details?.timezone
     const senderId = userRole === "learner" ? Cookies.get("learner_id") : Cookies.get("volunteer_id");
-
-    console.log("Role: ", userRole);
-    console.log("Message Modal: Sender Id - ", senderId);
-    console.log("Message Modal: Receiver Id - ", receiverId);
 
     // Role Based endpoints
     const endpoint = userRole === "learner" ? {
@@ -61,22 +63,19 @@ const MessageModal = ({ receiverId, isOpen, onClose }: MessageModalProps) => {
     }
     const { data: userData } = useQuery({ queryKey: [userRole, "profile_data"], queryFn: getUserData })
 
-    
-    const getUserMessages = async() => {
+
+    const getUserMessages = async () => {
         const { data } = await GET_API(endpoint.getMessages);
-        console.log("Messages: ", data);
-        
         setMessages(data?.items)
         return data;
     }
-    const { data: userMessages, isLoading } = useQuery({  queryKey: [userRole, "messages"], queryFn: getUserMessages })
+    const { data: userMessages, isFetching } = useQuery({ queryKey: [userRole, "messages"], queryFn: getUserMessages })
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (message: string) => {
         if (!message) return;
-        setMessages(prev => [...prev, { message: message, created_at: new Date(), created_by: userRole, learner_id: senderId, volunteer_id: senderId }])
         setMessage('');
-        const response = await POST_API(endpoint.sendMessage, { message });
-        console.log("Message Send: ", response);
+        const { data } = await POST_API(endpoint.sendMessage, { message });
+        setMessages(prev => [...prev, { message: data?.message, created_at: data?.created_at, created_by: data?.created_by, learner_id: data?.learner_id, volunteer_id: data?.volunteer_id, message_id: data?.message_id }])
     };
 
     const handleClose = () => {
@@ -102,10 +101,10 @@ const MessageModal = ({ receiverId, isOpen, onClose }: MessageModalProps) => {
     </>
 
     const footerComponent = <>
-        <div className="flex gap-2 w-full border-t border-stroke items-center mt-4 pt-4">
-            <Input name="message" className="!mb-0" inputType="text" placeholder="Type message here" onChange={(e) => setMessage(e.toString())} value={message || ""} />
+        <div className="flex gap-2 w-full border-t border-stroke items-end mt-0 pt-4">
+            <Input name="message" className="!mb-0" inputClassName="!text-lg !max-h-[80px]" inputType="textarea" placeholder="Type message here" onChange={(e) => setMessage(e.toString())} value={message || ""} />
             <Button
-                onClick={handleSubmit}
+                onClick={() => handleSubmit(message)}
                 disabled={!message}
                 btnVariant="secondary"
                 title="Send Message"
@@ -123,38 +122,29 @@ const MessageModal = ({ receiverId, isOpen, onClose }: MessageModalProps) => {
             customClassName='!max-h-[95vh] !w-[1080px] !max-w-[90%] !rounded-2xl overflow-hidden'
             headerComponent={headerComponent}
             footerComponent={footerComponent}
-            secondaryActionProps={{
-                onClick: handleSubmit,
-                title: "Send Email",
-                customClassName: "!rounded-xl hover:!bg-black text-sm hover:!text-white",
-            }}
-            primaryActionProps={{
-                onClick: onClose,
-                title: "Cancel",
-                btnVariant: "secondary",
-                customClassName: "!bg-transparent !text-black text-sm !rounded-xl",
-            }}
         >
             <div className="flex flex-col gap-3 min-h-[40vh] overflow-y-auto">
-                { isLoading ?
-                    <div className="flex-center !h-[40vh] !w-full">Loading...</div>
-                 : messages.length === 0 &&
-                    <div className="flex-center !h-[40vh] !w-full">No Message Found</div>
+                { isFetching ?
+                    <div className="!h-[40vh] !w-full">
+                        <Loader size="large" />
+                    </div> : 
+                    messages?.length === 0 && <div className="flex-center !h-[40vh] !w-full">No Message Found</div>
                 }
-                { Array.isArray(messages) &&
-                 messages.map((message: MessageProps, index: number) => (
-                    <div key={index} className={`!max-w-[80%] !min-w-[40%] rounded-xl text-base !bg-background-input p-3 ${message?.created_by === userRole ? 'ml-auto' : 'mr-auto'}`}>
-                        <p className="!text-black mb-3">{message?.message}</p>
-                        <div className={`${message?.created_by === userRole && 'flex flex-end'}`}>
-                            <p className="flex items-center gap-1 text-sm text-gray-light ml-auto">
-                                {formatTime(message?.created_at)} <span className="text-xl text- !font-black">•</span> {formatDateSuffix(message?.created_at)}
-                            </p>
+                {!isFetching && Array.isArray(messages) &&
+                    messages.map((message: MessageProps, index: number) => (
+                        <div key={message?.message_id || index} className={`!max-w-[80%] !min-w-[25%] rounded-xl text-base !bg-background-input p-3 ${message?.created_by === userRole ? 'ml-auto' : 'mr-auto'}`}>
+                            <p className="!text-black mb-3">{message?.message}</p>
+                            <div className={`${message?.created_by === userRole && 'flex flex-end'}`}>
+                                <p className="flex items-center gap-1 text-sm text-gray-light ml-auto">
+                                    {toUserTimeZone({ date: message?.created_at, timeZone: userTimezone, format: "h:mm A" })}
+                                    <span className="text-xl text- !font-black">•</span>
+                                    {toUserTimeZone({ date: message?.created_at, timeZone: userTimezone, format: "Do MMM" })}
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
                 <div ref={messagesEndRef} />
             </div>
-
         </CenterModal>
     );
 };

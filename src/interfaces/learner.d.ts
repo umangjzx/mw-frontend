@@ -73,8 +73,8 @@ interface Learnercontactdetails {
     email: string;
     contact_number: Parentcontactnumber;
     zip_code: string;
-    nationality: string,
-    time_zone: string
+    country: string,
+    timezone: string
 }
 
 interface Parentinfo {

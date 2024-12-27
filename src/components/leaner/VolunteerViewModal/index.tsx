@@ -86,7 +86,7 @@ const ProfileInfo = ({
         </div>
         <OverViewCard
             title="Hours Volunteered"
-            value={volunteerData?.volunteered_hours}
+            value={volunteerData?.volunteered_hours || 0}
             icon={<ClockIcon />}
         />
         <OverViewCard
