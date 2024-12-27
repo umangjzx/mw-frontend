@@ -54,6 +54,7 @@ type EndpointProps = {
     };
     resources: {
         create: string;
+        get: string;
     };
     post: {
         getPosts: string;

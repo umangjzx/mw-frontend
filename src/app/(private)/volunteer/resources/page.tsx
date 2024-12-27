@@ -1,5 +1,6 @@
 "use client";
 
+import { getResources } from "@/api/volunteers/resource";
 import AddResourceCard from "@/components/resources/AddResourceCard";
 import Card from "@/components/resources/Card";
 import DetailModal from "@/components/resources/DetailModal";
@@ -8,6 +9,7 @@ import SectionWrapper from "@/components/resources/SectionWrapper";
 import TopicCard from "@/components/resources/TopicCard";
 import { getHeaderIcon } from "@/layouts/helper";
 import { useComponentStore } from "@/store/useComponenetStore";
+import { useQuery } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { useEffect } from "react";
@@ -35,6 +37,11 @@ export default function ResourcesPage() {
     const [mode, setMode] = useQueryState("mode");
 
     const pathname = usePathname();
+
+    const { data } = useQuery({
+        queryKey: ["resource"],
+        queryFn: getResources,
+    })
 
     const handleTopicClick = (title: string) => {
         setCategory(title);
@@ -116,7 +123,7 @@ export default function ResourcesPage() {
                 data={ResourceData}
                 title={category !== null ? undefined : "Resources"}
                 renderItem={(item, index) => (
-                    <Card onClick={() => handleViewOrEditResource("view", item?.id)} />
+                    <Card key={item?.id} onClick={() => handleViewOrEditResource("view", item?.id)} />
                 )}
             />
         </div>
