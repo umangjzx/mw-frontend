@@ -66,6 +66,8 @@ export const endpoints: EndpointProps = {
     common: (path: CommonPath) => `common/${path}`,
     resources: {
         create: "resource",
+        get: "resource",
+        getResource: (resource_id: string) => `resource/${resource_id}`,
     },
     volunterFeedback: {
         create: "feedback/volunteer",

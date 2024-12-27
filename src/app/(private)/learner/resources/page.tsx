@@ -1,5 +1,6 @@
 "use client";
 
+import { getResources } from "@/api/resources";
 import AddResourceCard from "@/components/resources/AddResourceCard";
 import Card from "@/components/resources/Card";
 import DetailModal from "@/components/resources/DetailModal";
@@ -8,6 +9,7 @@ import SectionWrapper from "@/components/resources/SectionWrapper";
 import TopicCard from "@/components/resources/TopicCard";
 import { getHeaderIcon } from "@/layouts/helper";
 import { useComponentStore } from "@/store/useComponenetStore";
+import { useQuery } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { useEffect } from "react";
@@ -35,6 +37,11 @@ export default function ResourcesPage() {
     const [mode, setMode] = useQueryState("mode");
 
     const pathname = usePathname();
+
+    const { data: MyResources } = useQuery({
+        queryKey: ["my-resource"],
+        queryFn: getResources,
+    })
 
     const handleTopicClick = (title: string) => {
         setCategory(title);
@@ -110,15 +117,30 @@ export default function ResourcesPage() {
             />
 
             {/* Resources */}
-            <SectionWrapper
-                placeHolderComponent={category === "my-resources" ? <AddResourceCard /> : undefined}
-                onPlaceHolderClick={handleAddResourceClick}
-                data={ResourceData}
-                title={category !== null ? undefined : "Resources"}
-                renderItem={(item, index) => (
-                    <Card onClick={() => handleViewOrEditResource("view", item?.id)} />
-                )}
-            />
-        </div>
+            {category !== "my-resources" ?
+                <SectionWrapper
+                    placeHolderComponent={category === "my-resources" ? <AddResourceCard /> : undefined}
+                    onPlaceHolderClick={handleAddResourceClick}
+                    data={category === "my-resources" ? MyResources?.items : MyResources?.items}
+                    title={category !== null ? undefined : "Resources"}
+                    renderItem={(item, index) => (
+                        <Card key={item?.id || index} onClick={() => handleViewOrEditResource("view", item?.id)} />
+                    )}
+                />
+                :
+                <div className="grid grid-cols-12 p-10 gap-5">
+                    <div className="col-span-3">
+                        <AddResourceCard handleClick={handleAddResourceClick} />
+                    </div>
+                    {
+                        MyResources?.items?.map((resource: any, index: number) => (
+                            <div className="col-span-3">
+                                <Card key={resource?.resource_id || index} resource={resource} className="!w-full" onClick={() => handleViewOrEditResource("view", resource?.resource_id)} />
+                            </div>
+                        ))
+                    }
+                </div>
+            }
+        </div >
     );
 }

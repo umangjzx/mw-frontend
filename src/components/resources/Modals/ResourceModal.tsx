@@ -1,12 +1,15 @@
-import { endpoints } from "@/api/constants";
-import { GET_API, POST_API } from "@/api/request";
+import { z } from "zod";
 import { Input } from "@/components/common/Input";
 import CenterModal from "@/components/common/Modals/CenterModal";
-import { ResourceFormConstants } from "@/constants/resources";
+import { ResourceFormConstants, ResourceFormSchema } from "@/constants/resources";
 import { cn } from "@/utils/merge-class";
-import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { extractLabelValue } from "@/utils/format";
+import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useAppStore } from "@/store/useAppStore"
+import { addResource } from "@/api/resources";
+import { showToast } from "@/components/common/Toast";
 
 type ResourceModalProps = {
     isOpen: boolean;
@@ -14,88 +17,55 @@ type ResourceModalProps = {
     onClose: () => void;
 };
 
+type FormData = z.infer<typeof ResourceFormSchema>;
+
 const ResourceModal = ({ isOpen, mode = "view", onClose }: ResourceModalProps) => {
-    const [formData, setFormData] = useState<any>({});
+    const { control, handleSubmit, formState: { errors }, setValue, reset } = useForm<FormData>({
+        resolver: zodResolver(ResourceFormSchema),
+    });
+
+    const { learnerName, volunteerName } = useAppStore();
+    useEffect(()=>{
+        setValue("created_by", learnerName || volunteerName)
+    }, [])
+
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const getCategories = async () => {
-        const response = await GET_API(endpoints.common("categories"));
-        return extractLabelValue({
-            data: response.data,
-            labelKey: "category_name",
-            valueKey: "category_id",
-        });
-    };
-
-    const getSkills = async () => {
-        const response = await GET_API(endpoints.common("skills"));
-        return extractLabelValue({
-            data: response.data,
-            labelKey: "skill_name",
-            valueKey: "skill_name",
-            additionalKeys: {
-                id: "skill_id",
-            },
-        });
-    };
-
-    const {
-        data: categoriesData,
-        isLoading: isCategoriesLoading,
-        error: categoriesError,
-    } = useQuery({
-        queryKey: ["categories"],
-        queryFn: getCategories,
-    });
-
-    const {
-        data: skillsData,
-        isLoading: isSkillsLoading,
-        error: skillsError,
-    } = useQuery({
-        queryKey: ["skills"],
-        queryFn: getSkills,
-    });
-
+    const role = Cookies.get("role");
     const resourceTitle = mode === "edit" ? "Edit Resource" : "Add new Resource";
 
-    const handleSubmit = async () => {
+    const onSubmit = async (data: FormData) => {
         const payload = {
-            resource_title: formData.title,
-            resource_description: formData.description,
+            resource_title: data?.resource_title,
+            resource_description: data?.resource_description,
             resource_skills:
-                formData.skills?.map((skill: any) => ({
+                data?.resource_skills?.map((skill) => ({
                     skill_id: "81b8cfbd-1910-4fae-a4fc-14c89987eb07",
-                    skill_name: "Music theory",
+                    skill_name: "Music theory", // Adjust as needed
                 })) || [],
             resource_category: {
-                category_name: formData.category?.category_name,
-                category_id: formData.category?.category_id,
+                category_name: data?.resource_category?.category_name,
+                category_id: data?.resource_category?.category_id,
             },
-            resource_notes: formData.notes,
-            difficulty_level: formData.level,
-            created_by: "learner",
-            resource_image: formData.coverImage
+            resource_notes: data?.resource_notes,
+            difficulty_level: data?.difficulty_level,
+            created_by: role,
+            resource_image: data?.resource_image
                 ? {
-                      image_url: formData.coverImage.image_url,
-                      image_id: formData.coverImage.image_id,
+                      image_url: data?.resource_image.image_url,
+                      image_id: data?.resource_image.image_id,
                   }
                 : null,
         };
-        console.log("Resource Payload:", payload);
-
-        // Uncomment to make the API call
-        POST_API(endpoints.resources.create, payload).then((res: any) => {
-            console.log(res, "res");
-            onClose();
-        }).catch((err: Error) => {
-            console.log(err, "err");
-        });
-    };
-
-    const handleChange = (key: string, value: any) => {
-        setFormData((prev: any) => ({ ...prev, [key]: value }));
+        
+        const res = await addResource(payload);
+        if(res?.status === 201) {
+            onClose()
+            showToast({ message: "Resource created" })
+        }else{
+            showToast({ message: "Resource not created", type: "error" })
+        }
     };
 
     const buttonProps = {
@@ -111,7 +81,7 @@ const ResourceModal = ({ isOpen, mode = "view", onClose }: ResourceModalProps) =
             ),
         },
         secondary: {
-            onClick: handleSubmit,
+            onClick: handleSubmit(onSubmit),
             title: mode === "view" ? "Edit" : "Submit",
             customClassName: "!rounded-xl hover:!bg-black hover:!text-white",
         },
@@ -133,22 +103,25 @@ const ResourceModal = ({ isOpen, mode = "view", onClose }: ResourceModalProps) =
         >
             {error && <div className="text-red-500 mb-4 text-sm">{error}</div>}
             {mode !== "view" ? (
-                ResourceFormConstants.map((field: any) => (
-                    <Input
-                        key={field.name}
-                        {...field}
-                        inputClassName={field.inputClassName}
-                        value={formData[field.name]}
-                        onChange={(value: any) => handleChange(field.name, value)}
-                        options={
-                            field.name === "category"
-                                ? categoriesData
-                                : field.name === "skills"
-                                ? skillsData
-                                : field.options
-                        }
-                    />
-                ))
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    {ResourceFormConstants.map((field: any) => (
+                        <Controller
+                            key={field.name}
+                            name={field.name}
+                            control={control}
+                            render={({ field: { value, onChange } }) => (
+                                <Input
+                                    key={field.name}
+                                    {...field}
+                                    error={errors[field.name as keyof FormData]?.message}
+                                    value={value}
+                                    onChange={onChange}
+                                    inputClassName={field.inputClassName}
+                                />
+                            )}
+                        />
+                    ))}
+                </form>
             ) : (
                 <div>View</div>
             )}

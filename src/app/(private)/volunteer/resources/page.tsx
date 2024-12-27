@@ -1,5 +1,6 @@
 "use client";
 
+import { getResources } from "@/api/resources";
 import AddResourceCard from "@/components/resources/AddResourceCard";
 import Card from "@/components/resources/Card";
 import DetailModal from "@/components/resources/DetailModal";
