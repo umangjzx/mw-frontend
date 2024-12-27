@@ -57,8 +57,7 @@ export default function VolunteerPage() {
             const transformedData = volunteers.items.map((volunteer: any) => ({
                 id: volunteer.volunteer_id,
                 name: `${volunteer.volunteer_name}`,
-                classesTaken: volunteer.total_sessions,
-                subject: "N/A",
+                classesTaken: volunteer.total_sessions
             }));
             setVolunteerData(transformedData);
             setTotal(volunteers.total);

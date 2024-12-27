@@ -39,21 +39,14 @@ const LearnersTable: React.FC<LearnersTableProps> = ({
             dataIndex: "name",
             key: "name",
             sorter: (a: any, b: any) => a?.name?.localeCompare(b?.name),
-            className: "!pl-7 px-6 py-4 text-sm w-1/5 font-medium text-gray-900",
+            className: "!pl-7 px-6 py-4 text-sm w-1/3 font-medium text-gray-900",
         },
         {
             title: "Classes Taken",
             dataIndex: "classesTaken",
             key: "classesTaken",
             sorter: (a: any, b: any) => a?.classesTaken - b?.classesTaken,
-            className: "!pl-7 px-6 py-4 text-sm w-1/5 bg-gray-50 text-gray-900",
-        },
-        {
-            title: "Subject",
-            dataIndex: "subject",
-            key: "subject",
-            sorter: false,
-            className: "!pl-7 px-6 py-4 w-1/5 text-sm text-gray-900",
+            className: "!pl-7 px-6 py-4 text-sm w-1/4 bg-gray-50 text-gray-900",
         },
         {
             title: "Actions",
