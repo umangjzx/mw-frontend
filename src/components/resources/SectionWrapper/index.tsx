@@ -76,7 +76,7 @@ const SectionWrapper = ({
                             {placeHolderComponent}
                         </div>
                     )}
-                    {data.map((item, index) => (
+                    { Array.isArray(data) && data.map((item, index) => (
                         <>{renderItem(item, index)}</>
                     ))}
                 </div>
