@@ -26,6 +26,8 @@ type UseVolunteerProps = {
     setVolunteerName: (name: string) => void;
     volunteerImage: string;
     setVolunteerImage: (image: string) => void;
+    volunteerDetails: object;
+    setVolunteerDetails: (data: object) => void;
 };
 
 type UseLearnerProps = {
@@ -33,6 +35,8 @@ type UseLearnerProps = {
     setLearnerName: (name: string) => void;
     learnerImage: string;
     setLearnerImage: (image: string) => void;
+    learnerDetails: object;
+    setLearnerDetails: (data: object) => void;
 };
 
 type UseGlobalStoreProps = {

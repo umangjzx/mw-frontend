@@ -1,5 +1,5 @@
 interface DetailChipCardProps {
     tags: string[];
-    title: string;
+    title?: string;
     className?: string;
 }

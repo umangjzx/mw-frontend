@@ -11,7 +11,7 @@ const ReviewFilter = () => {
             <div className="flex items-center gap-2">
                 <p className="text-sm font-medium text-gray-light whitespace-nowrap">Sort By:</p>
                 <Input
-                    className="w-[14rem] !mb-0 !rounded-2xl"
+                    className="w-[250px] !mb-0 !rounded-2xl"
                     inputType="select"
                     name="sort"
                     options={options.map((option) => ({ label: option, value: option }))}

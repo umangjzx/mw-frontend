@@ -4,54 +4,36 @@ import ClockIcon from "@/assets/icons/ClockIcon";
 import LearnerConnectIcon from "@/assets/icons/LearnerConnectIcon";
 import RatingHeader from "./RatingHeader";
 import RatingCard from "./RatingCard";
-import DummyProfileImg from "@/assets/images/DummyProfileImg.png";
 import ReviewFilter from "./ReviewFilter";
 import Divider from "@/components/common/Divider";
+import { useQuery } from "@tanstack/react-query";
+import { GET_API } from "@/api/request";
+import Cookies from "js-cookie";
 
-const Overview = () => {
+const Overview = ({ data, reviewEndpoint }: any) => {
+    const role = Cookies.get("role") || "";
+    const isLearner = role === "learner";
+
     const overViewCard = [
         {
-            title: "Hours Volunteered",
-            value: 40,
+            title: isLearner ? "Hours Attended" : "Hours Volunteered",
+            value: data?.total_hours,
             icon: <ClockIcon />,
         },
         {
-            title: "Students Connected",
-            value: 40,
+            title: isLearner ? "Volunteer Connected" : "Students Connected",
+            value: data?.connections,
             icon: <LearnerConnectIcon />,
         },
     ];
 
-    const ratingCard = [
-        {
-            profileImg: DummyProfileImg,
-            name: "Vinoth Kumar",
-            rating: 4.5,
-            day: "1d",
-            review: "Jane was so patient and attentive with my child. She made learning fun and engaging, and I could see real progress in just a few weeks!",
-        },
-        {
-            profileImg: DummyProfileImg,
-            name: "Vinoth Kumar",
-            rating: 4.5,
-            day: "1d",
-            review: "Jane was so patient and attentive with my child. She made learning fun and engaging, and I could see real progress in just a few weeks!",
-        },
-        {
-            profileImg: DummyProfileImg,
-            name: "Vinoth Kumar",
-            rating: 4.5,
-            day: "1d",
-            review: "Jane was so patient and attentive with my child. She made learning fun and engaging, and I could see real progress in just a few weeks!",
-        },
-        {
-            profileImg: DummyProfileImg,
-            name: "Vinoth Kumar",
-            rating: 4.5,
-            day: "1d",
-            review: "Jane was so patient and attentive with my child. She made learning fun and engaging, and I could see real progress in just a few weeks!",
-        },
-    ];
+    const { data: reviews, isLoading } = useQuery({
+        queryKey: ["my-reviews"],
+        queryFn: async() => {
+            const { data } = await GET_API(reviewEndpoint)
+            return data
+        }
+    })
 
     return (
         <div className="bg-white rounded-3xl p-5 flex flex-col gap-7 h-[83vh]">
@@ -68,11 +50,13 @@ const Overview = () => {
             </div>
             <Divider />
             <ReviewFilter />
-            <RatingHeader rating={4.5} totalReviews={120} />
+            <RatingHeader rating={reviews?.overall_rating || 0} totalReviews={reviews?.feedbacks?.length || 0} />
             <div className="flex flex-col gap-5 h-[60vh] overflow-y-auto">
-                {ratingCard.map((item, index) => (
+                { Array.isArray(reviews?.feedbacks) && reviews?.feedbacks.map((item: any, index: number) => (
                     <RatingCard key={index} {...item} />
                 ))}
+                { reviews?.feedbacks?.length === 0 && <div className="h-full flex-center">No Reviews Found</div> }
+                { isLoading && <div className="h-full flex-center">Loading Reviews...</div> }
             </div>
         </div>
     );
