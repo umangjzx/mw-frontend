@@ -56,7 +56,7 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
             </div>
             <div className="flex flex-col gap-2.5">
                 <div className="flex flex-wrap gap-2.5">
-                    <CardChips label="Volunteer Hrs" value={volunteerHrs ? volunteerHrs : "0"} />
+                    <CardChips label="Volunteer Hrs" value={volunteerHrs || "0"} />
                 </div>
                 <div className="flex gap-2.5">
                     <CardChips label="Student connected" value={studentConnected} />
