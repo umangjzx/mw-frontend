@@ -38,14 +38,14 @@ const VolunteersTable: React.FC<VolunteersTableProps> = ({
             title: "Volunteer Name",
             dataIndex: "name",
             key: "name",
-            sorter: true,
+            sorter: (a: any, b: any) => a?.name?.localeCompare(b?.name),
             className: "!pl-7 px-6 py-4 text-sm w-1/5 font-medium text-gray-900",
         },
         {
             title: "Classes Taken",
             dataIndex: "classesTaken",
             key: "classesTaken",
-            sorter: true,
+            sorter: (a: any, b: any) => a?.classesTaken - b?.classesTaken,
             className: "!pl-7 px-6 py-4 text-sm w-1/5 bg-gray-50 text-gray-900",
         },
         {
