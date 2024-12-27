@@ -54,7 +54,7 @@ const ContactInput = (props: ContactInputProps) => {
                     onChange={e => handleChange(e?.toString(), "number")}
                 />
             </div>
-            {errorMsg && <p className="text-xs text-red-500">{errorMsg}</p>}
+            {/* {errorMsg && <p className="text-xs text-red-500">{errorMsg}</p>} */}
         </>
     );
 };

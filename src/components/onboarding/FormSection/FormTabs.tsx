@@ -81,10 +81,7 @@ const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFill
                             disabled={index > highestTab}
                         >
                             {section.title || `Step ${index + 1}`}
-                            <div
-                                className={`!h-[10px] !w-full mt-1 rounded-xl ${index <= activeTab ? "!bg-background-secondary" : "!bg-gray-300"
-                                    }`}
-                            ></div>
+                            <div className={`!h-[10px] !w-full mt-1 rounded-xl ${index <= activeTab ? "!bg-background-secondary" : "!bg-gray-300" }`}></div>
                         </button>
                     ))}
                 </div>
