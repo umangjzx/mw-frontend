@@ -3,9 +3,14 @@ import Image from "next/image";
 import { BiPlus } from "react-icons/bi";
 import { cn } from "@/utils/merge-class";
 import Button from "../../Button";
+import { IoCloseCircle } from "react-icons/io5";
+import { usePathname } from "next/navigation";
 
 const ImageUpload: React.FC<BaseUploaderProps> = ({ ...props }) => {
     const { value = [], maxFiles = 1, disabled = false, handleRemove, handleClick } = props;
+    console.log(props.fileType, "value for image upload");
+    const pathname = usePathname();
+    const isCommunity = pathname.includes("community");
 
     return (
         <div
@@ -19,28 +24,45 @@ const ImageUpload: React.FC<BaseUploaderProps> = ({ ...props }) => {
                     <div
                         key={index}
                         className={cn(
-                            "relative flex items-center justify-center group rounded-lg overflow-hidden",
+                            "relative flex items-center justify-center group rounded-lg ",
                             props.variant === "cover-image"
                                 ? "h-[250px] active:!scale-100 w-full"
                                 : "h-24 w-24"
                         )}
                     >
-                        <Image
-                            src={file.url}
-                            alt={`Upload ${index + 1}`}
-                            className="w-full absolute top-0 left-0 h-full object-cover"
-                            width={400}
-                            height={400}
-                        />
-
-                        <Button
-                            size="small"
-                            title="Remove"
-                            btnVariant="secondary"
-                            customClassName="transition-background max-w-full mx-2 group-hover:flex hidden !focus:bg-gray !hover:bg-gray bg-gray  z-50 p-0 !text-xs"
-                            onClick={() => handleRemove(index, props.fileType)}
-                        />
-                        <div className="absolute bg-opacity-40 bg-black inset-0 text-white opacity-0 group-hover:opacity-40 transition-opacity flex items-center justify-center"></div>
+                        <div className="relative w-full h-full">
+                            {maxFiles > 1 && file.url ? (
+                                <span
+                                    // @ts-ignore
+                                    onClick={() => handleRemove(index, "image/*", file?.image_id)}
+                                    className="absolute bg-white rounded-full -top-2 z-50 -right-2 text-2xl"
+                                >
+                                    <IoCloseCircle />
+                                </span>
+                            ) : null}
+                            <Image
+                                src={file.url}
+                                alt={`Upload ${index + 1}`}
+                                className="w-full absolute top-0 rounded-lg left-0 h-full object-cover transition-opacity duration-300 opacity-0"
+                                width={400}
+                                height={400}
+                                onLoadingComplete={(image) => {
+                                    image.classList.remove("opacity-0");
+                                }}
+                            />
+                        </div>
+                        {!isCommunity && (
+                            <>
+                                <Button
+                                    size="small"
+                                    title="Remove"
+                                    btnVariant="secondary"
+                                    customClassName="transition-background max-w-full mx-2 group-hover:flex hidden rounded-full !focus:bg-gray !hover:bg-gray bg-gray  z-50 p-0 !text-xs"
+                                    onClick={() => handleRemove(index, props.fileType)}
+                                />
+                                <div className="absolute bg-opacity-40 bg-black inset-0 text-white opacity-0 group-hover:opacity-40  rounded-lg transition-all duration-300 flex items-center justify-center"></div>
+                            </>
+                        )}
                     </div>
                 ))}
             {value?.length < maxFiles && (

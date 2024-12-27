@@ -25,7 +25,9 @@ const Uploader = ({ maxFiles = 1, ...props }: UploadProps) => {
             }
             props.onChange(convertedData);
         } else {
-            props.onChange([...props.value, convertedData]);
+            const currentValue = Array.isArray(props.value) ? props.value : [];
+            const updatedValue = [...currentValue, convertedData];
+            props.onChange(updatedValue);
         }
     };
 
@@ -46,17 +48,30 @@ const Uploader = ({ maxFiles = 1, ...props }: UploadProps) => {
 
         if (!files?.length) return;
 
+        // Check if adding new files would exceed maxFiles
+        const currentFileCount = Array.isArray(props.value) ? props.value.length : 0;
+        const remainingSlots = maxFiles - currentFileCount;
+
+        if (remainingSlots <= 0) {
+            alert(`Maximum ${maxFiles} files allowed`);
+            return;
+        }
+
+        const filesToUpload = Array.from(files).slice(0, remainingSlots);
+
         await Promise.all(
-            Array.from(files).map(async (file) => {
-                console.log(file, "file image");
+            filesToUpload.map(async (file) => {
                 return Promise.all([handleUpload(file)]);
             })
         );
     };
 
-    const handleRemove = (index: number, type?: string) => {
+    const handleRemove = (index: number, type?: string, image_id?: string) => {
+        alert(image_id + " " + type + " " + imageId);
         if (type === "image/*") {
-            DELETE_API(endpoints.media_uploader.deleteImage(imageId as string)).then(() => {
+            DELETE_API(
+                endpoints.media_uploader.deleteImage((imageId as string) || (image_id as string))
+            ).then(() => {
                 setImageId(null);
             });
         } else if (type === "video/*") {
@@ -99,7 +114,12 @@ const Uploader = ({ maxFiles = 1, ...props }: UploadProps) => {
             case "cover-image":
             default:
                 return (
-                    <ImageUpload {...props} handleRemove={handleRemove} handleClick={handleClick} />
+                    <ImageUpload
+                        maxFiles={maxFiles}
+                        {...props}
+                        handleRemove={handleRemove}
+                        handleClick={handleClick}
+                    />
                 );
         }
     };

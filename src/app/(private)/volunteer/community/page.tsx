@@ -68,7 +68,7 @@ export default function CommunityPage() {
                         activeTab === "your_notifications" ? (
                             <NotificationCard />
                         ) : (
-                            <FeedCard key={index} onClick={() => handleFeedCardClick(post.id)} />
+                            <FeedCard key={index} onClick={handleFeedCardClick} />
                         )
                     )}
                 </div>

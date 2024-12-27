@@ -11,7 +11,7 @@ export async function GET_API<T>(endpoint: string) {
     return response;
 }
 
-export async function POST_API<T>(endpoint: string, data: T) {
+export async function POST_API<T>(endpoint: string, data?: T) {
     const response = await request({
         method: "POST",
         url: endpoint,

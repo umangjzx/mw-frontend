@@ -5,7 +5,8 @@ export const endpoints: EndpointProps = {
         update: (role: "volunteer" | "learner") => `onboarding/${role}`,
         getOnboardingStatus: (id: string, role: "volunteer" | "learner") =>
             `onboarding/status/${role}/${id}`,
-        setLearnerOnboardingStatus: (id: string) => `onboarding/update_verification_status/learner/${id}?verification_status=verification_completed`
+        setLearnerOnboardingStatus: (id: string) =>
+            `onboarding/update_verification_status/learner/${id}?verification_status=verification_completed`,
     },
     auth: {
         oauth2callback: "auth/oauth2callback",
@@ -41,7 +42,8 @@ export const endpoints: EndpointProps = {
         getApprovalNotifications: (id: string, status: string) =>
             `session/volunteer/${id}?status=${status}`,
         getCalendarEvents: (id: string, userType: UserType, month?: string, status?: string) =>
-            `session/${userType}/${id}${month ? `?month=${month}` : ""}${status ? `?status=${status}` : ""
+            `session/${userType}/${id}${month ? `?month=${month}` : ""}${
+                status ? `?status=${status}` : ""
             }`,
         updateNotificationStatus: (id: string) => `session/${id}`,
         markAsCompleted: (id: string) => `session/${id}/mark_as_completed`,
@@ -58,10 +60,12 @@ export const endpoints: EndpointProps = {
         createPost: "post",
         getPosts: "post",
         getSinglePost: (post_id: string) => `post/${post_id}`,
+        like: (post_id: string) => `post/${post_id}/like`,
     },
     comment: {
         createComment: "comment",
         getPostComments: (post_id: string) => `comment/${post_id}`,
+        commentLikes: (comment_id: string) => `comment/${comment_id}/like`,
     },
     common: (path: CommonPath) => `common/${path}`,
     resources: {
