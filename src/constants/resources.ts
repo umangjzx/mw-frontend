@@ -53,7 +53,7 @@ export const ResourceFormConstants: FormField[] = [
         endpoint: "categories",
         variant: "single",
         responseAsLabel: "category_name",
-        responseAsValue: ["category_id", "category_name"],
+        responseAsValue: "payload",
     },
     {
         name: "notes",
