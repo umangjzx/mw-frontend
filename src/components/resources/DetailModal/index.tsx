@@ -13,23 +13,27 @@ import Button from "@/components/common/Button";
 import { IoTrashOutline } from "react-icons/io5";
 import { MdEdit } from "react-icons/md";
 import { useQuery } from "@tanstack/react-query";
-import { getSingleResource } from "@/api/resources";
+import { deleteResource, getSingleResource } from "@/api/resources";
+import { showToast } from "@/components/common/Toast";
+import { useState } from "react";
 
 type DetailModalProps = {
     isOpen: boolean;
     onClose: () => void;
+    triggerReload: () => void;
 };
 
-const DetailModal = ({ isOpen, onClose }: DetailModalProps) => {
+const DetailModal = ({ triggerReload, isOpen, onClose }: DetailModalProps) => {
     const [category] = useQueryState("category");
-    const [categoryId] = useQueryState("id");
+    const [resourceId] = useQueryState("id");
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const [_, setMode] = useQueryState("mode");
     const isMyResource = category === "my-resources";
 
     const { data: resource } = useQuery({
-        queryKey: ["resource-single", categoryId],
-        queryFn: () => getSingleResource(categoryId || ""),
+        queryKey: ["resource-single", resourceId],
+        queryFn: () => getSingleResource(resourceId || ""),
     })
 
     const curatedLinks = [
@@ -67,6 +71,19 @@ const DetailModal = ({ isOpen, onClose }: DetailModalProps) => {
         setMode("edit");
     };
 
+    const handleDelete = async () => {
+        if(!resourceId) return null;
+        setIsDeleting(true)
+        const res = await deleteResource(resourceId);
+        if(res === 200){
+            showToast({ message: "Resource Deleted" })
+            triggerReload()
+        }
+        else showToast({ message: "Redource not deleted", type: "error" })
+        onClose()
+        setIsDeleting(false)
+    }
+
     return (
         <ViewModal modalOpen={isOpen} onClose={onClose} width={800} height='720px'>
             <div className='relative w-full h-[260px] rounded-t-xl'>
@@ -74,6 +91,8 @@ const DetailModal = ({ isOpen, onClose }: DetailModalProps) => {
                 <div className='flex items-center gap-4 w-fit absolute top-4 right-4'>
                     {isMyResource ? (
                         <Button
+                            onClick={handleDelete}
+                            loading={isDeleting}
                             customClassName='rounded-full !px-4 !gap-1 !text-sm hover:!text-error hover:!bg-error-light !h-[35px] hover:!border-none !border-none'
                             btnVariant='error'
                             title={"Delete"}

@@ -22,14 +22,6 @@ const TopicData = [
     },
 ];
 
-//TODO: Needs to be deleted
-const ResourceData = [
-    {
-        id: "1",
-        title: "Resource 1",
-    },
-];
-
 export default function ResourcesPage() {
     const { setHeaderOptions } = useComponentStore();
     const [category, setCategory] = useQueryState("category");
@@ -38,7 +30,13 @@ export default function ResourcesPage() {
 
     const pathname = usePathname();
 
-    const { data: MyResources } = useQuery({
+    const { data: MyResources, refetch } = useQuery({
+        queryKey: ["my-resource"],
+        queryFn: getResources,
+    })
+    const triggerReload = async() => await refetch();
+
+    const { data: Resources } = useQuery({
         queryKey: ["my-resource"],
         queryFn: getResources,
     })
@@ -94,13 +92,14 @@ export default function ResourcesPage() {
         <div className="w-full h-full pt-8 flex flex-col gap-2 p-4 animate-fadeIn">
             {/* Resource Modal */}
             <ResourceModal
+                triggerReload={triggerReload}
                 isOpen={mode !== null && mode !== "view"}
                 mode={mode as ShowModalType}
                 onClose={handleCloseModal}
             />
 
             {/* Detail Modal */}
-            <DetailModal isOpen={mode === "view"} onClose={handleCloseModal} />
+            <DetailModal triggerReload={triggerReload} isOpen={mode === "view"} onClose={handleCloseModal}  />
 
             {/* Topics */}
             <SectionWrapper
@@ -119,12 +118,12 @@ export default function ResourcesPage() {
             {/* Resources */}
             {category !== "my-resources" ?
                 <SectionWrapper
-                    placeHolderComponent={category === "my-resources" ? <AddResourceCard /> : undefined}
+                    placeHolderComponent={undefined}
                     onPlaceHolderClick={handleAddResourceClick}
-                    data={category === "my-resources" ? MyResources?.items : MyResources?.items}
+                    data={Resources?.items}
                     title={category !== null ? undefined : "Resources"}
                     renderItem={(item, index) => (
-                        <Card key={item?.id || index} onClick={() => handleViewOrEditResource("view", item?.id)} />
+                        <Card key={item?.resource_id || index} resource={item} onClick={() => handleViewOrEditResource("view", item?.resource_id)} />
                     )}
                 />
                 :

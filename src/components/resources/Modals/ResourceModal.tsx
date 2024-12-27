@@ -8,70 +8,92 @@ import Cookies from "js-cookie";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppStore } from "@/store/useAppStore"
-import { addResource } from "@/api/resources";
+import { addResource, getSingleResource, updateResource } from "@/api/resources";
 import { showToast } from "@/components/common/Toast";
+import { useQuery } from "@tanstack/react-query";
+import { useQueryState } from "nuqs";
 
 type ResourceModalProps = {
     isOpen: boolean;
     mode: ShowModalType;
     onClose: () => void;
+    triggerReload: () => void;
 };
 
 type FormData = z.infer<typeof ResourceFormSchema>;
 
-const ResourceModal = ({ isOpen, mode = "view", onClose }: ResourceModalProps) => {
+const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: ResourceModalProps) => {
+    const { learnerName, volunteerName } = useAppStore();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const { control, handleSubmit, formState: { errors }, setValue, reset } = useForm<FormData>({
         resolver: zodResolver(ResourceFormSchema),
     });
 
-    const { learnerName, volunteerName } = useAppStore();
-    useEffect(()=>{
-        setValue("created_by", learnerName || volunteerName)
-    }, [])
-
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-
     const role = Cookies.get("role");
-    const resourceTitle = mode === "edit" ? "Edit Resource" : "Add new Resource";
+    const [resourceId] = useQueryState("id") || "";
+    const [currentMode] = useQueryState("mode");
+    const isEditMode = currentMode === "edit";
+    const resourceTitle = isEditMode ? "Edit Resource" : "Add new Resource";
+
+    const { data } = useQuery({
+        queryKey: ["getSingleResource", resourceId],
+        queryFn: async() => {
+            const res = await getSingleResource(resourceId || "");
+            reset(res)
+        },
+        enabled: isEditMode && !!resourceId,
+    });
+
+    useEffect(() => {
+        reset({})
+        setValue("created_by", role === "learner" ? learnerName : volunteerName)
+    }, [currentMode])
+
+    const handleAddResource = async(data: FormData) => {
+        const res = await addResource({...data, created_by: role});
+        if (res?.status === 201) {
+            onClose();
+            reset({});
+            showToast({ message: "Resource created" });
+            triggerReload();
+        } else {
+            showToast({ message: "Resource not created", type: "error" });
+        }
+    }
+
+    const handleEditResource = async(data: FormData) => {
+        const res = await updateResource(resourceId || "",{...data});
+        if (res?.status === 201) {
+            onClose();
+            reset({});
+            showToast({ message: "Resource updated" });
+            triggerReload();
+        } else {
+            showToast({ message: "Resource not updated", type: "error" });
+        }
+    }
+
 
     const onSubmit = async (data: FormData) => {
-        const payload = {
-            resource_title: data?.resource_title,
-            resource_description: data?.resource_description,
-            resource_skills:
-                data?.resource_skills?.map((skill) => ({
-                    skill_id: "81b8cfbd-1910-4fae-a4fc-14c89987eb07",
-                    skill_name: "Music theory", // Adjust as needed
-                })) || [],
-            resource_category: {
-                category_name: data?.resource_category?.category_name,
-                category_id: data?.resource_category?.category_id,
-            },
-            resource_notes: data?.resource_notes,
-            difficulty_level: data?.difficulty_level,
-            created_by: role,
-            resource_image: data?.resource_image
-                ? {
-                      image_url: data?.resource_image.image_url,
-                      image_id: data?.resource_image.image_id,
-                  }
-                : null,
-        };
-        
-        const res = await addResource(payload);
-        if(res?.status === 201) {
-            onClose()
-            showToast({ message: "Resource created" })
-        }else{
-            showToast({ message: "Resource not created", type: "error" })
+        setIsSubmitting(true);
+        try {
+            if(isEditMode){
+                await handleEditResource(data);
+            }else{
+                await handleAddResource(data);
+            }
+        } catch (error) {
+            showToast({ message: "An error occurred", type: "error" });
+        } finally {
+            setIsSubmitting(false);
         }
     };
-
+    
     const buttonProps = {
-        primary: {
+        secondary: {
             onClick: onClose,
-            title: mode === "view" ? "Delete" : "Cancel",
+            title: "Cancel",
             btnVariant: "secondary" as const,
             customClassName: cn(
                 mode === "view"
@@ -80,9 +102,9 @@ const ResourceModal = ({ isOpen, mode = "view", onClose }: ResourceModalProps) =
                 "!rounded-xl"
             ),
         },
-        secondary: {
+        primary: {
             onClick: handleSubmit(onSubmit),
-            title: mode === "view" ? "Edit" : "Submit",
+            title: isEditMode ? "Edit" : "Add",
             customClassName: "!rounded-xl hover:!bg-black hover:!text-white",
         },
     };
@@ -93,15 +115,15 @@ const ResourceModal = ({ isOpen, mode = "view", onClose }: ResourceModalProps) =
             isOpen={isOpen}
             onClose={onClose}
             width="40%"
+            loading={isSubmitting}
             customClassName="max-h-[80vh] !rounded-2xl overflow-hidden"
-            secondaryActionProps={{
-                ...buttonProps.secondary,
+            secondaryActionProps={buttonProps.secondary}
+            primaryActionProps={{
+                ...buttonProps.primary,
                 disabled: isSubmitting,
-                title: isSubmitting ? "Submitting..." : buttonProps.secondary.title,
+                title: isSubmitting ? (isEditMode ? "Editing" : "Adding") : buttonProps.primary.title,
             }}
-            primaryActionProps={buttonProps.primary}
         >
-            {error && <div className="text-red-500 mb-4 text-sm">{error}</div>}
             {mode !== "view" ? (
                 <form onSubmit={handleSubmit(onSubmit)}>
                     {ResourceFormConstants.map((field: any) => (
