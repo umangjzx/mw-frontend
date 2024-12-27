@@ -7,7 +7,6 @@ import { cn } from "@/utils/merge-class";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { extractLabelValue } from "@/utils/format";
-import Cookies from "js-cookie";
 
 type ResourceModalProps = {
     isOpen: boolean;
@@ -19,8 +18,6 @@ const ResourceModal = ({ isOpen, mode = "view", onClose }: ResourceModalProps) =
     const [formData, setFormData] = useState<any>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
-    const role = Cookies.get("role");
 
     const getCategories = async () => {
         const response = await GET_API(endpoints.common("categories"));
@@ -78,7 +75,7 @@ const ResourceModal = ({ isOpen, mode = "view", onClose }: ResourceModalProps) =
             },
             resource_notes: formData.notes,
             difficulty_level: formData.level,
-            created_by: role,
+            created_by: "learner",
             resource_image: formData.coverImage
                 ? {
                       image_url: formData.coverImage.image_url,
