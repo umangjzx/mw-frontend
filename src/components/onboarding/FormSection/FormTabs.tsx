@@ -18,6 +18,8 @@ type FormTabsProps = {
     isLoading: boolean;
 };
 
+const currentVersion = process.env.NEXT_PUBLIC_CURRENT_VERSION;
+
 const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFillForm, onSubmit, isLoading }: FormTabsProps) => {
     // Form Tabs
     const [activeTab, setActiveTab] = useState(0);
@@ -61,17 +63,17 @@ const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFill
         <form onSubmit={onSubmit} className="w-full pb-16">
             <div className="max-w-7xl px-10 mx-auto sm:px-6 lg:px-8">
                 {/* Auto Form Fill - Only for Dev */}
-                <div className="flex items-end justify-end mb-5">
+                { currentVersion === "dev" && <div className="flex items-end justify-end">
                     <Button
                         onClick={handleFillForm}
                         title="Fill Form"
                         size="large"
                         customClassName="w-fit hover:!bg-green-700 !text-sm !bg-green-700 !text-white !rounded-lg !shadow-2xl !font-bold"
                     />
-                </div>
+                </div> }
 
                 {/* Tabs Header */}
-                <div ref={tabButtonsRef} className="flex mb-8 gap-2">
+                <div ref={tabButtonsRef} className="flex my-8 gap-2">
                     {formData.map((section, index) => (
                         <button
                             key={section.title || index}
