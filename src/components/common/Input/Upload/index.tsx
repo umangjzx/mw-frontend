@@ -67,7 +67,8 @@ const Uploader = ({ maxFiles = 1, ...props }: UploadProps) => {
     };
 
     const handleRemove = (index: number, type?: string, image_id?: string) => {
-        alert(image_id + " " + type + " " + imageId);
+        if(!confirm("Are you sure?")) return null;
+        
         if (type === "image/*") {
             DELETE_API(
                 endpoints.media_uploader.deleteImage((imageId as string) || (image_id as string))

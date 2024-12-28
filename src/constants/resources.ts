@@ -3,6 +3,7 @@ import { z } from "zod";
 export const ResourceFormConstants: FormField[] = [
     {
         name: "resource_image",
+        variant: "cover-image",
         label: "Add Cover Image",
         inputType: "upload",
         maxFiles: 1,
