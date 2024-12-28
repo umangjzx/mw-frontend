@@ -1,6 +1,6 @@
 "use client";
 
-import { getResources } from "@/api/resources";
+import { getMyResources, getResources } from "@/api/resources";
 import AddResourceCard from "@/components/resources/AddResourceCard";
 import Card from "@/components/resources/Card";
 import DetailModal from "@/components/resources/DetailModal";
@@ -12,7 +12,7 @@ import { useComponentStore } from "@/store/useComponenetStore";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 
 //TODO: Needs to be deleted
@@ -27,18 +27,23 @@ export default function ResourcesPage() {
     const [category, setCategory] = useQueryState("category");
     const [_, setId] = useQueryState("id");
     const [mode, setMode] = useQueryState("mode");
+    const [resources, setResources] = useState([]);
 
     const pathname = usePathname();
 
     const { data: MyResources, refetch } = useQuery({
         queryKey: ["my-resource"],
-        queryFn: getResources,
+        queryFn: getMyResources,
     })
     const triggerReload = async() => await refetch();
 
-    const { data: Resources } = useQuery({
-        queryKey: ["my-resource"],
-        queryFn: getResources,
+    useQuery({
+        queryKey: ["resources"],
+        queryFn: async() => {
+            const resources = await getResources();
+            setResources(resources?.items)
+            return resources;
+        },
     })
 
     const handleTopicClick = (title: string) => {
@@ -88,6 +93,20 @@ export default function ResourcesPage() {
         setId(id);
     };
 
+    const handleUserLikeAction = (resource_id: string, likeStatus: boolean) => {
+        setResources((prevResources: any) =>
+            prevResources?.map((resource: any) => {
+                if (resource?.resource_id === resource_id) {
+                    return {
+                        ...resource,
+                        total_likes: resource?.total_likes + (likeStatus ? +1 : -1)
+                    };
+                }
+                return resource;
+            })
+        );
+    }
+
     return (
         <div className="w-full h-full pt-8 flex flex-col gap-2 p-4 animate-fadeIn">
             {/* Resource Modal */}
@@ -99,7 +118,7 @@ export default function ResourcesPage() {
             />
 
             {/* Detail Modal */}
-            <DetailModal triggerReload={triggerReload} isOpen={mode === "view"} onClose={handleCloseModal}  />
+            <DetailModal handleUserLikeAction={handleUserLikeAction} triggerReload={triggerReload} isOpen={mode === "view"} onClose={handleCloseModal}  />
 
             {/* Topics */}
             <SectionWrapper
@@ -120,7 +139,7 @@ export default function ResourcesPage() {
                 <SectionWrapper
                     placeHolderComponent={undefined}
                     onPlaceHolderClick={handleAddResourceClick}
-                    data={Resources?.items}
+                    data={resources || []}
                     title={category !== null ? undefined : "Resources"}
                     renderItem={(item, index) => (
                         <Card key={item?.resource_id || index} resource={item} onClick={() => handleViewOrEditResource("view", item?.resource_id)} />

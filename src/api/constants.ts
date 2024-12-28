@@ -71,9 +71,12 @@ export const endpoints: EndpointProps = {
     resources: {
         create: "resource",
         get: "resource",
+        getMyResources: "resource/myresources",
         getResource: (resource_id: string) => `resource/${resource_id}`,
         delete: (resource_id: string) => `resource/${resource_id}`,
         update: (resource_id: string) => `resource/${resource_id}`,
+        like: (resource_id: string) => `resource/${resource_id}/like`,
+        dislike: (resource_id: string) => `resource/${resource_id}/like`,
     },
     volunterFeedback: {
         create: "feedback/volunteer",

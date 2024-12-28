@@ -1,6 +1,6 @@
 "use client";
 
-import { getResources } from "@/api/resources";
+import { getMyResources, getResources } from "@/api/resources";
 import AddResourceCard from "@/components/resources/AddResourceCard";
 import Card from "@/components/resources/Card";
 import DetailModal from "@/components/resources/DetailModal";
@@ -9,6 +9,7 @@ import SectionWrapper from "@/components/resources/SectionWrapper";
 import TopicCard from "@/components/resources/TopicCard";
 import { getHeaderIcon } from "@/layouts/helper";
 import { useComponentStore } from "@/store/useComponenetStore";
+import { useQuery } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { useEffect } from "react";
@@ -31,12 +32,12 @@ export default function ResourcesPage() {
 
     const { data: MyResources, refetch } = useQuery({
         queryKey: ["my-resource"],
-        queryFn: getResources,
+        queryFn: getMyResources,
     })
     const triggerReload = async() => await refetch();
 
     const { data: Resources } = useQuery({
-        queryKey: ["my-resource"],
+        queryKey: ["resources"],
         queryFn: getResources,
     })
 

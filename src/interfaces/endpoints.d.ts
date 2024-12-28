@@ -55,9 +55,12 @@ type EndpointProps = {
     resources: {
         create: string;
         get: string;
+        getMyResources: string,
         getResource: (resource_id: string) => string,
         delete: (resource_id: string) => string,
         update: (resource_id: string) => string,
+        like: (resource_id: string) => string,
+        dislike: (resource_id: string) => string,
     };
     post: {
         getPosts: string;
