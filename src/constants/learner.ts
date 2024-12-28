@@ -170,6 +170,15 @@ const LearnerPersonalFields: FormField[] = [
     },
     {
         parent: "learner_contact_details",
+        id: "zip_code",
+        label: "Zip Code",
+        inputType: "text",
+        placeholder: "Enter Zip Code",
+        gridCols: 1,
+        required: true,
+    },
+    {
+        parent: "learner_contact_details",
         id: "country",
         label: "Country",
         inputType: "select",

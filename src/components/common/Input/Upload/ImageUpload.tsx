@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { BiPlus } from "react-icons/bi";
+import { MdChangeCircle, MdDelete } from "react-icons/md";
 import { cn } from "@/utils/merge-class";
 import Button from "../../Button";
 import { IoCloseCircle } from "react-icons/io5";
@@ -65,6 +66,32 @@ const ImageUpload: React.FC<BaseUploaderProps> = ({ ...props }) => {
                         )}
                     </div>
                 ))}
+            { maxFiles == 1 && value?.image_url &&
+                <div className={cn(
+                    "flex flex-col items-center justify-center group rounded-lg",
+                    props.variant === "cover-image"
+                        ? "h-[250px] active:!scale-100 w-full"
+                        : "h-24 w-24"
+                )}
+                >
+                    <div className="relative w-full h-full">
+                        <div className="absolute top-1 right-1 z-50 px-2 py-1 rounded flex gap-1 bg-white">
+                                <MdChangeCircle size={25} className="cursor-pointer" onClick={handleClick}/>
+                                <MdDelete size={25} className="cursor-pointer !text-red-600" onClick={() => handleRemove(0, "image/*", value?.image_id)} />
+                        </div>
+                        <Image
+                            src={value?.image_url}
+                            alt="Image Broken"
+                            className="w-full absolute top-0 rounded-lg left-0 h-full object-cover transition-opacity duration-300 opacity-0"
+                            width={400}
+                            height={400}
+                            onLoadingComplete={(image) => {
+                                image.classList.remove("opacity-0");
+                            }}
+                        />
+                    </div>
+                </div>}
+
             {value?.length < maxFiles && (
                 <Button
                     onClick={handleClick}

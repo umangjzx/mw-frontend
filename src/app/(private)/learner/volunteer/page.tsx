@@ -91,7 +91,7 @@ export default function LearnersPage() {
                 profileImage: volunteer.profile_picture.image_url,
                 name: `${volunteer.volunteer_first_name} ${volunteer.volunteer_last_name}`,
                 location: "Not Available", // Add location if available in API
-                volunteerHrs: volunteer.total_volunteered_hours?.toString(),
+                volunteerHrs: volunteer?.total_volunteered_hours?.toString(),
                 studentConnected: volunteer.students_connected?.toString(),
                 subjects: volunteer.volunteer_subjects.map((subject: any) => subject.subject_name),
                 languages: volunteer.volunteer_languages.map(

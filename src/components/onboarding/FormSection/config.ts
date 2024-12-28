@@ -305,8 +305,8 @@ export type VolunteerFormData = z.infer<typeof volunteerFormSchema>;
 export const learnerFormSchema = z.object({
     // Learner personal info - Required section
     learner_personal_info: z.object({
-        learner_first_name: z.string({ required_error: "Learner's First Name is required" }),
-        learner_last_name: z.string({ required_error: "Learner's Last Name is required" }),
+        learner_first_name: z.string({ required_error: "Learner's First Name is required" }).min(1, { message: "Learner's First Name cannot be empty" }),
+        learner_last_name: z.string({ required_error: "Learner's Last Name is required" }).min(1, { message: "Learner's Last Name cannot be empty" }),
         learner_date_of_birth: z.string({ required_error: "Learner's Date of Birth is required" }),
         learner_gender: z.string({ required_error: "Learner's Gender is required" }),
         learner_preferred_pronoun: z.string({
@@ -320,6 +320,9 @@ export const learnerFormSchema = z.object({
                 .string({ required_error: "Learner's Email is required" })
                 .email("Invalid email address"),
             contact_number: contactNumberValidation,
+            zip_code: z
+                .string({ required_error: "Zip code is required" })
+                .min(1, { message: "Zip code cannot be empty" }),
             country: z
                 .string({ required_error: "Country is required" })
                 .min(1, { message: "Country cannot be empty" }),
@@ -331,13 +334,13 @@ export const learnerFormSchema = z.object({
 
     // Parent info - Required section
     parent_info: z.object({
-        parent_first_name: z.string({ required_error: "Parent's First Name is required" }),
-        parent_last_name: z.string({ required_error: "Parent's Last Name is required" }),
+        parent_first_name: z.string({ required_error: "Parent's First Name is required" }).min(1, { message: "Parent's First Name cannot be empty" }),
+        parent_last_name: z.string({ required_error: "Parent's Last Name is required" }).min(1, { message: "Parent's Last Name cannot be empty" }),
         parent_email: z
             .string({ required_error: "Parent's Email is required" })
             .email("Invalid email address"),
         parent_contact_number: contactNumberValidation,
-        parent_address: z.string({ required_error: "Parent's Address is required" }),
+        parent_address: z.string({ required_error: "Parent's Address is required" }).min(1, { message: "Parent's Address cannot be empty" }),
         emergency_contact_number: contactNumberValidation,
         relationship_to_learner: z.string({
             required_error: "Relationship to Learner is required",

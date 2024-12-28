@@ -18,7 +18,7 @@ const Card = ({ className, resource, onClick }: CardProps) => {
             <div className="w-full h-[120px] relative">
                 <span className="absolute top-2 right-2 flex items-center gap-1 text-white z-10">
                     <TrendArrow />
-                    <span className="text-[0.75rem] font-medium text-white">{resource?.total_likes} likes</span>
+                    <span className="text-[0.75rem] font-medium text-white">{resource?.total_likes} {resource?.total_likes > 1 ? 'likes' : 'like'}</span>
                 </span>
                 <Image
                     src={resource?.resource_image?.image_url}

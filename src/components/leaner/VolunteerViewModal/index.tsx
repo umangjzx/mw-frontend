@@ -56,7 +56,7 @@ interface VolunteerData {
     volunteer_subjects: Array<{ subject_name: string; subject_id: string }>;
     volunteer_skills: Array<{ skill_name: string; skill_id: string }>;
     profile_picture: { image_url: string };
-    volunteered_hours: number;
+    total_volunteered_hours: number;
     students_connected: number;
 }
 
@@ -86,7 +86,7 @@ const ProfileInfo = ({
         </div>
         <OverViewCard
             title="Hours Volunteered"
-            value={volunteerData?.volunteered_hours || 0}
+            value={volunteerData?.total_volunteered_hours || 0}
             icon={<ClockIcon />}
         />
         <OverViewCard
