@@ -4,12 +4,14 @@ import Button from "@/components/common/Button";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { useRef } from "react";
 import { cn } from "@/utils/merge-class";
+import LottieLoader from "@/components/common/Loader/Lottie";
 
 const SCROLL_AMOUNT = 300;
 
 type SectionWrapperProps = {
     data: any[];
     title?: string;
+    isLoading?: boolean;
     renderItem: (item: any, index: number) => React.ReactNode;
     hideSectionHeader?: boolean;
     placeHolderComponent?: React.ReactNode;
@@ -20,6 +22,7 @@ const SectionWrapper = ({
     data,
     title,
     renderItem,
+    isLoading = false,
     hideSectionHeader = false,
     placeHolderComponent,
     onPlaceHolderClick,
@@ -76,9 +79,13 @@ const SectionWrapper = ({
                             {placeHolderComponent}
                         </div>
                     )}
-                    { Array.isArray(data) && data.map((item, index) => (
+                    { isLoading && <div className="min-w-[259px] min-h-[313px] h-full w-full flex-center">
+                        <LottieLoader isLoading={isLoading} />
+                    </div> }
+                    { !isLoading && Array.isArray(data) && data.map((item, index) => (
                         <>{renderItem(item, index)}</>
                     ))}
+                    { !isLoading && data?.length === 0 && <span className="min-w-[250px] min-h-[275px] h-full w-full flex-center">No Resource Found</span> }
                 </div>
             </div>
         </div>

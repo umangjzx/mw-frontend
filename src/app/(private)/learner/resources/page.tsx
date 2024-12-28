@@ -27,9 +27,10 @@ export default function ResourcesPage() {
     const [category, setCategory] = useQueryState("category");
     const [_, setId] = useQueryState("id");
     const [mode, setMode] = useQueryState("mode");
-    const [resources, setResources] = useState([]);
+    const [searchQuery] = useQueryState("query");
 
     const pathname = usePathname();
+    const [resources, setResources] = useState([]);
 
     const { data: MyResources, refetch } = useQuery({
         queryKey: ["my-resource"],
@@ -37,10 +38,11 @@ export default function ResourcesPage() {
     })
     const triggerReload = async() => await refetch();
 
-    useQuery({
-        queryKey: ["resources"],
+    const { isFetching } = useQuery({
+        queryKey: ["resources", searchQuery],
         queryFn: async() => {
-            const resources = await getResources();
+            setResources([])
+            const resources = await getResources({ query: searchQuery || "" });
             setResources(resources?.items)
             return resources;
         },
@@ -140,6 +142,7 @@ export default function ResourcesPage() {
                     placeHolderComponent={undefined}
                     onPlaceHolderClick={handleAddResourceClick}
                     data={resources || []}
+                    isLoading={isFetching}
                     title={category !== null ? undefined : "Resources"}
                     renderItem={(item, index) => (
                         <Card key={item?.resource_id || index} resource={item} onClick={() => handleViewOrEditResource("view", item?.resource_id)} />

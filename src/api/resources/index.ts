@@ -1,9 +1,9 @@
 import { endpoints } from "../constants"
 import { DELETE_API, GET_API, POST_API, PUT_API } from "../request"
 
-export const getResources = async () => {
+export const getResources = async (params?: any) => {
     const endpoint = endpoints.resources.get;
-    const { data } = await GET_API(endpoint);
+    const { data } = await GET_API(`${endpoint}?${new URLSearchParams({ ...params })}`);
     return data || {};
 }
 
