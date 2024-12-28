@@ -1,6 +1,6 @@
 "use client";
 
-import { getResources } from "@/api/resources";
+import { getMyResources, getResources } from "@/api/resources";
 import AddResourceCard from "@/components/resources/AddResourceCard";
 import Card from "@/components/resources/Card";
 import DetailModal from "@/components/resources/DetailModal";
@@ -9,9 +9,10 @@ import SectionWrapper from "@/components/resources/SectionWrapper";
 import TopicCard from "@/components/resources/TopicCard";
 import { getHeaderIcon } from "@/layouts/helper";
 import { useComponentStore } from "@/store/useComponenetStore";
+import { useQuery } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 
 //TODO: Needs to be deleted
@@ -26,18 +27,25 @@ export default function ResourcesPage() {
     const [category, setCategory] = useQueryState("category");
     const [_, setId] = useQueryState("id");
     const [mode, setMode] = useQueryState("mode");
+    const [searchQuery] = useQueryState("query");
 
     const pathname = usePathname();
+    const [resources, setResources] = useState([]);
 
     const { data: MyResources, refetch } = useQuery({
         queryKey: ["my-resource"],
-        queryFn: getResources,
+        queryFn: getMyResources,
     })
     const triggerReload = async() => await refetch();
 
-    const { data: Resources } = useQuery({
-        queryKey: ["my-resource"],
-        queryFn: getResources,
+    const { isFetching } = useQuery({
+        queryKey: ["resources", searchQuery],
+        queryFn: async() => {
+            setResources([])
+            const resources = await getResources({ query: searchQuery || "" });
+            setResources(resources?.items)
+            return resources;
+        },
     })
 
     const handleTopicClick = (title: string) => {
@@ -87,6 +95,20 @@ export default function ResourcesPage() {
         setId(id);
     };
 
+    const handleUserLikeAction = (resource_id: string, likeStatus: boolean) => {
+        setResources((prevResources: any) =>
+            prevResources?.map((resource: any) => {
+                if (resource?.resource_id === resource_id) {
+                    return {
+                        ...resource,
+                        total_likes: resource?.total_likes + (likeStatus ? +1 : -1)
+                    };
+                }
+                return resource;
+            })
+        );
+    }
+
     return (
         <div className="w-full h-full pt-8 flex flex-col gap-2 p-4 animate-fadeIn">
             {/* Resource Modal */}
@@ -98,7 +120,7 @@ export default function ResourcesPage() {
             />
 
             {/* Detail Modal */}
-            <DetailModal triggerReload={triggerReload} isOpen={mode === "view"} onClose={handleCloseModal} />
+            <DetailModal handleUserLikeAction={handleUserLikeAction} triggerReload={triggerReload} isOpen={mode === "view"} onClose={handleCloseModal} />
 
             {/* Topics */}
             <SectionWrapper
@@ -119,7 +141,8 @@ export default function ResourcesPage() {
                 <SectionWrapper
                     placeHolderComponent={undefined}
                     onPlaceHolderClick={handleAddResourceClick}
-                    data={Resources?.items}
+                    data={resources}
+                    isLoading={isFetching}
                     title={category !== null ? undefined : "Resources"}
                     renderItem={(item, index) => (
                         <Card key={item?.resource_id || index} resource={item} onClick={() => handleViewOrEditResource("view", item?.resource_id)} />

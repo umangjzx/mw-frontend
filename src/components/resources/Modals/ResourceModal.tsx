@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAppStore } from "@/store/useAppStore"
+import { useAppStore } from "@/store/useAppStore";
 import { addResource, getSingleResource, updateResource } from "@/api/resources";
 import { showToast } from "@/components/common/Toast";
 import { useQuery } from "@tanstack/react-query";
@@ -22,6 +22,13 @@ type ResourceModalProps = {
 
 type FormData = z.infer<typeof ResourceFormSchema>;
 
+type ResourceActionProps = {
+    data: FormData;
+    actionFn: (data: FormData) => Promise<any>;
+    successMessage: string;
+    errorMessage: string;
+};
+
 const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: ResourceModalProps) => {
     const { learnerName, volunteerName } = useAppStore();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,67 +41,56 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
     const [resourceId] = useQueryState("id") || "";
     const [currentMode] = useQueryState("mode");
     const isEditMode = currentMode === "edit";
-    const resourceTitle = isEditMode ? "Edit Resource" : "Add new Resource";
 
-    const { data } = useQuery({
+    // Fetch resource data if in edit mode
+    useQuery({
         queryKey: ["getSingleResource", resourceId],
-        queryFn: async() => {
-            const res = await getSingleResource(resourceId || "");
-            reset(res)
+        queryFn: async () => {
+            const resource = await getSingleResource(resourceId || "");
+            reset(resource);
         },
         enabled: isEditMode && !!resourceId,
     });
 
     useEffect(() => {
-        reset({})
-        setValue("created_by", role === "learner" ? learnerName : volunteerName)
-    }, [currentMode])
+        reset({});
+        setValue("created_by", role === "learner" ? learnerName : volunteerName);
+    }, [currentMode]);
 
-    const handleAddResource = async(data: FormData) => {
-        const res = await addResource({...data, created_by: role});
-        if (res?.status === 201) {
-            onClose();
-            reset({});
-            showToast({ message: "Resource created" });
-            triggerReload();
-        } else {
-            showToast({ message: "Resource not created", type: "error" });
-        }
-    }
-
-    const handleEditResource = async(data: FormData) => {
-        const res = await updateResource(resourceId || "",{...data});
-        if (res?.status === 201) {
-            onClose();
-            reset({});
-            showToast({ message: "Resource updated" });
-            triggerReload();
-        } else {
-            showToast({ message: "Resource not updated", type: "error" });
-        }
-    }
-
-
-    const onSubmit = async (data: FormData) => {
+    const handleResourceAction = async ({ data, actionFn, successMessage, errorMessage }: ResourceActionProps) => {
         setIsSubmitting(true);
         try {
-            if(isEditMode){
-                await handleEditResource(data);
-            }else{
-                await handleAddResource(data);
+            const isSuccess = await actionFn(data);
+            if (isSuccess) {
+                showToast({ message: successMessage });
+                triggerReload();
+                onClose();
+                reset({});
+            } else {
+                showToast({ message: errorMessage, type: "error" });
             }
         } catch (error) {
-            showToast({ message: "An error occurred", type: "error" });
+            showToast({ message: "Something went wrong!", type: "error" });
         } finally {
             setIsSubmitting(false);
         }
     };
-    
+
+    const onSubmit = (data: FormData) => {
+        const actionFn = isEditMode
+            ? (d: FormData) => updateResource(resourceId || "", d)
+            : (d: FormData) => addResource({ ...d, created_by: role });
+        const successMessage = isEditMode ? "Resource updated" : "Resource created";
+        const errorMessage = isEditMode ? "Resource not updated" : "Resource not created";
+
+        handleResourceAction({ data, actionFn, successMessage, errorMessage });
+    };
+
     const buttonProps = {
         secondary: {
             onClick: onClose,
             title: "Cancel",
-            btnVariant: "secondary" as const,
+            btnVariant: "secondary",
             customClassName: cn(
                 mode === "view"
                     ? "!text-error !bg-error-light !border-none"
@@ -104,25 +100,22 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
         },
         primary: {
             onClick: handleSubmit(onSubmit),
-            title: isEditMode ? "Edit" : "Add",
+            title: isSubmitting ? (isEditMode ? "Saving" : "Adding") : isEditMode ? "Save" : "Add",
             customClassName: "!rounded-xl hover:!bg-black hover:!text-white",
+            disabled: isSubmitting,
         },
     };
 
     return (
         <CenterModal
-            title={resourceTitle}
+            title={isEditMode ? "Edit Resource" : "Add New Resource"}
             isOpen={isOpen}
             onClose={onClose}
             width="40%"
             loading={isSubmitting}
             customClassName="max-h-[80vh] !rounded-2xl overflow-hidden"
             secondaryActionProps={buttonProps.secondary}
-            primaryActionProps={{
-                ...buttonProps.primary,
-                disabled: isSubmitting,
-                title: isSubmitting ? (isEditMode ? "Editing" : "Adding") : buttonProps.primary.title,
-            }}
+            primaryActionProps={buttonProps.primary}
         >
             {mode !== "view" ? (
                 <form onSubmit={handleSubmit(onSubmit)}>
