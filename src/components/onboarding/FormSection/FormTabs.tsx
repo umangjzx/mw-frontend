@@ -28,14 +28,9 @@ const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFill
 
     const validateCurrentSection = async () => {
         const currentFields = formData[activeTab].fields.map((field) => {
-            if (field.parent) {
-                return `${formData[activeTab].parent}.${field.parent}`;
-            } else if (formData[activeTab].parent) {
-                return `${formData[activeTab].parent}.${field.id}`
-            } else {
-                return field.id;
-            }
-        });
+            const parentPath = formData[activeTab].parent;
+            return parentPath ? `${parentPath}.${field.parent || field.id}` : field.parent || field.id;
+        });        
 
         console.log("Current Fields: ", currentFields);
 
