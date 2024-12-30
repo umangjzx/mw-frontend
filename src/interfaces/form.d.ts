@@ -21,6 +21,7 @@ type FormField = {
     sublabel?: string;
     showSearch?: boolean;
     options?: { label: string; value: any }[];
+    min?: number;
     gridCols?: number;
     inputClassName?: string;
     parent?: string | null;

@@ -15,6 +15,7 @@ export const LearnerFeedbackFormConstants: FormField[] = [
         placeholder: "Enter the duration of the class",
         sublabel: "(In hrs)",
         sublabelAlignment: "right",
+        min: 0,
     },
     {
         name: "rating",

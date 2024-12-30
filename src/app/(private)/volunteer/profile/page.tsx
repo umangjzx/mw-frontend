@@ -11,6 +11,7 @@ import Cookies from "js-cookie";
 import { getIndividualVolunteer } from "@/api/volunteers";
 import { useAppStore } from "@/store/useAppStore";
 import { endpoints } from "@/api/constants";
+import LottieLoader from "@/components/common/Loader/Lottie";
 
 export default function ProfilePage() {
     const { setHeaderOptions } = useComponentStore();
@@ -59,7 +60,11 @@ export default function ProfilePage() {
     }, [data]);
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <>
+            <div className="h-full w-full flex-center">
+                <LottieLoader isLoading={isLoading} />
+            </div>
+        </>
     }
 
     return (

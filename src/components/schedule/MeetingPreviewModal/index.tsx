@@ -242,7 +242,7 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                     </div>
                 )}
                 <div className="flex flex-col gap-2">
-                    <p className="font-medium text-sm text-gray-light">Guest</p>
+                    <p className="font-medium text-sm text-gray-light">{role === 'learner' ? 'Volunteer' : 'Guest' }</p>
                     <p className="text-black font-medium">
                         {role === 'learner'
                             ? volunteer_full_name

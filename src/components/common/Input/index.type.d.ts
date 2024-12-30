@@ -35,6 +35,7 @@ type NumberInputProps = BaseInputProps & {
     placeholder?: string;
     responseType?: string;
     maxLength?: number;
+    min?: number;
 };
 
 type TextAreaInputProps = BaseInputProps & {

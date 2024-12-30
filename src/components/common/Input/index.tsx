@@ -106,6 +106,7 @@ export const Input: React.FC<InputProps> = (props) => {
                     <InputNumber
                         {...props}
                         maxLength={props?.maxLength}
+                        min={props?.min}
                         name={name}
                         type={props.inputType}
                         placeholder={props.placeholder}
