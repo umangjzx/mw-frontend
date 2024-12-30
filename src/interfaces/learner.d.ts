@@ -1,6 +1,6 @@
 interface Learner {
-    parent_info: Parentinfo;
     learner_personal_info: Learnerpersonalinfo;
+    parent_info?: Parentinfo;
     learner_special_needs: Learnerspecialneeds;
     education: Education;
     social_skills: Socialskills;
@@ -82,7 +82,6 @@ interface Parentinfo {
     parent_last_name: string;
     parent_contact_number: Parentcontactnumber;
     parent_address: string;
-    emergency_contact_number: Parentcontactnumber;
     relationship_to_learner: string;
     parent_email: string;
 }

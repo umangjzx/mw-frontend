@@ -1,4 +1,5 @@
-import { z } from "zod";
+import { z, ZodError, ZodIssue } from "zod";
+import moment from "moment";
 
 const contactNumberValidation = z
     .object({
@@ -21,6 +22,8 @@ const contactNumberValidation = z
         message: "Phone number must be between 7 and 15 digits",
     });
 
+
+// Volunteer Schema & Default Data
 
 export const volunteerFormSchema = z.object({
     volunteer_first_name: z
@@ -301,6 +304,106 @@ export const volunteerFormSchema = z.object({
 });
 
 export type VolunteerFormData = z.infer<typeof volunteerFormSchema>;
+export const defaultVolunteerData: Volunteer = {
+    volunteer_first_name: "Walter",
+    volunteer_last_name: "White",
+    volunteer_birth_date: "1970-03-15",
+    volunteer_parent_email: "walterwhite@gmail.com",
+    volunteer_gender: "male",
+    volunteer_higher_education: "masters",
+    volunteer_education: "MSc Chemistry",
+    volunteer_experience: "20 years",
+    volunteer_description: "I'm a Chemist.",
+    volunteer_languages: [
+        {
+            language_name: "Tamil",
+            language_id: "a695792f-0ecd-4fff-bb46-f0feaf782c2b",
+        },
+        {
+            language_name: "English (United States)",
+            language_id: "a191a4a2-7007-42c6-a8ec-adea8a1fa8ac",
+        },
+    ],
+    consented_from_parent: true,
+    volunteer_skills: [
+        {
+            skill_name: "Basic rhythm",
+            skill_id: "3eb6efaf-fa76-4765-99c5-e160a303aa34",
+        },
+    ],
+    volunteer_contact_details: {
+        // email: "",
+        contact_number: {
+            number: "9876543210",
+            country_code: "+91",
+        },
+        zip_code: "638451",
+        country: "india",
+        timezone: "asia/kolkata"
+    },
+    legal_and_safety_info: {
+        criminal_background_check_details: {
+            convicted_of_a_felony: false,
+            involved_in_criminal_activity: false,
+            convicted_of_a_crime: false,
+            description: "",
+        },
+        sex_offender_check_details: {
+            checked_for_sex_offender: false,
+            description: "",
+        },
+        disciplinary_check_details: {
+            terminated_from_volunteer_position: false,
+            involved_in_disputes: false,
+            dismissed_from_institution: false,
+            description: "",
+        },
+        health_and_safety_check_details: {
+            having_health_issues: false,
+            description: "",
+        },
+        other_consents_details: {
+            consent_to_background_checks: false,
+            agree_to_follow_organization_policies: false,
+            agree_to_understand_termination_of_volunteer_agreement: false,
+            description: "",
+        },
+        volunteer_experience_details: {
+            previously_volunteered: false,
+            invloved_in_complaints: false,
+            description: "",
+        },
+    },
+    volunteer_subjects: [
+        {
+            subject_name: "Chemistry",
+            subject_id: "5b363d32-1aa9-45ba-86ce-598db4739330",
+        },
+        {
+            subject_name: "Physics",
+            subject_id: "4a4cbf72-edd0-4099-aa7f-2e45ea81889d",
+        },
+    ],
+    consent_and_permissions: {
+        photo_or_video_consent: true,
+        acknowledgement_of_program_policies: true,
+    },
+};
+
+// Learner Schema & Default Data
+
+const learnerParentSchema = z.object({
+    parent_first_name: z.string({ required_error: "Parent's First Name is required" }).min(1, { message: "Parent's First Name cannot be empty" }),
+    parent_last_name: z.string({ required_error: "Parent's Last Name is required" }).min(1, { message: "Parent's Last Name cannot be empty" }),
+    parent_email: z
+        .string({ required_error: "Parent's Email is required" })
+        .email("Invalid email address"),
+    parent_contact_number: contactNumberValidation,
+    parent_address: z.string({ required_error: "Parent's Address is required" }).min(1, { message: "Parent's Address cannot be empty" }),
+    relationship_to_learner: z.string({
+        required_error: "Relationship to Learner is required",
+    }),
+})
 
 export const learnerFormSchema = z.object({
     // Learner personal info - Required section
@@ -333,19 +436,7 @@ export const learnerFormSchema = z.object({
     }),
 
     // Parent info - Required section
-    parent_info: z.object({
-        parent_first_name: z.string({ required_error: "Parent's First Name is required" }).min(1, { message: "Parent's First Name cannot be empty" }),
-        parent_last_name: z.string({ required_error: "Parent's Last Name is required" }).min(1, { message: "Parent's Last Name cannot be empty" }),
-        parent_email: z
-            .string({ required_error: "Parent's Email is required" })
-            .email("Invalid email address"),
-        parent_contact_number: contactNumberValidation,
-        parent_address: z.string({ required_error: "Parent's Address is required" }).min(1, { message: "Parent's Address cannot be empty" }),
-        emergency_contact_number: contactNumberValidation,
-        relationship_to_learner: z.string({
-            required_error: "Relationship to Learner is required",
-        }),
-    }),
+    parent_info: learnerParentSchema.partial(),
 
     // Learner special needs - Required
     learner_special_needs: z.object({
@@ -443,169 +534,32 @@ export const learnerFormSchema = z.object({
             }),
         })
         .required(),
+})
+.superRefine((data) => {
+    const learnerAge = moment().diff(moment(data?.learner_personal_info.learner_date_of_birth), 'years');
+    if (learnerAge < 18) {
+        const issues: ZodIssue[] = [];
+
+        Object.entries(data?.parent_info).forEach(([fieldName, fieldValue]) => {
+            if(!fieldValue){
+                issues.push({
+                    message: `This field is required.`,
+                    path: ["parent_info", fieldName],
+                    code: "invalid_type",
+                    expected: "string",
+                    received: "undefined",
+                });
+            }
+        })
+        if (issues.length > 0) {
+            throw new ZodError(issues);
+        }
+    }
+    return true;
 });
 
+
 export type LearnerFormData = z.infer<typeof learnerFormSchema>;
-
-// export const defaultVolunteerData: Volunteer = {
-//     volunteer_description: "",
-//     volunteer_education: "B.Tech",
-//     volunteer_first_name: "Robert",
-//     volunteer_last_name: "JR",
-//     volunteer_birth_date: "12-01-2024",
-//     volunteer_parent_email: "rithirithi246863@gmail.com",
-//     volunteer_gender: "Male",
-//     volunteer_higher_education: "Bachelor's Degree",
-//     volunteer_languages: [],
-//     education_details: "",
-//     volunteer_experience: " Have good experience in  music for the past 2 years",
-//     consented_from_parent: true,
-//     volunteer_skills: [{ skill_id: "1", skill_name: "Music" }],
-//     volunteer_contact_details: {
-//         email: "",
-//         contact_number: {
-//             number: "",
-//             country_code: "",
-//         },
-//         zip_code: "",
-//     },
-//     legal_and_safety_info: {
-//         criminal_background_check_details: {
-//             convicted_of_a_felony: false,
-//             involved_in_criminal_activity: false,
-//             convicted_of_a_crime: false,
-//             description: "",
-//         },
-//         sex_offender_check_details: {
-//             checked_for_sex_offender: false,
-//             description: "",
-//         },
-//         disciplinary_check_details: {
-//             terminated_from_volunteer_position: false,
-//             involved_in_disputes: false,
-//             dismissed_from_institution: false,
-//             description: "",
-//         },
-//         health_and_safety_check_details: {
-//             having_health_issues: false,
-//             description: "",
-//         },
-//         other_consents_details: {
-//             consent_to_background_checks: false,
-//             agree_to_follow_organization_policies: false,
-//             agree_to_understand_termination_of_volunteer_agreement: false,
-//             description: "",
-//         },
-//         volunteer_experience_details: {
-//             previously_volunteered: false,
-//             invloved_in_complaints: false,
-//             description: "",
-//         },
-//     },
-//     profile_picture: {
-//         image_url: "",
-//         image_id: "",
-//     },
-//     profile_video: {
-//         video_url: "",
-//         video_id: "",
-//     },
-//     profile_document: {
-//         document_url: "",
-//         document_id: "",
-//     },
-//     volunteer_subjects: [],
-//     consent_and_permissions: {
-//         photo_or_video_consent: true,
-//         acknowledgement_of_program_policies: true,
-//     },
-// };
-
-export const defaultVolunteerData: Volunteer = {
-    volunteer_first_name: "Walter",
-    volunteer_last_name: "White",
-    volunteer_birth_date: "1970-03-15",
-    volunteer_parent_email: "walterwhite@gmail.com",
-    volunteer_gender: "male",
-    volunteer_higher_education: "masters",
-    volunteer_education: "MSc Chemistry",
-    volunteer_experience: "20 years",
-    volunteer_description: "I'm a Chemist.",
-    volunteer_languages: [
-        {
-            language_name: "Tamil",
-            language_id: "a695792f-0ecd-4fff-bb46-f0feaf782c2b",
-        },
-        {
-            language_name: "English (United States)",
-            language_id: "a191a4a2-7007-42c6-a8ec-adea8a1fa8ac",
-        },
-    ],
-    consented_from_parent: true,
-    volunteer_skills: [
-        {
-            skill_name: "Basic rhythm",
-            skill_id: "3eb6efaf-fa76-4765-99c5-e160a303aa34",
-        },
-    ],
-    volunteer_contact_details: {
-        // email: "",
-        contact_number: {
-            number: "9876543210",
-            country_code: "+91",
-        },
-        zip_code: "638451",
-        country: "india",
-        timezone: "asia/kolkata"
-    },
-    legal_and_safety_info: {
-        criminal_background_check_details: {
-            convicted_of_a_felony: false,
-            involved_in_criminal_activity: false,
-            convicted_of_a_crime: false,
-            description: "",
-        },
-        sex_offender_check_details: {
-            checked_for_sex_offender: false,
-            description: "",
-        },
-        disciplinary_check_details: {
-            terminated_from_volunteer_position: false,
-            involved_in_disputes: false,
-            dismissed_from_institution: false,
-            description: "",
-        },
-        health_and_safety_check_details: {
-            having_health_issues: false,
-            description: "",
-        },
-        other_consents_details: {
-            consent_to_background_checks: false,
-            agree_to_follow_organization_policies: false,
-            agree_to_understand_termination_of_volunteer_agreement: false,
-            description: "",
-        },
-        volunteer_experience_details: {
-            previously_volunteered: false,
-            invloved_in_complaints: false,
-            description: "",
-        },
-    },
-    volunteer_subjects: [
-        {
-            subject_name: "Chemistry",
-            subject_id: "5b363d32-1aa9-45ba-86ce-598db4739330",
-        },
-        {
-            subject_name: "Physics",
-            subject_id: "4a4cbf72-edd0-4099-aa7f-2e45ea81889d",
-        },
-    ],
-    consent_and_permissions: {
-        photo_or_video_consent: true,
-        acknowledgement_of_program_policies: true,
-    },
-};
 
 export const defaultLearnerData: Learner = {
     learner_personal_info: {
@@ -626,21 +580,17 @@ export const defaultLearnerData: Learner = {
             timezone: "asia/kolkata"
         },
     },
-    parent_info: {
-        parent_first_name: "Walter",
-        parent_last_name: "White",
-        parent_email: "wlaterwhite@gmail.com",
-        relationship_to_learner: "father",
-        parent_contact_number: {
-            number: "9876543210",
-            country_code: "+91",
-        },
-        emergency_contact_number: {
-            number: "9384913517",
-            country_code: "+91",
-        },
-        parent_address: "Address",
-    },
+    // parent_info: {
+    //     parent_first_name: "Walter",
+    //     parent_last_name: "White",
+    //     parent_email: "wlaterwhite@gmail.com",
+    //     relationship_to_learner: "father",
+    //     parent_contact_number: {
+    //         number: "9876543210",
+    //         country_code: "+91",
+    //     },
+    //     parent_address: "Address",
+    // },
 
     learner_special_needs: {
         type_of_developmental_disability: "Physical Disability",

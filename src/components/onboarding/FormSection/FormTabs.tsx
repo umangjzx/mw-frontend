@@ -6,6 +6,8 @@ import Button from "@/components/common/Button";
 import Link from "next/link";
 import { showToast } from "@/components/common/Toast";
 import { useEffect, useRef, useState } from "react";
+import Cookies from "js-cookie";
+import moment from "moment";
 
 type FormTabsProps = {
     formData: FormSectionConfig[];
@@ -21,6 +23,8 @@ type FormTabsProps = {
 const currentVersion = process.env.NEXT_PUBLIC_CURRENT_VERSION;
 
 const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFillForm, onSubmit, isLoading }: FormTabsProps) => {
+    const role = Cookies.get("role");
+
     // Form Tabs
     const [activeTab, setActiveTab] = useState(0);
     const [highestTab, setHighestTab] = useState(0);
@@ -30,7 +34,13 @@ const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFill
         const currentFields = formData[activeTab].fields.map((field) => {
             const parentPath = formData[activeTab].parent;
             return parentPath ? `${parentPath}.${field.parent || field.id}` : field.parent || field.id;
-        });        
+        });
+
+        if (role === "learner" && activeTab === 1) {
+            const learnerDOB = control._formValues?.learner_personal_info?.learner_date_of_birth;
+            const age = learnerDOB && moment().diff(moment(learnerDOB), 'years');
+            if (age > 18) return true;
+        }
 
         console.log("Current Fields: ", currentFields);
 
