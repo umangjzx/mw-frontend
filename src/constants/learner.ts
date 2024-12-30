@@ -71,17 +71,7 @@ const ParentGuardianFields: FormField[] = [
         gridCols: 2,
         inputClassName: "w-[49%]",
         required: true,
-    },
-    {
-        id: "emergency_contact_number",
-        label: "Emergency Contact Number",
-        inputType: "contact-input",
-        placeholder: "Enter Email ID",
-        sublabelAlignment: "right",
-        gridCols: 1,
-        disabled: false,
-        required: true,
-    },
+    }
 ];
 
 // Learner's Personal Information Fields
@@ -413,6 +403,7 @@ const BehaviorSocialFields: FormField[] = [
             { label: "Shy", value: "shy" },
             { label: "Prefers One-on-One", value: "prefers_one_on_one" },
             { label: "Prefers Group", value: "prefers_group" },
+            { label: "Others", value: "others" },
         ],
         required: true,
     },
@@ -486,6 +477,7 @@ const BehaviorSocialFields: FormField[] = [
                 value: "difficulty_in_forming_peer_relationships",
             },
             { label: "Hyperactivity or Hypoactivity", value: "hyperactivity_or_hypoactivity" },
+            { label: "Others", value: "others" },
         ],
         required: true,
     },
@@ -512,6 +504,7 @@ const BehaviorSocialFields: FormField[] = [
             { label: "Reduce Stimuli", value: "reduce_stimuli" },
             { label: "Simple Mindfulness", value: "simple_mindfulness" },
             { label: "Clear Instructions", value: "clear_instructions" },
+            { label: "Others", value: "others" },
         ],
         required: true,
     },
@@ -717,14 +710,14 @@ const AdditionalInfoFields: FormField[] = [
 
 export const LearnerFormSections: FormSectionConfig[] = [
     {
-        parent: "parent_info",
-        title: "Parent Information",
-        fields: ParentGuardianFields,
-    },
-    {
         parent: "learner_personal_info",
         title: "Learner Information",
         fields: LearnerPersonalFields,
+    },
+    {
+        parent: "parent_info",
+        title: "Guardian Information",
+        fields: ParentGuardianFields,
     },
     {
         title: "Profile Details",
@@ -758,6 +751,26 @@ export const LearnerFormSections: FormSectionConfig[] = [
         type: "card",
     },
     {
+        parent: "additional_info",
+        title: "Additional Information",
+        fields: AdditionalInfoFields,
+    },
+    {
+        title: "Upload Profile Picture",
+        parent: null,
+        fields: [
+            {
+                id: "profile_picture",
+                label: "Learner's Profile Picture",
+                inputType: "upload",
+                required: false,
+                gridCols: 1,
+                variant: "file",
+                fileType: "image/*",
+            },
+        ],
+    },
+    {
         title: "Consent",
         parent: "consent_and_permissions",
         fields: [
@@ -783,26 +796,6 @@ export const LearnerFormSections: FormSectionConfig[] = [
                 ],
                 inputType: "radio",
                 gridCols: 1,
-            },
-        ],
-    },
-    {
-        parent: "additional_info",
-        title: "Additional Information",
-        fields: AdditionalInfoFields,
-    },
-    {
-        title: "Upload Profile Picture",
-        parent: null,
-        fields: [
-            {
-                id: "profile_picture",
-                label: "Learner's Profile Picture",
-                inputType: "upload",
-                required: false,
-                gridCols: 1,
-                variant: "file",
-                fileType: "image/*",
             },
         ],
     },
