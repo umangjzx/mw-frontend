@@ -6,6 +6,7 @@ import { cn } from "@/utils/merge-class";
 import Button from "../../Button";
 import { IoCloseCircle } from "react-icons/io5";
 import { usePathname } from "next/navigation";
+import LottieLoader from "../../Loader/Lottie";
 
 const ImageUpload: React.FC<BaseUploaderProps> = ({ ...props }) => {
     const { value = [], maxFiles = 1, disabled = false, handleRemove, handleClick } = props;
@@ -66,18 +67,14 @@ const ImageUpload: React.FC<BaseUploaderProps> = ({ ...props }) => {
                         )}
                     </div>
                 ))}
-            { maxFiles == 1 && value?.image_url &&
+            {maxFiles === 1 && !props.isLoading && value?.image_url &&
                 <div className={cn(
-                    "flex flex-col items-center justify-center group rounded-lg",
-                    props.variant === "cover-image"
-                        ? "h-[250px] active:!scale-100 w-full"
-                        : "h-24 w-24"
-                )}
-                >
+                    "flex flex-col items-center justify-center group rounded-lg border",
+                    props.variant === "cover-image" ? "h-[250px] active:!scale-100 w-full" : "h-24 w-24")} >
                     <div className="relative w-full h-full">
                         <div className="absolute top-1 right-1 z-50 px-2 py-1 rounded flex gap-1 bg-white">
-                                <MdChangeCircle size={25} className="cursor-pointer" onClick={handleClick}/>
-                                <MdDelete size={25} className="cursor-pointer !text-red-600" onClick={() => handleRemove(0, "image/*", value?.image_id)} />
+                            <MdChangeCircle size={25} className="cursor-pointer" onClick={handleClick} />
+                            <MdDelete size={25} className="cursor-pointer !text-red-600" onClick={() => handleRemove(0, "image/*", value?.image_id)} />
                         </div>
                         <Image
                             src={value?.image_url}
@@ -90,18 +87,22 @@ const ImageUpload: React.FC<BaseUploaderProps> = ({ ...props }) => {
                             }}
                         />
                     </div>
-                </div>}
+                </div>
+            }
 
-            {value?.length < maxFiles && (
+            {(value?.length < maxFiles || props.isLoading) && (
                 <Button
-                    onClick={handleClick}
+                    onClick={props.isLoading || handleClick}
                     disabled={disabled}
                     className={cn(
                         "w-24 h-24 border-2 group border-stroke !bg-transparent rounded-lg flex items-center justify-center text-gray hover:border-primary hover:text-primary transition-colors",
                         props.variant === "cover-image" ? "!h-[250px] active:!scale-100 w-full" : ""
                     )}
                 >
-                    <BiPlus className="text-2xl text-black bg-stroke rounded-full" />
+                    {props.isLoading ?
+                        <LottieLoader isLoading={true} /> :
+                        <BiPlus className="text-2xl text-black bg-stroke rounded-full" />
+                    }
                 </Button>
             )}
         </div>
