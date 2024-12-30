@@ -8,7 +8,7 @@ const WhyWeBuild = () => {
             <h1 className="text-[2rem] font-medium">Why are we building this?</h1>
             <div className="flex items-center justify-center gap-7 ">
                 {cardData.map((item, index) => (
-                    <Card title={item.title} description={item.description} index={index} />
+                    <Card key={index} title={item.title} description={item.description} index={index} />
                 ))}
             </div>
         </ContainerWrapper>

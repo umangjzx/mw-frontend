@@ -25,7 +25,7 @@ const Community = () => {
             />
             <div className="bg-[#f4f7fb] shadow-inner rounded-3xl p-6 py-20 grid grid-cols-2 gap-4 place-items-center w-full">
                 {communityData.map((item, index) => (
-                    <div className="flex flex-col gap-5 max-w-[420px] w-full">
+                    <div key={index} className="flex flex-col gap-5 max-w-[420px] w-full">
                         <div className="relative xl:max-w-[420px] w-full h-[256px]">
                             <Image
                                 src={item.image}
