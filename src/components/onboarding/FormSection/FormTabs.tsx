@@ -20,6 +20,32 @@ type FormTabsProps = {
     isLoading: boolean;
 };
 
+const TermsAndConditionElement = <p>
+    By clicking on the Submit Application above, you agree to our {" "}
+    <Link
+        href="/terms-of-service"
+        className="text-black underline hover:underline font-medium"
+    >
+        Terms of Service
+    </Link>{" "}
+    and our {" "}
+    <Link
+        href="/privacy-policy"
+        className="text-black underline hover:underline font-medium"
+    >
+        Privacy Policy
+    </Link>
+    .
+</p>
+
+const termsAndConditionsInput: FormField = {
+    id: "terms_and_conditions_accepted",
+    name: "terms_and_conditions_accepted",
+    inputType: "checkbox",
+    children: TermsAndConditionElement,
+    required: true
+}
+
 const currentVersion = process.env.NEXT_PUBLIC_CURRENT_VERSION;
 
 const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFillForm, onSubmit, isLoading }: FormTabsProps) => {
@@ -68,14 +94,14 @@ const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFill
         <form onSubmit={onSubmit} className="w-full pb-16">
             <div className="max-w-7xl px-10 mx-auto sm:px-6 lg:px-8">
                 {/* Auto Form Fill - Only for Dev */}
-                { currentVersion === "dev" && <div className="flex items-end justify-end">
+                {currentVersion === "dev" && <div className="flex items-end justify-end">
                     <Button
                         onClick={handleFillForm}
                         title="Fill Form"
                         size="large"
                         customClassName="w-fit hover:!bg-green-700 !text-sm !bg-green-700 !text-white !rounded-lg !shadow-2xl !font-bold"
                     />
-                </div> }
+                </div>}
 
                 {/* Tabs Header */}
                 <div ref={tabButtonsRef} className="flex my-8 gap-2">
@@ -88,7 +114,7 @@ const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFill
                             disabled={index > highestTab}
                         >
                             {section.title || `Step ${index + 1}`}
-                            <div className={`!h-[10px] !w-full mt-1 rounded-xl ${index <= activeTab ? "!bg-background-secondary" : "!bg-gray-300" }`}></div>
+                            <div className={`!h-[10px] !w-full mt-1 rounded-xl ${index <= activeTab ? "!bg-background-secondary" : "!bg-gray-300"}`}></div>
                         </button>
                     ))}
                 </div>
@@ -145,6 +171,16 @@ const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFill
                             <div className="flex flex-col gap-3">
                                 {activeTab === formData.length - 1 ? (
                                     <>
+                                        <p className="text-gray-600 text-sm">
+                                            <FormField
+                                                key="terms_and_conditions_accepted"
+                                                field={termsAndConditionsInput}
+                                                control={control}
+                                                errors={errors}
+                                                parent={null}
+                                            />
+
+                                        </p>
                                         <Button
                                             htmlType="submit"
                                             onClick={validateForm}
@@ -153,23 +189,6 @@ const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFill
                                             size="large"
                                             customClassName="w-fit hover:!bg-background-secondary !text-sm !bg-background-secondary !text-black !rounded-lg !shadow-2xl !font-normal"
                                         />
-                                        <p className="text-gray-600 text-sm">
-                                            By clicking on the Submit Application above, you agree to our {" "}
-                                            <Link
-                                                href="/terms-of-service"
-                                                className="text-black underline hover:underline font-medium"
-                                            >
-                                                Terms of Service
-                                            </Link>{" "}
-                                            and our {" "}
-                                            <Link
-                                                href="/privacy-policy"
-                                                className="text-black underline hover:underline font-medium"
-                                            >
-                                                Privacy Policy
-                                            </Link>
-                                            .
-                                        </p>
                                     </>
                                 ) : (
                                     <Button

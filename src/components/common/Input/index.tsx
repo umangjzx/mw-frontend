@@ -237,7 +237,7 @@ export const Input: React.FC<InputProps> = (props) => {
                         onChange={(e) => props.onChange(e.target.checked)}
                         disabled={disabled}
                     >
-                        {props.placeholder}
+                        {props.children || props.placeholder}
                     </Checkbox>
                 );
 

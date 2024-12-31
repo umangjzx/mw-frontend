@@ -94,6 +94,7 @@ type CheckboxInputProps = BaseInputProps & {
     value: boolean;
     onChange: (value: boolean) => void;
     placeholder?: string;
+    children?: React.ReactNode;
 };
 
 type RadioVariant = "default" | "rating";
