@@ -2,7 +2,7 @@
 
 import { getHeaderIcon } from "@/layouts/helper";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import VolunteerCard from "@/components/leaner/VolunteerCard";
 import VolunteerViewModal from "@/components/leaner/VolunteerViewModal";
 import { useQuery } from "@tanstack/react-query";
@@ -13,7 +13,6 @@ import AddNewMeetingModal from "@/components/schedule/Modals/AddNewMeetingModal"
 import { useQueryState } from "nuqs";
 import VolunteerFilterModal from "@/components/learners/Modals/VolunteerFilter";
 import { RiFilter3Line } from "react-icons/ri";
-import CalendarAccessScreen from "@/components/common/CalendarAccessScreen";
 import LottieLoader from "@/components/common/Loader/Lottie";
 
 interface VolunteerCardData {
@@ -35,6 +34,7 @@ export default function LearnersPage() {
     const pathname = usePathname();
     const router = useRouter();
     const searchParams = useSearchParams();
+
     const [volunteerCardData, setVolunteerCardData] = useState<VolunteerCardData[]>([]);
     const [isOpenSchedule, setIsOpenSchedule] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -44,6 +44,7 @@ export default function LearnersPage() {
     const [query] = useQueryState("query");
     const [language_ids] = useQueryState("language_ids");
     const [subject_ids] = useQueryState("subject_ids");
+    const [country] = useQueryState("country");
     const [start_date] = useQueryState("start_date");
     const [end_date] = useQueryState("end_date");
     const [start_time] = useQueryState("start_time");
@@ -51,28 +52,13 @@ export default function LearnersPage() {
     const [volunteerId, setVolunteerId] = useQueryState("volunteerId");
     const [modalQuery, setModalQuery] = useQueryState("modal");
 
-    const getAllVolunteers = async () => {
-        const endpoint = `${endpoints.volunteer.getAllVolunteers}?${new URLSearchParams({
-            query: query || "",
-            page: page,
-            size: size,
-            language_ids: language_ids || "",
-            subject_ids: subject_ids || "",
-            start_date: start_date || "",
-            end_date: end_date || "",
-            start_time: start_time || "",
-            end_time: end_time || "",
-        })}`;
-        const response: any = await GET_API(endpoint);
-        return response.data;
-    };
-
     const { data, isLoading, isError } = useQuery({
         queryKey: [
             "volunteer",
             query,
             page,
             size,
+            country,
             language_ids,
             subject_ids,
             start_date,
@@ -80,9 +66,29 @@ export default function LearnersPage() {
             start_time,
             end_time,
         ],
-        queryFn: () => getAllVolunteers(),
+        queryFn: async () => {
+            const endpoint = `${endpoints.volunteer.getAllVolunteers}?${new URLSearchParams({
+                query: query || "",
+                page: page,
+                size: size,
+                language_ids: language_ids || "",
+                subject_ids: subject_ids || "",
+                country: country || "",
+                start_date: start_date || "",
+                end_date: end_date || "",
+                start_time: start_time || "",
+                end_time: end_time || "",
+            })}`;
+            const response: any = await GET_API(endpoint);
+            return response.data;
+        },
         enabled: true,
     });
+
+    const appliedFiltersCount = useMemo(() => {
+        const filters = [language_ids, subject_ids, country, start_date, start_time];
+        return filters.filter((filter) => filter).length;
+    }, [language_ids, subject_ids, country, start_date, start_time])
 
     useEffect(() => {
         if (data?.items) {
@@ -90,7 +96,7 @@ export default function LearnersPage() {
                 volunteerId: volunteer.volunteer_id,
                 profileImage: volunteer.profile_picture.image_url,
                 name: `${volunteer.volunteer_first_name} ${volunteer.volunteer_last_name}`,
-                location: "Not Available", // Add location if available in API
+                location: volunteer?.country,
                 volunteerHrs: volunteer?.total_volunteered_hours?.toString(),
                 studentConnected: volunteer.students_connected?.toString(),
                 subjects: volunteer.volunteer_subjects.map((subject: any) => subject.subject_name),
@@ -136,23 +142,23 @@ export default function LearnersPage() {
             titleIcon: getHeaderIcon(pathname),
             actionButtons: [
                 {
-                    buttonTitle: "Volunteers I have worked with",
-                    buttonOnClick: () => router.push("/learner/my-volunteers"),
-                    buttonClassName: "!bg-black !text-white hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4 !rounded-full",
-                    buttonPlacement: "right",
-                    showButton: true,
-                },
-                {
-                    buttonTitle: "Filters",
+                    buttonTitle: `Filters (${appliedFiltersCount})`,
                     buttonOnClick: () => setIsFilterOpen(true),
                     buttonIcon: <RiFilter3Line className="text-lg" />,
                     buttonClassName: "!bg-white !text-balck hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4 !rounded-full",
                     buttonPlacement: "right",
                     showButton: true,
+                },
+                {
+                    buttonTitle: "Volunteers I have worked with",
+                    buttonOnClick: () => router.push("/learner/my-volunteers"),
+                    buttonClassName: "!bg-black !text-white hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4 !rounded-full",
+                    buttonPlacement: "right",
+                    showButton: true,
                 }
             ]
         });
-    }, [pathname, setHeaderOptions]);
+    }, [pathname, setHeaderOptions, appliedFiltersCount]);
 
     return (
         <div className="px-10 py-10 animate-fadeIn h-full">
@@ -176,7 +182,7 @@ export default function LearnersPage() {
                             {...volunteer}
                         />
                     ))}
-                    {volunteerCardData.length === 0 && <div>No Volunteer Found</div> }
+                    {volunteerCardData.length === 0 && <div>No Volunteer Found</div>}
                 </div>
             )}
         </div>

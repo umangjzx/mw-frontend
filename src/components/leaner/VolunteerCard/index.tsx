@@ -50,7 +50,7 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
                 <div className="flex flex-col">
                     <p className="font-medium">{name}</p>
                     <p className="font-medium text-sm ">
-                        <span className="text-gray-light">From </span> {location}
+                        <span className="text-gray-light capitalize">{location && `From ${location}`}</span>
                     </p>
                 </div>
             </div>
