@@ -1,15 +1,15 @@
+import nationalities from "@/data/nationalities.json"
 
 export const VolunteerFilterModalConstants = [
     {
-        name: "nationality",
+        id: "country",
+        name: "country",
         label: "Select Nationality",
         inputType: "select",
         placeholder: "Select Nationality",
+        options: nationalities,
+        showSearch: true,
         required: true,
-        options: [
-            { label: "Indian", value: "indian" },
-            { label: "American", value: "american" }
-        ]
     },
     {
         name: "languages_known",

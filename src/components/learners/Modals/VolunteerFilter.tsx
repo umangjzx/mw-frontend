@@ -10,6 +10,7 @@ import dayjs from "dayjs";
 import moment from "moment";
 
 const meetingFormSchema = z.object({
+    country: z.any().optional(),
     languages_known: z.any().optional(),
     subjects: z.array(z.string()).optional(),
     available_time: z.any(),
@@ -27,6 +28,7 @@ interface VolunteerFilterModalProps {
 export default function VolunteerFilterModal({ isOpen, isFilterApplying, onClose }: VolunteerFilterModalProps) {
     const [language_ids, setLanguages] = useQueryState("language_ids");
     const [subject_ids, setSubjects] = useQueryState("subject_ids");
+    const [country, setCountry] = useQueryState("country");
     const [start_time, setStartTime] = useQueryState("start_time");
     const [end_time, setEndTime] = useQueryState("end_time");
     const [start_date, setStartDate] = useQueryState("start_date");
@@ -42,6 +44,7 @@ export default function VolunteerFilterModal({ isOpen, isFilterApplying, onClose
         setFilterData({
             languages_known: language_ids?.split(",") || [],
             subjects: subject_ids?.split(",") || [],
+            country: country || null,
             available_days: [
                 start_date ? dayjs(start_date) : null,
                 end_date ? dayjs(end_date) : null,
@@ -71,6 +74,7 @@ export default function VolunteerFilterModal({ isOpen, isFilterApplying, onClose
 
         setLanguages(filterData?.languages_known?.length ? filterData.languages_known.join(",") : null);
         setSubjects(filterData?.subjects?.length ? filterData.subjects.join(",") : null);
+        setCountry(filterData?.country ? filterData?.country : null);
 
         onClose();
     };
