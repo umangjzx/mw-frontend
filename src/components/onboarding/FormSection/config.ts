@@ -33,12 +33,9 @@ export const volunteerFormSchema = z.object({
         .string({ required_error: "Last Name is required" })
         .min(1, { message: "Last Name cannot be empty" }),
     volunteer_birth_date: z.string({ required_error: "Please select your birthday" }),
-    consented_from_parent: z
-        .boolean({ required_error: "Parent consent is required" })
-        .refine((val) => val === true, { message: "Parent consent must be provided" }),
-    volunteer_parent_email: z
-        .string({ required_error: "Parent email is required" })
-        .email("Please enter a valid email address"),
+    consented_from_parent: z.boolean().optional(),
+    volunteer_parent_fullname: z.string().optional(),
+    volunteer_parent_email: z.string().optional(),
     volunteer_gender: z.string({ required_error: "Please select your gender" }),
     volunteer_education: z
         .string({ required_error: "Please provide your education details" })
@@ -283,7 +280,7 @@ export const volunteerFormSchema = z.object({
                 message: "Profile video cannot be empty",
             }),
         })
-        .required(),
+        .optional(),
 
     // Profile Document
     profile_document: z
@@ -301,16 +298,43 @@ export const volunteerFormSchema = z.object({
     volunteer_subjects: z
         .array(z.any(), { required_error: "Please add at least one subject" })
         .nonempty("Please add at least one subject"),
-    terms_and_conditions_accepted: z.boolean().refine(val => val === true, {
-        message: "Acceptance of terms and conditions is required",
-      }),
-})
-.superRefine((data) => {
-    if(!data?.terms_and_conditions_accepted){
+    terms_and_conditions_accepted: z.boolean({ required_error: "Acceptance of terms and conditions is required" }),
+}).superRefine((data) => {
+    if (!data?.terms_and_conditions_accepted) {
         throw new ZodError([{ message: "Acceptance of terms and conditions is required", path: ["terms_and_conditions_accepted"], code: "invalid_type", expected: "boolean", received: "undefined" }])
     }
     return true;
 });
+
+export function validateVolunteerParentDetails(data: any) {
+    const errors = {
+        consented_from_parent: "",
+        volunteer_parent_fullname: "",
+        volunteer_parent_email: ""
+    }
+    let isSuccess = true;
+
+    const age = moment().diff(moment(data.volunteer_birth_date), 'years');
+    if (age < 18) {
+        if (!data.consented_from_parent) {
+            isSuccess = false
+            errors["consented_from_parent"] = "Parent consent is required for volunteers under 18";
+        }
+        if (!data.volunteer_parent_fullname || data.volunteer_parent_fullname.trim().length === 0) {
+            isSuccess = false
+            errors["volunteer_parent_fullname"] = "Parent name is required for volunteers under 18";
+        }
+        if (!data.volunteer_parent_email || data.volunteer_parent_email.trim().length === 0) {
+            isSuccess = false
+            errors["volunteer_parent_email"] = "Parent email is required for volunteers under 18";
+        }
+    }else{
+        isSuccess = true;
+    }
+
+    return { success: isSuccess, errors: isSuccess ? {} : errors };
+}
+
 
 export type VolunteerFormData = z.infer<typeof volunteerFormSchema>;
 export const defaultVolunteerData: Volunteer = {
@@ -545,31 +569,31 @@ export const learnerFormSchema = z.object({
         .required(),
     terms_and_conditions_accepted: z.boolean({ required_error: "Acceptance of terms and conditions is required" }),
 })
-.superRefine((data) => {
-    const learnerAge = moment().diff(moment(data?.learner_personal_info.learner_date_of_birth), 'years');
-    if (learnerAge < 18) {
-        const issues: ZodIssue[] = [];
+    .superRefine((data) => {
+        const learnerAge = moment().diff(moment(data?.learner_personal_info.learner_date_of_birth), 'years');
+        if (learnerAge < 18) {
+            const issues: ZodIssue[] = [];
 
-        Object.entries(data?.parent_info).forEach(([fieldName, fieldValue]) => {
-            if(!fieldValue){
-                issues.push({
-                    message: `This field is required.`,
-                    path: ["parent_info", fieldName],
-                    code: "invalid_type",
-                    expected: "string",
-                    received: "undefined",
-                });
+            Object.entries(data?.parent_info).forEach(([fieldName, fieldValue]) => {
+                if (!fieldValue) {
+                    issues.push({
+                        message: `This field is required.`,
+                        path: ["parent_info", fieldName],
+                        code: "invalid_type",
+                        expected: "string",
+                        received: "undefined",
+                    });
+                }
+            })
+            if (issues.length > 0) {
+                throw new ZodError(issues);
             }
-        })
-        if (issues.length > 0) {
-            throw new ZodError(issues);
         }
-    }
-    if(!data?.terms_and_conditions_accepted){
-        throw new ZodError([{ message: "Acceptance of terms and conditions is required", path: ["terms_and_conditions_accepted"], code: "invalid_type", expected: "boolean", received: "undefined" }])
-    }
-    return true;
-});
+        if (!data?.terms_and_conditions_accepted) {
+            throw new ZodError([{ message: "Acceptance of terms and conditions is required", path: ["terms_and_conditions_accepted"], code: "invalid_type", expected: "boolean", received: "undefined" }])
+        }
+        return true;
+    });
 
 
 export type LearnerFormData = z.infer<typeof learnerFormSchema>;

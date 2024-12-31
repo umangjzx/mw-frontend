@@ -8,6 +8,8 @@ import { showToast } from "@/components/common/Toast";
 import { useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import moment from "moment";
+import { validateVolunteerParentDetails } from "./config";
+import { UseFormSetError } from "react-hook-form";
 
 type FormTabsProps = {
     formData: FormSectionConfig[];
@@ -17,6 +19,7 @@ type FormTabsProps = {
     validateForm: () => void;
     handleFillForm: () => void;
     onSubmit: () => void;
+    setError: UseFormSetError<any>;
     isLoading: boolean;
 };
 
@@ -48,7 +51,7 @@ const termsAndConditionsInput: FormField = {
 
 const currentVersion = process.env.NEXT_PUBLIC_CURRENT_VERSION;
 
-const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFillForm, onSubmit, isLoading }: FormTabsProps) => {
+const FormTabs = ({ formData, control, errors, trigger, setError, validateForm, handleFillForm, onSubmit, isLoading }: FormTabsProps) => {
     const role = Cookies.get("role");
 
     // Form Tabs
@@ -61,7 +64,6 @@ const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFill
             const parentPath = formData[activeTab].parent;
             return parentPath ? `${parentPath}.${field.parent || field.id}` : field.parent || field.id;
         })
-        console.log("Current Fields: ", currentFields);
 
         if (role === "learner" && activeTab === 1) {
             const learnerDOB = control._formValues?.learner_personal_info?.learner_date_of_birth;
@@ -72,6 +74,16 @@ const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFill
         const isValidSection = await trigger(currentFields);
         if (!isValidSection) {
             showToast({ type: "error", message: "Please fill in all required fields before proceeding." });
+        }
+        if(role === "volunteer" && activeTab === 0){
+            const validation = validateVolunteerParentDetails(control._formValues);
+            if (!validation.success) {
+                Object.entries(validation.errors).forEach(([key, value]: any)=>{
+                    if(!key || !value) return;
+                    setError(key, { message: value })
+                })
+                return false;
+            }
         }
         return isValidSection;
     };
@@ -108,7 +120,7 @@ const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFill
 
                 {/* Tabs Header */}
                 <div ref={tabButtonsRef} className="flex my-8 gap-2">
-                    {formData.map((section, index) => (
+                    {formData.map((section: any, index) => (
                         <button
                             key={section.title || index}
                             type="button"

@@ -54,24 +54,6 @@ const ProfileDetailsFields: FormField[] = [
         birthDatePicker: { minAge: 14, maxAge: 100 },
     },
     {
-        id: "consented_from_parent",
-        label: "",
-        inputType: "checkbox",
-        placeholder: "I've consent from my parent or guardian to be a volunteer.",
-        gridCols: 1,
-        inputClassName: "w-fit",
-        required: true,
-    },
-    {
-        id: "volunteer_parent_email",
-        label: "Parent Email ID",
-        inputType: "text",
-        placeholder: "Enter Email ID",
-        gridCols: 2,
-        inputClassName: "!w-[49%]",
-        required: true,
-    },
-    {
         id: "volunteer_gender",
         label: "Select Gender",
         inputType: "radio",
@@ -80,8 +62,33 @@ const ProfileDetailsFields: FormField[] = [
             { label: "Female", value: "female" },
             { label: "Do not wish to reveal", value: "not_specified" },
         ],
-        gridCols: 2,
+        gridCols: 1,
         required: true,
+    },
+    {
+        id: "consented_from_parent",
+        label: "Parent Details are mandatory for volunteers younger than 18 years.",
+        inputType: "checkbox",
+        placeholder: "I've consent from my parent or guardian to be a volunteer.",
+        gridCols: 2,
+        inputClassName: "w-fit",
+        hide: true
+    },
+    {
+        id: "volunteer_parent_fullname",
+        label: "Parent Full Name",
+        inputType: "text",
+        placeholder: "Enter Parent FullName",
+        gridCols: 1,
+        hide: true
+    },
+    {
+        id: "volunteer_parent_email",
+        label: "Parent Email ID",
+        inputType: "text",
+        placeholder: "Enter Email ID",
+        gridCols: 1,
+        hide: true
     },
     {
         id: "volunteer_higher_education",

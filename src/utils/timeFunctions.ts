@@ -12,3 +12,8 @@ export const toUserTimeZone = ( { date, timeZone = localTimeZone, format = "YYYY
     if (!date) return "";
     return moment.utc(date).tz(timeZone).format(format);
 };
+
+export const calculateAge = (dob: string) => {
+    if(!dob) return "";
+    return moment().diff(moment(dob), 'years');
+}
