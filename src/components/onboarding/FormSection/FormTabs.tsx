@@ -20,7 +20,7 @@ type FormTabsProps = {
     isLoading: boolean;
 };
 
-const TermsAndConditionElement = <p>
+const TermsAndConditionElement = <div>
     By clicking on the Submit Application above, you agree to our {" "}
     <Link
         href="/terms-of-service"
@@ -36,7 +36,7 @@ const TermsAndConditionElement = <p>
         Privacy Policy
     </Link>
     .
-</p>
+</div>
 
 const termsAndConditionsInput: FormField = {
     id: "terms_and_conditions_accepted",
@@ -60,15 +60,14 @@ const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFill
         const currentFields = formData[activeTab].fields.map((field) => {
             const parentPath = formData[activeTab].parent;
             return parentPath ? `${parentPath}.${field.parent || field.id}` : field.parent || field.id;
-        });
+        })
+        console.log("Current Fields: ", currentFields);
 
         if (role === "learner" && activeTab === 1) {
             const learnerDOB = control._formValues?.learner_personal_info?.learner_date_of_birth;
             const age = learnerDOB && moment().diff(moment(learnerDOB), 'years');
             if (age > 18) return true;
         }
-
-        console.log("Current Fields: ", currentFields);
 
         const isValidSection = await trigger(currentFields);
         if (!isValidSection) {
@@ -85,6 +84,10 @@ const FormTabs = ({ formData, control, errors, trigger, validateForm, handleFill
         setActiveTab(index);
         setHighestTab(Math.max(highestTab, index));
     };
+
+    useEffect(() => {
+        if(errors?.parent_info) setActiveTab(1)
+    }, [errors])
 
     useEffect(() => {
         tabButtonsRef.current?.scrollIntoView({ behavior: "smooth" });
