@@ -54,14 +54,16 @@ const MessageModal = ({ receiverId, isOpen, onClose }: MessageModalProps) => {
 
         const profileData = userRole === "volunteer" ? {
             profile_picture: data?.profile_picture?.image_url,
-            fullName: `${data?.learner_personal_info?.learner_first_name} ${data?.learner_personal_info?.learner_last_name}`
+            fullName: `${data?.learner_personal_info?.learner_first_name} ${data?.learner_personal_info?.learner_last_name}`,
+            country: data?.learner_personal_info?.learner_contact_details?.country
         } : {
             profile_picture: data?.profile_picture?.image_url,
-            fullName: `${data?.volunteer_first_name} ${data?.volunteer_last_name}`
+            fullName: `${data?.volunteer_first_name} ${data?.volunteer_last_name}`,
+            country: data?.volunteer_contact_details?.country
         }
         return profileData;
     }
-    const { data: userData } = useQuery({ queryKey: [userRole, "profile_data"], queryFn: getUserData })
+    const { data: userData, isFetching: isFetchingUser } = useQuery({ queryKey: [userRole, "profile_data"], queryFn: getUserData })
 
 
     const getUserMessages = async () => {
@@ -90,19 +92,34 @@ const MessageModal = ({ receiverId, isOpen, onClose }: MessageModalProps) => {
         }
     }, [messages]);
 
-    const headerComponent = <>
+    const headerComponent = isFetchingUser ?
+        <div className="flex gap-2 w-full border-b border-stroke items-center mb-4 pb-4 animate-pulse">
+            <div className="h-[50px] w-[50px] bg-gray-200 rounded-full dark:bg-gray-700"></div>
+            <div>
+                <div className="h-[15px] w-[160px] bg-gray-200 rounded-full dark:bg-gray-500 mb-2"></div>
+                <div className="h-[10px] w-[200px] bg-gray-200 rounded-full dark:bg-gray-500"></div>
+            </div>
+        </div> :
         <div className="flex gap-2 w-full border-b border-stroke items-center mb-4 pb-4">
-            <img src={userData?.profile_picture} alt="" className="h-[50px] w-[50px] object-cover border rounded-full" />
+            <img src={userData?.profile_picture} alt={userData?.fullName} className="h-[50px] w-[50px] object-cover border rounded-full" />
             <div>
                 <h5 className="font-medium !text-xl">{userData?.fullName}</h5>
-                <p className="!text-sm">From New Mexico</p>
+                <p className="!text-sm">From <span className="capitalize">{userData?.country}</span></p>
             </div>
         </div>
-    </>
 
     const footerComponent = <>
         <div className="flex gap-2 w-full border-t border-stroke items-end mt-0 pt-4">
-            <Input name="message" className="!mb-0" inputClassName="!text-lg !max-h-[80px]" inputType="textarea" placeholder="Type message here" onChange={(e) => setMessage(e.toString())} value={message || ""} />
+            <Input name="message" className="!mb-0" inputClassName="!text-md !max-h-[80px]" inputType="textarea" placeholder="Type message here" 
+                onChange={(e) => setMessage(e.toString())}
+                onKeyDown={(event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+                    if (event.key === "Enter" && !event.shiftKey) {
+                        event.preventDefault();
+                        handleSubmit(message);
+                    }
+                }} 
+                value={message || ""} 
+            />
             <Button
                 onClick={() => handleSubmit(message)}
                 disabled={!message}
@@ -124,16 +141,16 @@ const MessageModal = ({ receiverId, isOpen, onClose }: MessageModalProps) => {
             footerComponent={footerComponent}
         >
             <div className="flex flex-col gap-3 min-h-[40vh] overflow-y-auto">
-                { isFetching ?
+                {isFetchingUser || isFetching ?
                     <div className="!h-[40vh] !w-full">
                         <Loader size="large" />
-                    </div> : 
+                    </div> :
                     messages?.length === 0 && <div className="flex-center !h-[40vh] !w-full">No Message Found</div>
                 }
-                {!isFetching && Array.isArray(messages) &&
+                {!isFetchingUser && !isFetching && Array.isArray(messages) &&
                     messages.map((message: MessageProps, index: number) => (
                         <div key={message?.message_id || index} className={`!max-w-[80%] !min-w-[25%] rounded-xl text-base !bg-background-input p-3 ${message?.created_by === userRole ? 'ml-auto' : 'mr-auto'}`}>
-                            <p className="!text-black mb-3">{message?.message}</p>
+                            <p className="!text-black mb-3  whitespace-pre-wrap">{message?.message}</p>
                             <div className={`${message?.created_by === userRole && 'flex flex-end'}`}>
                                 <p className="flex items-center gap-1 text-sm text-gray-light ml-auto">
                                     {toUserTimeZone({ date: message?.created_at, timeZone: userTimezone, format: "h:mm A" })}

@@ -11,6 +11,7 @@ import Cookies from "js-cookie";
 import { getIndividualLearner } from "@/api/learners";
 import { useAppStore } from "@/store/useAppStore";
 import { endpoints } from "@/api/constants";
+import LottieLoader from "@/components/common/Loader/Lottie";
 
 export default function ProfilePage() {
     const { setHeaderOptions } = useComponentStore();
@@ -58,6 +59,14 @@ export default function ProfilePage() {
 
         setLearnerData({ bio: bioData, overview: overviewData });
     }, [data]);
+
+    if (isLoading) {
+        return <>
+            <div className="h-full w-full flex-center">
+                <LottieLoader isLoading={isLoading} />
+            </div>
+        </>
+    }
 
     return (
         <div className="h-full animate-fadeIn">

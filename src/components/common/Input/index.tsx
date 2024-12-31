@@ -61,11 +61,7 @@ export const Input: React.FC<InputProps> = (props) => {
 
         return (
             <label htmlFor={name} className={`text-sm font-medium text-gray-700 ${labelClassName}`}>
-                <div
-                    className={`flex ${
-                        sublabelAlignment === "right" ? "items-center" : "flex-col items-start"
-                    } gap-1`}
-                >
+                <div className={`flex ${sublabelAlignment === "right" ? "items-center" : "flex-col items-start"} gap-1`}>
                     {labelContent}
                     {sublabelContent}
                 </div>
@@ -110,6 +106,7 @@ export const Input: React.FC<InputProps> = (props) => {
                     <InputNumber
                         {...props}
                         maxLength={props?.maxLength}
+                        min={props?.min}
                         name={name}
                         type={props.inputType}
                         placeholder={props.placeholder}
@@ -136,6 +133,7 @@ export const Input: React.FC<InputProps> = (props) => {
                         value={props.value}
                         onChange={(e) => props.onChange(e.target.value)}
                         disabled={disabled}
+                        onKeyDown={(event) => props.onKeyDown ? props.onKeyDown(event) : event}
                         rootClassName={cn(
                             props.inputClassName,
                             `hover:!border-stroke border focus:!border-stroke focus:!bg-background-input border-stroke`
@@ -239,7 +237,7 @@ export const Input: React.FC<InputProps> = (props) => {
                         onChange={(e) => props.onChange(e.target.checked)}
                         disabled={disabled}
                     >
-                        {props.placeholder}
+                        {props.children || props.placeholder}
                     </Checkbox>
                 );
 

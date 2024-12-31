@@ -301,6 +301,15 @@ export const volunteerFormSchema = z.object({
     volunteer_subjects: z
         .array(z.any(), { required_error: "Please add at least one subject" })
         .nonempty("Please add at least one subject"),
+    terms_and_conditions_accepted: z.boolean().refine(val => val === true, {
+        message: "Acceptance of terms and conditions is required",
+      }),
+})
+.superRefine((data) => {
+    if(!data?.terms_and_conditions_accepted){
+        throw new ZodError([{ message: "Acceptance of terms and conditions is required", path: ["terms_and_conditions_accepted"], code: "invalid_type", expected: "boolean", received: "undefined" }])
+    }
+    return true;
 });
 
 export type VolunteerFormData = z.infer<typeof volunteerFormSchema>;
@@ -534,6 +543,7 @@ export const learnerFormSchema = z.object({
             }),
         })
         .required(),
+    terms_and_conditions_accepted: z.boolean({ required_error: "Acceptance of terms and conditions is required" }),
 })
 .superRefine((data) => {
     const learnerAge = moment().diff(moment(data?.learner_personal_info.learner_date_of_birth), 'years');
@@ -554,6 +564,9 @@ export const learnerFormSchema = z.object({
         if (issues.length > 0) {
             throw new ZodError(issues);
         }
+    }
+    if(!data?.terms_and_conditions_accepted){
+        throw new ZodError([{ message: "Acceptance of terms and conditions is required", path: ["terms_and_conditions_accepted"], code: "invalid_type", expected: "boolean", received: "undefined" }])
     }
     return true;
 });

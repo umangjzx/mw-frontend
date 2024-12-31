@@ -21,11 +21,12 @@ type FormField = {
     sublabel?: string;
     showSearch?: boolean;
     options?: { label: string; value: any }[];
+    min?: number;
     gridCols?: number;
     inputClassName?: string;
     parent?: string | null;
     disabled?: boolean;
-    children?: FormField[];
+    children?: FormField[] | any;
     sublabelAlignment?: "right" | "bottom";
     title?: string;
     fileType?: string;

@@ -15,7 +15,6 @@ const ParentGuardianFields: FormField[] = [
         inputType: "text",
         placeholder: "Enter First Name",
         gridCols: 1,
-        required: true,
     },
     {
         id: "parent_last_name",
@@ -23,7 +22,6 @@ const ParentGuardianFields: FormField[] = [
         inputType: "text",
         placeholder: "Enter Last Name",
         gridCols: 1,
-        required: true,
     },
     {
         id: "relationship_to_learner",
@@ -38,7 +36,6 @@ const ParentGuardianFields: FormField[] = [
             { label: "Guardian", value: "guardian" },
             { label: "Other", value: "other" },
         ],
-        required: true,
     },
     {
         id: "",
@@ -50,7 +47,6 @@ const ParentGuardianFields: FormField[] = [
         inputType: "text",
         placeholder: "abc@example.com",
         gridCols: 1,
-        required: true,
     },
     {
         id: "parent_contact_number",
@@ -61,7 +57,6 @@ const ParentGuardianFields: FormField[] = [
         sublabelAlignment: "right",
         gridCols: 1,
         disabled: false,
-        required: true,
     },
     {
         id: "parent_address",
@@ -70,7 +65,6 @@ const ParentGuardianFields: FormField[] = [
         placeholder: "Type address here",
         gridCols: 2,
         inputClassName: "w-[49%]",
-        required: true,
     }
 ];
 
