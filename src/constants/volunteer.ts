@@ -71,24 +71,21 @@ const ProfileDetailsFields: FormField[] = [
         inputType: "checkbox",
         placeholder: "I've consent from my parent or guardian to be a volunteer.",
         gridCols: 2,
-        inputClassName: "w-fit",
-        hide: true
+        inputClassName: "w-fit"
     },
     {
         id: "volunteer_parent_fullname",
         label: "Parent Full Name",
         inputType: "text",
         placeholder: "Enter Parent FullName",
-        gridCols: 1,
-        hide: true
+        gridCols: 1
     },
     {
         id: "volunteer_parent_email",
         label: "Parent Email ID",
         inputType: "text",
         placeholder: "Enter Email ID",
-        gridCols: 1,
-        hide: true
+        gridCols: 1
     },
     {
         id: "volunteer_higher_education",
