@@ -67,7 +67,7 @@ export const endpoints: EndpointProps = {
         getPostComments: (post_id: string) => `comment/${post_id}`,
         commentLikes: (comment_id: string) => `comment/${comment_id}/like`,
     },
-    common: (path: CommonPath) => `common/${path}`,
+    common: (path: CommonPath) => `common/${path}/`,
     resources: {
         create: "resource",
         get: "resource",
