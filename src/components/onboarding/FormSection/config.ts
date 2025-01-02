@@ -661,7 +661,7 @@ export const defaultLearnerData: Learner = {
 
     learner_goals: {
         expected_goals: ["Encourage Independence"],
-        subjects_to_focus_on: ["Basic chords"],
+        subjects_to_focus_on: ["science"],
         preferred_volunteer_qualities: ["patience"],
         skill_level: "beginner",
     },

@@ -66,6 +66,22 @@ type MultiSelectInputProps = BaseInputProps & {
     isLoading?: boolean;
 };
 
+type MultiSelectInputCreatableProps = BaseInputProps & {
+    inputType: "select-creatable";
+    value: (string | number)[];
+    options: InputOption[];
+    placeholder?: string;
+    variant?: "single" | "multi";
+    isLoading?: boolean;
+    creatable?: boolean;
+    disabled?: boolean;
+    allowCreate: boolean;
+    endpoint: CommonPath;
+    onError?: (error: Error) => void;
+    onChange: (value: any) => void;
+    onCreate: (value: any) => void;
+};
+
 type DatePickerInputProps = BaseInputProps & {
     inputType: "datepicker";
     value: Date | null;
@@ -192,6 +208,7 @@ type InputProps =
     | TextAreaInputProps
     | SelectInputProps
     | MultiSelectInputProps
+    | MultiSelectInputCreatableProps
     | DatePickerInputProps
     | BirthDatePickerInputProps
     | CheckboxInputProps

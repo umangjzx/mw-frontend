@@ -20,6 +20,7 @@ type FormTabsProps = {
     handleFillForm: () => void;
     onSubmit: () => void;
     setError: UseFormSetError<any>;
+    setValue: (name: string, value: any, options?: any) => void;
     isLoading: boolean;
 };
 
@@ -51,7 +52,7 @@ const termsAndConditionsInput: FormField = {
 
 const currentVersion = process.env.NEXT_PUBLIC_CURRENT_VERSION;
 
-const FormTabs = ({ formData, control, errors, trigger, setError, validateForm, handleFillForm, onSubmit, isLoading }: FormTabsProps) => {
+const FormTabs = ({ formData, control, errors, trigger, setError, setValue, validateForm, handleFillForm, onSubmit, isLoading }: FormTabsProps) => {
     const role = Cookies.get("role");
 
     // Form Tabs
@@ -135,16 +136,16 @@ const FormTabs = ({ formData, control, errors, trigger, setError, validateForm, 
                 </div>
 
                 {/* Active Tab Content */}
-                {formData[activeTab] && (
-                    <div className="!bg-white p-10 rounded-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                        {formData[activeTab].title && (
-                            <h2 className="text-3xl font-semibold mb-8">{formData[activeTab].title}</h2>
+                {formData.map((section: any, index) => (
+                    <div className={`!bg-white p-10 rounded-3xl mx-auto px-4 sm:px-6 lg:px-8 ${activeTab === index ? 'block' : 'hidden'}`}>
+                        {section?.title && (
+                            <h2 className="text-3xl font-semibold mb-8">{section?.title}</h2>
                         )}
                         <div className="grid grid-cols-2 w-full gap-6">
-                            {formData[activeTab].fields.map((field, index) => {
-                                if (formData[activeTab]?.type === "card") {
-                                    const parent = formData[activeTab].parent
-                                        ? `${formData[activeTab].parent}.${field.parent}`
+                            {section?.fields.map((field: any, index: number) => {
+                                if (section?.type === "card") {
+                                    const parent = section?.parent
+                                        ? `${section?.parent}.${field.parent}`
                                         : field.parent;
 
                                     return (
@@ -160,6 +161,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, validateForm, 
                                                     control={control}
                                                     errors={errors}
                                                     parent={parent}
+                                                    setValue={setValue}
                                                 />
                                             ))}
                                         </CardWrapper>
@@ -172,10 +174,11 @@ const FormTabs = ({ formData, control, errors, trigger, setError, validateForm, 
                                         field={field}
                                         control={control}
                                         errors={errors}
+                                        setValue={setValue}
                                         parent={
                                             field.parent
-                                                ? `${formData[activeTab].parent}.${field.parent}`
-                                                : formData[activeTab].parent
+                                                ? `${section?.parent}.${field.parent}`
+                                                : section?.parent
                                         }
                                     />
                                 );
@@ -193,6 +196,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, validateForm, 
                                                 control={control}
                                                 errors={errors}
                                                 parent={null}
+                                                setValue={setValue}
                                             />
 
                                         </p>
@@ -216,7 +220,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, validateForm, 
                             </div>
                         </div>
                     </div>
-                )}
+                )) }
             </div>
         </form>
     );

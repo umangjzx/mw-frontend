@@ -17,6 +17,7 @@ import { Select } from "./Select";
 import ContactInput from "../ContactInput";
 import dayjs from "dayjs";
 import moment from "moment";
+import SelectInputCreatable from "./Select/SelectInputCreatable";
 
 const { TextArea } = AntInput;
 const { RangePicker: DateRangePicker } = AntDatePicker;
@@ -170,6 +171,10 @@ export const Input: React.FC<InputProps> = (props) => {
 
             case "multiselect":
                 return <MultiSelect {...props} />;
+            
+            case "select-creatable":
+                return <SelectInputCreatable {...props} />;
+        
             case "async-select":
                 return <AsyncSelect {...props} />;
             case "datepicker":

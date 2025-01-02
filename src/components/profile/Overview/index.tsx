@@ -17,7 +17,7 @@ const Overview = ({ data, reviewEndpoint }: any) => {
     const overViewCard = [
         {
             title: isLearner ? "Hours Attended" : "Hours Volunteered",
-            value: data?.total_hours,
+            value: data?.total_hours || 0,
             icon: <ClockIcon />,
         },
         {

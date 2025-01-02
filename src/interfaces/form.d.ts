@@ -11,6 +11,7 @@ type FormField = {
         | "textarea"
         | "parent"
         | "multiselect"
+        | "select-creatable"
         | "upload"
         | "search"
         | "async-select"
@@ -20,6 +21,7 @@ type FormField = {
     required?: boolean;
     sublabel?: string;
     showSearch?: boolean;
+    creatable?: boolean;
     options?: { label: string; value: any }[];
     min?: number;
     gridCols?: number;
