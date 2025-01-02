@@ -112,6 +112,17 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             [type]: value ? dayjs(value, "HH:mm").format("HH:mm") : "",
         };
 
+        if (
+            updatedSlot.start_time &&
+            updatedSlot.end_time &&
+            dayjs(updatedSlot.start_time, "HH:mm").isAfter(dayjs(updatedSlot.end_time, "HH:mm"))
+        ) {
+            const temp = updatedSlot.start_time;
+            updatedSlot.start_time = updatedSlot.end_time;
+            updatedSlot.end_time = temp;
+            console.log("Swapped start_time and end_time due to invalid order");
+        }
+
         // Check for overlap with other slots
         if (
             updatedSlot.start_time &&

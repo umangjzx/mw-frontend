@@ -41,6 +41,10 @@ export default function VolunteerFilterModal({ isOpen, isFilterApplying, onClose
 
     // Update form data when query state changes
     useEffect(() => {
+        let from = start_time ? moment(start_time, "HH:mm") : null;
+        let to = end_time ? moment(end_time, "HH:mm") : null;
+        if (from && to && from.isAfter(to)) [from, to] = [to, from];
+
         setFilterData({
             languages_known: language_ids?.split(",") || [],
             subjects: subject_ids?.split(",") || [],
@@ -49,10 +53,7 @@ export default function VolunteerFilterModal({ isOpen, isFilterApplying, onClose
                 start_date ? dayjs(start_date) : null,
                 end_date ? dayjs(end_date) : null,
             ],
-            available_time: {
-                from: start_time ? moment(start_time, "HH:mm") : null,
-                to: end_time ? moment(end_time, "HH:mm") : null,
-            },
+            available_time: { from, to },
         });
     }, [language_ids, subject_ids, start_date, end_date, start_time, end_time]);
 

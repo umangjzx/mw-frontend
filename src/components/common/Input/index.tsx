@@ -261,10 +261,10 @@ export const Input: React.FC<InputProps> = (props) => {
                             placeholder={props.fromPlaceholder || "From"}
                             value={props.value?.from}
                             onChange={(time) => {
-                                props.onChange({
-                                    from: time,
-                                    to: props.value?.to,
-                                });
+                                let from = time;
+                                let to = props.value?.to;
+                                if (from && to && dayjs(from, "h:mm A").isAfter(dayjs(to, "h:mm A"))) [from, to] = [to, from];
+                                props.onChange({ from, to });
                             }}
                             format="h:mm A"
                             use12Hours
@@ -276,10 +276,10 @@ export const Input: React.FC<InputProps> = (props) => {
                             placeholder={props.toPlaceholder || "To"}
                             value={props.value?.to}
                             onChange={(time) => {
-                                props.onChange({
-                                    from: props.value?.from,
-                                    to: time,
-                                });
+                                let from = props.value?.from;
+                                let to = time;
+                                if (from && to && dayjs(from, "h:mm A").isAfter(dayjs(to, "h:mm A"))) [from, to] = [to, from];
+                                props.onChange({ from, to });
                             }}
                             format="h:mm A"
                             use12Hours

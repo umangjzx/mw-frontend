@@ -1,6 +1,7 @@
 "use client";
 import { endpoints } from "@/api/constants";
 import { GET_API, POST_API } from "@/api/request";
+import LottieLoader from "@/components/common/Loader/Lottie";
 import Celebrate from "@/components/landingpage/Celebrate";
 import Community from "@/components/landingpage/Community";
 import ForLearner from "@/components/landingpage/ForLearner";
@@ -128,6 +129,10 @@ export default function Page() {
             }
         };
     }, []);
+
+    if(isLoading) return <div className="h-[100vh] w-full flex-center">
+        <LottieLoader isLoading={isLoading}/>
+    </div>
 
     return (
         <div className="w-full overflow-x-hidden bg-background-input">

@@ -61,9 +61,9 @@ const Header = ({ handleModalLogin }: HeaderProps) => {
             ></div>
 
             <div className="w-full mx-auto flex justify-between items-center 2xl:px-[4%] px-[5%] py-5 ">
-                <span className="cursor-pointer">
+                <Link href="/" className="cursor-pointer">
                     <Logo />
-                </span>
+                </Link>
                 <div className="flex 2xl:gap-6 gap-4 items-center">
                     <nav className="flex 2xl:gap-6 gap-4">
                         {links.map((link, index) => (
