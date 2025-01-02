@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { convertToOptions, customStyles } from "./helper";
 import { GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
@@ -17,13 +17,14 @@ const AsyncSelect = ({
     onError,
     ...props
 }: AsyncSelectProps) => {
-    console.log("props", variant, props.name);
-    const { data, isLoading, error } = useQuery({
+    const [data, setData] = useState<any[]>([]);
+    const { data: selectData, isLoading, error } = useQuery({
         queryKey: ["async-select", props.name, endpoint],
         queryFn: async () => {
             try {
-                const response = await GET_API(endpoints.common(endpoint));
-                return response.data;
+                const { data } = await GET_API(endpoints.common(endpoint));
+                setData(data);
+                return data;
             } catch (error) {
                 onError?.(error as Error);
                 throw error;
@@ -130,18 +131,12 @@ const AsyncSelect = ({
         };
     }, [data, props.value, responseAsValue, responseAsLabel, variant]);
 
-    // Add createOption handler
-    const handleCreate = (inputValue: string) => {
-        if (creatable && "onCreate" in props) {
-            props.onCreate(inputValue);
-        }
-    };
+    // console.log("Get Value: ", getValue);
 
     const options = useMemo(
         () => convertToOptions(data, responseAsValue, responseAsLabel, isLoading),
         [data, responseAsValue, responseAsLabel, isLoading]
     );
-    console.log("getValue", getValue);
 
     const filteredOptions = useMemo(() => {
         if (variant === "multi" && Array.isArray(getValue) && getValue?.length > 0) {
@@ -149,6 +144,17 @@ const AsyncSelect = ({
         }
         return options;
     }, [variant, getValue, options]);
+
+    // Add createOption handler
+    const handleCreate = (inputValue: string) => {
+        console.log("Input: ", inputValue);
+
+        if (creatable && "onCreate" in props) {
+            const [key1 = "label", key2 = "value"]: string[] = Object.keys(data[0]);
+            setData(prev => [...prev, { [key1]: inputValue, [key2]: inputValue }]);
+            props.onCreate(inputValue);
+        }
+    };
 
     return (
         <div className="flex flex-col gap-2 w-full">
@@ -165,7 +171,7 @@ const AsyncSelect = ({
                 classNamePrefix="select"
                 isDisabled={props.disabled}
                 placeholder={props.placeholder || "Search and Select"}
-                formatCreateLabel={(inputValue: string) => `Not Found - "${inputValue}"`}
+                formatCreateLabel={(inputValue: string) => `${creatable ? 'Create' : 'Not Found'} - "${inputValue}"`}
                 hideSelectedOptions={variant === "multi"}
                 loadingMessage={() => "Loading..."}
                 styles={customStyles}

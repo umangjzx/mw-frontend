@@ -7,10 +7,11 @@ interface FormFieldProps {
     field: FormField;
     control: Control<VolunteerFormData | LearnerFormData>;
     errors: any;
+    setValue: (name: string, value: any, options?: any) => void;
     parent?: string | null;
 }
 
-export const FormField = ({ field, control, errors, parent }: FormFieldProps) => {
+export const FormField = ({ field, control, setValue, errors, parent }: FormFieldProps) => {
     const getFieldValue = (field: any) => {
         if (parent) {
             const parentKey = parent.split(".");
@@ -39,6 +40,19 @@ export const FormField = ({ field, control, errors, parent }: FormFieldProps) =>
         return key;
     };
 
+    const handleCreate = (newValue: any) => {
+        const fieldName = getFieldProperty(field, "name");
+        if(field.variant === "single") {
+            return setValue(fieldName, newValue)
+        }
+        const currentValues = getFieldValue(field) || [];
+
+        setValue(fieldName, [...currentValues, newValue], {
+            shouldValidate: true,
+            shouldDirty: true,
+        });
+    };
+
     return (
         <div className={`${field.gridCols === 2 ? "col-span-2 w-full" : "col-span-1 w-full"}`}>
             <Controller
@@ -47,6 +61,7 @@ export const FormField = ({ field, control, errors, parent }: FormFieldProps) =>
                 render={({ field: { onChange } }) => (
                     <Input
                         {...(field as any)}
+                        onCreate={handleCreate}
                         error={getFieldProperty(field, "error")}
                         value={getFieldValue(field)}
                         onChange={onChange}
