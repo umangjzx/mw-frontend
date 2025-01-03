@@ -22,6 +22,7 @@ export default function Page() {
     const [role, setRole] = useState<UserType>((Cookies.get("role") as UserType) || "volunteer");
     const [code] = useQueryState("code");
     const [buttonLoading, setButtonLoading] = useState("");
+    const [isPageLoading, setIsPageLoading] = useState(false);
 
     const handleSignUp = async () => {
         try {
@@ -29,8 +30,8 @@ export default function Page() {
                 code,
                 signup_type: role,
             };
-            const response = await POST_API(endpoints.user.signIn, payload);
 
+            const response = await POST_API(endpoints.user.signIn, payload);
             if (response.status === 200 || response.status === 201) {
                 handleSignUpSuccess(response?.data);
             }
@@ -38,6 +39,7 @@ export default function Page() {
             return response?.data;
         } catch (error) {
             console.error("Error signing up:", error);
+            if(code) router.push("/login")
             throw error;
         }
     };
@@ -67,6 +69,10 @@ export default function Page() {
         queryFn: handleSignUp,
         enabled: !!code,
     });
+
+    useEffect(() => {
+        setIsPageLoading(isLoading || !!code)
+    }, [code, isLoading])
 
     useEffect(() => {
         const savedRole = Cookies.get("role") as UserType;
@@ -130,8 +136,8 @@ export default function Page() {
         };
     }, []);
 
-    if(isLoading) return <div className="h-[100vh] w-full flex-center">
-        <LottieLoader isLoading={isLoading}/>
+    if (isPageLoading) return <div className="h-[100vh] w-full flex-center">
+        <LottieLoader isLoading={isPageLoading} />
     </div>
 
     return (
