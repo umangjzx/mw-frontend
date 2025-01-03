@@ -9,7 +9,8 @@ import { useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import moment from "moment";
 import { validateVolunteerParentDetails } from "./config";
-import { UseFormSetError } from "react-hook-form";
+import { UseFormSetError, useWatch } from "react-hook-form";
+import { calculateAge } from "@/utils/timeFunctions";
 
 type FormTabsProps = {
     formData: FormSectionConfig[];
@@ -55,6 +56,8 @@ const currentVersion = process.env.NEXT_PUBLIC_CURRENT_VERSION;
 const FormTabs = ({ formData, control, errors, trigger, setError, setValue, validateForm, handleFillForm, onSubmit, isLoading }: FormTabsProps) => {
     const role = Cookies.get("role");
 
+    const volunteer_birth_date = useWatch({ name: 'volunteer_birth_date', control: control })
+
     // Form Tabs
     const [activeTab, setActiveTab] = useState(0);
     const [highestTab, setHighestTab] = useState(0);
@@ -83,6 +86,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                     if(!key || !value) return;
                     setError(key, { message: value })
                 })
+                showToast({ type: "error", message: "Please fill in all required fields before proceeding." });
                 return false;
             }
         }
@@ -105,6 +109,17 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
     useEffect(() => {
         tabButtonsRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [activeTab]);
+
+    const fields = ["consented_from_parent", "volunteer_parent_fullname", "volunteer_parent_email"]
+    const volunteerAge = () => {
+        const age = Number(calculateAge(volunteer_birth_date));
+        return age > 18;
+    }
+
+    const hideFields = (field: any) => {
+        if(role === "learner") return false;
+        return fields.includes(field.id) && volunteerAge();
+    };
 
     return (
         <form onSubmit={onSubmit} className="w-full pb-16">
@@ -142,7 +157,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                             <h2 className="text-3xl font-semibold mb-8">{section?.title}</h2>
                         )}
                         <div className="grid grid-cols-2 w-full gap-6">
-                            {section?.fields.map((field: any, index: number) => {
+                            {section?.fields?.filter((field: any) => !hideFields(field)).map((field: any, index: number) => {
                                 if (section?.type === "card") {
                                     const parent = section?.parent
                                         ? `${section?.parent}.${field.parent}`
@@ -203,7 +218,8 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                                         <Button
                                             htmlType="submit"
                                             onClick={validateForm}
-                                            isLoading={isLoading}
+                                            loading={isLoading}
+                                            disabled={isLoading}
                                             title="Submit Application"
                                             size="large"
                                             customClassName="w-fit hover:!bg-background-secondary !text-sm !bg-background-secondary !text-black !rounded-lg !shadow-2xl !font-normal"

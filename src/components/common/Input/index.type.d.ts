@@ -171,7 +171,7 @@ type BaseAsyncSelectProps = BaseInputProps & {
 
 type CreatableSelectProps = BaseAsyncSelectProps & {
     creatable: true;
-    onCreate: (value: string) => void;
+    onCreate: (value: any) => void;
 };
 
 type AsyncSelectProps = BaseAsyncSelectProps | CreatableSelectProps;
