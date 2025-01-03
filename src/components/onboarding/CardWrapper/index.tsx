@@ -11,7 +11,9 @@ const CardWrapper: FC<PropsWithChildren<CardWrapperProps>> = ({ children, title,
             <h2 className='text-3xl font-semibold mb-8'>
                 {index + 1}. {title}
             </h2>
-            {children}
+            <div className="grid grid-cols-2 w-full gap-6">
+                {children}
+            </div>
         </div>
     );
 };

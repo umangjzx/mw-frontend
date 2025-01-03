@@ -151,8 +151,9 @@ const AsyncSelect = ({
 
         if (creatable && "onCreate" in props) {
             const [key1 = "label", key2 = "value"]: string[] = Object.keys(data[0]);
-            setData(prev => [...prev, { [key1]: inputValue, [key2]: inputValue }]);
-            props.onCreate(inputValue);
+            const option = { [key1]: inputValue, [key2]: inputValue }
+            setData(prev => [...prev, option]);
+            props.onCreate(Array.isArray(responseAsValue) ? option : inputValue);
         }
     };
 

@@ -86,6 +86,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                     if(!key || !value) return;
                     setError(key, { message: value })
                 })
+                showToast({ type: "error", message: "Please fill in all required fields before proceeding." });
                 return false;
             }
         }
@@ -217,7 +218,8 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                                         <Button
                                             htmlType="submit"
                                             onClick={validateForm}
-                                            isLoading={isLoading}
+                                            loading={isLoading}
+                                            disabled={isLoading}
                                             title="Submit Application"
                                             size="large"
                                             customClassName="w-fit hover:!bg-background-secondary !text-sm !bg-background-secondary !text-black !rounded-lg !shadow-2xl !font-normal"
