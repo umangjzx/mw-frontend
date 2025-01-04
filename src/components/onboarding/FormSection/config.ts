@@ -481,7 +481,7 @@ export const learnerFormSchema = z.object({
         }),
         assistive_device_used: z.string({ required_error: "Assistive Device Used is required" }),
         communication_style: z.string({ required_error: "Communication Style is required" }),
-        description: z.string({ required_error: "Description of Needs is required" }),
+        description: z.string({ required_error: "Description of Needs is required" }).min(1, { message: "Description of Needs is required" }),
         areas_of_support_needed: z.array(z.string(), {
             required_error: "Areas of Support Needed are required",
         }),
@@ -490,8 +490,8 @@ export const learnerFormSchema = z.object({
 
     // Education - Required
     education: z.object({
-        current_school: z.string({ required_error: "Current School is required" }),
-        iep_plan_key: z.string({ required_error: "IEP Plan Key is required" }),
+        current_school: z.string({ required_error: "Current School is required" }).min(1, { message: "Current School is required" }),
+        iep_plan_key: z.string({ required_error: "IEP Plan Key is required" }).min(1, { message: "IEP Plan Key of Needs is required" }),
         academic_strengths: z.array(z.string(), {
             required_error: "Academic Strengths are required",
         }),
@@ -541,13 +541,13 @@ export const learnerFormSchema = z.object({
 
     // Additional info - Required
     additional_info: z.object({
-        cultural_consideration: z.string({ required_error: "Cultural Consideration is required" }),
+        cultural_consideration: z.string({ required_error: "Cultural Consideration is required" }).min(1, { message: "Cultural Consideration is required" }),
         other_concerns_or_requests: z.string({
             required_error: "Other Concerns or Requests are required",
-        }),
+        }).min(1, { message: "Other Concerns or Requests are required" }),
         what_motivates_to_learn: z.string({
             required_error: "What Motivates the Learner is required",
-        }),
+        }).min(1, { message: "What Motivates the Learner is required" }),
     }),
 
     // Consent and permissions - Required
