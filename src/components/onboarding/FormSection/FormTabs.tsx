@@ -28,14 +28,16 @@ type FormTabsProps = {
 const TermsAndConditionElement = <div>
     By clicking on the Submit Application above, you agree to our {" "}
     <Link
-        href="/terms-of-service"
+        href="https://glib-chiller-6dc.notion.site/Terms-Conditions-1702f1842d7a80dea739d037e7b7133e"
+        target="_blank"
         className="text-black underline hover:underline font-medium"
     >
         Terms of Service
     </Link>{" "}
     and our {" "}
     <Link
-        href="/privacy-policy"
+        href="https://glib-chiller-6dc.notion.site/Privacy-Policy-1702f1842d7a80f1b2ecc65ec0ef459e"
+        target="_blank"
         className="text-black underline hover:underline font-medium"
     >
         Privacy Policy

@@ -377,7 +377,7 @@ const OtherConsentsDetailsFields: FormField[] = [
     },
     {
         id: "description",
-        label: `Please describe the circumstance behind the "yes" answer above.`,
+        label: `Please describe the circumstance behind the "no" answer above.`,
         inputType: "textarea",
         placeholder: "Describe here",
         gridCols: 2,
