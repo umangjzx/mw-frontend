@@ -8,7 +8,7 @@ import { showToast } from "@/components/common/Toast";
 import { useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import moment from "moment";
-import { validateVolunteerParentDetails } from "./config";
+import { validateLearnerParentFields, validateVolunteerParentDetails } from "./config";
 import { UseFormSetError, useWatch } from "react-hook-form";
 import { calculateAge } from "@/utils/timeFunctions";
 
@@ -66,33 +66,48 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
     const tabButtonsRef = useRef<HTMLDivElement>(null);
 
     const validateCurrentSection = async () => {
-        const currentFields = formData[activeTab].fields.map((field) => {
-            const parentPath = formData[activeTab].parent;
-            return parentPath ? `${parentPath}.${field.parent || field.id}` : field.parent || field.id;
-        })
-
-        if (role === "learner" && activeTab === 1) {
-            const learnerDOB = control._formValues?.learner_personal_info?.learner_date_of_birth;
-            const age = learnerDOB && moment().diff(moment(learnerDOB), 'years');
-            if (age > 18) return true;
-        }
+        const { fields, parent } = formData[activeTab];
+        const currentFields = fields.map((field) =>
+            parent ? `${parent}.${field.parent || field.id}` : field.parent || field.id
+        );
 
         const isValidSection = await trigger(currentFields);
-        if (!isValidSection) {
+        if(!isValidSection) {
             showToast({ type: "error", message: "Please fill in all required fields before proceeding." });
             return false;
         }
-        if(role === "volunteer" && activeTab === 0){
-            const validation = validateVolunteerParentDetails(control._formValues);
-            if (!validation.success) {
-                Object.entries(validation.errors).forEach(([key, value]: any)=>{
-                    if(!key || !value) return;
-                    setError(key, { message: value })
-                })
+
+        const runValidation = (validationFn: Function) => {
+            const validation = validationFn(control?._formValues);
+            if(!validation.success) {
+                Object.entries(validation.errors).forEach(([key, value]: any) => {
+                    if (key && value) {
+                        setError(key, { message: value });
+                    }
+                });
                 showToast({ type: "error", message: "Please fill in all required fields before proceeding." });
                 return false;
             }
+            return true;
+        };
+
+        if(role === "learner" && activeTab === 1) {
+            const isLearnerUnder18 = () => {
+                const learnerDOB = control?._formValues?.learner_personal_info?.learner_date_of_birth;
+                const age = learnerDOB ? moment().diff(moment(learnerDOB), 'years') : null;
+                return age !== null && age < 18;
+            };
+            if (isLearnerUnder18() && !runValidation(validateLearnerParentFields)) {
+                return false;
+            }
         }
+
+        if(role === "volunteer" && activeTab === 0) {
+            if (!runValidation(validateVolunteerParentDetails)) {
+                return false;
+            }
+        }
+
         return isValidSection;
     };
 
@@ -239,7 +254,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                             </div>
                         </div>
                     </div>
-                )) }
+                ))}
             </div>
         </form>
     );

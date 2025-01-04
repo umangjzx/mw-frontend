@@ -545,7 +545,6 @@ const InterestsHobbiesFields: FormField[] = [
         sublabel: "(current or past participation)",
         inputType: "text",
         placeholder: "Enter here",
-        responseType: "array",
         gridCols: 1,
         // options: [
         //     { label: "Sports (e.g., Football, Basketball)", value: "sports" },
@@ -567,7 +566,6 @@ const InterestsHobbiesFields: FormField[] = [
         sublabel: "(activities that motivate the child)",
         inputType: "text",
         placeholder: "Enter here",
-        responseType: "array",
         gridCols: 1,
         // options: [
         //     { label: "Drawing and coloring", value: "drawing_and_coloring" },
