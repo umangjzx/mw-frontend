@@ -5,8 +5,9 @@ import { useQuery } from "@tanstack/react-query";
 import { GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import Cookies from "js-cookie";
+import moment from "moment";
 
-interface NotificationData {
+type SessionsData = {
     learner_first_name: string;
     learner_last_name: string;
     learner_picture: {
@@ -17,6 +18,12 @@ interface NotificationData {
     session_end_time: string;
     session_title: string;
     session_id: string;
+    overlapped_slot: boolean;
+}
+
+interface NotificationData {
+    date: string;
+    sessions: SessionsData[];
 }
 
 const ApprovalModal: React.FC<ApprovalModalProps> = ({ isOpen, onClose }) => {
@@ -25,9 +32,9 @@ const ApprovalModal: React.FC<ApprovalModalProps> = ({ isOpen, onClose }) => {
 
     const getNotifications = async () => {
         const response: any = await GET_API(
-            endpoints.session.getApprovalNotifications(volunteerId as string, "pending")
+            endpoints.session.getApprovalNotifications(volunteerId as string)
         );
-        console.log(response?.data, "Response from getApprovalNotifications");
+        console.log("Response from getApprovalNotifications: ", response?.data);
         return response?.data;
     };
 
@@ -38,18 +45,7 @@ const ApprovalModal: React.FC<ApprovalModalProps> = ({ isOpen, onClose }) => {
 
     useEffect(() => {
         if (data) {
-            const transformedData = data.items.map((item: any) => ({
-                learner_first_name: item.learner_first_name,
-                learner_last_name: item.learner_last_name,
-                learner_picture: {
-                    image_url: item.learner_picture.image_url,
-                },
-                session_date: item.session_date,
-                session_start_time: item.session_start_time,
-                session_end_time: item.session_end_time,
-                session_title: item.session_title,
-                session_id: item.session_id,
-            }));
+            const transformedData = data?.items || [];
             setNotificationsData(transformedData);
         }
     }, [data]);
@@ -61,14 +57,24 @@ const ApprovalModal: React.FC<ApprovalModalProps> = ({ isOpen, onClose }) => {
             isOpen={isOpen}
             isNeedButton={false}
         >
-            <div className="flex flex-col gap-4 px-5 mt-7">
+            <div className="flex flex-col gap-4 px-5 mt-5">
                 {isLoading ? (
                     <p>Loading...</p>
                 ) : isError ? (
                     <p>Error loading notifications</p>
                 ) : notificationsData.length > 0 ? (
                     notificationsData.map((notification) => (
-                        <NotificationCard key={notification.session_id} data={notification} />
+                        <div>
+                            <div className="relative inline-flex items-center justify-center w-full">
+                                <hr className="w-full h-px my-6 bg-gray-light border-0" />
+                                <span className="absolute -translate-x-1/2 left-1/2 px-3 font-semibold !text-sm !text-gray-light !bg-white">{moment(notification?.date).format("D MMM YYYY")}</span>
+                            </div>
+                            <div className="flex flex-col gap-3">
+                                {notification?.sessions?.map(session => (
+                                    <NotificationCard key={session?.session_id} data={session} />
+                                ))}
+                            </div>
+                        </div>
                     ))
                 ) : (
                     <div className="flex flex-col gap-4 border rounded-xl p-4 border-[#E0E0E0] h-fit w-[360px] items-center justify-center">
