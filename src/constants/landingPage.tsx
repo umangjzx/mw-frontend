@@ -24,7 +24,7 @@ export const gradientInnerTextStyle = {
 
 export const gradientTextStyle = {
     color: "#ffa766",
-    backgroundImage: "linear-gradient(90deg,#009BCC 30%,  #FF6C00 60%)",
+    backgroundImage: "linear-gradient(90deg, #009BCC 30%, #FF6C00 60%)",
     backgroundClip: "text",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
@@ -32,15 +32,15 @@ export const gradientTextStyle = {
 
 export const imapactData = [
     {
-        title: "1000+",
+        title: "10+",
         subTitle: "Hours Volunteers",
     },
     {
-        title: "2500+",
+        title: "3",
         subTitle: "Students Reached",
     },
     {
-        title: "500+",
+        title: "5",
         subTitle: "Volunteer Engaged",
     },
 ];

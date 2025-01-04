@@ -211,16 +211,16 @@ export const volunteerFormSchema = z.object({
                         description,
                     } = fields;
                     return (
-                        !(
-                            consent_to_background_checks ||
-                            agree_to_follow_organization_policies ||
+                        (
+                            consent_to_background_checks &&
+                            agree_to_follow_organization_policies &&
                             agree_to_understand_termination_of_volunteer_agreement
                         ) ||
                         (description && description.trim().length > 0)
                     );
                 },
                 {
-                    message: 'Description is required if any consent agreement is marked as "yes".',
+                    message: 'Description is required if any consent agreement is marked as "no".',
                     path: ["description"],
                 }
             ),
