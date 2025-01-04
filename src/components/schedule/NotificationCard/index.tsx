@@ -11,6 +11,7 @@ import { useSendData } from "@/hooks/useReactQuery";
 import { useState } from "react";
 import { cn } from "@/utils/merge-class";
 import { showToast } from "@/components/common/Toast";
+import moment from "moment";
 
 interface NotificationCardProps {
     data: {
@@ -24,6 +25,7 @@ interface NotificationCardProps {
         session_end_time: string;
         session_title: string;
         session_id: string;
+        overlapped_slot: boolean;
     };
 }
 
@@ -31,6 +33,18 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ data }) => {
     const queryClient = useQueryClient();
     const [loadingAccept, setLoadingAccept] = useState(false);
     const [loadingDecline, setLoadingDecline] = useState(false);
+
+    const formatTimeRange = (timeRange: string) => {
+        const [start, end] = timeRange.split(" - ");
+        const startMoment = moment(start, "h:mm A");
+        const endMoment = moment(end, "h:mm A");
+
+        if (startMoment.format("A") === endMoment.format("A")) {
+            return `${startMoment.format("h:mm")} - ${endMoment.format("h:mm A")}`;
+        }
+        return `${startMoment.format("h:mm A")} - ${endMoment.format("h:mm A")}`;
+    };
+
     const formatTime = (start: string, end: string) => {
         if (!start || !end) return "Time not set";
 
@@ -64,7 +78,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ data }) => {
 
     const { mutate: onSave, isPending } = useSendData({
         // @ts-ignore
-        fn: (status: string) => handleNotificationStatus(status, data.session_id),
+        fn: (status: string) => handleNotificationStatus(status, data?.session_id),
         invalidateKey: ["events"],
         success: () => {
             queryClient.invalidateQueries({ queryKey: ["approval-notifications"] });
@@ -87,7 +101,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ data }) => {
                 </div>
                 <p className="font-normal">
                     <span className="font-semibold">
-                        {`${data.learner_first_name} ${data.learner_last_name}`}
+                        {`${data?.learner_first_name} ${data?.learner_last_name}`}
                     </span>{" "}
                     requested for a meeting
                 </p>
@@ -95,19 +109,27 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ data }) => {
             <div className="flex gap-2 items-center justify-between">
                 <div className="flex flex-col gap-1">
                     <p className="text-[0.75rem] font-medium text-gray-light">Subject</p>
-                    <p className="text-sm font-medium">{data.session_title}</p>
+                    <p className="text-sm font-medium">{data?.session_title}</p>
                 </div>
                 <div className="flex flex-col gap-1">
                     <p className="text-[0.75rem] font-medium text-gray-light">Date</p>
-                    <p className="text-sm font-medium">{data.session_date}</p>
+                    <p className="text-sm font-medium">{moment(data?.session_date).format("D MMM YYYY")}</p>
                 </div>
                 <div className="flex flex-col gap-1">
                     <p className="text-[0.75rem] font-medium text-gray-light">Time</p>
                     <p className="text-sm font-medium">
-                        {formatTime(data.session_start_time, data.session_end_time)}
+                        {formatTime(data?.session_start_time, data?.session_end_time)}
                     </p>
                 </div>
             </div>
+            { data?.overlapped_slot && 
+                <div className="bg-[#FEFCE8] p-3 rounded-xl">
+                    <p className="text-xs text-[#CA8A04]">
+                        <span className="mr-2 font-semibold text-[#A16207]">Conflict Alert:</span>
+                        Accepting one meeting request for this date and time will decline all others. Please choose carefully.
+                    </p>
+                </div>
+             }
             <div className="flex items-center gap-2 w-full">
                 <Button
                     disabled={loadingAccept || loadingDecline}

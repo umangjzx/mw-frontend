@@ -34,7 +34,7 @@ type EndpointProps = {
         bookSession: string;
         getLearnerSessions: (id: string) => string;
         cancelSession: (id: string) => string;
-        getApprovalNotifications: (id: string, status: string) => string;
+        getApprovalNotifications: (id: string) => string;
         updateNotificationStatus: (id: string) => string;
         getCalendarEvents: (
             id: string,

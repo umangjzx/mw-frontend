@@ -60,7 +60,7 @@ const Avatar = () => {
             <div className="relative w-[80px] h-[80px]">
                 <Image src={image} alt="avatar" fill className="object-cover rounded-full" />
             </div>
-            <p className="font-medium">{userName}</p>
+            <p className="font-medium text-center">{userName}</p>
             <TagComponent text={role || ""} />
         </Link>
     );

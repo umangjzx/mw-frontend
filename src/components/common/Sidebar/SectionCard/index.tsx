@@ -21,7 +21,7 @@ const SectionCard = ({ href, text, icon, textColor, onClick }: SectionCardProps)
     return (
         <div className="w-full flex items-center justify-center ">
             <Link
-                href={`/${role}/${href}`}
+                href={role ? `/${role}/${href}` : `/${href}`}
                 onClick={onClick}
                 className="flex items-start gap-2 max-w-[125px] w-full ml-[-1rem]"
             >
