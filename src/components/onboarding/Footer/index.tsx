@@ -11,6 +11,7 @@ type Props = {};
 type PolicyLink = {
     href: string;
     label: string;
+    target: string;
 };
 
 type SocialLink = {
@@ -20,9 +21,9 @@ type SocialLink = {
 };
 
 const policyLinks: PolicyLink[] = [
-    { href: "/policy", label: "Policy" },
-    { href: "/terms", label: "Terms" },
-    { href: "/careers", label: "Careers" },
+    { href: "https://glib-chiller-6dc.notion.site/Privacy-Policy-1702f1842d7a80f1b2ecc65ec0ef459e", target: "_black", label: "Policy" },
+    { href: "https://glib-chiller-6dc.notion.site/Terms-Conditions-1702f1842d7a80dea739d037e7b7133e", target: "_black", label: "Terms" },
+    { href: "/careers", target: "_black", label: "Careers" },
 ];
 
 const socialLinks: SocialLink[] = [
@@ -43,6 +44,7 @@ const Footer = (props: Props) => {
                             <Link
                                 key={link.href}
                                 href={link.href}
+                                target={link.target}
                                 className="text-gray-600 underline hover:text-gray-900 transition-colors"
                             >
                                 {link.label}

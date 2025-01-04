@@ -80,6 +80,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
         const isValidSection = await trigger(currentFields);
         if (!isValidSection) {
             showToast({ type: "error", message: "Please fill in all required fields before proceeding." });
+            return false;
         }
         if(role === "volunteer" && activeTab === 0){
             const validation = validateVolunteerParentDetails(control._formValues);
