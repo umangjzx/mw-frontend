@@ -307,34 +307,29 @@ export const volunteerFormSchema = z.object({
 });
 
 export function validateVolunteerParentDetails(data: any) {
-    const errors = {
-        consented_from_parent: "",
-        volunteer_parent_fullname: "",
-        volunteer_parent_email: ""
-    }
+    const errors: { [key: string]: string } = {};
     let isSuccess = true;
 
     const age = moment().diff(moment(data.volunteer_birth_date), 'years');
+
     if (age < 18) {
-        if (!data.consented_from_parent) {
-            isSuccess = false
-            errors["consented_from_parent"] = "Parent consent is required for volunteers under 18";
-        }
-        if (!data.volunteer_parent_fullname || data.volunteer_parent_fullname.trim().length === 0) {
-            isSuccess = false
-            errors["volunteer_parent_fullname"] = "Parent name is required for volunteers under 18";
-        }
-        if (!data.volunteer_parent_email || data.volunteer_parent_email.trim().length === 0) {
-            isSuccess = false
-            errors["volunteer_parent_email"] = "Parent email is required for volunteers under 18";
-        }
-    }else{
-        isSuccess = true;
+        const requiredFields = {
+            consented_from_parent: "Parent consent is required for volunteers under 18",
+            volunteer_parent_fullname: "Parent name is required for volunteers under 18",
+            volunteer_parent_email: "Parent email is required for volunteers under 18",
+        };
+
+        Object.entries(requiredFields).forEach(([key, errorMessage]) => {
+            const value = data[key];
+            if (!value || (typeof value === "string" && value.trim().length === 0)) {
+                isSuccess = false;
+                errors[key] = errorMessage;
+            }
+        });
     }
 
-    return { success: isSuccess, errors: isSuccess ? {} : errors };
+    return { success: isSuccess, errors };
 }
-
 
 export type VolunteerFormData = z.infer<typeof volunteerFormSchema>;
 export const defaultVolunteerData: Volunteer = {
@@ -425,6 +420,15 @@ export const defaultVolunteerData: Volunteer = {
 
 // Learner Schema & Default Data
 
+type learnerParentSchemaType = {
+    parent_first_name: string,
+    parent_last_name: string,
+    parent_email: string,
+    parent_contact_number: number | string,
+    parent_address: string,
+    relationship_to_learner: string
+}
+
 const learnerParentSchema = z.object({
     parent_first_name: z.string({ required_error: "Parent's First Name is required" }).min(1, { message: "Parent's First Name cannot be empty" }),
     parent_last_name: z.string({ required_error: "Parent's Last Name is required" }).min(1, { message: "Parent's Last Name cannot be empty" }),
@@ -481,7 +485,7 @@ export const learnerFormSchema = z.object({
         }),
         assistive_device_used: z.string({ required_error: "Assistive Device Used is required" }),
         communication_style: z.string({ required_error: "Communication Style is required" }),
-        description: z.string({ required_error: "Description of Needs is required" }),
+        description: z.string({ required_error: "Description of Needs is required" }).min(1, { message: "Description of Needs is required" }),
         areas_of_support_needed: z.array(z.string(), {
             required_error: "Areas of Support Needed are required",
         }),
@@ -490,8 +494,8 @@ export const learnerFormSchema = z.object({
 
     // Education - Required
     education: z.object({
-        current_school: z.string({ required_error: "Current School is required" }),
-        iep_plan_key: z.string({ required_error: "IEP Plan Key is required" }),
+        current_school: z.string({ required_error: "Current School is required" }).min(1, { message: "Current School is required" }),
+        iep_plan_key: z.string({ required_error: "IEP Plan Key is required" }).min(1, { message: "IEP Plan Key of Needs is required" }),
         academic_strengths: z.array(z.string(), {
             required_error: "Academic Strengths are required",
         }),
@@ -519,12 +523,12 @@ export const learnerFormSchema = z.object({
     // Current interests - Required
     current_interests: z.object({
         interests: z.array(z.string(), { required_error: "Interests are required" }),
-        extra_curricular_activities: z.array(z.string(), {
+        extra_curricular_activities: z.string({
             required_error: "Extra-curricular Activities are required",
-        }),
-        favorite_activities: z.array(z.string(), {
+        }).min(1, { message: "Extra-curricular Activities  are required" }),
+        favorite_activities: z.string({
             required_error: "Favorite Activities are required",
-        }),
+        }).min(1, { message: "Favorite Activities  are required" }),
     }),
 
     // Learner goals - Required
@@ -541,13 +545,13 @@ export const learnerFormSchema = z.object({
 
     // Additional info - Required
     additional_info: z.object({
-        cultural_consideration: z.string({ required_error: "Cultural Consideration is required" }),
+        cultural_consideration: z.string({ required_error: "Cultural Consideration is required" }).min(1, { message: "Cultural Consideration is required" }),
         other_concerns_or_requests: z.string({
             required_error: "Other Concerns or Requests are required",
-        }),
+        }).min(1, { message: "Other Concerns or Requests are required" }),
         what_motivates_to_learn: z.string({
             required_error: "What Motivates the Learner is required",
-        }),
+        }).min(1, { message: "What Motivates the Learner is required" }),
     }),
 
     // Consent and permissions - Required
@@ -568,33 +572,32 @@ export const learnerFormSchema = z.object({
         })
         .required(),
     terms_and_conditions_accepted: z.boolean({ required_error: "Acceptance of terms and conditions is required" }),
-})
-    .superRefine((data) => {
-        const learnerAge = moment().diff(moment(data?.learner_personal_info.learner_date_of_birth), 'years');
-        if (learnerAge < 18) {
-            const issues: ZodIssue[] = [];
+}).superRefine((data) => {
+    if (!data?.terms_and_conditions_accepted) {
+        throw new ZodError([{ message: "Acceptance of terms and conditions is required", path: ["terms_and_conditions_accepted"], code: "invalid_type", expected: "boolean", received: "undefined" }])
+    }
+    return true;
+});
 
-            Object.entries(data?.parent_info).forEach(([fieldName, fieldValue]) => {
-                if (!fieldValue) {
-                    issues.push({
-                        message: `This field is required.`,
-                        path: ["parent_info", fieldName],
-                        code: "invalid_type",
-                        expected: "string",
-                        received: "undefined",
-                    });
-                }
-            })
-            if (issues.length > 0) {
-                throw new ZodError(issues);
+export function validateLearnerParentFields(data: any) {
+    const errors: { [key: string]: string } = {};
+    let isSuccess = true;
+
+    const learnerDob = data?.learner_personal_info?.learner_date_of_birth;
+    const age = learnerDob ? moment().diff(moment(learnerDob), 'years') : null;
+
+    if (age !== null && age < 18) {
+        (Object.keys(data?.parent_info || {}) as (keyof learnerParentSchemaType)[]).forEach((key) => {
+            const field = data?.parent_info?.[key];
+            if (!field || (typeof field === "string" && field.trim().length === 0)) {
+                errors[`parent_info.${key}`] = `${key.split("_").join(" ")} is required for learners under 18`;
+                isSuccess = false;
             }
-        }
-        if (!data?.terms_and_conditions_accepted) {
-            throw new ZodError([{ message: "Acceptance of terms and conditions is required", path: ["terms_and_conditions_accepted"], code: "invalid_type", expected: "boolean", received: "undefined" }])
-        }
-        return true;
-    });
+        });
+    }
 
+    return { success: isSuccess, errors: isSuccess ? {} : errors };
+}
 
 export type LearnerFormData = z.infer<typeof learnerFormSchema>;
 
@@ -655,8 +658,8 @@ export const defaultLearnerData: Learner = {
 
     current_interests: {
         interests: ["Basic chords"],
-        extra_curricular_activities: ["Sports"],
-        favorite_activities: ["Drawing and coloring"],
+        extra_curricular_activities: "Sports",
+        favorite_activities: "Drawing and coloring",
     },
 
     learner_goals: {
