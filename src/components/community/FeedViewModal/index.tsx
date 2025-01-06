@@ -7,7 +7,9 @@ import Image from "next/image";
 import TagComponent from "@/components/common/Tag";
 import Divider from "@/components/common/Divider";
 import CommentCard from "@/components/community/CommentCard";
-import { FeedModalCloseIcon, FeedModalMenuIcon } from "@/assets/icons";
+import { FeedModalCloseIcon } from "@/assets/icons";
+import ReportIcon from "@/assets/icons/ReportIcon";
+
 import { useParams, useSearchParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { endpoints } from "@/api/constants";
@@ -22,6 +24,7 @@ import { IoIosClose } from "react-icons/io";
 type FeedViewModalProps = {
     isOpen: boolean;
     onClose: () => void;
+    handleReportClick?: (id: string) => void;
 };
 
 interface PostData {
@@ -45,7 +48,7 @@ interface PostData {
     total_comments: number;
 }
 
-const FeedViewModal = ({ isOpen, onClose }: FeedViewModalProps) => {
+const FeedViewModal = ({ isOpen, onClose, handleReportClick }: FeedViewModalProps) => {
     const searchParams = useSearchParams();
     const id = searchParams.get("id");
     const [comment, setComment] = useState("");
@@ -136,7 +139,9 @@ const FeedViewModal = ({ isOpen, onClose }: FeedViewModalProps) => {
                 </div>
                 <div className="flex flex-col h-[720px] relative">
                     <div className="flex justify-end items-center px-5 pb-2 pt-5 gap-3">
-                        <FeedModalMenuIcon className="cursor-pointer" />
+                        <span className="cursor-pointer" onClick={() => handleReportClick?.(post?.post_id)}>
+                            <ReportIcon />
+                        </span>
                         <FeedModalCloseIcon className="cursor-pointer" onClick={handleCloseModal} />
                     </div>
                     <Divider />

@@ -40,11 +40,11 @@ export default function ResourcesPage() {
         queryKey: ["my-resource"],
         queryFn: getMyResources,
     })
-    const triggerReload = async() => await refetch();
+    const triggerReload = async () => await refetch();
 
     const { isFetching } = useQuery({
         queryKey: ["resources", searchQuery],
-        queryFn: async() => {
+        queryFn: async () => {
             setResources([])
             const resources = await getResources({ query: searchQuery || "" });
             setResources(resources?.items)
@@ -140,10 +140,10 @@ export default function ResourcesPage() {
             />
 
             {/* Detail Modal */}
-            <DetailModal 
-                handleUserLikeAction={handleUserLikeAction} 
-                triggerReload={triggerReload} 
-                isOpen={mode === "view"} 
+            <DetailModal
+                handleUserLikeAction={handleUserLikeAction}
+                triggerReload={triggerReload}
+                isOpen={mode === "view"}
                 onClose={handleCloseModal}
                 handleReportClick={handleReportClick}
             />
@@ -171,10 +171,10 @@ export default function ResourcesPage() {
                     isLoading={isFetching}
                     title={category !== null ? undefined : "Resources"}
                     renderItem={(item, index) => (
-                        <Card 
-                            key={item?.resource_id || index} 
-                            resource={item} 
-                            onClick={() => handleViewOrEditResource("view", item?.resource_id)} 
+                        <Card
+                            key={item?.resource_id || index}
+                            resource={item}
+                            onClick={() => handleViewOrEditResource("view", item?.resource_id)}
                             handleReportClick={handleReportClick}
                         />
                     )}

@@ -5,12 +5,13 @@ import FeedCard from "@/components/community/FeedCard";
 import FeedViewModal from "@/components/community/FeedViewModal";
 import { PostModal } from "@/components/community/Modals";
 import NotificationCard from "@/components/community/NotificationCard";
+import CommunityReportModal from "@/components/community/ReportsModal";
 import { getCurrentTab } from "@/constants/community";
 import { getHeaderIcon } from "@/layouts/helper";
 import { useComponentStore } from "@/store/useComponenetStore";
 import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function CommunityPage() {
     const { setHeaderOptions } = useComponentStore();
@@ -19,6 +20,9 @@ export default function CommunityPage() {
     const [_, setId] = useQueryState("id");
     const [activeTab] = useQueryState("tab");
     const title = getCurrentTab(activeTab)?.name;
+
+    const [reportModalOpen, setReportModalOpen] = useState(false);
+    const [reportModalPostId, setReportModalPostId] = useState("");
 
     const handleAddNewPost = () => {
         setMode("add");
@@ -38,15 +42,6 @@ export default function CommunityPage() {
         });
     }, [pathname, setHeaderOptions]);
 
-    const posts: any = [
-        {
-            id: "1",
-            title: "Post 1",
-            description: "Description 1",
-            image: "https://via.placeholder.com/150",
-        },
-    ];
-
     const handleCloseModal = () => {
         setMode(null);
         setId(null);
@@ -57,20 +52,35 @@ export default function CommunityPage() {
         setMode("view");
     };
 
+    const handleReportClick = (resource_id: string) => {
+        setReportModalOpen(true);
+        setReportModalPostId(resource_id);
+    }
+
+    const handleCloseReportModal = () => {
+        setReportModalOpen(false);
+        setReportModalPostId("");
+    };
+
     return (
         <div className="grid grid-cols-12 p-6 w-full h-full overflow-hidden animate-fadeIn">
+            
+            <CommunityReportModal
+                postId={reportModalPostId}
+                isOpen={reportModalOpen}
+                onClose={handleCloseReportModal}
+            />
+
             <PostModal isOpen={mode === "add"} onClose={handleCloseModal} />
-            <FeedViewModal isOpen={mode === "view"} onClose={handleCloseModal} />
+            <FeedViewModal isOpen={mode === "view"} onClose={handleCloseModal} handleReportClick={handleReportClick} />
             <div className="col-span-12 flex justify-between gap-4 overflow-hidden h-full w-full">
                 <div className="col-span-8 w-full bg-white rounded-3xl mb-6 h-full overflow-auto no-scrollbar p-6 flex flex-col gap-4">
                     <h2>{title}</h2>
-                    {posts.map((post: any, index: number) =>
-                        activeTab === "your_notifications" ? (
+                        { activeTab === "your_notifications" ? (
                             <NotificationCard />
                         ) : (
-                            <FeedCard key={index} onClick={() => handleFeedCardClick(post.id)} />
-                        )
-                    )}
+                            <FeedCard onClick={handleFeedCardClick} />
+                        ) }
                 </div>
                 <div className="col-span-3">
                     <ActionPanel />
