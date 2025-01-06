@@ -91,13 +91,14 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
             return true;
         };
 
-        if(role === "learner" && activeTab === 1) {
+        if(role === "learner" && activeTab <= 1) {
             const isLearnerUnder18 = () => {
                 const learnerDOB = control?._formValues?.learner_personal_info?.learner_date_of_birth;
                 const age = learnerDOB ? moment().diff(moment(learnerDOB), 'years') : null;
                 return age !== null && age < 18;
             };
             if (isLearnerUnder18() && !runValidation(validateLearnerParentFields)) {
+                if(activeTab !== 1) setActiveTab(1);
                 return false;
             }
         }
