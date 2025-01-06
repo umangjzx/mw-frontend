@@ -33,6 +33,7 @@ export default function ProfilePage() {
             titleIcon: <IoIosArrowBack className="text-lg" />,
             titleIconClick: () => router.back(),
             showButton: false,
+            hideSearch: true
         });
     }, []);
 

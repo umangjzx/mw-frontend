@@ -18,7 +18,8 @@ const CommonHeader: React.FC = () => {
         titleIcon,
         title,
         titleIconClick,
-        actionButtons
+        actionButtons,
+        hideSearch
     } = headerOptions || {};
 
     const handleSearch = (value: string) => {
@@ -44,15 +45,18 @@ const CommonHeader: React.FC = () => {
                     "flex items-center justify-center gap-2"
                 )}
             >
-                <Input
-                    value={searchQuery ?? ""}
-                    inputType="search"
-                    name="search"
-                    inputClassName="!bg-transparent mt-4 !rounded-xl gap-1 items-center"
-                    className="!bg-transparent !w-fit"
-                    onChange={handleSearch}
-                    placeholder={searchPlaceholder ?? "Search"}
-                />
+                {
+                    hideSearch ||
+                    <Input
+                        value={searchQuery ?? ""}
+                        inputType="search"
+                        name="search"
+                        inputClassName="!bg-transparent mt-4 !rounded-xl gap-1 items-center"
+                        className="!bg-transparent !w-fit"
+                        onChange={handleSearch}
+                        placeholder={searchPlaceholder ?? "Search"}
+                    />
+                }
                 {showButton && (
                     <Button
                         title={actionButtonTitle}
@@ -62,7 +66,7 @@ const CommonHeader: React.FC = () => {
                         icon={actionButtonIcon}
                     />
                 )}
-                { actionButtons?.map((button: ActionButtons) => (
+                {actionButtons?.map((button: ActionButtons) => (
                     <Button
                         title={button?.buttonTitle}
                         onClick={button?.buttonOnClick}
@@ -70,7 +74,7 @@ const CommonHeader: React.FC = () => {
                         size="small"
                         icon={button?.buttonIcon}
                     />
-                )) }
+                ))}
             </div>
         </div>
     );
