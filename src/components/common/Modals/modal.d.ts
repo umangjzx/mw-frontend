@@ -17,6 +17,7 @@ interface CenterModalProps {
     secondaryActionProps?: ButtonProps;
     hideFooter?: boolean;
     loading?: boolean;
+    zIndex?: number;
 }
 
 interface ViewModalProps {

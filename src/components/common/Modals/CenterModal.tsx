@@ -18,7 +18,8 @@ const CenterModal: React.FC<CenterModalProps> = ({
     secondaryActionProps,
     loading = false,
     headerComponent,
-    footerComponent
+    footerComponent,
+    zIndex = 1000
 }) => {
     const defaultButtonStyles = {
         primaryActionProps: {
@@ -62,6 +63,7 @@ const CenterModal: React.FC<CenterModalProps> = ({
             open={isOpen}
             onCancel={onClose}
             footer={footer}
+            zIndex={zIndex}
             width={width}
             className={`custom-modal ${customClassName}`}
             classNames={classNames}

@@ -84,6 +84,9 @@ type EndpointProps = {
         get: (id: string) => string;
         update: string;
     };
+    report: {
+        create: string;
+    },
     media_uploader: {
         image: string;
         video: string;

@@ -53,3 +53,8 @@ export const dislikeResource = async (resource_id: string) => {
     const { status } = await DELETE_API(endpoint);
     return status;
 }
+
+export const reportResource = async (payload: any) => {
+    const { status } = await POST_API(endpoints.report.create, payload);
+    return status === 201;
+}

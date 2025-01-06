@@ -142,12 +142,14 @@ const FeedCard = ({ onClick }: FeedCardProps) => {
                                     {/* <ReactTimeAgo date={new Date(post.created_at)} locale="en-US" /> */}
                                 </p>
                             </div>
-                            <MenuDot />
+                            <span onClick={() => onClick(post.post_id)} className="cursor-pointer">
+                                <MenuDot />
+                            </span>
                         </div>
                         <p className="text-sm font-normal">
                             {post.description}
                             {post.description.length > 150 && (
-                                <span className="text-primary font-medium text-[#ffac71]">
+                                <span onClick={() => onClick(post.post_id)} className="cursor-pointer text-primary font-medium text-[#ffac71]">
                                     {" "}
                                     See More
                                 </span>
@@ -160,7 +162,7 @@ const FeedCard = ({ onClick }: FeedCardProps) => {
                                     alt="post image"
                                     fill
                                     onClick={() => onClick(post.post_id)}
-                                    className="object-cover rounded-xl"
+                                    className="object-cover rounded-xl cursor-pointer"
                                 />
                             </div>
                         )}

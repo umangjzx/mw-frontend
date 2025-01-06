@@ -24,9 +24,10 @@ type DetailModalProps = {
     onClose: () => void;
     triggerReload: () => void;
     handleUserLikeAction: (id: string, status: boolean) => void;
+    handleReportClick?: (id: string) => void;
 };
 
-const DetailModal = ({ handleUserLikeAction, triggerReload, isOpen, onClose }: DetailModalProps) => {
+const DetailModal = ({ handleUserLikeAction, triggerReload, isOpen, onClose, handleReportClick }: DetailModalProps) => {
     const [category] = useQueryState("category");
     const [resourceId] = useQueryState("id");
     const [mode, setMode] = useQueryState("mode");
@@ -160,7 +161,9 @@ const DetailModal = ({ handleUserLikeAction, triggerReload, isOpen, onClose }: D
                                         icon={<MdEdit size={16} />}
                                     />
                                 ) : (
-                                    <ReportIcon />
+                                    <span onClick={() => handleReportClick?.(resource?.resource_id)}>
+                                        <ReportIcon />
+                                    </span>
                                 )}
                             </span>
                             <span onClick={onClose} className="cursor-pointer">
