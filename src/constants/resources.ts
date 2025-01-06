@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+// Add Resource Fields
 export const ResourceFormConstants: FormField[] = [
     {
         name: "resource_image",
@@ -73,7 +74,6 @@ export const ResourceFormConstants: FormField[] = [
         required: true,
     },
 ];
-
 
 // Zod schema validation
 export const ResourceFormSchema = z.object({

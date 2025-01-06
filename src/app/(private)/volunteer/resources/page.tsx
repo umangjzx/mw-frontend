@@ -14,6 +14,7 @@ import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
+import ResourceReportModal from "@/components/resources/ReportsModal";
 
 //TODO: Needs to be deleted
 const TopicData = [
@@ -31,6 +32,9 @@ export default function ResourcesPage() {
 
     const pathname = usePathname();
     const [resources, setResources] = useState([]);
+
+    const [reportModalOpen, setReportModalOpen] = useState(false);
+    const [reportModalResourceId, setReportModalResourceId] = useState("");
 
     const { data: MyResources, refetch } = useQuery({
         queryKey: ["my-resource"],
@@ -109,6 +113,16 @@ export default function ResourcesPage() {
         );
     }
 
+    const handleReportClick = (resource_id: string) => {
+        setReportModalOpen(true);
+        setReportModalResourceId(resource_id);
+    }
+
+    const handleCloseReportModal = () => {
+        setReportModalOpen(false);
+        setReportModalResourceId("");
+    };
+
     return (
         <div className="w-full h-full pt-8 flex flex-col gap-2 p-4 animate-fadeIn">
             {/* Resource Modal */}
@@ -119,8 +133,20 @@ export default function ResourcesPage() {
                 onClose={handleCloseModal}
             />
 
+            <ResourceReportModal
+                resourceId={reportModalResourceId}
+                isOpen={reportModalOpen}
+                onClose={handleCloseReportModal}
+            />
+
             {/* Detail Modal */}
-            <DetailModal handleUserLikeAction={handleUserLikeAction} triggerReload={triggerReload} isOpen={mode === "view"} onClose={handleCloseModal} />
+            <DetailModal 
+                handleUserLikeAction={handleUserLikeAction} 
+                triggerReload={triggerReload} 
+                isOpen={mode === "view"} 
+                onClose={handleCloseModal}
+                handleReportClick={handleReportClick}
+            />
 
             {/* Topics */}
             <SectionWrapper
@@ -145,7 +171,12 @@ export default function ResourcesPage() {
                     isLoading={isFetching}
                     title={category !== null ? undefined : "Resources"}
                     renderItem={(item, index) => (
-                        <Card key={item?.resource_id || index} resource={item} onClick={() => handleViewOrEditResource("view", item?.resource_id)} />
+                        <Card 
+                            key={item?.resource_id || index} 
+                            resource={item} 
+                            onClick={() => handleViewOrEditResource("view", item?.resource_id)} 
+                            handleReportClick={handleReportClick}
+                        />
                     )}
                 />
                 :
@@ -156,7 +187,12 @@ export default function ResourcesPage() {
                     {
                         MyResources?.items?.map((resource: any, index: number) => (
                             <div className="col-span-3">
-                                <Card key={resource?.resource_id || index} resource={resource} className="!w-full" onClick={() => handleViewOrEditResource("view", resource?.resource_id)} />
+                                <Card
+                                    key={resource?.resource_id || index}
+                                    resource={resource}
+                                    className="!w-full"
+                                    onClick={() => handleViewOrEditResource("view", resource?.resource_id)}
+                                />
                             </div>
                         ))
                     }

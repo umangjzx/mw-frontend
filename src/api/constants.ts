@@ -88,6 +88,9 @@ export const endpoints: EndpointProps = {
         get: (id: string) => `feedback/learner/${id}`,
         update: "feedback/learner",
     },
+    report: {
+        create: "report"
+    },
     media_uploader: {
         image: "common/media_uploader/image",
         video: "common/media_uploader/video",
