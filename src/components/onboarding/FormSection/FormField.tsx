@@ -54,7 +54,7 @@ export const FormField = ({ field, control, setValue, errors, parent }: FormFiel
     };
 
     return (
-        <div className={`${field.gridCols === 2 ? "col-span-2 w-full" : "col-span-1 w-full"}`}>
+        <div className={`${field.gridCols === 2 ? "col-span-2 w-full" : "col-span-2 md:col-span-1 w-full"}`}>
             <Controller
                 name={getFieldProperty(field, "name")}
                 control={control}
