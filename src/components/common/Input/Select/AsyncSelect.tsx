@@ -7,6 +7,7 @@ import CreatableSelect from "react-select/creatable";
 import { BiCaretDown } from "react-icons/bi";
 import TagComponent from "../../Tag";
 import { cn } from "@/utils/merge-class";
+import { StylesConfig } from "react-select";
 
 const AsyncSelect = ({
     variant,
@@ -18,7 +19,11 @@ const AsyncSelect = ({
     ...props
 }: AsyncSelectProps) => {
     const [data, setData] = useState<any[]>([]);
-    const { data: selectData, isLoading, error } = useQuery({
+    const {
+        data: selectData,
+        isLoading,
+        error,
+    } = useQuery({
         queryKey: ["async-select", props.name, endpoint],
         queryFn: async () => {
             try {
@@ -140,7 +145,10 @@ const AsyncSelect = ({
 
     const filteredOptions = useMemo(() => {
         if (variant === "multi" && Array.isArray(getValue) && getValue?.length > 0) {
-            return options.filter((option: any) => !getValue.some(selectValue => selectValue?.label === option?.label))
+            return options.filter(
+                (option: any) =>
+                    !getValue.some((selectValue) => selectValue?.label === option?.label)
+            );
         }
         return options;
     }, [variant, getValue, options]);
@@ -151,8 +159,8 @@ const AsyncSelect = ({
 
         if (creatable && "onCreate" in props) {
             const [key1 = "label", key2 = "value"]: string[] = Object.keys(data[0]);
-            const option = { [key1]: inputValue, [key2]: inputValue }
-            setData(prev => [...prev, option]);
+            const option = { [key1]: inputValue, [key2]: inputValue };
+            setData((prev) => [...prev, option]);
             props.onCreate(Array.isArray(responseAsValue) ? option : inputValue);
         }
     };
@@ -172,10 +180,20 @@ const AsyncSelect = ({
                 classNamePrefix="select"
                 isDisabled={props.disabled}
                 placeholder={props.placeholder || "Search and Select"}
-                formatCreateLabel={(inputValue: string) => `${creatable ? 'Create' : 'Not Found'} - "${inputValue}"`}
+                formatCreateLabel={(inputValue: string) =>
+                    `${creatable ? "Create" : "Not Found"} - "${inputValue}"`
+                }
                 hideSelectedOptions={variant === "multi"}
                 loadingMessage={() => "Loading..."}
-                styles={customStyles}
+                styles={
+                    {
+                        ...customStyles,
+                        placeholder: (base) => ({
+                            ...base,
+                            fontSize: "0.875rem",
+                        }),
+                    } as StylesConfig
+                }
                 components={{
                     DropdownIndicator: () => <BiCaretDown className="text-black mr-1" />,
                     ClearIndicator: () => null,

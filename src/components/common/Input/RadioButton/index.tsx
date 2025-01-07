@@ -62,7 +62,7 @@ const RadioInput: React.FC<RadioInputProps> = ({
                     >
                         <Radio value={option.value}>
                             <div>
-                                <span>{option.label}</span>
+                                <span className="text-sm">{option.label}</span>
                                 {option.sublabel && (
                                     <p className="text-sm text-gray-500 ml-0">{option.sublabel}</p>
                                 )}
