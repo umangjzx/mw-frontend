@@ -155,7 +155,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                 </div>}
 
                 {/* Tabs Header */}
-                <div className="md:hidden w-full text-center mt-5 lg:mt-0">
+                <div className="lg:hidden w-full text-center mt-5 lg:mt-0">
                     <p className="font-semibold">{`Step ${activeTab + 1}/${formData.length} - ${formData[activeTab]?.title}`}</p>
                 </div>
                 <div ref={tabButtonsRef} className="flex mb-8 gap-2 px-5">
@@ -164,10 +164,10 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                             key={section.title || index}
                             type="button"
                             onClick={() => handleNavigation(index)}
-                            className={`md:px-4 py-2 w-full text-sm font-medium ${index > highestTab ? "cursor-not-allowed" : ""}`}
+                            className={`lg:px-4 py-2 w-full text-sm font-medium ${index > highestTab ? "cursor-not-allowed" : ""}`}
                             disabled={index > highestTab}
                         >
-                            <p className="hidden md:block">{section.title || `Step ${index + 1}`}</p>
+                            <p className="hidden lg:block">{section.title || `Step ${index + 1}`}</p>
                             <div className={`!h-[10px] !w-full mt-1 rounded-xl ${index <= activeTab ? "!bg-background-secondary" : "!bg-gray-300"}`}></div>
                         </button>
                     ))}
@@ -175,9 +175,9 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
 
                 {/* Active Tab Content */}
                 {formData.map((section: any, index) => (
-                    <div className={`!bg-white p-10 md:rounded-3xl mx-auto px-6 lg:px-8 ${activeTab === index ? 'block' : 'hidden'}`}>
+                    <div className={`!bg-white p-10 lg:rounded-3xl mx-auto px-6 lg:px-8 ${activeTab === index ? 'block' : 'hidden'}`}>
                         {section?.title && (
-                            <h2 className="text-2xl md:text-3xl font-semibold mb-4 md:mb-8">{section?.title}</h2>
+                            <h2 className="text-2xl lg:text-3xl font-semibold mb-4 lg:mb-8">{section?.title}</h2>
                         )}
                         <div className="grid grid-cols-2 w-full gap-6">
                             {section?.fields?.filter((field: any) => !hideFields(field)).map((field: any, index: number) => {
@@ -245,7 +245,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                                             disabled={isLoading}
                                             title="Submit Application"
                                             size="large"
-                                            customClassName="w-full lg:w-fit hover:!bg-background-secondary !text-sm !bg-background-secondary !text-black !rounded-lg !shadow-2xl !font-normal"
+                                            customClassName="w-full sm:w-[50%] lg:w-fit max-lg:mx-auto hover:!bg-background-secondary !text-sm !bg-background-secondary !text-black !rounded-lg !shadow-2xl !font-normal"
                                         />
                                     </>
                                 ) : (
@@ -253,7 +253,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                                         onClick={() => handleNavigation(activeTab + 1)}
                                         title="Next"
                                         size="large"
-                                        customClassName="w-full lg:w-fit hover:!bg-background-secondary !text-sm !bg-background-secondary !text-black !rounded-lg !shadow-2xl !font-medium"
+                                        customClassName="w-full sm:w-[50%] lg:w-fit max-lg:mx-auto hover:!bg-background-secondary !text-sm !bg-background-secondary !text-black !rounded-lg !shadow-2xl !font-medium"
                                     />
                                 )}
                             </div>

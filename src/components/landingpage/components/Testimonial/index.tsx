@@ -32,7 +32,7 @@ export default function Testimonial({ testimonials }: TestimonialProps) {
                                     <TagComponent
                                         className={`${
                                             testimonial.category === "Learners"
-                                                ? "!bg-[#F0FAFF] text-[#009BCC]"
+                                                ? "!bg-[#F0FAFF] !text-[#009BCC]"
                                                 : "!text-[#FF9053] !bg-[#FFF5ED]"
                                         } py-1 !text-sm px-4 border-none`}
                                         text={testimonial.category}

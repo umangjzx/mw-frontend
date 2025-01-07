@@ -25,8 +25,8 @@ const infoItems: InfoItem[] = [
 
 const InfoSection = (props: Props) => {
     return (
-        <section className='w-full py-10 md:py-16'>
-            <div className='max-w-7xl p-10 bg-white md:rounded-3xl mx-auto px-6 lg:px-8'>
+        <section className='w-full py-10 lg:py-16'>
+            <div className='max-w-7xl p-10 bg-white lg:rounded-3xl mx-auto px-6 lg:px-8'>
                 <div className='flex flex-col gap-8'>
                     {infoItems.map((item, index) => (
                         <div key={index} className='flex flex-col gap-2'>

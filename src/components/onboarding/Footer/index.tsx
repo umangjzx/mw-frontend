@@ -52,9 +52,9 @@ const Footer = (props: Props) => {
     )
 
     return (
-        <footer className="w-full bg-white min-h-[40dvh] px-[9%] flex items-center justify-center">
+        <footer className="w-full bg-white lg:min-h-[40vh] px-[9%] flex items-center justify-center">
             <div className="max-w-[1400px] w-full mx-auto py-6">
-                <div className="flex w-full flex-col md:flex-row justify-between items-center lg:items-start gap-4 py-8 lg:py-0">
+                <div className="flex w-full flex-col lg:flex-row justify-between items-center lg:items-start gap-4 py-8 lg:py-0">
                     {/* Left side - Policy and Terms links */}
                     <div className="flex flex-col lg:flex-row items-center mb-5 lg:mb-0 gap-6">
                         {policyLinks.map((link) => (
