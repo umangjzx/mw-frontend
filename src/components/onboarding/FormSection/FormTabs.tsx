@@ -156,7 +156,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
 
                 {/* Tabs Header */}
                 <div className="lg:hidden w-full text-center mt-5 lg:mt-0">
-                    <p className="font-semibold">{`Step ${activeTab + 1}/${formData.length} - ${formData[activeTab]?.title}`}</p>
+                    <p className="text-base font-medium">{`Step ${activeTab + 1}/${formData.length} - ${formData[activeTab]?.title}`}</p>
                 </div>
                 <div ref={tabButtonsRef} className="flex mb-8 gap-2 px-5">
                     {formData.map((section: any, index) => (
@@ -167,7 +167,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                             className={`lg:px-4 py-2 w-full text-sm font-medium ${index > highestTab ? "cursor-not-allowed" : ""}`}
                             disabled={index > highestTab}
                         >
-                            <p className="hidden lg:block">{section.title || `Step ${index + 1}`}</p>
+                            <p className="hidden lg:block text-base">{section.title || `Step ${index + 1}`}</p>
                             <div className={`!h-[10px] !w-full mt-1 rounded-xl ${index <= activeTab ? "!bg-background-secondary" : "!bg-gray-300"}`}></div>
                         </button>
                     ))}
@@ -177,9 +177,9 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                 {formData.map((section: any, index) => (
                     <div className={`!bg-white p-10 lg:rounded-3xl mx-auto px-6 lg:px-8 ${activeTab === index ? 'block' : 'hidden'}`}>
                         {section?.title && (
-                            <h2 className="text-2xl lg:text-3xl font-semibold mb-4 lg:mb-8">{section?.title}</h2>
+                            <h2 className="text-2xl lg:text-3xl font-medium lg:font-semibold mb-4 lg:mb-8">{section?.title}</h2>
                         )}
-                        <div className="grid grid-cols-2 w-full gap-6">
+                        <div className="grid grid-cols-2 w-full gap-3 lg:gap-6">
                             {section?.fields?.filter((field: any) => !hideFields(field)).map((field: any, index: number) => {
                                 if (section?.type === "card") {
                                     const parent = section?.parent
