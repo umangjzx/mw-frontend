@@ -10,7 +10,7 @@ export const useAppStore = create<UseAppStoreProps>()(
         persist(
             (set, get, api) => {
                 return {
-                    ...useVolunteer(set, get, api), //* Add stores which are needed
+                    ...useVolunteer(set, get, api),
                     ...useLearner(set, get, api),
                     ...useGlobalStore(set, get, api),
                 };

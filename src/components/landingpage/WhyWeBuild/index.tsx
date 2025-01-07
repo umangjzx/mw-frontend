@@ -5,8 +5,8 @@ import { cardData } from "@/constants/landingPage";
 const WhyWeBuild = () => {
     return (
         <ContainerWrapper>
-            <h1 className="text-[2rem] font-medium">Why are we building this?</h1>
-            <div className="flex items-center justify-center gap-7 ">
+            <h1 className="text-2xl mb-6 lg:mb-0 lg:text-[2rem] text-center font-medium">Why are we building this?</h1>
+            <div className="flex flex-col md:flex-row items-center justify-center gap-7">
                 {cardData.map((item, index) => (
                     <Card key={index} title={item.title} description={item.description} index={index} />
                 ))}

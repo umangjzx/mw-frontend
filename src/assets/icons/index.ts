@@ -22,3 +22,4 @@ export { default as SeeMoreIcon } from "./SeeMoreIcon";
 export { default as CalendarAccessIcon } from "./CalendarAccessIcon";
 export { default as UnlikeHeartIcon } from "./UnlikeHeartIcon";
 export { default as HeartLikeIcon } from "./HeartLikeIcon";
+export { default as SideMenuIcon } from "./SideMenuIcon";

@@ -11,7 +11,7 @@ interface ForVolunteerProps {
 
 const ForVolunteer = ({ onVolunteerLogin }: ForVolunteerProps) => {
     return (
-        <ContainerWrapper>
+        <ContainerWrapper className="bg-white py-10 px-5">
             <ContainerHeader
                 title="For Volunteers"
                 subTitle="You’ll find more than a volunteer role—you’ll find a purpose that uplifts"
@@ -19,17 +19,25 @@ const ForVolunteer = ({ onVolunteerLogin }: ForVolunteerProps) => {
                 titleColor="!text-[#FF6C00]"
             />
 
-            <div className="flex flex-col justify-center items-center gap-1">
-                <div className="flex">
+            <div className="flex flex-col justify-center items-center gap-1 mt-10 lg:mt-0">
+                <div className="flex flex-col lg:flex-row">
                     {volunteerData.map((item, index) => (
-                        <StepsChart key={index} title={item.title} icon={item.icon} index={index} />
+                        <StepsChart
+                            key={index}
+                            title={item.title}
+                            icon={item.icon}
+                            iconMobile={item.iconMobile}
+                            index={index}
+                        />
                     ))}
                 </div>
-                <LandingPageButton
-                    title="Become a Volunteer"
-                    type="volunteer"
-                    onClick={() => onVolunteerLogin("volunteer")}
-                />
+                <div className="max-w-[300px]">
+                    <LandingPageButton
+                        title="Become a Volunteer"
+                        type="volunteer"
+                        onClick={() => onVolunteerLogin("volunteer")}
+                    />
+                </div>
             </div>
         </ContainerWrapper>
     );

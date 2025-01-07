@@ -12,13 +12,19 @@ const ContainerHeader = ({ title, subTitle, description, titleColor }: Container
     return (
         <div className="flex flex-col gap-4 items-center">
             <p
-                className={`text-xl font-semibold ${titleColor ? titleColor : ""}`}
+                className={`text-base lg:text-xl font-semibold ${titleColor ? titleColor : ""}`}
                 style={titleColor ? {} : gradientTextStyle}
             >
                 {title}
             </p>
-            <h2 className="text-[2rem] font-medium text-center leading-normal">{subTitle}</h2>
-            <p className="text-xl text-gray-light text-center leading-normal">{description}</p>
+            {subTitle && (
+                <h2 className="text-2xl px-2 lg:text-[2rem] font-medium text-center leading-normal">
+                    {subTitle}
+                </h2>
+            )}
+            <p className="text-sm lg:text-xl px-2 text-gray-light text-center leading-normal">
+                {description}
+            </p>
         </div>
     );
 };

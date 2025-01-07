@@ -1,5 +1,6 @@
 import { LogoIcon } from "@/assets/icons";
 import HeroBannerImg from "@/assets/images/HeroBannerImg.png";
+import HeroBannerMobileImg from "@/assets/images/HeroBannerMobileImg.png";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import LandingPageButton from "../components/Button";
@@ -24,19 +25,20 @@ const Hero = ({ handleSetRole, buttonLoading }: HeroProps) => {
             }`}
         >
             <Header handleModalLogin={(value) => handleSetRole(value as UserType)} />
-            <div className={`w-full h-[80vh] bg-white relative`}>
-                <div className="w-full h-full relative">
-                    <Image src={HeroBannerImg} alt="Hero Banner" fill className="object-cover" />
+            <div className={`w-full md:h-[80vh] md:bg-white relative`}>
+                <div className="w-full !h-[300px] md:!h-full md:!relative">
+                    <Image src={HeroBannerImg} alt="Hero Banner" fill className="h-full object-cover hidden md:block" />
+                    <Image src={HeroBannerMobileImg} alt="Hero Banner" fill className="!h-[300px] md:hidden object-cover" />
                 </div>
-                <div className="w-[40%] h-[30%] absolute top-[25%] left-[10%] z-10 flex flex-col gap-6">
+                <div className="md:!w-[40%] md:!h-[30%] md:!absolute md:!top-[25%] md:!left-[10%] z-10 flex-center flex-col md:items-start md:justify-start gap-6">
                     <span>
                         <LogoIcon />
                     </span>
-                    <h1 className="text-4xl font-medium leading-normal">
+                    <h1 className="px-5 md:px-0 text-2xl lg:text-4xl text-center md:!text-start font-medium !leading-normal">
                         Limitless free learning <br /> opportunities for diverse <br />
                         disabilities
                     </h1>
-                    <div className="flex gap-3">
+                    <div className="flex flex-col md:flex-row gap-3">
                         <LandingPageButton
                             loading={buttonLoading === "learner"}
                             onClick={() => handleSetRole("learner")}

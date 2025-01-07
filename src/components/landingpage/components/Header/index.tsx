@@ -1,14 +1,14 @@
 "use client";
-import React, { useState } from "react";
-import Logo from "@/components/common/Logo";
-import Link from "next/link";
-import Button from "@/components/common/Button";
-import { IoMdClose } from "react-icons/io";
-import RadioInput from "@/components/common/Input/RadioButton";
-import { Radio } from "antd";
-import { FaGoogle } from "react-icons/fa";
-import { GoogleIcon } from "@/assets/icons";
+import { GoogleIcon, SideMenuIcon } from "@/assets/icons";
 import ModalCloseIcon from "@/assets/icons/FeedModalCloseIcon";
+import Button from "@/components/common/Button";
+import Logo from "@/components/common/Logo";
+import { Radio } from "antd";
+import Link from "next/link";
+import React, { useState } from "react";
+import SideNavBar from "@/components/landingpage/SideNavBar";
+import { IoMdClose } from "react-icons/io";
+import { useRouter } from "next/navigation";
 
 interface HeaderProps {
     handleModalLogin?: (value: string) => void;
@@ -17,6 +17,12 @@ interface HeaderProps {
 const Header = ({ handleModalLogin }: HeaderProps) => {
     const [loginAs, setLoginAs] = useState<UserType>("volunteer");
     const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
+    const [isSideNavBarOpen, setIsSideNavBarOpen] = useState<boolean>(false);
+    const router = useRouter();
+
+    const handleSideNavBar = () => {
+        setIsSideNavBarOpen(!isSideNavBarOpen);
+    };
 
     console.log(loginAs, "loginAs");
 
@@ -52,6 +58,11 @@ const Header = ({ handleModalLogin }: HeaderProps) => {
         setLoginAs(value);
     };
 
+    const handleLinkClick = (link: string) => {
+        handleSideNavBar();
+        router.push(link);
+    };
+
     return (
         <div className="w-full mx-auto bg-white shadow-md ">
             <div
@@ -64,7 +75,7 @@ const Header = ({ handleModalLogin }: HeaderProps) => {
                 <Link href="/" className="cursor-pointer">
                     <Logo />
                 </Link>
-                <div className="flex 2xl:gap-6 gap-4 items-center">
+                <div className="hidden md:flex 2xl:gap-6 gap-4 items-center">
                     <nav className="flex 2xl:gap-6 gap-4">
                         {links.map((link, index) => (
                             <Link
@@ -116,7 +127,36 @@ const Header = ({ handleModalLogin }: HeaderProps) => {
                         </div>
                     </div>
                 </div>
+                <div className="md:hidden cursor-pointer" onClick={handleSideNavBar}>
+                    <SideMenuIcon />
+                </div>
             </div>
+            <SideNavBar isOpen={isSideNavBarOpen} onClose={handleSideNavBar}>
+                <div className="flex justify-between items-center px-4">
+                    <Link href="/" className="cursor-pointer">
+                        <Logo />
+                    </Link>
+                    <div onClick={handleSideNavBar} className="cursor-pointer">
+                        <IoMdClose className="text-[28px] mt-1 font-bold" />
+                    </div>
+                </div>
+                <div className="flex flex-col gap-10 justify-center items-center mt-16">
+                    {links.map((link, index) => (
+                        <div
+                            onClick={() => handleLinkClick(link.link)}
+                            key={index}
+                            className="underline font-medium hover:text-gray-600 transition-all duration-300 text-base"
+                        >
+                            {link.title}
+                        </div>
+                    ))}
+                    {/* <Button
+                        title="Log In"
+                        className="!bg-black !px-[2rem] !py-1 text-white hover:!bg-black hover:!text-white text-base !rounded-xl"
+                        onClick={handleLoginModal}
+                    /> */}
+                </div>
+            </SideNavBar>
         </div>
     );
 };

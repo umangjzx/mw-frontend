@@ -71,7 +71,7 @@ const ProfileDetailsFields: FormField[] = [
         inputType: "checkbox",
         placeholder: "I've consent from my parent or guardian to be a volunteer.",
         gridCols: 2,
-        inputClassName: "w-fit"
+        inputClassName: "max-md:text-sm w-fit"
     },
     {
         id: "volunteer_parent_fullname",

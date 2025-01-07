@@ -4,6 +4,7 @@ import { GET_API, POST_API } from "@/api/request";
 import LottieLoader from "@/components/common/Loader/Lottie";
 import Celebrate from "@/components/landingpage/Celebrate";
 import Community from "@/components/landingpage/Community";
+import Testimonials from "@/components/landingpage/testimonials";
 import ForLearner from "@/components/landingpage/ForLearner";
 import ForVolunteer from "@/components/landingpage/ForVolunteer";
 import Hero from "@/components/landingpage/Hero";
@@ -39,7 +40,7 @@ export default function Page() {
             return response?.data;
         } catch (error) {
             console.error("Error signing up:", error);
-            if(code) router.push("/login")
+            if (code) router.push("/login");
             throw error;
         }
     };
@@ -71,8 +72,8 @@ export default function Page() {
     });
 
     useEffect(() => {
-        setIsPageLoading(isLoading || !!code)
-    }, [code, isLoading])
+        setIsPageLoading(isLoading || !!code);
+    }, [code, isLoading]);
 
     useEffect(() => {
         const savedRole = Cookies.get("role") as UserType;
@@ -136,30 +137,38 @@ export default function Page() {
         };
     }, []);
 
-    if (isPageLoading) return <div className="h-[100vh] w-full flex-center">
-        <LottieLoader isLoading={isPageLoading} />
-    </div>
+    if (isPageLoading)
+        return (
+            <div className="h-[100vh] w-full flex-center">
+                <LottieLoader isLoading={isPageLoading} />
+            </div>
+        );
 
     return (
         <div className="w-full overflow-x-hidden bg-background-input">
             <Hero handleSetRole={handleSetRole} buttonLoading={buttonLoading} />
-            <div className="flex flex-col gap-[7rem] py-[7rem] px-[9%]">
-                <div className="reveal" id="our-mission">
+            <div className="flex flex-col gap-20 lg:gap-[7rem] py-[7rem]">
+                <div className="reveal px-[9%]" id="our-mission">
                     <WhyWeBuild />
                 </div>
-                <div className="reveal" id="our-impact">
+                <div className="reveal px-[9%]" id="our-impact">
                     <Impact />
                 </div>
-                <div className="reveal">
-                    <ForLearner onLearnerLogin={handleSetRole} />
+                <div className="flex flex-col lg:gap-20">
+                    <div className="reveal lg:px-[9%]">
+                        <ForLearner onLearnerLogin={handleSetRole} />
+                    </div>
+                    <div className="reveal lg:px-[9%]">
+                        <ForVolunteer onVolunteerLogin={handleSetRole} />
+                    </div>
                 </div>
-                <div className="reveal">
-                    <ForVolunteer onVolunteerLogin={handleSetRole} />
-                </div>
-                <div className="reveal">
+                <div className="reveal px-[7%]">
                     <Community />
                 </div>
                 <div className="reveal">
+                    <Testimonials />
+                </div>
+                <div className="reveal px-[4%] lg:px-[9%]">
                     <Celebrate />
                 </div>
             </div>

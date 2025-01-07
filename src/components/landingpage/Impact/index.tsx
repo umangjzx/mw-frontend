@@ -12,16 +12,16 @@ const Impact = () => {
                     subTitle="Together, We're Making a Difference"
                     description="Here's how our community is spreading knowledge and bringing change."
                 />
-                <div className="bg-[#f4f7fb] shadow-inner rounded-3xl p-6 py-20 grid grid-cols-3 place-items-center w-full">
+                <div className="bg-white lg:bg-[#f4f7fb] shadow-inner rounded-3xl p-6 py-10 md:py-20 grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-0 place-items-center w-full">
                     {imapactData.map((item, index) => (
                         <div key={index} className="flex flex-col">
                             <span
                                 style={gradientInnerTextStyle}
-                                className="text-[4rem] font-semibold tracking-tighter"
+                                className="text-center lg:text-start text-[4rem] font-semibold tracking-tighter"
                             >
                                 {item.title}
                             </span>
-                            <p className="text-xl font-medium -mt-2">{item.subTitle}</p>
+                            <p className="text-xl md:text-base lg:text-xl font-medium -mt-2">{item.subTitle}</p>
                         </div>
                     ))}
                 </div>
