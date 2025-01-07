@@ -41,8 +41,8 @@ const ContactInput = (props: ContactInputProps) => {
                     options={mobileCountryCodes}
                     inputType='select'
                     placeholder='+91'
-                    className='!w-[18%] mb-0 mt-0 !h-full'
-                    inputClassName='!w-[18%] mt-0 p-0 !mb-0'
+                    className='w-[35%] md:w-[20%] mb-0 mt-0 !h-full'
+                    inputClassName='w-[35%] md:w-[20%] mt-0 p-0 !mb-0'
                 />
                 <Input
                     name='number'

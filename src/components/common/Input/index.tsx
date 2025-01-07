@@ -301,7 +301,7 @@ export const Input: React.FC<InputProps> = (props) => {
     };
 
     return (
-        <div className={`mb-4 w-full h-auto flex flex-col gap-2 ${className}`}>
+        <div className={`mb-1 md:mb-4 w-full h-auto flex flex-col gap-2 ${className}`}>
             {renderLabel()}
             {renderInput()}
             {error && <p className="text-xs text-red-500 capitalize">{error}</p>}

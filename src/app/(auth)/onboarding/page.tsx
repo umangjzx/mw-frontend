@@ -11,10 +11,11 @@ import Cookies from "js-cookie";
 
 export default function OnboardingPage () {
     const role = Cookies.get("role");
+    const isVolunteer = role === "volunteer";
 
-    const titleSectionConstants = role === "volunteer" ? VolunteerOnboardingConstants : LearnerOnboardingConstants;
-    const formData = role === "volunteer" ? VolunteerFormSections : LearnerFormSections;
-    const schema = role === "volunteer" ? volunteerFormSchema : learnerFormSchema;
+    const titleSectionConstants = isVolunteer ? VolunteerOnboardingConstants : LearnerOnboardingConstants;
+    const formData = isVolunteer ? VolunteerFormSections : LearnerFormSections;
+    const schema = isVolunteer ? volunteerFormSchema : learnerFormSchema;
 
     return (
         <div className='flex bg-background-input flex-col gap-5'>
@@ -22,7 +23,7 @@ export default function OnboardingPage () {
                 title={titleSectionConstants.title}
                 description={titleSectionConstants.description}
             />
-            {role === "volunteer" && <InfoSection />}
+            {isVolunteer && <InfoSection />}
             <FormSection schema={schema} formData={formData} />
         </div>
     );

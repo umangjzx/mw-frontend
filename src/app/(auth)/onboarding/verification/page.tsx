@@ -65,7 +65,7 @@ export default function VerificationPage() {
     const thankyouCardConstants = role === "learner" ? LearnerThankyouCardConstants : VolunteerThankyouCardConstants;
 
     return (
-        <div className="flex h-[60dvh] bg-background-input items-center justify-center flex-col gap-5">
+        <div className="flex min-h-[60dvh] bg-background-input items-center justify-center flex-col gap-5 md:px-10">
             <ThankyouCard
                 title={thankyouCardConstants.title}
                 description={thankyouCardConstants.description}

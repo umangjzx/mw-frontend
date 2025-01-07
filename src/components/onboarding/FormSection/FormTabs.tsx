@@ -72,14 +72,14 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
         );
 
         const isValidSection = await trigger(currentFields);
-        if(!isValidSection) {
+        if (!isValidSection) {
             showToast({ type: "error", message: "Please fill in all required fields before proceeding." });
             return false;
         }
 
         const runValidation = (validationFn: Function) => {
             const validation = validationFn(control?._formValues);
-            if(!validation.success) {
+            if (!validation.success) {
                 Object.entries(validation.errors).forEach(([key, value]: any) => {
                     if (key && value) {
                         setError(key, { message: value });
@@ -91,19 +91,19 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
             return true;
         };
 
-        if(role === "learner" && activeTab <= 1) {
+        if (role === "learner" && activeTab <= 1) {
             const isLearnerUnder18 = () => {
                 const learnerDOB = control?._formValues?.learner_personal_info?.learner_date_of_birth;
                 const age = learnerDOB ? moment().diff(moment(learnerDOB), 'years') : null;
                 return age !== null && age < 18;
             };
             if (isLearnerUnder18() && !runValidation(validateLearnerParentFields)) {
-                if(activeTab !== 1) setActiveTab(1);
+                if (activeTab !== 1) setActiveTab(1);
                 return false;
             }
         }
 
-        if(role === "volunteer" && activeTab === 0) {
+        if (role === "volunteer" && activeTab === 0) {
             if (!runValidation(validateVolunteerParentDetails)) {
                 return false;
             }
@@ -122,7 +122,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
     };
 
     useEffect(() => {
-        if(errors?.parent_info) setActiveTab(1)
+        if (errors?.parent_info) setActiveTab(1)
     }, [errors])
 
     useEffect(() => {
@@ -136,15 +136,15 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
     }
 
     const hideFields = (field: any) => {
-        if(role === "learner") return false;
+        if (role === "learner") return false;
         return fields.includes(field.id) && volunteerAge();
     };
 
     return (
         <form onSubmit={onSubmit} className="w-full pb-16">
-            <div className="max-w-7xl px-10 mx-auto sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto lg:px-8">
                 {/* Auto Form Fill - Only for Dev */}
-                {currentVersion === "dev" && <div className="flex items-end justify-end">
+                {currentVersion === "dev" && <div className="flex items-end justify-end mb-5">
                     <Button
                         onClick={handleFillForm}
                         title="Fill Form"
@@ -154,16 +154,19 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                 </div>}
 
                 {/* Tabs Header */}
-                <div ref={tabButtonsRef} className="flex my-8 gap-2">
+                <div className="md:hidden w-full text-center mb-3">
+                    <p className="font-semibold">{`Step ${activeTab + 1}/${formData.length} - ${formData[activeTab]?.title}`}</p>
+                </div>
+                <div ref={tabButtonsRef} className="flex mb-8 gap-2 px-5">
                     {formData.map((section: any, index) => (
                         <button
                             key={section.title || index}
                             type="button"
                             onClick={() => handleNavigation(index)}
-                            className={`px-4 py-2 w-full text-sm font-medium ${index > highestTab ? "cursor-not-allowed" : ""}`}
+                            className={`md:px-4 py-2 w-full text-sm font-medium ${index > highestTab ? "cursor-not-allowed" : ""}`}
                             disabled={index > highestTab}
                         >
-                            {section.title || `Step ${index + 1}`}
+                            <p className="hidden md:block">{section.title || `Step ${index + 1}`}</p>
                             <div className={`!h-[10px] !w-full mt-1 rounded-xl ${index <= activeTab ? "!bg-background-secondary" : "!bg-gray-300"}`}></div>
                         </button>
                     ))}
@@ -171,9 +174,9 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
 
                 {/* Active Tab Content */}
                 {formData.map((section: any, index) => (
-                    <div className={`!bg-white p-10 rounded-3xl mx-auto px-4 sm:px-6 lg:px-8 ${activeTab === index ? 'block' : 'hidden'}`}>
+                    <div className={`!bg-white p-10 md:rounded-3xl mx-auto px-6 lg:px-8 ${activeTab === index ? 'block' : 'hidden'}`}>
                         {section?.title && (
-                            <h2 className="text-3xl font-semibold mb-8">{section?.title}</h2>
+                            <h2 className="text-2xl md:text-3xl font-semibold mb-4 md:mb-8">{section?.title}</h2>
                         )}
                         <div className="grid grid-cols-2 w-full gap-6">
                             {section?.fields?.filter((field: any) => !hideFields(field)).map((field: any, index: number) => {
