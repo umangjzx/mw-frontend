@@ -64,7 +64,7 @@ const Header = ({ handleModalLogin }: HeaderProps) => {
                 <Link href="/" className="cursor-pointer">
                     <Logo />
                 </Link>
-                <div className="flex 2xl:gap-6 gap-4 items-center">
+                <div className="hidden md:flex 2xl:gap-6 gap-4 items-center">
                     <nav className="flex 2xl:gap-6 gap-4">
                         {links.map((link, index) => (
                             <Link

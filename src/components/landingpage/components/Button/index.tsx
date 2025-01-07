@@ -14,12 +14,12 @@ const LandingPageButton = ({ title, type, loading, onClick }: ButtonProps) => {
             ? "!bg-[#68DBFF] hover:!bg-[#68DBFF] border-0 border-r-2 border-b-2 border-[#009BCC] hover:!border-[#009BCC] text-sm !text-black rounded-[10px] shadow-sm  "
             : "!bg-[#FFAC71] hover:!bg-[#FFAC71] border-0 border-r-2 border-b-2 border-[#CC5600] hover:!border-[#CC5600] text-sm !text-black rounded-[10px] shadow-sm  ";
     return (
-        <div>
+        <div className="w-full md:w-auto">
             <Button
                 disabled={loading}
                 onClick={onClick}
                 size="small"
-                className={`${typeClass} !text-sm !text-black font-medium !py-4 px-3`}
+                className={`${typeClass} w-full md:w-auto !text-sm !text-black font-medium !py-4 px-3`}
                 loading={loading}
             >
                 {title}
