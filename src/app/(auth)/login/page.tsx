@@ -147,26 +147,28 @@ export default function Page() {
     return (
         <div className="w-full overflow-x-hidden bg-background-input">
             <Hero handleSetRole={handleSetRole} buttonLoading={buttonLoading} />
-            <div className="flex flex-col gap-[7rem] py-[7rem] px-[9%]">
-                <div className="reveal" id="our-mission">
+            <div className="flex flex-col gap-20 lg:gap-[7rem] py-[7rem]">
+                <div className="reveal px-[9%]" id="our-mission">
                     <WhyWeBuild />
                 </div>
-                <div className="reveal" id="our-impact">
+                <div className="reveal px-[9%]" id="our-impact">
                     <Impact />
                 </div>
-                <div className="reveal">
-                    <ForLearner onLearnerLogin={handleSetRole} />
+                <div className="flex flex-col lg:gap-20">
+                    <div className="reveal lg:px-[9%]">
+                        <ForLearner onLearnerLogin={handleSetRole} />
+                    </div>
+                    <div className="reveal lg:px-[9%]">
+                        <ForVolunteer onVolunteerLogin={handleSetRole} />
+                    </div>
                 </div>
-                <div className="reveal">
-                    <ForVolunteer onVolunteerLogin={handleSetRole} />
-                </div>
-                <div className="reveal">
+                <div className="reveal px-[7%]">
                     <Community />
                 </div>
                 <div className="reveal">
                     <Testimonials />
                 </div>
-                <div className="reveal">
+                <div className="reveal px-[4%] lg:px-[9%]">
                     <Celebrate />
                 </div>
             </div>

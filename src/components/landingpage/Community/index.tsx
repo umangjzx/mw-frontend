@@ -23,10 +23,10 @@ const Community = () => {
                 title="Our Community Hub"
                 description="At Melody Wings, we believe in empowering both our volunteers and learners beyond just the sessions."
             />
-            <div className="bg-[#f4f7fb] shadow-inner rounded-3xl p-6 py-20 grid grid-cols-2 gap-4 place-items-center w-full">
+            <div className="mt-10 lg:mt-0 bg-white lg:bg-[#f4f7fb] shadow-inner rounded-3xl p-6 lg:py-20 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-6 place-items-center w-full">
                 {communityData.map((item, index) => (
                     <div key={index} className="flex flex-col gap-5 max-w-[420px] w-full">
-                        <div className="relative xl:max-w-[420px] w-full h-[256px]">
+                        <div className="relative xl:max-w-[420px] w-full h-[190px] lg:h-[256px]">
                             <Image
                                 src={item.image}
                                 alt="Community"
@@ -34,7 +34,7 @@ const Community = () => {
                                 fill
                             />
                         </div>
-                        <p className="text-xl font-normal text-center">{item.title}</p>
+                        <p className="text-base lg:text-xl font-normal text-center">{item.title}</p>
                     </div>
                 ))}
             </div>

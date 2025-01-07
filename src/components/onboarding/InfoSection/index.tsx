@@ -30,10 +30,10 @@ const InfoSection = (props: Props) => {
                 <div className='flex flex-col gap-8'>
                     {infoItems.map((item, index) => (
                         <div key={index} className='flex flex-col gap-2'>
-                            <h2 className='text-xl md:text-2xl font-medium text-gray-900'>
+                            <h2 className='text-sm lg:text-xl font-semibold lg:font-medium text-black lg:text-gray-900'>
                                 {item.title}
                             </h2>
-                            <p className='text-lg text-gray-600 italic'>
+                            <p className='text-sm lg:text-lg text-gray-600 italic'>
                                 {item.description}
                             </p>
                         </div>

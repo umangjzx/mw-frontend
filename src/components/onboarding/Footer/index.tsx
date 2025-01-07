@@ -34,12 +34,29 @@ const socialLinks: SocialLink[] = [
 ];
 
 const Footer = (props: Props) => {
+
+    const renderSocialLinks = () => (
+        <div className="flex items-center gap-6">
+            {socialLinks.map((link) => (
+                <Link
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    className="hover:text-gray-600 transition-all duration-300"
+                    aria-label={link.label}
+                >
+                    <link.icon size={22} />
+                </Link>
+            ))}
+        </div>
+    )
+
     return (
-        <footer className="w-full bg-white min-h-[40dvh] px-[9%] flex items-center justify-center ">
-            <div className="max-w-[1400px] w-full  mx-auto py-6">
-                <div className="flex w-full flex-col md:flex-row justify-between items-start gap-4">
+        <footer className="w-full bg-white min-h-[40dvh] px-[9%] flex items-center justify-center">
+            <div className="max-w-[1400px] w-full mx-auto py-6">
+                <div className="flex w-full flex-col md:flex-row justify-between items-center lg:items-start gap-4 py-8 lg:py-0">
                     {/* Left side - Policy and Terms links */}
-                    <div className="flex items-center gap-6">
+                    <div className="flex flex-col lg:flex-row items-center mb-5 lg:mb-0 gap-6">
                         {policyLinks.map((link) => (
                             <Link
                                 key={link.href}
@@ -52,8 +69,11 @@ const Footer = (props: Props) => {
                         ))}
                     </div>
 
-                    <div className="flex flex-col items-center gap-6">
+                    <div className="flex-center flex-col gap-6">
                         <Logo className="flex !flex-col" />
+                        <div className="lg:hidden">
+                            {renderSocialLinks()}
+                        </div>
                         {/* Center - Terms of Use and Privacy Policy text */}
                         <p className="text-gray-500 text-center text-sm">
                             Be sure to take a look at our Terms of Use
@@ -62,20 +82,11 @@ const Footer = (props: Props) => {
                         </p>
                     </div>
 
-                    {/* Right side - Social media icons */}
-                    <div className="flex items-center gap-6">
-                        {socialLinks.map((link) => (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                target="_blank"
-                                className="hover:text-gray-600 transition-all duration-300"
-                                aria-label={link.label}
-                            >
-                                <link.icon size={22} />
-                            </Link>
-                        ))}
+                    {/* Social media icons */}
+                    <div className="hidden lg:block">
+                        {renderSocialLinks()}
                     </div>
+
                 </div>
             </div>
         </footer>

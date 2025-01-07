@@ -50,7 +50,8 @@ const termsAndConditionsInput: FormField = {
     name: "terms_and_conditions_accepted",
     inputType: "checkbox",
     children: TermsAndConditionElement,
-    required: true
+    required: true,
+    inputClassName: "text-sm lg:text-base"
 }
 
 const currentVersion = process.env.NEXT_PUBLIC_CURRENT_VERSION;
@@ -154,7 +155,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                 </div>}
 
                 {/* Tabs Header */}
-                <div className="md:hidden w-full text-center mb-3">
+                <div className="md:hidden w-full text-center mt-5 lg:mt-0">
                     <p className="font-semibold">{`Step ${activeTab + 1}/${formData.length} - ${formData[activeTab]?.title}`}</p>
                 </div>
                 <div ref={tabButtonsRef} className="flex mb-8 gap-2 px-5">
@@ -244,7 +245,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                                             disabled={isLoading}
                                             title="Submit Application"
                                             size="large"
-                                            customClassName="w-fit hover:!bg-background-secondary !text-sm !bg-background-secondary !text-black !rounded-lg !shadow-2xl !font-normal"
+                                            customClassName="w-full lg:w-fit hover:!bg-background-secondary !text-sm !bg-background-secondary !text-black !rounded-lg !shadow-2xl !font-normal"
                                         />
                                     </>
                                 ) : (
@@ -252,7 +253,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                                         onClick={() => handleNavigation(activeTab + 1)}
                                         title="Next"
                                         size="large"
-                                        customClassName="w-fit hover:!bg-background-secondary !text-sm !bg-background-secondary !text-black !rounded-lg !shadow-2xl !font-normal"
+                                        customClassName="w-full lg:w-fit hover:!bg-background-secondary !text-sm !bg-background-secondary !text-black !rounded-lg !shadow-2xl !font-medium"
                                     />
                                 )}
                             </div>

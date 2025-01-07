@@ -19,15 +19,15 @@ const frames = {
 // Grid layout configurations
 const gridLayouts = [
     {
-        className: "grid-cols-[1.2fr,1.5fr,0.9fr] h-[156px]",
+        className: "grid-cols-[1.2fr,1.5fr,0.9fr] h-[70px] md:h-[156px]",
         images: ["FrameOne", "FrameTwo", "FrameThree"],
     },
     {
-        className: "grid-cols-[1fr,4fr,1fr] h-[360px]",
+        className: "grid-cols-[1fr,4fr,1fr] h-[110px] md:h-[360px]",
         images: ["FrameFour", "FrameFive", "FrameSix"],
     },
     {
-        className: "grid-cols-[1fr,1fr,1.3fr] h-[156px]",
+        className: "grid-cols-[1fr,1fr,1.3fr] h-[70px] md:h-[156px]",
         images: ["FrameSeven", "FrameEight", "FrameNine"],
     },
 ];
@@ -52,9 +52,9 @@ const Celebrate = () => {
                 subTitle="Celebrating Moments That Matter"
                 description="A glimpse into the smiles, connections, and learning journeys created by our community."
             />
-            <div className="grid w-full gap-2 max-w-[1200px] mx-auto">
+            <div className="mt-10 lg:mt-0 grid w-full gap-1 lg:gap-2 max-w-[1200px] mx-auto">
                 {gridLayouts.map((layout, index) => (
-                    <div key={index} className={`grid w-full gap-2 ${layout.className}`}>
+                    <div key={index} className={`grid w-full gap-1 lg:gap-2 ${layout.className}`}>
                         {layout.images.map((frameName) => (
                             <ImageFrame
                                 key={frameName}
