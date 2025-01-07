@@ -69,49 +69,46 @@ export const cardData = [
 
 export const volunteerData = [
     {
-        icon: handleInnerWidth() > 768 ? <SignUpIcon /> : <SignUpIcon width={44} height={44} />,
-
+        icon: <SignUpIcon />,
+        iconMobile: <SignUpIcon width={44} height={44} />,
         title: "Sign up and fill out your profile",
     },
     {
-        icon: handleInnerWidth() > 768 ? <SubjectIcon /> : <SubjectIcon width={44} height={44} />,
+        icon: <SubjectIcon />,
+        iconMobile: <SubjectIcon width={44} height={44} />,
         title: "Choose the subject or skill you’d like to teach",
     },
     {
-        icon:
-            handleInnerWidth() > 768 ? (
-                <LearnerMatchIcon />
-            ) : (
-                <LearnerMatchIcon width={44} height={44} />
-            ),
+        icon: <LearnerMatchIcon />,
+        iconMobile: <LearnerMatchIcon width={44} height={44} />,
         title: "Get matched with a learner based on your preferences",
     },
     {
-        icon:
-            handleInnerWidth() > 768 ? (
-                <LearnerScheduleIcon />
-            ) : (
-                <LearnerScheduleIcon width={44} height={44} />
-            ),
+        icon: <LearnerScheduleIcon />,
+        iconMobile: <LearnerScheduleIcon width={44} height={44} />,
         title: "Schedule lessons that fit your availability",
     },
 ];
 
 export const learnerData = [
     {
-        icon: handleInnerWidth() > 768 ? <CreateIcon /> : <CreateIcon width={44} height={44} />,
+        icon: <CreateIcon />,
+        iconMobile: <CreateIcon width={44} height={44} />,
         title: "Create a profile for your learner",
     },
     {
-        icon: handleInnerWidth() > 768 ? <ShareIcon /> : <ShareIcon width={44} height={44} />,
+        icon: <ShareIcon />,
+        iconMobile: <ShareIcon width={44} height={44} />,
         title: "Share your learner’s learning needs and interests",
     },
     {
-        icon: handleInnerWidth() > 768 ? <MatchIcon /> : <MatchIcon width={44} height={44} />,
+        icon: <MatchIcon />,
+        iconMobile: <MatchIcon width={44} height={44} />,
         title: "Get matched with a suitable tutor",
     },
     {
-        icon: handleInnerWidth() > 768 ? <ScheduleIcon /> : <ScheduleIcon width={44} height={44} />,
+        icon: <ScheduleIcon />,
+        iconMobile: <ScheduleIcon width={44} height={44} />,
         title: "Schedule classes that fit your schedule",
     },
 ];

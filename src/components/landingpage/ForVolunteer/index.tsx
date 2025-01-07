@@ -22,7 +22,13 @@ const ForVolunteer = ({ onVolunteerLogin }: ForVolunteerProps) => {
             <div className="flex flex-col justify-center items-center gap-1 mt-10 lg:mt-0">
                 <div className="flex flex-col lg:flex-row">
                     {volunteerData.map((item, index) => (
-                        <StepsChart key={index} title={item.title} icon={item.icon} index={index} />
+                        <StepsChart
+                            key={index}
+                            title={item.title}
+                            icon={item.icon}
+                            iconMobile={item.iconMobile}
+                            index={index}
+                        />
                     ))}
                 </div>
                 <div className="max-w-[300px]">
