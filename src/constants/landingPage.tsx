@@ -13,6 +13,15 @@ import DonateImg1 from "@/assets/images/DonateImg1.png";
 import DonateImg2 from "@/assets/images/DonateImg2.png";
 import DonateImg3 from "@/assets/images/DonateImg3.png";
 import DonateImg4 from "@/assets/images/DonateImg4.png";
+import { TestimonialData } from "@/components/landingpage/testimonials";
+import TestimonialDummyImg from "@/assets/images/TestimonialDummyImg.png";
+
+const handleInnerWidth = () => {
+    if (typeof window !== "undefined") {
+        return window.innerWidth;
+    }
+    return 0;
+};
 
 export const gradientInnerTextStyle = {
     color: "#ffa766",
@@ -60,38 +69,49 @@ export const cardData = [
 
 export const volunteerData = [
     {
-        icon: <SignUpIcon />,
+        icon: handleInnerWidth() > 768 ? <SignUpIcon /> : <SignUpIcon width={44} height={44} />,
+
         title: "Sign up and fill out your profile",
     },
     {
-        icon: <SubjectIcon />,
+        icon: handleInnerWidth() > 768 ? <SubjectIcon /> : <SubjectIcon width={44} height={44} />,
         title: "Choose the subject or skill you’d like to teach",
     },
     {
-        icon: <LearnerMatchIcon />,
+        icon:
+            handleInnerWidth() > 768 ? (
+                <LearnerMatchIcon />
+            ) : (
+                <LearnerMatchIcon width={44} height={44} />
+            ),
         title: "Get matched with a learner based on your preferences",
     },
     {
-        icon: <LearnerScheduleIcon />,
+        icon:
+            handleInnerWidth() > 768 ? (
+                <LearnerScheduleIcon />
+            ) : (
+                <LearnerScheduleIcon width={44} height={44} />
+            ),
         title: "Schedule lessons that fit your availability",
     },
 ];
 
 export const learnerData = [
     {
-        icon: <CreateIcon />,
+        icon: handleInnerWidth() > 768 ? <CreateIcon /> : <CreateIcon width={44} height={44} />,
         title: "Create a profile for your learner",
     },
     {
-        icon: <ShareIcon />,
+        icon: handleInnerWidth() > 768 ? <ShareIcon /> : <ShareIcon width={44} height={44} />,
         title: "Share your learner’s learning needs and interests",
     },
     {
-        icon: <MatchIcon />,
+        icon: handleInnerWidth() > 768 ? <MatchIcon /> : <MatchIcon width={44} height={44} />,
         title: "Get matched with a suitable tutor",
     },
     {
-        icon: <ScheduleIcon />,
+        icon: handleInnerWidth() > 768 ? <ScheduleIcon /> : <ScheduleIcon width={44} height={44} />,
         title: "Schedule classes that fit your schedule",
     },
 ];
@@ -227,5 +247,41 @@ export const donateCardData = [
         title: "Community Growth",
         subtitle: "Expand our efforts to reach more children and families worldwide.",
         image: DonateImg4,
+    },
+];
+
+export const testimonialsLearners: TestimonialData[] = [
+    {
+        category: "Learners",
+        quote: "Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it. Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it.",
+        author: "John Doe",
+        role: "Volunteer Teacher",
+        image: TestimonialDummyImg,
+    },
+    {
+        category: "Learners",
+        quote: "Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it. Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it.",
+
+        author: "Jane Smith",
+        role: "Math Teacher",
+        image: TestimonialDummyImg,
+    },
+    // Add more testimonials as needed
+];
+
+export const testimonialsVolunteers: TestimonialData[] = [
+    {
+        category: "Volunteers",
+        quote: "Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it. Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it.",
+        author: "John Doe",
+        role: "Volunteer Teacher",
+        image: TestimonialDummyImg,
+    },
+    {
+        category: "Volunteers",
+        quote: "Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it. Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it.",
+        author: "John Doe",
+        role: "Volunteer Teacher",
+        image: TestimonialDummyImg,
     },
 ];

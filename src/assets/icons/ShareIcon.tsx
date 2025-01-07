@@ -1,7 +1,18 @@
 import * as React from "react";
 
-const ShareIcon = (props: any) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="none" viewBox="0 0 64 64">
+interface ShareIconProps {
+    width?: number;
+    height?: number;
+}
+
+const ShareIcon = ({ width = 64, height = 64 }: ShareIconProps) => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width={width}
+        height={height}
+        fill="none"
+        viewBox="0 0 64 64"
+    >
         <rect width="64" height="64" fill="#F0FAFF" rx="32"></rect>
         <g clipPath="url(#clip0_450_2252)">
             <path

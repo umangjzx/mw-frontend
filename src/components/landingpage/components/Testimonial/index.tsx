@@ -27,7 +27,7 @@ export default function Testimonial({ testimonials }: TestimonialProps) {
                 {testimonials.map((testimonial, index) => (
                     <div key={index} className="">
                         <div className="bg-white rounded-3xl p-6 pb-14">
-                            <div className="flex flex-col gap-8">
+                            <div className="flex flex-col md:gap-8 gap-6">
                                 <div className="flex justify-center">
                                     <TagComponent
                                         className={`${
@@ -44,7 +44,7 @@ export default function Testimonial({ testimonials }: TestimonialProps) {
                                 <div className="flex items-center gap-4">
                                     <div className="w-16 h-16 relative rounded-full overflow-hidden flex-shrink-0">
                                         <Image
-                                            src={testimonial.image}
+                                            src={testimonial.image.src}
                                             alt={testimonial.author}
                                             fill
                                             className="object-cover"

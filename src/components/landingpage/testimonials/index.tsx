@@ -2,7 +2,7 @@ import React from "react";
 import ContainerWrapper from "../components/ContainerWrapper";
 import ContainerHeader from "../components/ContainerHeader";
 import Testimonial from "../components/Testimonial";
-import TestimonialDummyImg from "@/assets/images/TestimonialDummyImg.png";
+import { testimonialsLearners, testimonialsVolunteers } from "@/constants/landingPage";
 
 export interface TestimonialData {
     category: string;
@@ -13,42 +13,6 @@ export interface TestimonialData {
 }
 
 const Testimonials = () => {
-    const testimonialsLearners: TestimonialData[] = [
-        {
-            category: "Learners",
-            quote: "Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it. Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it.",
-            author: "John Doe",
-            role: "Volunteer Teacher",
-            image: TestimonialDummyImg,
-        },
-        {
-            category: "Learners",
-            quote: "Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it. Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it.",
-
-            author: "Jane Smith",
-            role: "Math Teacher",
-            image: TestimonialDummyImg,
-        },
-        // Add more testimonials as needed
-    ];
-
-    const testimonialsVolunteers: TestimonialData[] = [
-        {
-            category: "Volunteers",
-            quote: "Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it. Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it.",
-            author: "John Doe",
-            role: "Volunteer Teacher",
-            image: TestimonialDummyImg,
-        },
-        {
-            category: "Volunteers",
-            quote: "Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it. Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it.",
-            author: "John Doe",
-            role: "Volunteer Teacher",
-            image: TestimonialDummyImg,
-        },
-    ];
-
     return (
         <ContainerWrapper>
             <ContainerHeader

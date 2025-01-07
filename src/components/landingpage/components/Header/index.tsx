@@ -8,6 +8,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import SideNavBar from "@/components/landingpage/SideNavBar";
 import { IoMdClose } from "react-icons/io";
+import { useRouter } from "next/navigation";
 
 interface HeaderProps {
     handleModalLogin?: (value: string) => void;
@@ -17,6 +18,7 @@ const Header = ({ handleModalLogin }: HeaderProps) => {
     const [loginAs, setLoginAs] = useState<UserType>("volunteer");
     const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
     const [isSideNavBarOpen, setIsSideNavBarOpen] = useState<boolean>(false);
+    const router = useRouter();
 
     const handleSideNavBar = () => {
         setIsSideNavBarOpen(!isSideNavBarOpen);
@@ -54,6 +56,11 @@ const Header = ({ handleModalLogin }: HeaderProps) => {
 
     const handleLoginAs = (value: UserType) => {
         setLoginAs(value);
+    };
+
+    const handleLinkClick = (link: string) => {
+        handleSideNavBar();
+        router.push(link);
     };
 
     return (
@@ -135,19 +142,19 @@ const Header = ({ handleModalLogin }: HeaderProps) => {
                 </div>
                 <div className="flex flex-col gap-10 justify-center items-center mt-16">
                     {links.map((link, index) => (
-                        <Link
-                            href={link.link}
+                        <div
+                            onClick={() => handleLinkClick(link.link)}
                             key={index}
                             className="underline font-medium hover:text-gray-600 transition-all duration-300 text-base"
                         >
                             {link.title}
-                        </Link>
+                        </div>
                     ))}
-                    <Button
+                    {/* <Button
                         title="Log In"
                         className="!bg-black !px-[2rem] !py-1 text-white hover:!bg-black hover:!text-white text-base !rounded-xl"
                         onClick={handleLoginModal}
-                    />
+                    /> */}
                 </div>
             </SideNavBar>
         </div>

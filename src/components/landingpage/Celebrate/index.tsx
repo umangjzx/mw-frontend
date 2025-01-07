@@ -34,11 +34,11 @@ const gridLayouts = [
 
 // Reusable Image component
 const ImageFrame = ({ src, alt = "Celebrate" }: { src: string; alt: string }) => (
-    <div className="h-full w-full relative rounded-xl overflow-hidden ">
+    <div className="h-full w-full relative overflow-hidden md:rounded-xl rounded-md">
         <Image
             src={src}
             alt={alt}
-            className="h-full w-full object-cover rounded-xl hover:scale-[1.03]  transition-all duration-300"
+            className="h-full w-full object-cover md:rounded-xl rounded-md hover:scale-[1.03]  transition-all duration-300"
             fill
         />
     </div>

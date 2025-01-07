@@ -1,7 +1,18 @@
 import * as React from "react";
 
-const SubjectIcon = (props: any) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="none" viewBox="0 0 64 64">
+interface SubjectIconProps {
+    width?: number;
+    height?: number;
+}
+
+const SubjectIcon = ({ width = 64, height = 64 }: SubjectIconProps) => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width={width}
+        height={height}
+        fill="none"
+        viewBox="0 0 64 64"
+    >
         <rect width="64" height="64" fill="#FFF5ED" rx="32"></rect>
         <g clipPath="url(#clip0_511_1926)">
             <path

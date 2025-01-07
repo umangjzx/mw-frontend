@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import RootLayoutClient from "./RootLayoutClient";
+import DesktopVersionWrapper from "@/components/layouts/DesktopVersionWrapper";
 
 const poppins = Poppins({
     weight: ["300", "400", "500", "600", "700"],
@@ -22,7 +23,9 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={poppins.className}>
-                <RootLayoutClient>{children}</RootLayoutClient>
+                <RootLayoutClient>
+                    <DesktopVersionWrapper>{children}</DesktopVersionWrapper>
+                </RootLayoutClient>
             </body>
         </html>
     );
