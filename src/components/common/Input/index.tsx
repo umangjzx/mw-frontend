@@ -62,7 +62,11 @@ export const Input: React.FC<InputProps> = (props) => {
 
         return (
             <label htmlFor={name} className={`text-sm font-medium text-gray-700 ${labelClassName}`}>
-                <div className={`flex ${sublabelAlignment === "right" ? "items-center" : "flex-col items-start"} gap-1`}>
+                <div
+                    className={`flex ${
+                        sublabelAlignment === "right" ? "items-center" : "flex-col items-start"
+                    } gap-1`}
+                >
                     {labelContent}
                     {sublabelContent}
                 </div>
@@ -134,7 +138,7 @@ export const Input: React.FC<InputProps> = (props) => {
                         value={props.value}
                         onChange={(e) => props.onChange(e.target.value)}
                         disabled={disabled}
-                        onKeyDown={(event) => props.onKeyDown ? props.onKeyDown(event) : event}
+                        onKeyDown={(event) => (props.onKeyDown ? props.onKeyDown(event) : event)}
                         rootClassName={cn(
                             props.inputClassName,
                             `hover:!border-stroke border focus:!border-stroke focus:!bg-background-input border-stroke`
@@ -171,10 +175,10 @@ export const Input: React.FC<InputProps> = (props) => {
 
             case "multiselect":
                 return <MultiSelect {...props} />;
-            
+
             case "select-creatable":
                 return <SelectInputCreatable {...props} />;
-        
+
             case "async-select":
                 return <AsyncSelect {...props} />;
             case "datepicker":
@@ -236,7 +240,7 @@ export const Input: React.FC<InputProps> = (props) => {
             case "checkbox":
                 return (
                     <Checkbox
-                        className={props.inputClassName}
+                        className={`${props.inputClassName} max-md:!text-sm`}
                         name={name}
                         checked={props.value}
                         onChange={(e) => props.onChange(e.target.checked)}
@@ -245,7 +249,6 @@ export const Input: React.FC<InputProps> = (props) => {
                         {props.children || props.placeholder}
                     </Checkbox>
                 );
-
             case "radio":
                 return <RadioInput {...props} />;
 
@@ -263,7 +266,12 @@ export const Input: React.FC<InputProps> = (props) => {
                             onChange={(time) => {
                                 let from = time;
                                 let to = props.value?.to;
-                                if (from && to && dayjs(from, "h:mm A").isAfter(dayjs(to, "h:mm A"))) [from, to] = [to, from];
+                                if (
+                                    from &&
+                                    to &&
+                                    dayjs(from, "h:mm A").isAfter(dayjs(to, "h:mm A"))
+                                )
+                                    [from, to] = [to, from];
                                 props.onChange({ from, to });
                             }}
                             format="h:mm A"
@@ -278,7 +286,12 @@ export const Input: React.FC<InputProps> = (props) => {
                             onChange={(time) => {
                                 let from = props.value?.from;
                                 let to = time;
-                                if (from && to && dayjs(from, "h:mm A").isAfter(dayjs(to, "h:mm A"))) [from, to] = [to, from];
+                                if (
+                                    from &&
+                                    to &&
+                                    dayjs(from, "h:mm A").isAfter(dayjs(to, "h:mm A"))
+                                )
+                                    [from, to] = [to, from];
                                 props.onChange({ from, to });
                             }}
                             format="h:mm A"
@@ -294,7 +307,7 @@ export const Input: React.FC<InputProps> = (props) => {
                         format="YYYY-MM-DD"
                         placeholder={["Start Date", "End Date"]}
                         onChange={(date) => props.onChange(date)}
-                        disabledDate={(current) => current && current < moment().startOf('day')}
+                        disabledDate={(current) => current && current < moment().startOf("day")}
                     />
                 );
         }
