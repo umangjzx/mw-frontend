@@ -4,6 +4,7 @@ import { GET_API, POST_API } from "@/api/request";
 import LottieLoader from "@/components/common/Loader/Lottie";
 import Celebrate from "@/components/landingpage/Celebrate";
 import Community from "@/components/landingpage/Community";
+import Testimonials from "@/components/landingpage/testimonials";
 import ForLearner from "@/components/landingpage/ForLearner";
 import ForVolunteer from "@/components/landingpage/ForVolunteer";
 import Hero from "@/components/landingpage/Hero";
@@ -39,7 +40,7 @@ export default function Page() {
             return response?.data;
         } catch (error) {
             console.error("Error signing up:", error);
-            if(code) router.push("/login")
+            if (code) router.push("/login");
             throw error;
         }
     };
@@ -71,8 +72,8 @@ export default function Page() {
     });
 
     useEffect(() => {
-        setIsPageLoading(isLoading || !!code)
-    }, [code, isLoading])
+        setIsPageLoading(isLoading || !!code);
+    }, [code, isLoading]);
 
     useEffect(() => {
         const savedRole = Cookies.get("role") as UserType;
@@ -136,9 +137,12 @@ export default function Page() {
         };
     }, []);
 
-    if (isPageLoading) return <div className="h-[100vh] w-full flex-center">
-        <LottieLoader isLoading={isPageLoading} />
-    </div>
+    if (isPageLoading)
+        return (
+            <div className="h-[100vh] w-full flex-center">
+                <LottieLoader isLoading={isPageLoading} />
+            </div>
+        );
 
     return (
         <div className="w-full overflow-x-hidden bg-background-input">
@@ -158,6 +162,9 @@ export default function Page() {
                 </div>
                 <div className="reveal">
                     <Community />
+                </div>
+                <div className="reveal">
+                    <Testimonials />
                 </div>
                 <div className="reveal">
                     <Celebrate />
