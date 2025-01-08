@@ -50,10 +50,10 @@ const ParentGuardianFields: FormField[] = [
     },
     {
         id: "parent_contact_number",
-        label: "Your contact number",
+        label: "Parent contact number",
         sublabel: "(with country code)",
         inputType: "contact-input",
-        placeholder: "Enter Email ID",
+        placeholder: "Enter contact number",
         sublabelAlignment: "right",
         gridCols: 1,
         disabled: false,
