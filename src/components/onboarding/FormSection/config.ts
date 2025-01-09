@@ -424,19 +424,17 @@ type learnerParentSchemaType = {
     parent_first_name: string,
     parent_last_name: string,
     parent_email: string,
-    parent_contact_number: number | string,
+    parent_contact_number: number | string | any,
     parent_address: string,
     relationship_to_learner: string
 }
 
 const learnerParentSchema = z.object({
-    parent_first_name: z.string({ required_error: "Parent's First Name is required" }).min(1, { message: "Parent's First Name cannot be empty" }),
-    parent_last_name: z.string({ required_error: "Parent's Last Name is required" }).min(1, { message: "Parent's Last Name cannot be empty" }),
-    parent_email: z
-        .string({ required_error: "Parent's Email is required" })
-        .email("Invalid email address"),
-    parent_contact_number: contactNumberValidation,
-    parent_address: z.string({ required_error: "Parent's Address is required" }).min(1, { message: "Parent's Address cannot be empty" }),
+    parent_first_name: z.string({ required_error: "Parent's First Name is required" }),
+    parent_last_name: z.string({ required_error: "Parent's Last Name is required" }),
+    parent_email: z.string({ required_error: "Parent's Email is required" }),
+    parent_contact_number: z.any().optional(),
+    parent_address: z.string({ required_error: "Parent's Address is required" }),
     relationship_to_learner: z.string({
         required_error: "Relationship to Learner is required",
     }),
@@ -579,6 +577,7 @@ export const learnerFormSchema = z.object({
     return true;
 });
 
+const emailSchema = z.string().email("Invalid email address").optional(); 
 export function validateLearnerParentFields(data: any) {
     const errors: { [key: string]: string } = {};
     let isSuccess = true;
@@ -592,6 +591,22 @@ export function validateLearnerParentFields(data: any) {
             if (!field || (typeof field === "string" && field.trim().length === 0)) {
                 errors[`parent_info.${key}`] = `${key.split("_").join(" ")} is required for learners under 18`;
                 isSuccess = false;
+            }
+            if (key === "parent_email") {
+                try {
+                    emailSchema.parse(field);
+                } catch (e) {
+                    errors[`parent_info.${key}`] = "Invalid email address";
+                    isSuccess = false;
+                }
+            }
+            if (key === "parent_contact_number") {
+                try {
+                    contactNumberValidation.parse(field);
+                } catch (e) {
+                    errors[`parent_info.${key}`] = "Parent Contact Number is required for learners under 18";
+                    isSuccess = false;
+                }
             }
         });
     }

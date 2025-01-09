@@ -55,8 +55,6 @@ const FeedbackModal = ({
         onSubmit(submissionData);
     };
 
-    const handleCancel = () => {};
-
     const handleChange = (key: string, value: any) => {
         setFormData((prev: any) => ({ ...prev, [key]: value }));
     };
@@ -68,7 +66,7 @@ const FeedbackModal = ({
             customClassName: "!rounded-xl hover:!bg-black hover:!text-white",
         },
         secondary: {
-            onClick: handleCancel,
+            onClick: onClose,
             title: mode === "view" ? "Delete" : "Cancel",
             btnVariant: "secondary" as const,
             customClassName: cn(

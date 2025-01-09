@@ -7,11 +7,12 @@ interface TagComponentProps {
     isClose?: boolean;
     onClose?: () => void;
     className?: string;
+    tagClassName?: string;
     icon?: any;
     onClick?: () => void;
 }
 
-const TagComponent = ({ text, isClose, onClose, className, icon, onClick }: TagComponentProps) => {
+const TagComponent = ({ text, isClose, onClose, className, tagClassName, icon, onClick }: TagComponentProps) => {
     return (
         <Tag
             onClick={onClick}
@@ -27,7 +28,7 @@ const TagComponent = ({ text, isClose, onClose, className, icon, onClick }: TagC
                     />
                 ) : undefined
             }
-            className={`bg-background text-black border-background font-medium text-[0.8rem] capitalize rounded-full`}
+            className={`bg-background text-black border-background font-medium text-[0.8rem] capitalize rounded-full ${tagClassName}`}
         >
             {text} {icon ? icon : null}
         </Tag>

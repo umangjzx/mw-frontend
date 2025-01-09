@@ -71,20 +71,11 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
         const currentFields = fields.map((field) =>
             parent ? `${parent}.${field.parent || field.id}` : field.parent || field.id
         );
-
-        const isValidSection = await trigger(currentFields);
-        if (!isValidSection) {
-            showToast({ type: "error", message: "Please fill in all required fields before proceeding." });
-            return false;
-        }
-
-        const runValidation = (validationFn: Function) => {
-            const validation = validationFn(control?._formValues);
-            if (!validation.success) {
-                Object.entries(validation.errors).forEach(([key, value]: any) => {
-                    if (key && value) {
-                        setError(key, { message: value });
-                    }
+    
+        const handleValidationErrors = ({ success, errors }: { success: boolean; errors: any }) => {
+            if (!success) {
+                Object.entries(errors)?.forEach(([key, value]: any) => {
+                    if (key && value) setError(key, { message: value });
                 });
                 showToast({ type: "error", message: "Please fill in all required fields before proceeding." });
                 return false;
@@ -92,25 +83,38 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
             return true;
         };
 
-        if (role === "learner" && activeTab <= 1) {
-            const isLearnerUnder18 = () => {
-                const learnerDOB = control?._formValues?.learner_personal_info?.learner_date_of_birth;
-                const age = learnerDOB ? moment().diff(moment(learnerDOB), 'years') : null;
-                return age !== null && age < 18;
-            };
-            if (isLearnerUnder18() && !runValidation(validateLearnerParentFields)) {
-                if (activeTab !== 1) setActiveTab(1);
+        const validateAgeUnder18 = (dob: string | undefined) => {
+            const age = dob && moment().diff(moment(dob), "years");
+            return age && age < 18;
+        };
+    
+        // Generic section validation using `trigger`
+        const isValidSection = await trigger(currentFields);
+        if (!isValidSection) {
+            showToast({ type: "error", message: "Please fill in all required fields before proceeding." });
+            return false;
+        }
+
+        // Specific validation for learners under 18
+        if (role === "learner" && validateAgeUnder18(control._formValues?.learner_personal_info?.learner_date_of_birth)) {
+            const learnerValidation = validateLearnerParentFields(control._formValues);
+        
+            if (
+                (activeTab === 0 && highestTab > 1 && !handleValidationErrors(learnerValidation)) || 
+                (activeTab === 1 && !handleValidationErrors(learnerValidation))
+            ) {
+                if (activeTab === 0) setActiveTab(1);
                 return false;
             }
         }
 
+        // Specific validation for volunteers under 18
         if (role === "volunteer" && activeTab === 0) {
-            if (!runValidation(validateVolunteerParentDetails)) {
-                return false;
-            }
+            const volunteerValidation = validateVolunteerParentDetails(control._formValues);
+            if (!handleValidationErrors(volunteerValidation)) return false;
         }
-
-        return isValidSection;
+    
+        return true;
     };
 
     const handleNavigation = async (index: number) => {

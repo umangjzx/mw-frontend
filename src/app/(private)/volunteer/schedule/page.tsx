@@ -15,6 +15,7 @@ import { checkCalendarScope, getCalendarEvents } from "@/utils/calender";
 import { useSendData } from "@/hooks/useReactQuery";
 import CalendarAccessScreen from "@/components/common/CalendarAccessScreen";
 import LottieLoader from "@/components/common/Loader/Lottie";
+import { useQueryState } from "nuqs";
 
 export default function SchedulePage() {
     const [isOpenSchedule, setIsOpenSchedule] = useState(false);
@@ -24,9 +25,9 @@ export default function SchedulePage() {
     const [isCalendarScope, setIsCalendarScope] = useState("checking");
 
     const router = useRouter();
-    const searchParams = useSearchParams();
     const { eventDetails, currentMonth } = useAppStore();
-    const modal = searchParams.get("modal");
+    
+    const [modal] = useQueryState("modal");
     const volunteerId = Cookies.get("volunteer_id");
 
     const getEvents = () => getCalendarEvents(volunteerId as string, "volunteer", currentMonth);

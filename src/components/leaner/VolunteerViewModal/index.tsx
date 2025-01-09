@@ -52,6 +52,9 @@ interface VolunteerData {
     volunteer_description: string;
     volunteer_education: string;
     volunteer_experience: string;
+    volunteer_contact_details?: {
+        country?: string;
+    }
     volunteer_languages: Array<{ language_name: string; language_id: string }>;
     volunteer_subjects: Array<{ subject_name: string; subject_id: string }>;
     volunteer_skills: Array<{ skill_name: string; skill_id: string }>;
@@ -81,7 +84,7 @@ const ProfileInfo = ({
                 <p className="font-medium">
                     {`${volunteerData?.volunteer_first_name} ${volunteerData?.volunteer_last_name}`}
                 </p>
-                <TagComponent text={text} />
+                <TagComponent text="Volunteer" tagClassName="!bg-[#FFE9D4] !border-none px-2" />
             </div>
         </div>
         <OverViewCard
@@ -114,11 +117,10 @@ const TabButtons = ({
                 <div
                     key={tab}
                     onClick={() => handleTabChange(tab)}
-                    className={`font-medium text-center w-[50%] rounded-full py-2.5 px-5 ${
-                        activeTab === tab
+                    className={`font-medium text-center w-[50%] rounded-full py-2.5 px-5 ${activeTab === tab
                             ? "bg-[#dff5ff] border-primary border-2"
                             : "border-2 border-transparent"
-                    } transition-all duration-200 cursor-pointer`}
+                        } transition-all duration-200 cursor-pointer`}
                 >
                     {tab === "overview" ? "Overview" : `Reviews - ${rating} (${totalReviews})`}
                 </div>
@@ -159,11 +161,14 @@ const OverviewContent = ({ volunteerData }: { volunteerData: VolunteerData }) =>
             <div className="px-5 flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                     <p className="font-medium">Bio</p>
-                    {/* <TagComponent
-                        text="Los Angeles, CA"
-                        className="text-sm py-1 font-medium px-2"
-                        icon={<FaLocationDot />}
-                    /> */}
+                    {volunteerData?.volunteer_contact_details?.country
+                        &&
+                        <TagComponent
+                            text={volunteerData?.volunteer_contact_details?.country}
+                            className="text-sm py-1 font-medium px-2"
+                            icon={<FaLocationDot />}
+                        />
+                    }
                 </div>
                 <p className="text-sm text-gray-light font-normal">
                     {volunteerData?.volunteer_description}
@@ -302,22 +307,20 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
                 />
                 <div className="relative">
                     <div
-                        className={`transform transition-all duration-300 ${
-                            activeTab === "overview"
+                        className={`transform transition-all duration-300 ${activeTab === "overview"
                                 ? "opacity-100 translate-x-0"
                                 : "opacity-0 -translate-x-8 absolute top-0 left-0 right-0"
-                        }`}
+                            }`}
                     >
                         {activeTab === "overview" && (
                             <OverviewContent volunteerData={volunteerData} />
                         )}
                     </div>
                     <div
-                        className={`transform transition-all duration-300 ${
-                            activeTab === "reviews"
+                        className={`transform transition-all duration-300 ${activeTab === "reviews"
                                 ? "opacity-100 translate-x-0"
                                 : "opacity-0 translate-x-8 absolute top-0 left-0 right-0"
-                        }`}
+                            }`}
                     >
                         {activeTab === "reviews" && (
                             <div>

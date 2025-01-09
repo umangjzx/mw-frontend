@@ -15,6 +15,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useSendData } from "@/hooks/useReactQuery";
 import CalendarAccessScreen from "@/components/common/CalendarAccessScreen";
 import LottieLoader from "@/components/common/Loader/Lottie";
+import { useQueryState } from "nuqs";
 
 export default function LearnerSchedulePage() {
     const [isOpenSchedule, setIsOpenSchedule] = useState(false);
@@ -22,11 +23,10 @@ export default function LearnerSchedulePage() {
     const [isCalendarScope, setIsCalendarScope] = useState("checking");
 
     const router = useRouter();
-    const searchParams = useSearchParams();
     const { eventDetails, currentMonth } = useAppStore();
     const queryClient = useQueryClient();
 
-    const modal = searchParams.get("modal");
+    const [modal] = useQueryState("modal");
     const learnerId = Cookies.get("learner_id");
 
     const getEvents = () => getCalendarEvents(learnerId as string, "learner", currentMonth);

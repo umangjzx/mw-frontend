@@ -51,6 +51,12 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
         }
         return await PUT_API(endpoints.session.updateNotificationStatus(sessionId), {
             status: status,
+        }).then(() => {
+            if (status === "accepted") {
+                showToast({ type: "success", message: "Invitation Accepted" });
+            } else {
+                showToast({ type: "error", message: "Invitation Declined" });
+            }
         });
     };
 
