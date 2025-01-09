@@ -208,8 +208,8 @@ const ReviewsContent = ({ volunteerFeedback }: { volunteerFeedback: any }) => {
                     {ratingCardData?.map((item: any, index: number) => (
                         <RatingCard
                             key={index}
-                            name={item?.volunteer_name}
-                            profileImg={item?.volunteer_profile_picture?.image_url}
+                            name={item?.author_name}
+                            profileImg={item?.author_profile_picture?.image_url}
                             rating={item?.volunteer_commitment_level}
                             day={item?.created_at}
                             review={item?.comment}
@@ -327,7 +327,7 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
                                 {volunteerFeedback?.feedbacks.length > 0 ? (
                                     <ReviewsContent volunteerFeedback={volunteerFeedback} />
                                 ) : (
-                                    <div className="flex items-center justify-center h-full">
+                                    <div className="flex items-center justify-center h-full min-h-[300px]">
                                         <p className="text-sm text-gray-light font-normal">
                                             No reviews yet
                                         </p>
