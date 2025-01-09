@@ -36,9 +36,9 @@ const Header = ({ handleModalLogin }: HeaderProps) => {
 
     const links = [
         { title: "Our Mission", link: "/login#our-mission" },
-        { title: "Blogs", link: "/blogs" },
-        { title: "Donate", link: "/donate" },
-        { title: "Team Up", link: "/" },
+        // { title: "Blogs", link: "/blogs" },
+        // { title: "Donate", link: "/donate" },
+        // { title: "Team Up", link: "/" },
     ];
 
     const loginAsRadio = {

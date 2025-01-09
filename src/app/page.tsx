@@ -12,7 +12,7 @@ TimeAgo.addLocale(ru);
 
 export default function Page() {
     return (
-        <div className="w-screen  bg-background-input mx-auto p-6">
+        <div className="w-screen bg-background-input mx-auto p-6">
             <LoginPage />
         </div>
     );

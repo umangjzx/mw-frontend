@@ -23,7 +23,7 @@ type SocialLink = {
 const policyLinks: PolicyLink[] = [
     { href: "https://glib-chiller-6dc.notion.site/Privacy-Policy-1702f1842d7a80f1b2ecc65ec0ef459e", target: "_black", label: "Policy" },
     { href: "https://glib-chiller-6dc.notion.site/Terms-Conditions-1702f1842d7a80dea739d037e7b7133e", target: "_black", label: "Terms" },
-    { href: "/careers", target: "_black", label: "Careers" },
+    // { href: "/careers", target: "_black", label: "Careers" },
 ];
 
 const socialLinks: SocialLink[] = [
