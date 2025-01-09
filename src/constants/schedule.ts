@@ -59,6 +59,7 @@ export const LearnerScheduleModalConstants = [
         inputType: "select",
         placeholder: "Select a volunteer",
         required: true,
+        isLoading: true,
         options: [],
     },
     {
