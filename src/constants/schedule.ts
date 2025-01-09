@@ -10,7 +10,7 @@ export const LearnerFeedbackFormConstants: FormField[] = [
     {
         name: "classDuration",
         label: "How long was the class?",
-        inputType: "text",
+        inputType: "number",
         contentType: "number",
         placeholder: "Enter the duration of the class",
         sublabel: "(In hrs)",

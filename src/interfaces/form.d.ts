@@ -3,6 +3,7 @@ type FormField = {
     label?: string;
     inputType:
         | "text"
+        | "number"
         | "select"
         | "radio"
         | "checkbox"
