@@ -46,7 +46,9 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
     }, [modalParam]);
 
     const handleEventClick = (clickInfo: EventClickArg) => {
-        const rect = clickInfo.el.getBoundingClientRect();
+        console.log("Hello World ========================= ", clickInfo?.el);
+        
+        const rect = clickInfo?.el?.getBoundingClientRect();
 
         // Calculate position relative to viewport
         let xPosition = rect.left;
@@ -110,41 +112,41 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
 
     const dayCellClassNames = "min-h-[100px] bg-white hover:bg-gray-50";
 
-    // const handleMoreLinkClick = (arg: any) => {
-    //     arg.jsEvent.preventDefault();
+    const handleMoreLinkClick = (arg: any) => {
+        arg.jsEvent.preventDefault();
 
-    //     const dateEvents = arg.allSegs.map((seg: any) => ({
-    //         ...seg.event._def,
-    //         time: getTime(seg.event._instance.range.start),
-    //     }));
+        const dateEvents = arg.allSegs.map((seg: any) => ({
+            ...seg.event._def,
+            time: getTime(seg.event._instance.range.start),
+        }));
 
-    //     setCurrentEventData({
-    //         events: dateEvents,
-    //         date: formatDate(arg.date, {
-    //             month: "short",
-    //             day: "2-digit",
-    //             year: "numeric",
-    //         }),
-    //     });
-    //     setShowModal("events");
-    // };
+        setCurrentEventData({
+            events: dateEvents,
+            date: formatDate(arg.date, {
+                month: "short",
+                day: "2-digit",
+                year: "numeric",
+            }),
+        });
+        setShowModal("events");
+    };
 
-    // // Add a click handler to close the preview when clicking outside
-    // useEffect(() => {
-    //     const handleClickOutside = (event: MouseEvent) => {
-    //         if (showPreview) {
-    //             const modal = document.querySelector(".meeting-preview-modal");
-    //             if (modal && !modal.contains(event.target as Node)) {
-    //                 setShowPreview(false);
-    //             }
-    //         }
-    //     };
+    // Add a click handler to close the preview when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (showPreview) {
+                const modal = document.querySelector(".meeting-preview-modal");
+                if (modal && !modal.contains(event.target as Node)) {
+                    setShowPreview(false);
+                }
+            }
+        };
 
-    //     document.addEventListener("mousedown", handleClickOutside);
-    //     return () => {
-    //         document.removeEventListener("mousedown", handleClickOutside);
-    //     };
-    // }, [showPreview]);
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [showPreview]);
 
     useEffect(() => {
         if (currentDate && calendarRef.current) {
@@ -214,7 +216,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
                 onClose={handleCloseModal}
             />
 
-            {/* <AllEventsModal
+            <AllEventsModal
                 isOpen={showModal === "events"}
                 onClose={handleCloseModal}
                 onSave={() => setShowModal(null)}
@@ -222,7 +224,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
                 onEventClick={(event) => {
                     handleEventClick({ event } as EventClickArg);
                 }}
-            /> */}
+            />
             <div className="p-4 calendar-container">
                 <FullCalendar
                     ref={calendarRef}
@@ -232,8 +234,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
                     selectable={false}
                     selectMirror={false}
                     eventClick={handleEventClick}
-                    dayMaxEvents={false}
-                    dayMaxEventRows={false}
+                    dayMaxEvents={true}
                     weekends={true}
                     headerToolbar={false}
                     dayHeaderContent={customDayHeaderContent}
@@ -241,7 +242,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
                     dayCellClassNames={dayCellClassNames}
                     events={events || []}
                     moreLinkClassNames={["!text-primary", "hover:!bg-transparent"]}
-                    // moreLinkClick={handleMoreLinkClick}
+                    moreLinkClick={handleMoreLinkClick}
                 />
             </div>
         </>
