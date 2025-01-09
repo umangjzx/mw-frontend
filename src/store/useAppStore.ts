@@ -10,6 +10,10 @@ export const useAppStore = create<UseAppStoreProps>()(
         persist(
             (set, get, api) => {
                 return {
+                    userImage: "",
+                    setUserName: (name: string) => set({ userName: name }),
+                    userName: "",
+                    setUserImage: (image: string) => set({ userImage: image }),
                     ...useVolunteer(set, get, api),
                     ...useLearner(set, get, api),
                     ...useGlobalStore(set, get, api),
