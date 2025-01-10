@@ -4,7 +4,7 @@ import { isCookiesFound, isTokenValid } from "./utils/auth";
 
 const PROTECTED_ROUTES = ["/learner", "/volunteer"];
 const ONBOARDING_ROUTES = ["/onboarding", "/onboarding/verification"];
-const LANDING_PAGE_ROUTES = ["/login"];
+const LANDING_PAGE_ROUTES = ["/login", "/about-us"];
 
 export default function middleware(req: NextRequest) {
   const { pathname, origin } = req.nextUrl;
