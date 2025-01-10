@@ -8,13 +8,17 @@ import {
     SubjectIcon,
     SignUpIcon,
 } from "@/assets/icons";
+
 import DummyImage from "@/assets/images/BackgroundImg.jpeg";
 import DonateImg1 from "@/assets/images/DonateImg1.png";
 import DonateImg2 from "@/assets/images/DonateImg2.png";
 import DonateImg3 from "@/assets/images/DonateImg3.png";
 import DonateImg4 from "@/assets/images/DonateImg4.png";
+import DummyProfile from "@/assets/images/DummyProfile.png";
+
 import { TestimonialData } from "@/components/landingpage/testimonials";
 import TestimonialDummyImg from "@/assets/images/TestimonialDummyImg.png";
+import { MeetOurTeamProps } from "@/components/landingpage/AboutUs/MeetOurTeam/TeamCard";
 
 const handleInnerWidth = () => {
     if (typeof window !== "undefined") {
@@ -282,3 +286,23 @@ export const testimonialsVolunteers: TestimonialData[] = [
         image: TestimonialDummyImg,
     },
 ];
+
+
+// About Us
+export const meetOurTeamCardData: MeetOurTeamProps[] = [
+    {
+        image: DummyProfile,
+        name: "Chitra Ganesan",
+        role: "Co-founder & Executive Director"
+    },
+    {
+        image: DummyProfile,
+        name: "Nithila Shanmugam",
+        role: "Co-founder/Student Outreach Ambassador"
+    },
+    {
+        image: DummyProfile,
+        name: "Nishaanth Krishnan",
+        role: "Secretary - Melody Wings"
+    }
+]
