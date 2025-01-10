@@ -10,6 +10,7 @@ import cn from "classnames";
 import dayjs from "dayjs";
 import AddSlotIcon from "@/assets/icons/AddSlotIcon";
 import { useSendData } from "@/hooks/useReactQuery";
+import { generateTimeSlotId } from "@/utils/timeFunctions";
 
 interface TimeSlot {
     start_time: string;
@@ -185,15 +186,18 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
     };
 
     const formatScheduleForAPI = (): APIScheduleFormat[] => {
+        console.log("formatScheduleForAPI schedule", schedule);
         return days.map((day) => ({
             day,
             slots: schedule[day]
                 .filter((slot) => slot.start_time && slot.end_time) // Only include filled slots
-                .map((slot) => ({
-                    volunteer_slot_id: uuidv4(),
-                    start_time: slot.start_time,
-                    end_time: slot.end_time,
-                })),
+                .map((slot) => {
+                    return {
+                        volunteer_slot_id: generateTimeSlotId(slot.start_time, slot.end_time),
+                        start_time: slot.start_time,
+                        end_time: slot.end_time,
+                    };
+                }),
         }));
     };
 
@@ -203,6 +207,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             deleted_slots: deletedSlots,
             slots: formattedData,
         };
+        console.log("formattedData schedule", formattedData);
         return await PUT_API(endpoints.volunteer_slot.update, payload);
     };
 
