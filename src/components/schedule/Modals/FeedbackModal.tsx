@@ -18,13 +18,13 @@ const FeedbackModal = ({
     Loading,
 }: FeedbackModalProps) => {
     const [formData, setFormData] = useState<any>({});
-    const { learnerName, volunteerName } = useAppStore();
+    const { userName } = useAppStore();
     const feedbackTitle = mode === "edit" ? "Edit Feedback" : "Please Fill the Feedback";
     const searchParams = useSearchParams();
     const role = Cookies.get("role");
 
     const eventDetails = {
-        Name: role === "volunteer" ? volunteerName : learnerName,
+        Name: userName,
         Date: new Date().toLocaleDateString("en-GB"),
         Time: new Date().toLocaleTimeString("en-US", {
             hour: "numeric",

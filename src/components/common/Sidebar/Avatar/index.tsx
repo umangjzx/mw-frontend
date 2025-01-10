@@ -19,6 +19,8 @@ const Avatar = () => {
         userImage,
         setUserName,
         setUserImage,
+        setLearnerName,
+        setVolunteerName,
         setVolunteerDetails,
         setLearnerDetails
     } = useAppStore()
@@ -33,12 +35,14 @@ const Avatar = () => {
         if (role === "learner") {
             setLearnerDetails(data);
             const learnerName = data?.learner_personal_info?.learner_first_name + " " + data?.learner_personal_info?.learner_last_name;
+            setLearnerName(learnerName)
             setUserName(learnerName);
             setUserImage(data?.profile_picture?.image_url);
         } else {
             setVolunteerDetails(data);
             const volunteerName = data?.volunteer_first_name + " " + data?.volunteer_last_name;
             setUserName(volunteerName);
+            setVolunteerName(volunteerName)
             setUserImage(data?.profile_picture?.image_url);
         }
     };
