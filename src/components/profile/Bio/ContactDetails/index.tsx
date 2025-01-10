@@ -24,7 +24,7 @@ const ContactDetails = ({ tags = [] }: any) => {
     return (
         <div className="px-5 flex flex-col gap-3">
             <p className="font-medium ">Contact Information</p>
-            <div className="flex justify-between px-2">
+            <div className="flex gap-1 flex-wrap justify-between px-2">
                 {tags?.map((tag: any) => 
                     renderElement(tag)
                 )}

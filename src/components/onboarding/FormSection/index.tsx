@@ -60,7 +60,6 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
         );
     };
 
-
     return (
         <div>
             <FormTabs 

@@ -46,8 +46,10 @@ export const Input: React.FC<InputProps> = (props) => {
 
         const labelContent = (
             <div className="max-lg:font-normal max-lg:text-sm">
-                {label}
-                {required && <span className="text-red-500 ml-1">*</span>}
+                <span>
+                    {label}
+                    {required && <span className="text-red-500">&nbsp;*</span>}
+                </span>
             </div>
         );
 
@@ -63,9 +65,7 @@ export const Input: React.FC<InputProps> = (props) => {
         return (
             <label htmlFor={name} className={`text-sm font-medium text-gray-700 ${labelClassName}`}>
                 <div
-                    className={`flex ${
-                        sublabelAlignment === "right" ? "items-center" : "flex-col items-start"
-                    } gap-1`}
+                    className={`flex ${sublabelAlignment === "right" ? "items-center" : "flex-col items-start"} gap-1`}
                 >
                     {labelContent}
                     {sublabelContent}
