@@ -53,6 +53,8 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
         selected_slot: "",
     });
     const [availableSlots, setAvailableSlots] = useState<any[]>([]);
+
+    const [fetchingVolunteers, setFetchingVolunteers] = useState<boolean>(false);
     const [volunteers, setVolunteers] = useState<Array<{ label: string; value: string }>>([]);
     const queryClient = useQueryClient();
     const searchParams = useSearchParams();
@@ -64,6 +66,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
     const [selectedVolunteerId, setSelectedVolunteerId] = useState<string>("");
 
     const getVolunteers = async () => {
+        setFetchingVolunteers(true);
         const response = await GET_API(endpoints.volunteer.getAllVolunteers);
         const volunteerOptions = response.data.items.map((volunteer: any) => ({
             label: volunteer.volunteer_first_name + " " + volunteer.volunteer_last_name, // Adjust according to your API response structure
@@ -78,6 +81,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
             }
         }
         setVolunteers(volunteerOptions);
+        setFetchingVolunteers(false);
     };
 
     const getIndividualVolunteer = async() => {
@@ -208,6 +212,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
             return {
                 ...field,
                 options: volunteers,
+                isLoading: fetchingVolunteers,
             };
         }
         return field;

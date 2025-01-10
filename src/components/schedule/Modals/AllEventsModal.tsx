@@ -3,6 +3,11 @@ import EventCard from "../Calender/EventCard";
 
 const AllEventsModal = ({ isOpen, onClose, onSave, data, onEventClick }: AllEventsModalProps) => {
     console.log("🚀 ~ AllEventsModal ~ data:", data.events);
+
+    const handleClick = (e: any) => {
+        console.log(e)
+        onEventClick(e);
+    }
     return (
         <CenterModal
             title={`Schedule - ${data.date}`}
@@ -10,19 +15,19 @@ const AllEventsModal = ({ isOpen, onClose, onSave, data, onEventClick }: AllEven
             onClose={onClose}
             width="40%"
             customClassName="!rounded-3xl !h-[70vh]"
-            hideFooter
+            hideFooter={true}
         >
             <div className="flex flex-col gap-2">
                 {data.events.map((event) => {
-                    console.log("🚀 ~ AllEventsModal ~ event:", event);
                     return (
                         <EventCard
                             key={event.id}
                             title={event.title}
                             style={event.ui}
+                            status={event?.extendedProps?.status}
                             time={event.time}
                             className="!p-2 rounded-md border"
-                            onEventClick={() => onEventClick(event)}
+                            onEventClick={handleClick}
                         />
                     );
                 })}

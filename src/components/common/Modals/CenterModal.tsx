@@ -19,7 +19,8 @@ const CenterModal: React.FC<CenterModalProps> = ({
     loading = false,
     headerComponent,
     footerComponent,
-    zIndex = 1000
+    zIndex = 1000,
+    hideFooter = false
 }) => {
     const defaultButtonStyles = {
         primaryActionProps: {
@@ -43,7 +44,7 @@ const CenterModal: React.FC<CenterModalProps> = ({
         <Button {...defaultButtonStyles.primaryActionProps} loading={loading} />,
     ];
 
-    const footer = footerComponent || buttons.filter((button) => button);
+    const footer = hideFooter || footerComponent || buttons.filter((button) => button);
 
     const header = headerComponent || title && (
         <div className="flex gap-2 w-full flex-col border-b border-stroke items-start justify-between mb-4 pb-4">

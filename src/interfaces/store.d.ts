@@ -58,4 +58,11 @@ type UseComponentStoreProps = {
     setHeaderOptions: (options: HeaderOptions) => void;
 };
 
-type UseAppStoreProps = UseVolunteerProps & UseLearnerProps & UseGlobalStoreProps;
+type UseUserProps = {
+    userName: string;
+    setUserName: (userName: string) => void;
+    userImage: string;
+    setUserImage: (userImage: string) => void;
+};
+
+type UseAppStoreProps = UseUserProps & UseVolunteerProps & UseLearnerProps & UseGlobalStoreProps;

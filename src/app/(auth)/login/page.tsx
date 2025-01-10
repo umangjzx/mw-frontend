@@ -148,7 +148,7 @@ export default function Page() {
         <div className="w-full overflow-x-hidden bg-background-input">
             <Hero handleSetRole={handleSetRole} buttonLoading={buttonLoading} />
             <div className="flex flex-col gap-20 lg:gap-[7rem] py-[7rem]">
-                <div className="reveal px-[9%]" id="our-mission">
+                <div className="reveal px-[9%]" id="about-us">
                     <WhyWeBuild />
                 </div>
                 <div className="reveal px-[9%]" id="our-impact">
