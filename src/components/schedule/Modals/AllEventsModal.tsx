@@ -22,7 +22,7 @@ const AllEventsModal = ({ isOpen, onClose, data, onEventClick }: AllEventsModalP
                             time=""
                             start={event?.start}
                             end={event?.end}
-                            className="!p-2 rounded-md border"
+                            className="!p-2 rounded-md border !cursor-pointer"
                             onEventClick={(e) => onEventClick(e?.currentTarget, event)}
                         />
                     );
