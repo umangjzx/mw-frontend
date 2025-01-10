@@ -83,13 +83,14 @@ const Sidebar = () => {
                     ))}
                 </div>
             </div>
-            <SectionCard
-                href="/"
-                text="Sign Out"
-                icon={<SignOutIcon />}
-                textColor="#B91C1C"
-                onClick={handleSignOut}
-            />
+            <button onClick={handleSignOut} className="flex gap-1">
+                <span className={`text-[1.25rem] transition-all duration-300 "text-black"`}>
+                    <SignOutIcon />
+                </span>
+                <p style={{ color: "#B91C1C" }} className={`!text-[#B91C1C] transition-all duration-300 font-medium`} >
+                    Sign Out
+                </p>
+            </button>
         </div>
     );
 };
