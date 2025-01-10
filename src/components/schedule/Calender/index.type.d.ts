@@ -5,6 +5,8 @@ type EventCardProps = {
     className?: string;
     status?: string;
     style?: any;
+    start?: any;
+    end?: any;
 };
 
 type DayCellContentProps = {

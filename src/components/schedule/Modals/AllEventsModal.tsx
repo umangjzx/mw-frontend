@@ -1,13 +1,7 @@
 import CenterModal from "@/components/common/Modals/CenterModal";
 import EventCard from "../Calender/EventCard";
 
-const AllEventsModal = ({ isOpen, onClose, onSave, data, onEventClick }: AllEventsModalProps) => {
-    console.log("🚀 ~ AllEventsModal ~ data:", data.events);
-
-    const handleClick = (e: any) => {
-        console.log(e)
-        onEventClick(e);
-    }
+const AllEventsModal = ({ isOpen, onClose, data, onEventClick }: AllEventsModalProps) => {
     return (
         <CenterModal
             title={`Schedule - ${data.date}`}
@@ -18,16 +12,18 @@ const AllEventsModal = ({ isOpen, onClose, onSave, data, onEventClick }: AllEven
             hideFooter={true}
         >
             <div className="flex flex-col gap-2">
-                {data.events.map((event) => {
+                {data.events.map((event, index) => {
                     return (
                         <EventCard
-                            key={event.id}
-                            title={event.title}
-                            style={event.ui}
-                            status={event?.extendedProps?.status}
-                            time={event.time}
+                            key={event?._def?.id || index}
+                            title={event?._def?.title}
+                            style={event?._def?.ui}
+                            status={event?._def?.extendedProps?.status}
+                            time=""
+                            start={event?.start}
+                            end={event?.end}
                             className="!p-2 rounded-md border"
-                            onEventClick={handleClick}
+                            onEventClick={(e) => onEventClick(e?.currentTarget, event)}
                         />
                     );
                 })}

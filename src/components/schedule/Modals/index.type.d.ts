@@ -10,13 +10,13 @@ type FeedbackModalProps = {
 type AllEventsModalProps = {
     isOpen: boolean;
     onClose: () => void;
-    onSave: () => void;
+    onSave?: () => void;
     data: {
         events: any[];
         date: string;
         w?: any;
     };
-    onEventClick: (event: any) => void;
+    onEventClick: (event: any, data: any) => void;
 };
 
 type AlertModalProps = {

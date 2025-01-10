@@ -1,6 +1,7 @@
 import { cn } from "@/utils/merge-class";
+import moment from "moment";
 
-const EventCard = ({ title, time, onEventClick, className, status, style }: EventCardProps) => {
+const EventCard = ({ title, time, onEventClick, className, status, style, start, end }: EventCardProps) => {
     const statusStyles = {
         accepted: {
             bg: "bg-[#DCFCE7] border-[#86EFAC] text-[#15803D]",
@@ -21,6 +22,8 @@ const EventCard = ({ title, time, onEventClick, className, status, style }: Even
     };
 
     const currentStyle = statusStyles[status as keyof typeof statusStyles] || statusStyles.pending;
+    const startTime = moment(start).local().format("h:mm A");
+    const endTime = moment(end).local().format("h:mm A");
 
     return (
         <div
@@ -35,7 +38,7 @@ const EventCard = ({ title, time, onEventClick, className, status, style }: Even
                 <span className={`w-2 h-2 rounded-full ${currentStyle.dot}`} />
                 <span className="font-normal capitalize !text-sm truncate">{title}</span>
             </div>
-            <span className="text-xs">{time}</span>
+            <span className="text-xs">{time || `${startTime} - ${endTime}`}</span>
         </div>
     );
 };

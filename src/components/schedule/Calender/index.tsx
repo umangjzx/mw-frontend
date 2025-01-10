@@ -29,6 +29,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
         events: [],
         date: "",
     });
+
     const [previewPosition, setPreviewPosition] = useState({ x: 0, y: 0 });
     const [showPreview, setShowPreview] = useState(true);
     const [selectedEvent, setSelectedEvent] = useState<EventApi | null>(null);
@@ -46,8 +47,6 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
     }, [modalParam]);
 
     const handleEventClick = (clickInfo: EventClickArg) => {
-        console.log("Hello World ========================= ", clickInfo?.el);
-        
         const rect = clickInfo?.el?.getBoundingClientRect();
 
         // Calculate position relative to viewport
@@ -76,6 +75,33 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
 
         clickInfo.jsEvent.preventDefault();
         clickInfo.jsEvent.stopPropagation();
+    };
+
+    const handleModalEventClick = (buttonElement: HTMLButtonElement, data: any) => {
+        const rect = buttonElement.getBoundingClientRect();
+
+        // Calculate position relative to viewport
+        let xPosition = rect.left;
+        let yPosition = rect.bottom + 10;
+
+        // Adjust for viewport edges
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const modalWidth = 405;
+        const modalHeight = 315;
+
+        if (xPosition + modalWidth > viewportWidth) {
+            xPosition = viewportWidth - modalWidth - 10;
+        }
+
+        if (yPosition + modalHeight > viewportHeight) {
+            yPosition = rect.top - modalHeight - 10;
+        }
+
+        setPreviewPosition({ x: xPosition, y: yPosition });
+        setSelectedEvent(data);
+        setSelectedEventForFeedback(data);
+        setShowPreview(true);
     };
 
     const handleCloseModal = () => {
@@ -115,11 +141,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
     const handleMoreLinkClick = (arg: any) => {
         arg.jsEvent.preventDefault();
 
-        const dateEvents = arg.allSegs.map((seg: any) => ({
-            ...seg.event._def,
-            time: getTime(seg.event._instance.range.start),
-        }));
-
+        const dateEvents = arg.allSegs.map((seg: any) => (seg?.event));
         setCurrentEventData({
             events: dateEvents,
             date: formatDate(arg.date, {
@@ -158,8 +180,6 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
     useEffect(() => {
         setEventDetails(selectedEventForFeedback);
     }, [selectedEventForFeedback]);
-
-    useEffect(() => {}, [currentDate]);
 
     const handleEventMouseEnter = (mouseEnterInfo: any) => {
         const rect = mouseEnterInfo.el.getBoundingClientRect();
@@ -212,7 +232,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
                 onCancel={handleCloseModal}
                 onProceed={() => setShowModal(null)}
                 value={""}
-                onChange={() => {}}
+                onChange={() => { }}
                 onClose={handleCloseModal}
             />
 
@@ -221,8 +241,8 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
                 onClose={handleCloseModal}
                 onSave={() => setShowModal(null)}
                 data={currentEventData}
-                onEventClick={(event) => {
-                    handleEventClick({ event } as EventClickArg);
+                onEventClick={(element: HTMLButtonElement, data: any) => {
+                    handleModalEventClick(element, data);
                 }}
             />
             <div className="p-4 calendar-container">

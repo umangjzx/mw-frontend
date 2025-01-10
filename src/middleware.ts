@@ -1,23 +1,46 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { isAuthenticated } from "./utils/auth";
+import { isCookiesFound, isTokenValid } from "./utils/auth";
 
-const protectedRoutes = ["/learner", "/volunteer"];
+const PROTECTED_ROUTES = ["/learner", "/volunteer"];
+const ONBOARDING_ROUTES = ["/onboarding", "/onboarding/verification"];
+const LANDING_PAGE_ROUTES = ["/login"];
 
 export default function middleware(req: NextRequest) {
-    if (!isAuthenticated() && protectedRoutes.includes(req.nextUrl.pathname)) {
-        const absoluteURL = new URL("/", req.nextUrl.origin);
-        return NextResponse.redirect(absoluteURL.toString());
+  const { pathname, origin } = req.nextUrl;
+  const { cookies } = req;
+  const isUserCookiesFound = isCookiesFound(cookies);
+
+  if (pathname.startsWith("/_next") || pathname === "/favicon.ico") {
+    return NextResponse.next();
+  }
+
+  if ((!isUserCookiesFound || !isTokenValid(cookies)) && !LANDING_PAGE_ROUTES.includes(pathname)) {
+    return NextResponse.redirect(new URL("/login", origin));
+  }
+
+  if (isUserCookiesFound) {
+    const isUserTokenValid = isTokenValid(cookies);
+    const role = cookies.get("role")?.value;
+    const onboardedStatus = cookies.get("onboarded_status")?.value;
+
+    if (isUserTokenValid) {
+      if (onboardedStatus === "details_pending" && !ONBOARDING_ROUTES.includes(pathname)) {
+        return NextResponse.redirect(new URL("/onboarding", origin));
+      }
+      if (onboardedStatus === "verification_completed" && !pathname.startsWith(`/${role}`) || PROTECTED_ROUTES.includes(pathname)) {
+        return NextResponse.redirect(new URL(`/${role}/schedule`, origin));
+      }
     }
 
-    if(req.nextUrl.pathname === "/") {
-        const absoluteURL = new URL("/login", req.nextUrl.origin);
-        return NextResponse.redirect(absoluteURL.toString());
+    if (!isUserTokenValid && pathname !== "/login") {
+      return NextResponse.redirect(new URL("/login", origin));
     }
+  }
 
-    if (isAuthenticated() && protectedRoutes.includes(req.nextUrl.pathname) && req.nextUrl.pathname !== "/") {
-        const path = req.nextUrl.pathname.replace("/", "");
-        const absoluteURL = new URL(`/${path}/schedule`, req.nextUrl.origin);
-        return NextResponse.redirect(absoluteURL.toString());
-    }
+  if (pathname === "/") {
+    return NextResponse.redirect(new URL("/login", origin));
+  }
+
+  return NextResponse.next();
 }

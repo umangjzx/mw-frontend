@@ -58,10 +58,15 @@ const Sidebar = () => {
     const handleSignOut = () => {
         Cookies.remove("role");
         Cookies.remove("token");
-        router.push("/");
+        Cookies.remove("refresh_token");
+        Cookies.remove("learner_id");
+        Cookies.remove("volunteer_id");
+        Cookies.remove("onboarded_status");
+
         if (typeof window !== "undefined") {
             localStorage.clear();
         }
+        router.push("/");
     };
 
     return (
