@@ -35,7 +35,7 @@ const Header = ({ handleModalLogin }: HeaderProps) => {
     };
 
     const links = [
-        { title: "About Us", link: "/login#about-us" },
+        { title: "About Us", link: "/about-us" },
         // { title: "Blogs", link: "/blogs" },
         // { title: "Donate", link: "/donate" },
         // { title: "Team Up", link: "/" },
