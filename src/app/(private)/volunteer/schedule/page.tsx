@@ -26,7 +26,7 @@ export default function SchedulePage() {
 
     const router = useRouter();
     const { eventDetails, currentMonth } = useAppStore();
-    
+
     const [modal] = useQueryState("modal");
     const volunteerId = Cookies.get("volunteer_id");
 
@@ -52,10 +52,10 @@ export default function SchedulePage() {
 
     const { mutate: onSave, isPending } = useSendData({
         fn: (formData: any) => handleSubmitFeedback(formData),
-        invalidateKey: ["events"],
+        invalidateKey: ["volunteer-events"],
         success: () => {
             handleNavigate();
-            queryClient.invalidateQueries({ queryKey: ["events", currentMonth] });
+            queryClient.invalidateQueries({ queryKey: ["volunteer-events", currentMonth] });
         },
         error: (err) => {
             console.log("Error: ", err);
@@ -76,8 +76,9 @@ export default function SchedulePage() {
 
     return (
         <div className="w-full h-full animate-fadeIn">
-            { isCalendarScope === "checking" || isLoading ? <LottieLoader isLoading={true} />
-            : !isCalendarScope ? (
+            {isCalendarScope === "checking" || isLoading ? (
+                <LottieLoader isLoading={true} />
+            ) : !isCalendarScope ? (
                 <CalendarAccessScreen />
             ) : (
                 <>

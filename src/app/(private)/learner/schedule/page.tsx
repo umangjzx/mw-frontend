@@ -51,10 +51,10 @@ export default function LearnerSchedulePage() {
 
     const { mutate: onSave, isPending } = useSendData({
         fn: (formData: any) => handleSubmitFeedback(formData),
-        invalidateKey: ["events"],
+        invalidateKey: ["learner-events"],
         success: () => {
             handleNavigate();
-            queryClient.invalidateQueries({ queryKey: ["events", currentMonth] });
+            queryClient.invalidateQueries({ queryKey: ["learner-events", currentMonth] });
         },
         error: (err) => {
             console.log("Error: ", err);
@@ -74,23 +74,24 @@ export default function LearnerSchedulePage() {
 
     return (
         <>
-            { isCalendarScope === "checking" || isLoading ? <LottieLoader isLoading={true} />
-                : !isCalendarScope ? (
-                    <CalendarAccessScreen />
-                ) : (
-                    <div className="w-full h-full animate-fadeIn">
-                        <Calendar events={data || []} />
-                        <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleNavigate} />
-                        <FeedbackModal
-                            mode="create"
-                            isOpen={isOpenFeedback}
-                            onClose={handleNavigate}
-                            onSubmit={onSave}
-                            data={eventDetails}
-                            Loading={isPending}
-                        />
-                    </div>
-                )}
+            {isCalendarScope === "checking" || isLoading ? (
+                <LottieLoader isLoading={true} />
+            ) : !isCalendarScope ? (
+                <CalendarAccessScreen />
+            ) : (
+                <div className="w-full h-full animate-fadeIn">
+                    <Calendar events={data || []} />
+                    <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleNavigate} />
+                    <FeedbackModal
+                        mode="create"
+                        isOpen={isOpenFeedback}
+                        onClose={handleNavigate}
+                        onSubmit={onSave}
+                        data={eventDetails}
+                        Loading={isPending}
+                    />
+                </div>
+            )}
         </>
     );
 }
