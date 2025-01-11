@@ -63,12 +63,17 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
     const { mutate: onSave, isPending } = useSendData({
         // @ts-ignore
         fn: (status: string) => handleNotificationStatus(status, sessionId),
-        invalidateKey: ["events"],
+        invalidateKey: ["events "],
         success: () => {
             queryClient.invalidateQueries({ queryKey: ["approval-notifications"] });
-            queryClient.invalidateQueries({ queryKey: ["events"] });
+            if (role === "volunteer") {
+                queryClient.invalidateQueries({ queryKey: ["volunteer-events"] });
+            } else {
+                queryClient.invalidateQueries({ queryKey: ["learner-events"] });
+            }
             setLoadingAccept(false);
             setLoadingDecline(false);
+            onClose();
         },
         error: (err) => {
             console.log("Error: ", err);
@@ -116,7 +121,11 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
 
     const handleMarkAsCompleted = () => {
         PUT_API(endpoints.session.markAsCompleted(sessionId), {}).then(() => {
-            queryClient.invalidateQueries({ queryKey: ["events"] });
+            if (role === "volunteer") {
+                queryClient.invalidateQueries({ queryKey: ["volunteer-events"] });
+            } else {
+                queryClient.invalidateQueries({ queryKey: ["learner-events"] });
+            }
             onClose();
         });
     };
@@ -248,11 +257,13 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                     </div>
                 )}
                 <div className="flex flex-col gap-2">
-                    <p className="font-medium text-sm text-gray-light">{role === 'learner' ? 'Volunteer' : 'Guest' }</p>
+                    <p className="font-medium text-sm text-gray-light">
+                        {role === "learner" ? "Volunteer" : "Guest"}
+                    </p>
                     <p className="text-black font-medium">
-                        {role === 'learner'
+                        {role === "learner"
                             ? volunteer_full_name
-                            : `${learner.firstName} ${learner.lastName}` }
+                            : `${learner.firstName} ${learner.lastName}`}
                     </p>
                 </div>
                 <Divider />
