@@ -18,13 +18,13 @@ const FeedbackModal = ({
     Loading,
 }: FeedbackModalProps) => {
     const [formData, setFormData] = useState<any>({});
-    const { userName } = useAppStore();
+    const { userName, eventDetails } = useAppStore();
     const feedbackTitle = mode === "edit" ? "Edit Feedback" : "Please Fill the Feedback";
     const searchParams = useSearchParams();
     const role = Cookies.get("role");
 
-    const eventDetails = {
-        Name: userName,
+    const feedBackEventDetails = {
+        Name: role === "volunteer" ? eventDetails?.learner_name : eventDetails?.volunteer_name,
         Date: new Date().toLocaleDateString("en-GB"),
         Time: new Date().toLocaleTimeString("en-US", {
             hour: "numeric",
@@ -83,7 +83,7 @@ const FeedbackModal = ({
             title={feedbackTitle}
             isOpen={isOpen}
             onClose={onClose}
-            topContent={<DetailsSection data={eventDetails} />}
+            topContent={<DetailsSection data={feedBackEventDetails} />}
             width="40%"
             customClassName="max-h-[80vh] !rounded-2xl overflow-hidden"
             secondaryActionProps={buttonProps.secondary}
