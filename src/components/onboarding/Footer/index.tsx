@@ -21,8 +21,8 @@ type SocialLink = {
 };
 
 const policyLinks: PolicyLink[] = [
-    { href: "https://glib-chiller-6dc.notion.site/Privacy-Policy-1702f1842d7a80f1b2ecc65ec0ef459e", target: "_black", label: "Policy" },
-    { href: "https://glib-chiller-6dc.notion.site/Terms-Conditions-1702f1842d7a80dea739d037e7b7133e", target: "_black", label: "Terms" },
+    { href: "/policy", target: "_blank", label: "Policy" },
+    { href: "/terms", target: "_blank", label: "Terms" },
     // { href: "/careers", target: "_black", label: "Careers" },
 ];
 
@@ -34,7 +34,6 @@ const socialLinks: SocialLink[] = [
 ];
 
 const Footer = (props: Props) => {
-
     const renderSocialLinks = () => (
         <div className="flex items-center gap-6">
             {socialLinks.map((link) => (
@@ -49,7 +48,7 @@ const Footer = (props: Props) => {
                 </Link>
             ))}
         </div>
-    )
+    );
 
     return (
         <footer className="w-full bg-white lg:min-h-[40vh] px-[9%] flex items-center justify-center">
@@ -71,9 +70,7 @@ const Footer = (props: Props) => {
 
                     <div className="flex-center flex-col gap-6">
                         <Logo className="flex !flex-col" />
-                        <div className="lg:hidden">
-                            {renderSocialLinks()}
-                        </div>
+                        <div className="lg:hidden">{renderSocialLinks()}</div>
                         {/* Center - Terms of Use and Privacy Policy text */}
                         <p className="text-gray-500 text-center text-sm">
                             Be sure to take a look at our Terms of Use
@@ -83,10 +80,7 @@ const Footer = (props: Props) => {
                     </div>
 
                     {/* Social media icons */}
-                    <div className="hidden lg:block">
-                        {renderSocialLinks()}
-                    </div>
-
+                    <div className="hidden lg:block">{renderSocialLinks()}</div>
                 </div>
             </div>
         </footer>
