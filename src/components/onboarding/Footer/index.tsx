@@ -11,7 +11,7 @@ type Props = {};
 type PolicyLink = {
     href: string;
     label: string;
-    target: string;
+    target?: string;
 };
 
 type SocialLink = {
@@ -21,9 +21,8 @@ type SocialLink = {
 };
 
 const policyLinks: PolicyLink[] = [
-    { href: "/policy", target: "_blank", label: "Policy" },
-    { href: "/terms", target: "_blank", label: "Terms" },
-    // { href: "/careers", target: "_black", label: "Careers" },
+    { href: "/privacy-policy", target: "_black", label: "Policy" },
+    { href: "/terms-and-conditions", target: "_black", label: "Terms" },
 ];
 
 const socialLinks: SocialLink[] = [
