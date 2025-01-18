@@ -6,7 +6,7 @@ type UserTimeZoneProps = {
     format?: string;
 };
 
-const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || moment.tz.guess();
+const localTimeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone || moment.tz.guess();
 
 export const toUserTimeZone = ({
     date,

@@ -12,6 +12,8 @@ import { validateLearnerParentFields, validateVolunteerParentDetails } from "./c
 import { UseFormSetError, useWatch } from "react-hook-form";
 import { calculateAge } from "@/utils/timeFunctions";
 
+const currentVersion = process.env.NEXT_PUBLIC_CURRENT_VERSION;
+
 type FormTabsProps = {
     formData: FormSectionConfig[];
     control: any;
@@ -28,7 +30,7 @@ type FormTabsProps = {
 const TermsAndConditionElement = <div>
     By clicking on the Submit Application above, you agree to our {" "}
     <Link
-        href="https://glib-chiller-6dc.notion.site/Terms-Conditions-1702f1842d7a80dea739d037e7b7133e"
+        href="/terms-and-conditions"
         target="_blank"
         className="text-black underline hover:underline font-medium"
     >
@@ -36,7 +38,7 @@ const TermsAndConditionElement = <div>
     </Link>{" "}
     and our {" "}
     <Link
-        href="https://glib-chiller-6dc.notion.site/Privacy-Policy-1702f1842d7a80f1b2ecc65ec0ef459e"
+        href="/privacy-policy"
         target="_blank"
         className="text-black underline hover:underline font-medium"
     >
@@ -54,8 +56,6 @@ const termsAndConditionsInput: FormField = {
     inputClassName: "text-sm lg:text-base"
 }
 
-const currentVersion = process.env.NEXT_PUBLIC_CURRENT_VERSION;
-
 const FormTabs = ({ formData, control, errors, trigger, setError, setValue, validateForm, handleFillForm, onSubmit, isLoading }: FormTabsProps) => {
     const role = Cookies.get("role");
 
@@ -71,7 +71,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
         const currentFields = fields.map((field) =>
             parent ? `${parent}.${field.parent || field.id}` : field.parent || field.id
         );
-    
+
         const handleValidationErrors = ({ success, errors }: { success: boolean; errors: any }) => {
             if (!success) {
                 Object.entries(errors)?.forEach(([key, value]: any) => {
@@ -84,36 +84,34 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
         };
 
         const validateAgeUnder18 = (dob: string | undefined) => {
-            const age = dob && moment().diff(moment(dob), "years");
-            return age && age < 18;
+            const age = dob && moment().diff(moment(dob), "years") || 0;
+            return age < 18;
         };
-    
-        // Generic section validation using `trigger`
+
         const isValidSection = await trigger(currentFields);
         if (!isValidSection) {
             showToast({ type: "error", message: "Please fill in all required fields before proceeding." });
             return false;
         }
 
-        // Specific validation for learners under 18
-        if (role === "learner" && validateAgeUnder18(control._formValues?.learner_personal_info?.learner_date_of_birth)) {
+        if (role === "learner") {
+            const learnerAge = control._formValues?.learner_personal_info?.learner_date_of_birth;
+            if (!validateAgeUnder18(learnerAge)) return true;
+
             const learnerValidation = validateLearnerParentFields(control._formValues);
-        
-            if (
-                (activeTab === 0 && highestTab > 1 && !handleValidationErrors(learnerValidation)) || 
-                (activeTab === 1 && !handleValidationErrors(learnerValidation))
-            ) {
-                if (activeTab === 0) setActiveTab(1);
-                return false;
+            if (!handleValidationErrors(learnerValidation)) {
+                if ((activeTab === 0 && highestTab > 1) || (activeTab === 1)) {
+                    if (activeTab === 0) setActiveTab(1);
+                    return false;
+                }
             }
         }
 
-        // Specific validation for volunteers under 18
         if (role === "volunteer" && activeTab === 0) {
             const volunteerValidation = validateVolunteerParentDetails(control._formValues);
             if (!handleValidationErrors(volunteerValidation)) return false;
         }
-    
+
         return true;
     };
 
@@ -179,7 +177,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
 
                 {/* Active Tab Content */}
                 {formData.map((section: any, index) => (
-                    <div className={`!bg-white p-10 lg:rounded-3xl mx-auto px-6 lg:px-8 ${activeTab === index ? 'block' : 'hidden'}`}>
+                    <div key={index} className={`!bg-white p-10 lg:rounded-3xl mx-auto px-6 lg:px-8 ${activeTab === index ? 'block' : 'hidden'}`}>
                         {section?.title && (
                             <h2 className="text-2xl lg:text-3xl font-medium lg:font-semibold mb-4 lg:mb-8">{section?.title}</h2>
                         )}

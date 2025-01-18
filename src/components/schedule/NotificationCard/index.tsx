@@ -73,6 +73,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ data }) => {
             } else {
                 showToast({ type: "error", message: "Invitation Declined" });
             }
+            queryClient.invalidateQueries({ queryKey: ["volunteer-events"] });
         });
     };
 
@@ -97,7 +98,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ data }) => {
         <div className="flex flex-col gap-4 border rounded-xl p-4 border-[#E0E0E0] h-fit w-[360px]">
             <div className="flex items-center gap-2">
                 <div>
-                    <Image src={DummyProfileImg} alt="notification" width={40} height={40} />
+                    <Image src={data?.learner_picture?.image_url || DummyProfileImg} alt="notification" width={40} height={40} className="h-[40px] w-[40px] object-cover rounded-full" />
                 </div>
                 <p className="font-normal">
                     <span className="font-semibold">

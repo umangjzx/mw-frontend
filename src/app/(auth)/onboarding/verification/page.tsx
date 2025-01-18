@@ -49,7 +49,7 @@ export default function VerificationPage() {
 
     useEffect(() => {
         if (onboardingStatus?.onboarded_status === "verification_completed") {
-            Cookies.set("onboarded_status", onboardingStatus.onboarded_status);
+            Cookies.set("onboarded_status", onboardingStatus.onboarded_status, { expires: 30 });
             router.push(`/${role}/schedule`);
         }
     }, [onboardingStatus, role, router]);

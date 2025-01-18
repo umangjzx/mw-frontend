@@ -13,6 +13,7 @@ import WhyWeBuild from "@/components/landingpage/WhyWeBuild";
 import Footer from "@/components/onboarding/Footer";
 import { useQuery } from "@tanstack/react-query";
 import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
@@ -47,11 +48,18 @@ export default function Page() {
 
     const handleSignUpSuccess = (data: any) => {
         const idKey = role === "volunteer" ? "volunteer_id" : "learner_id";
-        Cookies.set(idKey, data[idKey]);
-        Cookies.set("token", data.access_token);
-        Cookies.set("refresh_token", data.refresh_token);
-        Cookies.set("role", role);
-        Cookies.set("onboarded_status", data.onboarded_status);
+
+        const decodedToken: any = jwtDecode(data?.access_token);
+        const currentTime = Math.floor(Date.now() / 1000);
+        const expireSeconds = decodedToken?.exp - currentTime;
+        const expireDays = Math.ceil(expireSeconds / (60 * 60 * 24)) || 30;
+
+        Cookies.set(idKey, data[idKey], { expires: expireDays });
+        Cookies.set("token", data?.access_token, { expires: expireDays });
+        Cookies.set("refresh_token", data?.refresh_token, { expires: expireDays });
+        Cookies.set("role", role, { expires: expireDays });
+        Cookies.set("onboarded_status", data?.onboarded_status, { expires: expireDays });
+
         handleNavigation(data);
     };
 
@@ -101,7 +109,7 @@ export default function Page() {
 
     const handleSetRole = (newRole: UserType) => {
         setRole(newRole);
-        Cookies.set("role", newRole);
+        Cookies.set("role", newRole, { expires: 30 });
         handleLogin(newRole);
     };
 
