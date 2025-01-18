@@ -98,7 +98,7 @@ const ProfileDetailsFields: FormField[] = [
             { label: "Master's Degree", value: "masters" },
             { label: "PhD", value: "phd" },
             { label: "Others", value: "others" },
-            { label: "N/A", value: "n_a" },
+            { label: "N/A", value: "N/A" },
         ],
         gridCols: 1,
         inputClassName: "!w-full",
