@@ -12,6 +12,8 @@ import { validateLearnerParentFields, validateVolunteerParentDetails } from "./c
 import { UseFormSetError, useWatch } from "react-hook-form";
 import { calculateAge } from "@/utils/timeFunctions";
 
+const currentVersion = process.env.NEXT_PUBLIC_CURRENT_VERSION;
+
 type FormTabsProps = {
     formData: FormSectionConfig[];
     control: any;
@@ -53,8 +55,6 @@ const termsAndConditionsInput: FormField = {
     required: true,
     inputClassName: "text-sm lg:text-base"
 }
-
-const currentVersion = process.env.NEXT_PUBLIC_CURRENT_VERSION;
 
 const FormTabs = ({ formData, control, errors, trigger, setError, setValue, validateForm, handleFillForm, onSubmit, isLoading }: FormTabsProps) => {
     const role = Cookies.get("role");

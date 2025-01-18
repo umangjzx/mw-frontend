@@ -32,7 +32,7 @@ export default function SchedulePage() {
 
     const getEvents = () => getCalendarEvents(volunteerId as string, "volunteer", currentMonth);
 
-    const { data, isLoading } = useQuery({
+    const { data, isFetching } = useQuery({
         queryKey: ["volunteer-events", currentMonth],
         queryFn: getEvents,
     });
@@ -76,7 +76,7 @@ export default function SchedulePage() {
 
     return (
         <div className="w-full h-full animate-fadeIn">
-            {isCalendarScope === "checking" || isLoading ? (
+            {isCalendarScope === "checking" || isFetching ? (
                 <LottieLoader isLoading={true} />
             ) : !isCalendarScope ? (
                 <CalendarAccessScreen />

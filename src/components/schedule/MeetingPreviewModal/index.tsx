@@ -37,6 +37,7 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
     const [isVisible, setIsVisible] = useState(false);
     const [loadingAccept, setLoadingAccept] = useState(false);
     const [loadingDecline, setLoadingDecline] = useState(false);
+    const [loadingCompleted, setLoadingCompleted] = useState(false);
 
     const router = useRouter();
     const queryClient = useQueryClient();
@@ -116,10 +117,12 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
     } = extendedProps;
 
     const handleFeedBack = () => {
+        onClose()
         router.push(`/${role}/schedule?current_month=${currentMonth}&modal=feedback`);
     };
 
     const handleMarkAsCompleted = () => {
+        setLoadingCompleted(true)
         PUT_API(endpoints.session.markAsCompleted(sessionId), {}).then(() => {
             if (role === "volunteer") {
                 queryClient.invalidateQueries({ queryKey: ["volunteer-events"] });
@@ -127,6 +130,7 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                 queryClient.invalidateQueries({ queryKey: ["learner-events"] });
             }
             onClose();
+            setLoadingCompleted(false)
         });
     };
 
@@ -273,9 +277,11 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                         <p className="text-gray-light font-medium text-sm">Availability Status</p>
                         {status === "accepted" ? (
                             <Button
+                                loading={loadingCompleted}
+                                disabled={loadingCompleted}
                                 onClick={() => handleMarkAsCompleted()}
                                 title="Mark as completed"
-                                customClassName="w-fit bg-white !text-[#DC2626] border border-[#DC2626] text-sm rounded-full !py-0 !px-5"
+                                customClassName="w-fit bg-white !text-[#DC2626] border border-[#DC2626] hover:bg-white hover:!text-[#DC2626] hover:border hover:border-[#DC2626] text-sm rounded-full !py-0 !px-5"
                             />
                         ) : (
                             <p className="text-[#DC2626] font-medium text-xs">

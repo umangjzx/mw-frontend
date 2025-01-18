@@ -217,7 +217,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
             <MeetingPreviewModal
                 isOpen={showPreview}
                 data={events}
-                onClose={() => setShowPreview(false)}
+                onClose={() => {setShowPreview(false); setShowModal(null)}}
                 event={selectedEvent}
                 style={{
                     position: "fixed",
