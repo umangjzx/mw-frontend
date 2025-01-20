@@ -1,6 +1,5 @@
 "use client";
 import { useAppStore } from "@/store/useAppStore";
-import { getTime } from "@/utils/calender";
 import { EventApi, EventClickArg, formatDate } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";

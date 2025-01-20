@@ -7,25 +7,22 @@ const ONBOARDING_ROUTES = ["/onboarding", "/onboarding/verification"];
 const LANDING_PAGE_ROUTES = ["/login", "/about-us", "/privacy-policy", "/terms-and-conditions"];
 
 export default function middleware(req: NextRequest) {
-    const { pathname, origin } = req.nextUrl;
-    const { cookies } = req;
-    const isUserCookiesFound = isCookiesFound(cookies);
+  const { pathname, origin } = req.nextUrl;
+  if (pathname === "/favicon.ico" || pathname.startsWith("/_next")) {
+    return NextResponse.next();
+  }
 
-    if (pathname.startsWith("/_next") || pathname === "/favicon.ico") {
-        return NextResponse.next();
-    }
+  const { cookies } = req;
+  const isUserCookiesFound = isCookiesFound(cookies);
 
-    if (
-        (!isUserCookiesFound || !isTokenValid(cookies)) &&
-        !LANDING_PAGE_ROUTES.includes(pathname)
-    ) {
-        return NextResponse.redirect(new URL("/login", origin));
-    }
+  if ((!isUserCookiesFound || !isTokenValid(cookies)) && !LANDING_PAGE_ROUTES.includes(pathname)) {
+    return NextResponse.redirect(new URL("/login", origin));
+  }
 
-    if (isUserCookiesFound) {
-        const isUserTokenValid = isTokenValid(cookies);
-        const role = cookies.get("role")?.value;
-        const onboardedStatus = cookies.get("onboarded_status")?.value;
+  if (isUserCookiesFound) {
+    const isUserTokenValid = isTokenValid(cookies);
+    const role = cookies.get("role")?.value;
+    const onboardedStatus = cookies.get("onboarded_status")?.value;
 
     if (isUserTokenValid) {
       if (onboardedStatus === "details_pending" && pathname !== '/onboarding') {
@@ -39,14 +36,14 @@ export default function middleware(req: NextRequest) {
       }
     }
 
-        if (!isUserTokenValid && pathname !== "/login") {
-            return NextResponse.redirect(new URL("/login", origin));
-        }
+    if (!isUserTokenValid && pathname !== "/login") {
+      return NextResponse.redirect(new URL("/login", origin));
     }
+  }
 
-    if (pathname === "/") {
-        return NextResponse.redirect(new URL("/login", origin));
-    }
+  if (pathname === "/") {
+    return NextResponse.redirect(new URL("/login", origin));
+  }
 
-    return NextResponse.next();
+  return NextResponse.next();
 }

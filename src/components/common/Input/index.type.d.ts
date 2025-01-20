@@ -102,6 +102,7 @@ type BirthDatePickerInputProps = BaseInputProps & {
     value?: Date | string | null;
     onChange: (value: Date | string | string[] | null) => void;
     placeholder?: string;
+    format?: string;
     birthDatePicker: { minAge: number | 0; maxAge: number | 100 };
 };
 
@@ -134,7 +135,7 @@ type UploadProps = BaseInputProps & {
     maxFiles?: number;
     inputClassName?: string;
     variant?: "cover-image" | "file" | "profile-image";
-    fileType?: "image/*" | "application/*" | "video/*";
+    fileType?: "image/*" | "application/*" | "video/*" | "application/*,image/*";
     error?: (error: Error) => void;
 };
 

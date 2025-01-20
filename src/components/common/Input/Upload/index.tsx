@@ -20,7 +20,7 @@ const Uploader = ({ maxFiles = 1, ...props }: UploadProps) => {
                 setImageId(convertedData?.image_id);
             } else if (props.fileType === "video/*") {
                 setVideoId(convertedData?.video_id);
-            } else if (props.fileType === "application/*") {
+            } else if (props.fileType === "application/*,image/*") {
                 setDocumentId(convertedData?.document_id);
             }
             props.onChange(convertedData);
@@ -79,7 +79,7 @@ const Uploader = ({ maxFiles = 1, ...props }: UploadProps) => {
             DELETE_API(endpoints.media_uploader.deleteVideo(videoId as string)).then(() => {
                 setVideoId(null);
             });
-        } else if (type === "application/*") {
+        } else if (type === "application/*,image/*") {
             DELETE_API(endpoints.media_uploader.deleteDocument(documentId as string)).then(() => {
                 setDocumentId(null);
             });

@@ -18,6 +18,7 @@ type HeaderOptions = {
     hideSearch?: boolean;
     titleIcon?: React.ReactNode;
     title?: string;
+    leftButton?: ActionButtons;
     actionButtons?: ActionButtons[];
     titleIconClick?: () => void;
 } | null;

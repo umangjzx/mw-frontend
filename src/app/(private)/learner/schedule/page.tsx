@@ -31,7 +31,7 @@ export default function LearnerSchedulePage() {
 
     const getEvents = () => getCalendarEvents(learnerId as string, "learner", currentMonth);
 
-    const { data, isLoading } = useQuery({
+    const { data, isFetching } = useQuery({
         queryKey: ["learner-events", currentMonth],
         queryFn: getEvents,
     });
@@ -74,7 +74,7 @@ export default function LearnerSchedulePage() {
 
     return (
         <>
-            {isCalendarScope === "checking" || isLoading ? (
+            {isCalendarScope === "checking" || isFetching ? (
                 <LottieLoader isLoading={true} />
             ) : !isCalendarScope ? (
                 <CalendarAccessScreen />

@@ -310,7 +310,7 @@ export function validateVolunteerParentDetails(data: any) {
     const errors: { [key: string]: string } = {};
     let isSuccess = true;
 
-    const age = moment().diff(moment(data.volunteer_birth_date), 'years');
+    const age = moment().diff(moment(data.volunteer_birth_date, "DD-MM-YYYY"), 'years');
 
     if (age < 18) {
         const requiredFields = {
@@ -583,7 +583,7 @@ export function validateLearnerParentFields(data: any) {
     let isSuccess = true;
 
     const learnerDob = data?.learner_personal_info?.learner_date_of_birth;
-    const age = learnerDob ? moment().diff(moment(learnerDob), 'years') : null;
+    const age = learnerDob ? moment().diff(moment(learnerDob, "DD-MM-YYYY"), 'years') : null;
 
     if (age !== null && age < 18) {
         (Object.keys(data?.parent_info || {}) as (keyof learnerParentSchemaType)[]).forEach((key) => {

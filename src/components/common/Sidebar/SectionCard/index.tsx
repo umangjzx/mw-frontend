@@ -23,7 +23,7 @@ const SectionCard = ({ href, text, icon, textColor, onClick }: SectionCardProps)
             <Link
                 href={role ? `/${role}/${href}` : `/${href}`}
                 onClick={onClick}
-                className="flex items-start gap-2 max-w-[125px] w-full ml-[-1rem]"
+                className="flex items-start gap-2 max-w-[150px] w-full ml-[-1rem]"
             >
                 <span
                     className={`text-[1.25rem] transition-all duration-300 ${

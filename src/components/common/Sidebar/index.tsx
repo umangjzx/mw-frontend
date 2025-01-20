@@ -12,6 +12,7 @@ import {
 } from "@/assets/icons";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const Sidebar = () => {
     const role = Cookies.get("role");
@@ -35,7 +36,7 @@ const Sidebar = () => {
               }
             : {
                   href: "/volunteer",
-                  text: "Volunteer",
+                  text: "Seek Volunteer",
                   icon: <VolunteerIcon />,
               };
 
@@ -72,7 +73,9 @@ const Sidebar = () => {
     return (
         <div className="bg-white w-full h-screen flex flex-col items-center justify-between p-6">
             <div>
-                <Logo />
+                <Link href="/">
+                    <Logo />
+                </Link>
                 <div className="flex flex-col items-center gap-3 w-full mt-[4rem]">
                     <Avatar />
                     <Divider />

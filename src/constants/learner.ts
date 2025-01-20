@@ -26,11 +26,10 @@ const ParentGuardianFields: FormField[] = [
     {
         id: "relationship_to_learner",
         label: "Relationship to the Learner",
-        inputType: "select",
+        inputType: "select-creatable",
+        variant: "single",
         placeholder: "Select relationship",
         gridCols: 1,
-        inputClassName: "!w-[49%]",
-        className: "!w-[49%]",
         options: [
             { label: "Parent", value: "parent" },
             { label: "Guardian", value: "guardian" },
@@ -90,7 +89,8 @@ const LearnerPersonalFields: FormField[] = [
         id: "learner_date_of_birth",
         label: "Date of Birth",
         inputType: "birthdatepicker",
-        placeholder: "MM/DD/YYYY",
+        placeholder: "DD/MM/YYYY",
+        format: "DD-MM-YYYY",
         gridCols: 1,
         required: true,
         birthDatePicker: { minAge: 0, maxAge: 100 },
@@ -731,12 +731,12 @@ const AdditionalInfoFields: FormField[] = [
 export const LearnerFormSections: FormSectionConfig[] = [
     {
         parent: "learner_personal_info",
-        title: "Learner Information",
+        title: "Learner Info",
         fields: LearnerPersonalFields,
     },
     {
         parent: "parent_info",
-        title: "Guardian Information",
+        title: "Guardian Info",
         fields: ParentGuardianFields,
     },
     {
@@ -772,11 +772,11 @@ export const LearnerFormSections: FormSectionConfig[] = [
     },
     {
         parent: "additional_info",
-        title: "Additional Information",
+        title: "Additional Info",
         fields: AdditionalInfoFields,
     },
     {
-        title: "Upload Profile Picture",
+        title: "Profile Pic",
         parent: null,
         fields: [
             {
