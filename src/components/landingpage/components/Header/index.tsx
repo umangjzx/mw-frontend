@@ -16,6 +16,8 @@ interface HeaderProps {
 
 const Header = ({ handleModalLogin }: HeaderProps) => {
     const [loginAs, setLoginAs] = useState<UserType>("volunteer");
+
+    const [isSignBtnLoading, setIsSignBtnLoading] = useState(false);
     const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
     const [isSideNavBarOpen, setIsSideNavBarOpen] = useState<boolean>(false);
     const router = useRouter();
@@ -24,9 +26,9 @@ const Header = ({ handleModalLogin }: HeaderProps) => {
         setIsSideNavBarOpen(!isSideNavBarOpen);
     };
 
-    console.log(loginAs, "loginAs");
-
     const handleLoginClick = () => {
+        setIsSignBtnLoading(true)
+        router.push(`/login?loginAs=${loginAs}`);
         handleModalLogin && handleModalLogin(loginAs);
     };
 
@@ -119,6 +121,7 @@ const Header = ({ handleModalLogin }: HeaderProps) => {
                                 />
                             </div>
                             <Button
+                                loading={isSignBtnLoading}
                                 onClick={handleLoginClick}
                                 title="Sign In With Google"
                                 className="!bg-black w-full !px-3 !py-1 text-white hover:!bg-black hover:!text-white text-sm !rounded-xl"

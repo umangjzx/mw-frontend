@@ -23,6 +23,7 @@ export default function Page() {
     const router = useRouter();
     const [role, setRole] = useState<UserType>((Cookies.get("role") as UserType) || "volunteer");
     const [code] = useQueryState("code");
+    const [loginAs, setLoginAs] = useQueryState("loginAs");
     const [buttonLoading, setButtonLoading] = useState("");
     const [isPageLoading, setIsPageLoading] = useState(false);
 
@@ -112,6 +113,13 @@ export default function Page() {
         Cookies.set("role", newRole, { expires: 30 });
         handleLogin(newRole);
     };
+
+    useEffect(() => {
+        if(loginAs === "volunteer" || loginAs === "learner"){
+            handleSetRole(loginAs);
+            setLoginAs(null);
+        }
+    }, [loginAs])
 
     useEffect(() => {
         let sr: any;
