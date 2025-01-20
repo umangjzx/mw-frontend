@@ -135,7 +135,7 @@ type UploadProps = BaseInputProps & {
     maxFiles?: number;
     inputClassName?: string;
     variant?: "cover-image" | "file" | "profile-image";
-    fileType?: "image/*" | "application/*" | "video/*";
+    fileType?: "image/*" | "application/*" | "video/*" | "application/*,image/*";
     error?: (error: Error) => void;
 };
 

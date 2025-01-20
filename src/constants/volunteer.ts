@@ -508,7 +508,7 @@ export const VolunteerFormSections: FormSectionConfig[] = [
                 required: true,
                 gridCols: 2,
                 variant: "file",
-                fileType: "application/*",
+                fileType: "application/*,image/*",
             },
         ],
     },

@@ -8,7 +8,7 @@ const FileUpload = ({ ...props }: BaseUploaderProps) => {
             return "Upload Image";
         } else if (props.fileType === "video/*") {
             return "Upload Video";
-        } else if (props.fileType === "application/*") {
+        } else if (props.fileType === "application/*,image/*") {
             return "Upload Document";
         }
         return "Upload Document";
@@ -19,7 +19,7 @@ const FileUpload = ({ ...props }: BaseUploaderProps) => {
             return value?.image_id && value?.image_id + ".jpg";
         } else if (props.fileType === "video/*") {
             return value?.video_id;
-        } else if (props.fileType === "application/*") {
+        } else if (props.fileType === "application/*,image/*") {
             return value?.document_id;
         }
         return null;
