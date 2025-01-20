@@ -213,21 +213,30 @@ export const Input: React.FC<InputProps> = (props) => {
                         />
                     </div>
                 );
+            
             case "birthdatepicker":
-                const { birthDatePicker } = props;
+                const { birthDatePicker, format = "DD-MM-YYYY", value, onChange } = props;
                 const startDate = dayjs().subtract(birthDatePicker?.maxAge || 100, "year");
                 const endDate = dayjs().subtract(birthDatePicker?.minAge || 0, "year");
+            
                 const disabledDate = (current: any) =>
                     current &&
                     (current.isBefore(startDate, "day") || current.isAfter(endDate, "day"));
+            
+                const parseDate = (date: any) => date && dayjs(date, format).isValid() ? dayjs(date, format) : null;
+    
+                const handleDateChange = (date: any, dateString: string | string[]) => {
+                    const validDate = parseDate(dateString);
+                    onChange(validDate ? validDate.format(format) : null);
+                };
 
                 return (
                     <div>
                         <AntDatePicker
-                            value={props.value ? dayjs(props.value) : null}
+                            value={parseDate(value) || null}
                             disabledDate={disabledDate}
-                            onChange={(date, dateString) => props.onChange(dateString as string)}
-                            format="YYYY-MM-DD"
+                            onChange={handleDateChange}
+                            format={format}
                             allowClear={false}
                             placeholder="Click to select date"
                             className={cn(
@@ -237,6 +246,7 @@ export const Input: React.FC<InputProps> = (props) => {
                         />
                     </div>
                 );
+                
             case "checkbox":
                 return (
                     <Checkbox

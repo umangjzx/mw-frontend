@@ -102,6 +102,7 @@ type BirthDatePickerInputProps = BaseInputProps & {
     value?: Date | string | null;
     onChange: (value: Date | string | string[] | null) => void;
     placeholder?: string;
+    format?: string;
     birthDatePicker: { minAge: number | 0; maxAge: number | 100 };
 };
 

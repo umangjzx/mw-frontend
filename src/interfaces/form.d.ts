@@ -34,6 +34,7 @@ type FormField = {
     title?: string;
     fileType?: string;
     endpoint?: string;
+    format?: string
     responseType?: string;
     responseAsLabel?: string;
     responseAsValue?: string[] | string;
