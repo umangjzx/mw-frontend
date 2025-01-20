@@ -84,7 +84,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
         };
 
         const validateAgeUnder18 = (dob: string | undefined) => {
-            const age = dob && moment().diff(moment(dob), "years") || 0;
+            const age = dob && moment().diff(moment(dob, "DD-MM-YYYY"), "years") || 0;
             return age < 18;
         };
 
@@ -135,7 +135,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
     const fields = ["consented_from_parent", "volunteer_parent_fullname", "volunteer_parent_email"]
     const volunteerAge = () => {
         const age = Number(calculateAge(volunteer_birth_date));
-        return age > 18;
+        return age >= 18;
     }
 
     const hideFields = (field: any) => {

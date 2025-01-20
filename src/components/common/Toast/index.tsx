@@ -9,30 +9,32 @@ interface ToastParams {
 }
 
 export const showToast = ({ type="success", message = "Done", position = "top-center", duration = 4000 }: ToastParams) => {
+  toast.dismiss();
+
   switch (type) {
     case "success":
       toast.success(message, {
         duration,
-        position
+        position,
       });
       break;
 
     case "error":
       toast.error(message, {
         duration,
-        position
+        position,
       });
       break;
 
     case "info":
       toast(message, {
         duration,
-        position
+        position,
       });
       break;
 
     default:
-      toast("Default message", {
+      toast("Done", {
         duration,
         position: "top-right",
         style: {
