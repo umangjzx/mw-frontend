@@ -72,6 +72,27 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
         });
     }, []);
 
+    // Add this useEffect to check for overlapping times whenever schedule changes
+    useEffect(() => {
+        const newErrors: { [key: string]: string[] } = {};
+
+        days.forEach((day) => {
+            const dayErrors: string[] = [];
+            schedule[day].forEach((slot, index) => {
+                if (slot.start_time && slot.end_time) {
+                    if (isTimeOverlapping(day, slot.start_time, slot.end_time, index)) {
+                        dayErrors.push(`Time slot ${index + 1} overlaps with another slot`);
+                    }
+                }
+            });
+            if (dayErrors.length > 0) {
+                newErrors[day] = dayErrors;
+            }
+        });
+
+        setErrors(newErrors);
+    }, [schedule]);
+
     const isTimeOverlapping = (
         day: string,
         newFrom: string,
@@ -102,6 +123,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
         return hours * 60 + minutes;
     };
 
+    // Modify handleTimeChange to remove error handling since it's now handled by useEffect
     const handleTimeChange = (
         day: string,
         slotIndex: number,
@@ -123,32 +145,6 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             updatedSlot.end_time = temp;
             console.log("Swapped start_time and end_time due to invalid order");
         }
-
-        // Check for overlap with other slots
-        if (
-            updatedSlot.start_time &&
-            updatedSlot.end_time &&
-            isTimeOverlapping(day, updatedSlot.start_time, updatedSlot.end_time, slotIndex)
-        ) {
-            setErrors((prev) => ({
-                ...prev,
-                [day]: [
-                    ...(prev[day] || []).filter(
-                        (error) => !error.includes(`Time slot ${slotIndex + 1}`)
-                    ),
-                    `Time slot ${slotIndex + 1} overlaps with another slot`,
-                ],
-            }));
-            return;
-        }
-
-        // Clear errors if no issues
-        setErrors((prev) => ({
-            ...prev,
-            [day]: (prev[day] || []).filter(
-                (error) => !error.includes(`Time slot ${slotIndex + 1}`)
-            ),
-        }));
 
         setSchedule((prev) => ({
             ...prev,
@@ -175,14 +171,6 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                 [day]: prev[day].filter((_, index) => index !== slotIndex),
             };
         });
-
-        // Clear errors for removed slot
-        setErrors((prev) => ({
-            ...prev,
-            [day]: (prev[day] || []).filter(
-                (error) => !error.includes(`Time slot ${slotIndex + 1}`)
-            ),
-        }));
     };
 
     const formatScheduleForAPI = (): APIScheduleFormat[] => {
