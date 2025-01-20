@@ -17,7 +17,7 @@ const MainLayout: FC<PropsWithChildren> = ({ children }) => {
                 <div hidden={isProfile} className='col-span-2'>
                     <Sidebar />
                 </div>
-                <div className={cn("h-full bg-white", isProfile ? "col-span-12" : "col-span-10 ")}>
+                <div className={cn("h-full bg-white", isProfile ? "col-span-12" : "col-span-10")}>
                     <div className='h-[10vh] w-full'>{header}</div>
                     <div
                         className={cn(

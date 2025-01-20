@@ -36,7 +36,7 @@ const Sidebar = () => {
               }
             : {
                   href: "/volunteer",
-                  text: "Volunteer",
+                  text: "Seek Volunteer",
                   icon: <VolunteerIcon />,
               };
 
