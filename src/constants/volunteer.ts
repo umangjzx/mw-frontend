@@ -88,6 +88,19 @@ const ProfileDetailsFields: FormField[] = [
         gridCols: 1
     },
     {
+        id: "volunteer_languages",
+        label: "Languages Spoken",
+        inputType: "async-select",
+        variant: "multi",
+        placeholder: "English, Tamil, Hindi",
+        endpoint: "languages",
+        responseAsLabel: "language_name",
+        responseAsValue: ["language_id", "language_name"],
+        gridCols: 2,
+        inputClassName: "!w-[49%]",
+        required: true,
+    },
+    {
         id: "volunteer_higher_education",
         label: "Highest Education",
         inputType: "select",
@@ -105,21 +118,8 @@ const ProfileDetailsFields: FormField[] = [
         required: true,
     },
     {
-        id: "volunteer_languages",
-        label: "Languages Spoken",
-        inputType: "async-select",
-        variant: "multi",
-        placeholder: "English, Tamil, Hindi",
-        endpoint: "languages",
-        responseAsLabel: "language_name",
-        responseAsValue: ["language_id", "language_name"],
-        gridCols: 2,
-        inputClassName: "!w-[49%]",
-        required: true,
-    },
-    {
         id: "volunteer_education",
-        label: "Education",
+        label: "Education Summary",
         inputType: "text",
         placeholder: "Type here",
         gridCols: 2,
@@ -140,7 +140,7 @@ const ProfileDetailsFields: FormField[] = [
     },
     {
         id: "volunteer_experience",
-        label: "Experience",
+        label: "Work Experience",
         inputType: "text",
         placeholder: "Type here",
         gridCols: 2,
@@ -431,7 +431,7 @@ export const VolunteerFormSections: FormSectionConfig[] = [
     },
     {
         parent: "legal_and_safety_info",
-        title: "Volunteer Application",
+        title: "Legal and Safety Info",
         fields: [
             {
                 parent: "criminal_background_check_details",

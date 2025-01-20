@@ -731,12 +731,12 @@ const AdditionalInfoFields: FormField[] = [
 export const LearnerFormSections: FormSectionConfig[] = [
     {
         parent: "learner_personal_info",
-        title: "Learner Information",
+        title: "Learner Info",
         fields: LearnerPersonalFields,
     },
     {
         parent: "parent_info",
-        title: "Guardian Information",
+        title: "Guardian Info",
         fields: ParentGuardianFields,
     },
     {
@@ -772,11 +772,11 @@ export const LearnerFormSections: FormSectionConfig[] = [
     },
     {
         parent: "additional_info",
-        title: "Additional Information",
+        title: "Additional Info",
         fields: AdditionalInfoFields,
     },
     {
-        title: "Upload Profile Picture",
+        title: "Profile Pic",
         parent: null,
         fields: [
             {
