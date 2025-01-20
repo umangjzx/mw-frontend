@@ -26,11 +26,10 @@ const ParentGuardianFields: FormField[] = [
     {
         id: "relationship_to_learner",
         label: "Relationship to the Learner",
-        inputType: "select",
+        inputType: "select-creatable",
+        variant: "single",
         placeholder: "Select relationship",
         gridCols: 1,
-        inputClassName: "!w-[49%]",
-        className: "!w-[49%]",
         options: [
             { label: "Parent", value: "parent" },
             { label: "Guardian", value: "guardian" },
