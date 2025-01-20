@@ -22,6 +22,7 @@ export const useOnboardingForm = (schema: any) => {
             PUT_API(endpoints.onboarding.update(role as "volunteer" | "learner"), data),
         success: () => {
             showToast({ type: "success", message: "Form Submitted!" });
+            Cookies.set("onboarded_status", (role === 'learner') ? "verification_completed" : "verification_pending");
             router.push("/onboarding/verification");
             setImageId(null);
             setVideoId(null);

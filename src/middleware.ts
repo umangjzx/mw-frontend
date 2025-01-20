@@ -25,10 +25,10 @@ export default function middleware(req: NextRequest) {
     const onboardedStatus = cookies.get("onboarded_status")?.value;
 
     if (isUserTokenValid) {
-      if (onboardedStatus === "details_pending" && pathname !== '/onboarding') {
+      if (onboardedStatus === "details_pending" && pathname !== '/onboarding' && !LANDING_PAGE_ROUTES.includes(pathname)) {
         return NextResponse.redirect(new URL("/onboarding", origin));
       }
-      if (onboardedStatus === "verification_pending" && pathname !== '/onboarding/verification') {
+      if (onboardedStatus === "verification_pending" && pathname !== '/onboarding/verification' && !LANDING_PAGE_ROUTES.includes(pathname)) {
         return NextResponse.redirect(new URL("/onboarding/verification", origin));
       }
       if (onboardedStatus === "verification_completed" && !pathname.startsWith(`/${role}`) || PROTECTED_ROUTES.includes(pathname)) {
