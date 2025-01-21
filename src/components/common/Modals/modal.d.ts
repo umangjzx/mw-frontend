@@ -42,6 +42,7 @@ interface SideModalProps {
     isDisabled?: boolean;
     isNeedButton?: boolean;
     isLoading?: boolean;
+    modalWidth?: number;
 }
 
 type ShowModalType = "view" | "edit" | "create" | null;

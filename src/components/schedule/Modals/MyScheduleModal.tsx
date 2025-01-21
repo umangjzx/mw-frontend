@@ -34,7 +34,6 @@ interface APIScheduleFormat {
 }
 
 const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) => {
-    const [formData, setFormData] = useState<any>({});
     const [schedule, setSchedule] = useState<DaySchedule>({
         Sunday: [],
         Monday: [],
@@ -229,10 +228,11 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             saveButtonText="Save Changes"
             cancelButtonText="Cancel"
             isOpen={isOpen}
-            onSave={() => onSave(formData)}
+            onSave={() => onSave({})}
             onCancel={onClose}
             isDisabled={hasErrors()}
             isLoading={isPending}
+            modalWidth={410}
         >
             <div>
                 <div className="flex flex-col gap-1 px-5 py-4">
@@ -247,7 +247,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                             <div key={day} className="flex flex-col gap-2">
                                 <div className="flex items-start justify-between gap-2 px-5">
                                     <p className="font-semibold w-[2rem]">{day.slice(0, 3)}</p>
-                                    <div className="flex flex-col items-center gap-2 w-full">
+                                    <div className="flex flex-col items-center gap-2 w-full px-2">
                                         {schedule[day].length > 0 ? (
                                             schedule[day].map((slot, slotIndex) => (
                                                 <div
