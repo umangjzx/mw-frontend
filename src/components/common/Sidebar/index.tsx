@@ -57,7 +57,7 @@ const Sidebar = () => {
     const linksData = [...baseLinksData, roleBasedLink, ...remainingLinks];
 
     const handleSignOut = () => {
-        const cookieSetting = { path: '/', secure: true};
+        const cookieSetting = { path: "/", secure: true };
         Cookies.remove("role", cookieSetting);
         Cookies.remove("token", cookieSetting);
         Cookies.remove("refresh_token", cookieSetting);
@@ -68,7 +68,9 @@ const Sidebar = () => {
         if (typeof window !== "undefined") {
             localStorage.clear();
         }
-        router.push("/");
+        if (typeof window !== "undefined") {
+            window.location.href = "/";
+        }
     };
 
     return (
@@ -91,7 +93,10 @@ const Sidebar = () => {
                 <span className={`text-[1.25rem] transition-all duration-300 "text-black"`}>
                     <SignOutIcon />
                 </span>
-                <p style={{ color: "#B91C1C" }} className={`!text-[#B91C1C] transition-all duration-300 font-medium`} >
+                <p
+                    style={{ color: "#B91C1C" }}
+                    className={`!text-[#B91C1C] transition-all duration-300 font-medium`}
+                >
                     Sign Out
                 </p>
             </button>
