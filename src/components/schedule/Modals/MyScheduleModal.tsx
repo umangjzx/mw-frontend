@@ -3,14 +3,15 @@ import { endpoints } from "@/api/constants";
 import { GET_API, PUT_API } from "@/api/request";
 import SideModal from "@/components/common/Modals/SideModal";
 import { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import TrashIcon from "@/assets/icons/TrashIcon";
-import { TimePicker } from "antd";
 import cn from "classnames";
 import dayjs from "dayjs";
 import AddSlotIcon from "@/assets/icons/AddSlotIcon";
 import { useSendData } from "@/hooks/useReactQuery";
 import { generateTimeSlotId } from "@/utils/timeFunctions";
+
+import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 interface TimeSlot {
     start_time: string;
@@ -46,7 +47,6 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
     const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
     const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const [deletedSlots, setDeletedSlots] = useState<string[]>([]);
-    const [isDisabled, setIsDisabled] = useState(false);
 
     useEffect(() => {
         GET_API(endpoints.volunteer_slot.get).then((res: any) => {
@@ -213,11 +213,8 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
 
     // Add this CSS class to style the TimePicker input
     const timePickerClass = cn(
-        "w-[6.7rem] font-medium px-3 py-1 rounded-xl [&_.ant-picker-input>input]:!text-sm",
-        "ant-picker-small", // This will make the overall picker smaller
-        "[&_.ant-picker-panel]:!text-sm", // This affects the dropdown text size
-        "[&_.ant-picker-dropdown]:!text-sm [&_.ant-picker-dropdown]:!bg-blue-200", // This affects the dropdown container
-        "[&_.ant-picker-time-panel-cell-inner]:!bg-blue-200 "
+        "!text-sm",
+        "[&_.css-1dune0f-MuiInputBase-input-MuiOutlinedInput-input]:!text-sm",
     );
 
     // Add this function to check if there are any errors
@@ -262,73 +259,87 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                                                         className="flex gap-2 items-center"
                                                     >
                                                         <div className="">
-                                                            <TimePicker
-                                                                use12Hours
-                                                                format="h:mm A"
-                                                                value={
-                                                                    slot.start_time
-                                                                        ? dayjs(
-                                                                              slot.start_time,
-                                                                              "HH:mm"
-                                                                          )
-                                                                        : null
-                                                                }
-                                                                onChange={(time) =>
-                                                                    handleTimeChange(
-                                                                        day,
-                                                                        slotIndex,
-                                                                        "start_time",
-                                                                        time
-                                                                            ? time.format("HH:mm")
+                                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                                <TimePicker
+                                                                    minutesStep={1}
+                                                                    format="h:mm A"
+                                                                    value={
+                                                                        slot.start_time
+                                                                            ? dayjs(
+                                                                                slot.start_time,
+                                                                                "HH:mm"
+                                                                            )
                                                                             : null
-                                                                    )
-                                                                }
-                                                                className={cn(
-                                                                    timePickerClass,
-                                                                    errors[day]?.some((error) =>
-                                                                        error.includes(
-                                                                            `Time slot ${
-                                                                                slotIndex + 1
-                                                                            }`
+                                                                    }
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                                                                                border: "2px solid var(--background-secondary-color) !important",
+                                                                            },
+                                                                        },
+                                                                    }}
+                                                                    onAccept={(time) =>
+                                                                        handleTimeChange(
+                                                                            day,
+                                                                            slotIndex,
+                                                                            "start_time",
+                                                                            time
+                                                                                ? time.format("HH:mm")
+                                                                                : null
                                                                         )
-                                                                    ) && "border-red-500"
-                                                                )}
-                                                            />
+                                                                    }
+                                                                    className={cn(
+                                                                        timePickerClass,
+                                                                        errors[day]?.some((error) =>
+                                                                            error.includes(
+                                                                                `Time slot ${slotIndex + 1}`
+                                                                            )
+                                                                        ) && "border-red-500"
+                                                                    )}
+                                                                />
+                                                            </LocalizationProvider>
                                                         </div>
                                                         <p className="text-sm font-medium">to</p>
                                                         <div className="">
-                                                            <TimePicker
-                                                                use12Hours
-                                                                format="h:mm A"
-                                                                value={
-                                                                    slot.end_time
-                                                                        ? dayjs(
-                                                                              slot.end_time,
-                                                                              "HH:mm"
-                                                                          )
-                                                                        : null
-                                                                }
-                                                                onChange={(time) =>
-                                                                    handleTimeChange(
-                                                                        day,
-                                                                        slotIndex,
-                                                                        "end_time",
-                                                                        time
-                                                                            ? time.format("HH:mm")
+                                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                                <TimePicker
+                                                                    minutesStep={1}
+                                                                    format="h:mm A"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                                                                                border: "2px solid var(--background-secondary-color) !important",
+                                                                            },
+                                                                        },
+                                                                    }}
+                                                                    value={
+                                                                        slot.end_time
+                                                                            ? dayjs(
+                                                                                slot.end_time,
+                                                                                "HH:mm"
+                                                                            )
                                                                             : null
-                                                                    )
-                                                                }
-                                                                className={cn(
-                                                                    timePickerClass,
-                                                                    errors[day]?.some((error) =>
-                                                                        error.includes(
-                                                                            `Time slot ${
-                                                                                slotIndex + 1
-                                                                            }`
+                                                                    }
+                                                                    onAccept={(time) =>
+                                                                        handleTimeChange(
+                                                                            day,
+                                                                            slotIndex,
+                                                                            "end_time",
+                                                                            time
+                                                                                ? time.format("HH:mm")
+                                                                                : null
                                                                         )
-                                                                    ) && "border-red-500"
-                                                                )}
-                                                            />
+                                                                    }
+                                                                    className={cn(
+                                                                        timePickerClass,
+                                                                        errors[day]?.some((error) =>
+                                                                            error.includes(
+                                                                                `Time slot ${slotIndex + 1}`
+                                                                            )
+                                                                        ) && "border-red-500"
+                                                                    )}
+                                                                />
+                                                            </LocalizationProvider>
                                                         </div>
                                                         <span
                                                             onClick={() =>

@@ -15,7 +15,7 @@ export const handleConvertBasedOnContentType = (data: any, fileType: string | un
     } else if (fileType?.startsWith("application/")) {
         return {
             document_url: data.url,
-            document_id: data.document_id,
+            document_id: data?.document_id || data?.image_id,
         };
     }
     return data;
