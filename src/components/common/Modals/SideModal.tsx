@@ -16,6 +16,7 @@ const SideModal: React.FC<SideModalProps> = ({
     isDisabled = false,
     isNeedButton = true,
     isLoading = false,
+    modalWidth = 400,
 }) => {
     return (
         <div>
@@ -24,7 +25,7 @@ const SideModal: React.FC<SideModalProps> = ({
                 closable={false}
                 onClose={onClose}
                 open={isOpen}
-                width={400}
+                width={modalWidth}
                 className="py-4 !px-0"
                 bodyStyle={{ padding: 0 }}
             >

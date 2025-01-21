@@ -134,7 +134,7 @@ html {
 
 .MuiInputBase-input.MuiOutlinedInput-input {
     font-weight: 600 !important;
-    padding: 8px 10px !important;
+    padding: 8px 0px 8px 10px !important;
 }
 
 .MuiPaper-root.MuiPickersPopper-paper{
