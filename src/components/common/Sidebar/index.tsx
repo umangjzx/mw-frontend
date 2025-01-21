@@ -57,12 +57,13 @@ const Sidebar = () => {
     const linksData = [...baseLinksData, roleBasedLink, ...remainingLinks];
 
     const handleSignOut = () => {
-        Cookies.remove("role");
-        Cookies.remove("token");
-        Cookies.remove("refresh_token");
-        Cookies.remove("learner_id");
-        Cookies.remove("volunteer_id");
-        Cookies.remove("onboarded_status");
+        const cookieSetting = { path: '/', secure: true};
+        Cookies.remove("role", cookieSetting);
+        Cookies.remove("token", cookieSetting);
+        Cookies.remove("refresh_token", cookieSetting);
+        Cookies.remove("learner_id", cookieSetting);
+        Cookies.remove("volunteer_id", cookieSetting);
+        Cookies.remove("onboarded_status", cookieSetting);
 
         if (typeof window !== "undefined") {
             localStorage.clear();

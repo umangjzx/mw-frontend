@@ -33,7 +33,6 @@ const ParentGuardianFields: FormField[] = [
         options: [
             { label: "Parent", value: "parent" },
             { label: "Guardian", value: "guardian" },
-            { label: "Other", value: "other" },
         ],
     },
     {
