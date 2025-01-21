@@ -119,31 +119,35 @@ html {
 }
 
 /* Customize Mui Time Picker Style */
-.css-elo8k2-MuiInputAdornment-root {
+.MuiInputAdornment-root {
     margin-left: 0px !important;
 }
 
-.css-1ysp02-MuiButtonBase-root-MuiIconButton-root {
+.MuiButtonBase-root.MuiIconButton-root {
     padding: 0px !important;
 }
 
-.css-jupps9-MuiInputBase-root-MuiOutlinedInput-root {
+.MuiInputBase-root.MuiOutlinedInput-root {
     border-radius: 10px !important;
     padding-right: 16px !important;
 }
 
-.css-1dune0f-MuiInputBase-input-MuiOutlinedInput-input {
+.MuiInputBase-input.MuiOutlinedInput-input {
     font-weight: 600 !important;
     padding: 8px 10px !important;
 }
 
-.css-aj5au3-MuiPaper-root-MuiPickersPopper-paper{
+.MuiPaper-root.MuiPickersPopper-paper{
     border-radius: 10px !important;
 }
 
-.css-ux17pc-MuiButtonBase-root-MuiMenuItem-root-MuiMultiSectionDigitalClockSection-item.Mui-selected{
+.MuiButtonBase-root.MuiMenuItem-root.MuiMultiSectionDigitalClockSection-item.Mui-selected{
     background-color: var(--background-secondary-color) !important;
     border-radius: 5px !important;
+}
+
+.MuiMultiSectionDigitalClock-root ul{
+    scrollbar-width: none !important;
 }
 
 /* Custom Spin Styles */
