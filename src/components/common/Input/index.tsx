@@ -18,8 +18,7 @@ import dayjs from "dayjs";
 import moment from "moment";
 import SelectInputCreatable from "./Select/SelectInputCreatable";
 
-import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import TimeRangePicker from "./Picker/TimeRangePicker";
 
 const { TextArea } = AntInput;
 const { RangePicker: DateRangePicker } = AntDatePicker;
@@ -271,59 +270,7 @@ export const Input: React.FC<InputProps> = (props) => {
             case "timerange":
                 return (
                     <div className="flex items-center gap-2">
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <TimePicker
-                                name={`${name}-from`}
-                                value={props.value?.from}
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                            border: "2px solid var(--background-secondary-color) !important",
-                                        },
-                                    },
-                                }}
-                                onAccept={(time) => {
-                                    let from = time;
-                                    let to = props.value?.to;
-                                    if (
-                                        from &&
-                                        to &&
-                                        dayjs(from, "h:mm A").isAfter(dayjs(to, "h:mm A"))
-                                    )
-                                        [from, to] = [to, from];
-                                    props.onChange({ from, to });
-                                }}
-                                format="h:mm A"
-                                disabled={disabled}
-                            />
-                        </LocalizationProvider>
-                        <span className="text-gray-500">to</span>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <TimePicker
-                                name={`${name}-to`}
-                                value={props.value?.to}
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                            border: "2px solid var(--background-secondary-color) !important",
-                                        },
-                                    },
-                                }}
-                                onAccept={(time) => {
-                                    let from = props.value?.from;
-                                    let to = time;
-                                    if (
-                                        from &&
-                                        to &&
-                                        dayjs(from, "h:mm A").isAfter(dayjs(to, "h:mm A"))
-                                    )
-                                        [from, to] = [to, from];
-                                    props.onChange({ from, to });
-                                }}
-                                format="h:mm A"
-                                disabled={disabled}
-                            />
-                        </LocalizationProvider>
+                        <TimeRangePicker {...props} />
                     </div>
                 );
             case "daterange":

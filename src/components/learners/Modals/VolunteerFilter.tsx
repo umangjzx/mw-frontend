@@ -7,7 +7,6 @@ import { z } from "zod";
 import { VolunteerFilterModalConstants } from "@/constants/modals";
 import { useQueryState } from "nuqs";
 import dayjs from "dayjs";
-import moment from "moment";
 
 const meetingFormSchema = z.object({
     country: z.any().optional(),
@@ -37,12 +36,12 @@ export default function VolunteerFilterModal({ isOpen, isFilterApplying, onClose
     const [filterData, setFilterData] = useState<FilterData>({});
 
     const convertToDate = (date: any) => date ? dayjs(date).format("YYYY-MM-DD") : null;
-    const convertToTime = (time: any) => time ? time.format("HH:mm") : null;
+    const convertToTime = (time: any) => time && dayjs.isDayjs(time) ? time.format("HH:mm") : null;
 
     // Update form data when query state changes
     useEffect(() => {
-        let from = start_time ? moment(start_time, "HH:mm") : null;
-        let to = end_time ? moment(end_time, "HH:mm") : null;
+        let from = start_time ? dayjs(start_time, "HH:mm") : null;
+        let to = end_time ? dayjs(end_time, "HH:mm") : null;
         if (from && to && from.isAfter(to)) [from, to] = [to, from];
 
         setFilterData({

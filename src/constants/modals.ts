@@ -9,7 +9,6 @@ export const VolunteerFilterModalConstants = [
         placeholder: "Select Nationality",
         options: nationalities,
         showSearch: true,
-        required: true,
     },
     {
         name: "languages_known",
@@ -20,14 +19,12 @@ export const VolunteerFilterModalConstants = [
         endpoint: "languages",
         responseAsLabel: "language_name",
         responseAsValue: "language_id",
-        required: true,
     },
     {
         name: "subjects",
         label: "Subjects",
         inputType: "async-select",
         placeholder: "Select Subjects",
-        required: true,
         endpoint: "subjects",
         responseAsLabel: "subject_name",
         responseAsValue: "subject_id",
@@ -38,12 +35,11 @@ export const VolunteerFilterModalConstants = [
         label: "Available Time",
         inputType: "timerange",
         placeholder: "Available Time",
-        required: true,
+        clearable: true,
     },
     {
         name: "available_days",
         label: "Available range of days",
         inputType: "daterange",
-        required: true,
     }
 ];
