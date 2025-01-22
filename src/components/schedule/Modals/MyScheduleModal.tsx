@@ -231,7 +231,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             onCancel={onClose}
             isDisabled={hasErrors()}
             isLoading={isPending}
-            modalWidth={420}
+            modalWidth={430}
         >
             <div>
                 <div className="flex flex-col gap-1 px-5 py-4">
@@ -244,7 +244,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                     <div className="flex flex-col gap-10 mt-2">
                         {days.map((day) => (
                             <div key={day} className="flex flex-col gap-2">
-                                <div className="flex items-start justify-between gap-2 px-4">
+                                <div className="flex items-start justify-between gap-2 px-5">
                                     <p className="font-semibold w-[2rem]">{day.slice(0, 3)}</p>
                                     <div className="flex flex-col items-center gap-2 w-full px-1">
                                         {schedule[day].length > 0 ? (
@@ -260,7 +260,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                                                         <div className="">
                                                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                                 <TimePicker
-                                                                    minutesStep={1}
+                                                                    timeSteps={{ minutes: 1 }}
                                                                     format="h:mm A"
                                                                     value={
                                                                         slot.start_time
@@ -277,7 +277,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                                                                             },
                                                                         },
                                                                     }}
-                                                                    onAccept={(time) =>
+                                                                    onChange={(time) =>
                                                                         handleTimeChange(
                                                                             day,
                                                                             slotIndex,
@@ -302,7 +302,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                                                         <div className="">
                                                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                                 <TimePicker
-                                                                    minutesStep={1}
+                                                                    timeSteps={{ minutes: 1 }}
                                                                     format="h:mm A"
                                                                     sx={{
                                                                         '& .MuiOutlinedInput-root': {
@@ -319,7 +319,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                                                                             )
                                                                             : null
                                                                     }
-                                                                    onAccept={(time) =>
+                                                                    onChange={(time) =>
                                                                         handleTimeChange(
                                                                             day,
                                                                             slotIndex,
