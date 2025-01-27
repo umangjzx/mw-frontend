@@ -32,7 +32,7 @@ const Hero = ({ handleSetRole, buttonLoading }: HeroProps) => {
                 </div>
                 <div className="md:!w-[40%] md:!h-[30%] md:!absolute md:!top-[25%] md:!left-[10%] z-10 flex-center flex-col md:items-start md:justify-start gap-6">
                     <span>
-                        <LogoIcon />
+                        <LogoIcon width={70} height={64} />
                     </span>
                     <h1 className="px-5 md:px-0 text-2xl lg:text-4xl text-center md:!text-start font-medium !leading-normal">
                         Limitless free learning <br /> opportunities for diverse <br />
