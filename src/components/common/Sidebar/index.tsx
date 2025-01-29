@@ -5,7 +5,9 @@ import SectionCard from "./SectionCard";
 import {
     CalendarIcon,
     CommunityIcon,
+    FeedModalCloseIcon,
     LearnerIcon,
+    LogoIcon,
     ResourceIcon,
     SignOutIcon,
     VolunteerIcon,
@@ -14,7 +16,7 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-const Sidebar = () => {
+const Sidebar = ({ onClose }: { onClose?: () => void }) => {
     const role = Cookies.get("role");
     const router = useRouter();
 
@@ -30,15 +32,15 @@ const Sidebar = () => {
     const roleBasedLink =
         role === "volunteer"
             ? {
-                  href: "/learners",
-                  text: "Learners",
-                  icon: <LearnerIcon />,
-              }
+                href: "/learners",
+                text: "Learners",
+                icon: <LearnerIcon />,
+            }
             : {
-                  href: "/volunteer",
-                  text: "Seek Volunteer",
-                  icon: <VolunteerIcon />,
-              };
+                href: "/volunteer",
+                text: "Seek Volunteer",
+                icon: <VolunteerIcon />,
+            };
 
     const remainingLinks = [
         {
@@ -74,16 +76,24 @@ const Sidebar = () => {
     };
 
     return (
-        <div className="bg-white w-full h-screen flex flex-col items-center justify-between p-6">
-            <div>
-                <Link href="/">
+        <div className="bg-white w-full h-full lg:h-screen flex flex-col items-center justify-between p-6">
+            <div className="w-full">
+                <div className="lg:hidden shrink-0 flex items-center justify-between">
+                    <LogoIcon />
+                    {onClose &&
+                        <span onClick={onClose} className="cursor-pointer">
+                            <FeedModalCloseIcon />
+                        </span>
+                    }
+                </div>
+                <Link href="/" className="max-lg:hidden">
                     <Logo />
                 </Link>
                 <div className="flex flex-col items-center gap-3 w-full mt-[4rem]">
                     <Avatar />
-                    <Divider />
+                    <Divider className="max-md:!w-full" />
                 </div>
-                <div className="flex flex-col items-center gap-[2.2rem] w-full mt-[2rem]">
+                <div className="flex flex-col items-center gap-5 lg:gap-[2.2rem] w-full mt-[2rem]">
                     {linksData.map((link) => (
                         <SectionCard key={link.href} {...link} />
                     ))}

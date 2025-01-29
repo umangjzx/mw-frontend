@@ -319,7 +319,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
             isLoading={isPending}
             onCancel={onClose}
         >
-            <div className="flex flex-col px-5 mt-7">
+            <div className="flex flex-col max-lg:gap-3 px-5 mt-7">
                 {LearnerScheduleModalConstants.map((field: any) => {
                     const availableDaysForField =
                         field.name === "select_date" ? volunteerAvailableDays : undefined;

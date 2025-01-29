@@ -2,17 +2,25 @@
 
 import Button from "@/components/common/Button";
 import MonthYearSlider from "./MonthYearSlider";
-import { CalendarDayOne, CalendarIcon, NotificationIcon } from "@/assets/icons";
+import { CalendarDayOne, CalendarIcon, NotificationIcon, SideMenuIcon } from "@/assets/icons";
 import { IoIosSearch } from "react-icons/io";
-import { getLocalStorage } from "@/utils/localStorage";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import InnerWidth from "@/utils/innerWidth";
+import MonthYearPicker from "./MonthYearPicker";
+import SideModal from "@/components/common/Modals/MobileSideModal";
+import Sidebar from "@/components/common/Sidebar";
+import { useState } from "react";
 
 type Props = {};
 
 const Header = (props: Props) => {
     const role = Cookies.get("role");
     const router = useRouter();
+    const [isSideNavBarOpen, setIsSideNavBarOpen] = useState<boolean>(false);
+
+    const innerWidth = InnerWidth();
+    const isMobileScreen = innerWidth < 768;
 
     const handleAddMeeting = () => {
         router.push("/learner/schedule?modal=add_new_meeting");
@@ -27,27 +35,39 @@ const Header = (props: Props) => {
     };
 
     return (
-        <div className="w-full h-full p-2 px-3 flex items-center justify-between">
-            <Button
-                onClick={() => {}}
-                title="Schedule"
-                icon={<CalendarIcon />}
-                rootClassName="bg-transparent border-none font-medium shadow-none"
-            />
-            <div className="flex items-center gap-4">
+        <div className="w-full h-full p-2 px-3 lg:flex items-center justify-between">
+            <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                    <div className="md:hidden cursor-pointer" onClick={() => setIsSideNavBarOpen(true)}>
+                        <SideMenuIcon height="22px" width="22px" />
+                    </div>
+                    <Button
+                        onClick={() => { }}
+                        title="Schedule"
+                        icon={isMobileScreen ? "" : <CalendarIcon />}
+                        rootClassName="bg-transparent text-xl border-none font-medium shadow-none max-lg:!px-2"
+                    />
+                </div>
+                {role === "volunteer" &&
+                    <Button
+                        onClick={handleNotification}
+                        icon={<NotificationIcon height="21px" width="21px" />}
+                        customClassName="lg:hidden !border-none !bg-transparent font-semibold !text-black rounded-full !p-0"
+                    />
+                }
+            </div>
+            <div className="max-lg:hidden flex items-center gap-4">
                 <MonthYearSlider
                     onChange={(date) => {
                         console.log(date, "date from month year slider");
                     }}
                 />
-                {/* <Button
-                    onClick={() => {}}
-                    title="Today"
-                    icon={<CalendarDayOne />}
-                    rootClassName="bg-transparent font-medium rounded-full shadow-none"
-                /> */}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 max-lg:mt-2">
+                {
+                    isMobileScreen &&
+                    <MonthYearPicker />
+                }
                 {/* <Button
                     onClick={() => {}}
                     icon={<IoIosSearch className="text-xl" />}
@@ -57,7 +77,7 @@ const Header = (props: Props) => {
                     <Button
                         onClick={handleAddMeeting}
                         title="Add New Meeting"
-                        customClassName="!bg-black font-medium !text-white rounded-full !py-3 !px-3"
+                        customClassName="!bg-black max-md:!text-sm !font-medium !text-white rounded-full p-2 lg:!p-3"
                     />
                 ) : (
                     <div className="flex items-center gap-2">
@@ -74,6 +94,12 @@ const Header = (props: Props) => {
                     </div>
                 )}
             </div>
+            {
+                isMobileScreen &&
+                <SideModal isOpen={isSideNavBarOpen}>
+                    <Sidebar onClose={() => setIsSideNavBarOpen(!isSideNavBarOpen)} />
+                </SideModal>
+            }
         </div>
     );
 };
