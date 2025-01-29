@@ -48,8 +48,8 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
                     )}
                 </div>
                 <div className="flex flex-col">
-                    <p className="font-medium">{name}</p>
-                    <p className="font-medium text-sm ">
+                    <p className="text-base font-semibold lg:text-normal lg:font-medium">{name}</p>
+                    <p className="text-sm font-medium">
                         <span className="text-gray-light capitalize">{location && `From ${location}`}</span>
                     </p>
                 </div>
@@ -58,7 +58,7 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
                 <div className="flex flex-wrap gap-2.5">
                     <CardChips label="Volunteer Hrs" value={volunteerHrs || "0"} />
                 </div>
-                <div className="flex gap-2.5">
+                <div className="flex max-lg:flex-col gap-2.5">
                     <CardChips label="Student connected" value={studentConnected} />
                     <CardChips label="Subject" value={subjects.join(", ")} />
                 </div>

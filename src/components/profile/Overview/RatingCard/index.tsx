@@ -1,12 +1,13 @@
 "use client";
-import Divider from "@/components/common/Divider";
+
 import Image from "next/image";
 import React from "react";
 import { IoStarSharp } from "react-icons/io5";
 import moment from "moment";
+
 const RatingCard: React.FC<RatingCardProps> = ({ profileImg, name, rating, day, review }) => {
     return (
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5 pt-5">
             <div className="flex gap-1 w-[800px]">
                 <div className="w-[40px] h-[40px] relative flex-shrink-0">
                     <Image
@@ -32,7 +33,6 @@ const RatingCard: React.FC<RatingCardProps> = ({ profileImg, name, rating, day, 
                     <p className="text-sm font-normal text-gray-light">{review}</p>
                 </div>
             </div>
-            <Divider />
         </div>
     );
 };

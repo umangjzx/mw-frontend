@@ -161,7 +161,7 @@ export default function LearnersPage() {
     }, [pathname, setHeaderOptions, appliedFiltersCount]);
 
     return (
-        <div className="px-10 py-10 animate-fadeIn h-full">
+        <div className="p-5 py-8 lg:p-10 animate-fadeIn h-full">
             <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleModal} />
             <VolunteerViewModal isOpen={isOpen} onClose={handleModal} />
             <VolunteerFilterModal
@@ -174,7 +174,7 @@ export default function LearnersPage() {
             ) : isError ? (
                 <div>Error loading volunteers</div>
             ) : (
-                <div className="grid grid-cols-3 gap-4 w-full">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full pb-10">
                     {volunteerCardData.map((volunteer) => (
                         <VolunteerCard
                             key={volunteer.volunteerId}

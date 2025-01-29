@@ -9,6 +9,7 @@ const ViewModal: React.FC<ViewModalProps> = ({
     height,
     style,
     className,
+    borderRadius,
 }) => {
     return (
         <Modal
@@ -19,7 +20,7 @@ const ViewModal: React.FC<ViewModalProps> = ({
                 },
                 content: {
                     padding: 0,
-                    borderRadius: "1rem",
+                    borderRadius: borderRadius || "1rem",
                 },
                 body: {
                     padding: 0,
@@ -28,7 +29,7 @@ const ViewModal: React.FC<ViewModalProps> = ({
             }}
             style={style}
             modalRender={node => (
-                <div style={{ borderRadius: "12px", overflow: "hidden" }}>{node}</div>
+                <div style={{ borderRadius: borderRadius || "12px", overflow: "hidden" }}>{node}</div>
             )}
             centered
             open={modalOpen}

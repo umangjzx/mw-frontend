@@ -14,6 +14,7 @@ import DetailCard from "@/components/profile/Bio/DetailCard";
 import DetailChipCard from "@/components/profile/Bio/DetailChipCard";
 import RatingCard from "@/components/profile/Overview/RatingCard";
 import RatingHeader from "@/components/profile/Overview/RatingHeader";
+import InnerWidth from "@/utils/innerWidth";
 import { getLocalStorage } from "@/utils/localStorage";
 import { useQuery } from "@tanstack/react-query";
 import Cookies from "js-cookie";
@@ -21,6 +22,7 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { FaLocationDot } from "react-icons/fa6";
+import { IoIosArrowBack } from "react-icons/io";
 
 const ProfileHeader = ({
     text,
@@ -32,14 +34,19 @@ const ProfileHeader = ({
     onScheduleMeeting: () => void;
 }) => (
     <div className="flex items-center justify-between px-5">
-        <p className="font-medium text-xl">Profile</p>
+        <div className="flex items-center gap-2">
+            <span onClick={onClose} className="cursor-pointer md:hidden border border-black rounded-full p-2">
+                <IoIosArrowBack className="text-lg" />
+            </span>
+            <p className="font-medium text-xl">Profile</p>
+        </div>
         <div className="flex items-center gap-2">
             <Button
                 onClick={onScheduleMeeting}
                 title="Schedule a meeting"
                 className="text-sm !text-black !bg-primary !border-primary !border"
             />
-            <span onClick={onClose} className="cursor-pointer">
+            <span onClick={onClose} className="cursor-pointer max-md:hidden">
                 <ModalCloseIcon />
             </span>
         </div>
@@ -61,6 +68,7 @@ interface VolunteerData {
     profile_picture: { image_url: string };
     total_volunteered_hours: number;
     students_connected: number;
+    volunteer_gender?: string;
 }
 
 const ProfileInfo = ({
@@ -70,7 +78,7 @@ const ProfileInfo = ({
     text: string | null;
     volunteerData: VolunteerData;
 }) => (
-    <div className="grid grid-cols-[1.7fr,2fr,2fr] gap-4 px-5">
+    <div className="grid md:grid-cols-[1.7fr,2fr,2fr] gap-4 px-5 max-md:py-5">
         <div className="flex items-center gap-3">
             <div className="relative w-[80px] h-[80px] rounded-full shrink-0">
                 <Image
@@ -80,22 +88,36 @@ const ProfileInfo = ({
                     className="object-cover rounded-full w-full h-full"
                 />
             </div>
-            <div className="flex flex-col gap-2">
-                <p className="font-medium">
+            <div className="flex flex-col gap-1 md:gap-2">
+                <p className="max-md:text-xl font-medium">
                     {`${volunteerData?.volunteer_first_name} ${volunteerData?.volunteer_last_name}`}
                 </p>
-                <TagComponent text="Volunteer" tagClassName="!bg-[#FFE9D4] !border-none px-2" />
+                <TagComponent text="Volunteer" tagClassName="!bg-[#FFE9D4] !border-none px-2 max-md:hidden" />
+                <OverViewCard
+                    title="Hours Volunteered"
+                    value={volunteerData?.total_volunteered_hours || 0}
+                    icon={""}
+                    className="rounded-xl md:hidden"
+                />
+                <OverViewCard
+                    title="Students Connected"
+                    value={volunteerData?.students_connected}
+                    icon={""}
+                    className="rounded-xl md:hidden"
+                />
             </div>
         </div>
         <OverViewCard
             title="Hours Volunteered"
             value={volunteerData?.total_volunteered_hours || 0}
             icon={<ClockIcon />}
+            className="max-md:hidden"
         />
         <OverViewCard
             title="Students Connected"
             value={volunteerData?.students_connected}
             icon={<LearnerConnectIcon />}
+            className="max-md:hidden"
         />
     </div>
 );
@@ -105,27 +127,46 @@ const TabButtons = ({
     handleTabChange,
     rating,
     totalReviews,
+    isMobileScreen,
 }: {
     activeTab: string;
     handleTabChange: (tab: string) => void;
     rating: number;
     totalReviews: number;
+    isMobileScreen?: boolean;
 }) => (
     <div className="px-5">
-        <div className="flex items-center justify-between border-stroke border-2 rounded-full">
-            {["overview", "reviews"].map((tab) => (
-                <div
-                    key={tab}
-                    onClick={() => handleTabChange(tab)}
-                    className={`font-medium text-center w-[50%] rounded-full py-2.5 px-5 ${activeTab === tab
-                            ? "bg-[#dff5ff] border-primary border-2"
-                            : "border-2 border-transparent"
-                        } transition-all duration-200 cursor-pointer`}
-                >
-                    {tab === "overview" ? "Overview" : `Reviews - ${rating} (${totalReviews})`}
+        {
+            isMobileScreen ?
+                <div className="flex gap-2 px-2">
+                    {["overview", "reviews"].map((tab: any, index) => (
+                        <button
+                            key={tab || index}
+                            type="button"
+                            onClick={() => handleTabChange(tab)}
+                            className="w-full"
+                        >
+                            <p className={`text-base font-medium capitalize ${activeTab === tab ? "text-black" : "text-[#808080]"}`}>{tab}</p>
+                            <div className={`!h-[4px] !w-full mt-1 rounded-t-xl ${activeTab === tab ? 'bg-[#FF9053]' : ''}`}></div>
+                        </button>
+                    ))}
                 </div>
-            ))}
-        </div>
+                :
+                <div className="flex items-center justify-between border-stroke border-2 rounded-full">
+                    {["overview", "reviews"].map((tab) => (
+                        <div
+                            key={tab}
+                            onClick={() => handleTabChange(tab)}
+                            className={`font-medium text-center w-[50%] rounded-full py-2.5 px-5 ${activeTab === tab
+                                ? "bg-[#dff5ff] border-primary border-2"
+                                : "border-2 border-transparent"
+                                } transition-all duration-200 cursor-pointer`}
+                        >
+                            {tab === "overview" ? "Overview" : `Reviews - ${rating} (${totalReviews})`}
+                        </div>
+                    ))}
+                </div>
+        }
     </div>
 );
 
@@ -158,14 +199,14 @@ const OverviewContent = ({ volunteerData }: { volunteerData: VolunteerData }) =>
 
     return (
         <div className="flex flex-col gap-4">
-            <div className="px-5 flex flex-col gap-2">
+            <div className="px-5 flex flex-col gap-1">
                 <div className="flex items-center justify-between">
                     <p className="font-medium">Bio</p>
                     {volunteerData?.volunteer_contact_details?.country
                         &&
                         <TagComponent
                             text={volunteerData?.volunteer_contact_details?.country}
-                            className="text-sm py-1 font-medium px-2"
+                            className="max-md:hidden text-xs py-1 font-medium px-2"
                             icon={<FaLocationDot />}
                         />
                     }
@@ -173,6 +214,20 @@ const OverviewContent = ({ volunteerData }: { volunteerData: VolunteerData }) =>
                 <p className="text-sm text-gray-light font-normal">
                     {volunteerData?.volunteer_description}
                 </p>
+                <div className={`md:hidden flex items-center justify-between my-3 ${volunteerData?.volunteer_contact_details?.country ? '' : 'hidden'}`}>
+                    <p className="font-medium">Location</p>
+                    <TagComponent
+                        text={volunteerData?.volunteer_contact_details?.country || ""}
+                        className="text-xs py-1 font-medium px-2"
+                    />
+                </div>
+                <div className={`md:hidden flex items-center justify-between ${volunteerData?.volunteer_gender ? '' : 'hidden'}`}>
+                    <p className="font-medium">Gender</p>
+                    <TagComponent
+                        text={volunteerData?.volunteer_gender || ""}
+                        className="text-xs py-1 font-medium px-2"
+                    />
+                </div>
             </div>
             {details.map((detail, index) => (
                 <DetailChipCard
@@ -199,22 +254,30 @@ const ReviewsContent = ({ volunteerFeedback }: { volunteerFeedback: any }) => {
 
     return (
         <div className="flex flex-col gap-3">
-            <div className="px-5">
+            <div className="md:px-5">
                 <div className="flex flex-col gap-5">
                     <RatingHeader
                         rating={volunteerFeedback?.overall_rating}
                         totalReviews={volunteerFeedback?.feedbacks.length}
                     />
-                    {ratingCardData?.map((item: any, index: number) => (
-                        <RatingCard
-                            key={index}
-                            name={item?.author_name}
-                            profileImg={item?.author_profile_picture?.image_url}
-                            rating={item?.volunteer_commitment_level}
-                            day={item?.created_at}
-                            review={item?.comment}
-                        />
-                    ))}
+                    <div className="max-md:bg-white max-md:rounded-xl max-md:p-3">
+                        <div className="flex justify-between">
+                            <p className="text-base font-semibold md:hidden">Reviews</p>
+                            <p className="text-gray text-sm">Sort By: <span className="text-black">Recently added</span></p>
+                        </div>
+                        <div className="flex flex-col gap-5 divide-y">
+                            {ratingCardData?.map((item: any, index: number) => (
+                                <RatingCard
+                                    key={index}
+                                    name={item?.author_name}
+                                    profileImg={item?.author_profile_picture?.image_url}
+                                    rating={item?.volunteer_commitment_level}
+                                    day={item?.created_at}
+                                    review={item?.comment}
+                                />
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -222,11 +285,15 @@ const ReviewsContent = ({ volunteerFeedback }: { volunteerFeedback: any }) => {
 };
 
 const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose }) => {
-    const [activeTab, setActiveTab] = useState("overview");
-    const text = getLocalStorage("role");
-    const searchParams = useSearchParams();
-    const volunteerId = searchParams.get("volunteerId");
     const router = useRouter();
+    const searchParams = useSearchParams();
+
+    const innerWidth = InnerWidth();
+    const isMobileScreen = innerWidth < 768;
+
+    const text = getLocalStorage("role");
+    const [activeTab, setActiveTab] = useState("overview");
+    const volunteerId = searchParams.get("volunteerId");
 
     const getIndividualVolunteer = async () => {
         const response: any = await GET_API(
@@ -289,27 +356,35 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
     const totalReviews = volunteerFeedback?.feedbacks.length;
 
     return (
-        <ViewModal modalOpen={isOpen} onClose={onClose} width={855}>
-            <div className="flex flex-col gap-4 py-4">
+        <ViewModal
+            modalOpen={isOpen}
+            onClose={onClose}
+            width={855}
+            height={isMobileScreen ? "100vh" : ""}
+            borderRadius={isMobileScreen ? "0px" : ""}
+            className="max-md:!w-full max-md:!max-w-full max-md:!m-0"
+        >
+            <div className="flex flex-col gap-0 md:gap-4 pt-4 md:py-4 h-full">
                 <ProfileHeader
                     text={text}
                     onClose={onClose}
                     onScheduleMeeting={handleScheduleMeeting}
                 />
-                <Divider />
+                <Divider className="max-md:hidden" />
                 <ProfileInfo text={text} volunteerData={volunteerData} />
-                <Divider />
+                <Divider className="max-md:hidden" />
                 <TabButtons
                     activeTab={activeTab}
                     handleTabChange={handleTabChange}
                     rating={rating}
                     totalReviews={totalReviews}
+                    isMobileScreen={isMobileScreen}
                 />
-                <div className="relative">
+                <div className="relative max-md:h-full max-md:bg-background-input max-md:p-5 overflow-y-auto max-md:border-t max-md:border-t-2">
                     <div
-                        className={`transform transition-all duration-300 ${activeTab === "overview"
-                                ? "opacity-100 translate-x-0"
-                                : "opacity-0 -translate-x-8 absolute top-0 left-0 right-0"
+                        className={`transform transition-all duration-300 max-md:bg-white max-md:py-3 max-md:rounded-xl ${activeTab === "overview"
+                            ? "opacity-100 translate-x-0"
+                            : "opacity-0 -translate-x-8 absolute top-0 left-0 right-0"
                             }`}
                     >
                         {activeTab === "overview" && (
@@ -318,8 +393,8 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
                     </div>
                     <div
                         className={`transform transition-all duration-300 ${activeTab === "reviews"
-                                ? "opacity-100 translate-x-0"
-                                : "opacity-0 translate-x-8 absolute top-0 left-0 right-0"
+                            ? "opacity-100 translate-x-0"
+                            : "opacity-0 translate-x-8 absolute top-0 left-0 right-0"
                             }`}
                     >
                         {activeTab === "reviews" && (

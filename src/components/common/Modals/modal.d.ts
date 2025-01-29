@@ -28,6 +28,7 @@ interface ViewModalProps {
     height?: number | string;
     style?: React.CSSProperties;
     className?: string;
+    borderRadius?: string;
 }
 
 interface SideModalProps {
