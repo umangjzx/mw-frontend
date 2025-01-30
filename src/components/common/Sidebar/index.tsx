@@ -56,7 +56,7 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
     ];
 
     // Combine all links in the desired order
-    const linksData = [...baseLinksData, roleBasedLink];
+    const linksData = [...baseLinksData, roleBasedLink, ...remainingLinks];
 
     const handleSignOut = () => {
         const cookieSetting = { path: "/", secure: true };
