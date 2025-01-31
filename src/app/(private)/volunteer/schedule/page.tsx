@@ -68,18 +68,10 @@ export default function SchedulePage() {
         setIsOpenFeedback(modal === "feedback");
     }, [modal]);
 
-    useEffect(() => {
-        checkCalendarScope().then((res) => {
-            setIsCalendarScope(res.data.calendar_access_enabled);
-        });
-    }, []);
-
     return (
         <div className="w-full h-full animate-fadeIn">
-            {isCalendarScope === "checking" || isFetching ? (
+            {isFetching ? (
                 <LottieLoader isLoading={true} />
-            ) : !isCalendarScope ? (
-                <CalendarAccessScreen />
             ) : (
                 <>
                     <Calendar events={data || []} />

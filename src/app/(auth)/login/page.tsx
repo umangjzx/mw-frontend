@@ -18,6 +18,8 @@ import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import ScrollReveal from "scrollreveal";
+import { useGoogleLogin } from "@react-oauth/google";
+import { API_URL } from "@/definitions";
 
 export default function Page() {
     const router = useRouter();
@@ -26,25 +28,32 @@ export default function Page() {
     const [loginAs, setLoginAs] = useQueryState("loginAs");
     const [buttonLoading, setButtonLoading] = useState("");
     const [isPageLoading, setIsPageLoading] = useState(false);
+    const handleLogin = useGoogleLogin({
+        onSuccess: async (response) => SIGN_IN(response),
+    });
 
-    const handleSignUp = async () => {
-        try {
-            const payload = {
-                code,
-                signup_type: role,
-            };
-
-            const response = await POST_API(endpoints.user.signIn, payload);
-            if (response.status === 200 || response.status === 201) {
-                handleSignUpSuccess(response?.data);
-            }
-
-            return response?.data;
-        } catch (error) {
-            console.error("Error signing up:", error);
-            if (code) router.push("/login");
-            throw error;
-        }
+    const SIGN_IN = async (response: any) => {
+        let payload = {
+            signup_type: role,
+        };
+        await fetch(`${API_URL}/${endpoints.user.signIn}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${response.access_token}`,
+            },
+            body: JSON.stringify(payload),
+        })
+            .then(async (res) => {
+                const response = await res.json();
+                if (response) {
+                    console.log(response, "LOGIN RESPONSE");
+                    handleSignUpSuccess(response);
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     };
 
     const handleSignUpSuccess = (data: any) => {
@@ -74,16 +83,6 @@ export default function Page() {
         }
     };
 
-    const { data, isLoading } = useQuery({
-        queryKey: ["onboarded_status"],
-        queryFn: handleSignUp,
-        enabled: !!code,
-    });
-
-    useEffect(() => {
-        setIsPageLoading(isLoading || !!code);
-    }, [code, isLoading]);
-
     useEffect(() => {
         const savedRole = Cookies.get("role") as UserType;
         if (savedRole) {
@@ -91,35 +90,18 @@ export default function Page() {
         }
     }, []);
 
-    const handleLogin = (newRole: UserType) => {
-        setButtonLoading(newRole);
-        GET_API(endpoints.auth.oauth2callback)
-            .then((res: any) => {
-                setButtonLoading("");
-                if (res?.data) {
-                    if (typeof window !== "undefined") {
-                        window.location.href = res.data;
-                    }
-                }
-            })
-            .catch((err) => {
-                console.log("err ", err);
-                setButtonLoading("");
-            });
-    };
-
     const handleSetRole = (newRole: UserType) => {
         setRole(newRole);
         Cookies.set("role", newRole, { expires: 30 });
-        handleLogin(newRole);
+        handleLogin();
     };
 
     useEffect(() => {
-        if(loginAs === "volunteer" || loginAs === "learner"){
+        if (loginAs === "volunteer" || loginAs === "learner") {
             handleSetRole(loginAs);
             setLoginAs(null);
         }
-    }, [loginAs])
+    }, [loginAs]);
 
     useEffect(() => {
         let sr: any;

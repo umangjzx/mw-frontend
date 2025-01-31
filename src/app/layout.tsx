@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import RootLayoutClient from "./RootLayoutClient";
 import DesktopVersionWrapper from "@/components/layouts/DesktopVersionWrapper";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const poppins = Poppins({
     weight: ["300", "400", "500", "600", "700"],
@@ -20,12 +21,16 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
+
     return (
         <html lang="en">
             <body className={poppins.className}>
-                <RootLayoutClient>
-                    <DesktopVersionWrapper>{children}</DesktopVersionWrapper>
-                </RootLayoutClient>
+                <GoogleOAuthProvider clientId={clientId}>
+                    <RootLayoutClient>
+                        <DesktopVersionWrapper>{children}</DesktopVersionWrapper>
+                    </RootLayoutClient>
+                </GoogleOAuthProvider>
             </body>
         </html>
     );
