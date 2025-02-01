@@ -7,7 +7,7 @@ interface SideNavBarProps {
     onClose?: () => void;
 }
 
-const SideModal: React.FC<SideNavBarProps> = ({ children, isOpen, onClose }) => {
+const MobileSideModal: React.FC<SideNavBarProps> = ({ children, isOpen, onClose }) => {
     return (
         <div>
             <Drawer
@@ -24,4 +24,4 @@ const SideModal: React.FC<SideNavBarProps> = ({ children, isOpen, onClose }) => 
     );
 };
 
-export default SideModal;
+export default MobileSideModal;

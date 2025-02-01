@@ -73,6 +73,12 @@ const CenterModal: React.FC<CenterModalProps> = ({
             }
             centered
             height={height}
+            styles={{
+                body: {
+                    padding: 0,
+                    height: height,
+                },
+            }}
         >
             <div className={`flex w-full h-full flex-col`}>
                 {header}

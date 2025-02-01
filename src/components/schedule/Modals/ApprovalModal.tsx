@@ -6,6 +6,7 @@ import { GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import Cookies from "js-cookie";
 import moment from "moment";
+import InnerWidth from "@/utils/innerWidth";
 
 type SessionsData = {
     learner_first_name: string;
@@ -50,12 +51,15 @@ const ApprovalModal: React.FC<ApprovalModalProps> = ({ isOpen, onClose }) => {
         }
     }, [data]);
 
+    const isMobileScreen = InnerWidth() < 768;
+
     return (
         <SideModal
             title="Approval Notifications"
             onClose={onClose}
             isOpen={isOpen}
             isNeedButton={false}
+            modalWidth={isMobileScreen ? "100%" : 400}
         >
             <div className="flex flex-col gap-4 px-5 mt-5">
                 {isLoading ? (

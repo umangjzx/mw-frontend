@@ -5,10 +5,12 @@ import { Input } from "@/components/common/Input";
 import CenterModal from "@/components/common/Modals/CenterModal";
 import { LearnerFeedbackFormConstants } from "@/constants/schedule";
 import { useAppStore } from "@/store/useAppStore";
+import InnerWidth from "@/utils/innerWidth";
 import { cn } from "@/utils/merge-class";
 import Cookies from "js-cookie";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+
 const FeedbackModal = ({
     isOpen,
     mode = "view",
@@ -17,6 +19,7 @@ const FeedbackModal = ({
     data,
     Loading,
 }: FeedbackModalProps) => {
+    const isMobileScreen = InnerWidth() < 768;
     const [formData, setFormData] = useState<any>({});
     const { userName, eventDetails } = useAppStore();
     const feedbackTitle = mode === "edit" ? "Edit Feedback" : "Please Fill the Feedback";
@@ -84,8 +87,9 @@ const FeedbackModal = ({
             isOpen={isOpen}
             onClose={onClose}
             topContent={<DetailsSection data={feedBackEventDetails} />}
-            width="40%"
-            customClassName="max-h-[80vh] !rounded-2xl overflow-hidden"
+            width={isMobileScreen ? "100%" : "40%"}
+            height={isMobileScreen ? "100%" : ""}
+            customClassName="max-md:!h-full md:max-h-[80vh] !rounded-2xl overflow-hidden"
             secondaryActionProps={buttonProps.secondary}
             primaryActionProps={buttonProps.primary}
             loading={Loading}

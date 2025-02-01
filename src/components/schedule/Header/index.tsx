@@ -81,11 +81,14 @@ const Header = (props: Props) => {
                     />
                 ) : (
                     <div className="flex items-center gap-2">
-                        <Button
-                            onClick={handleNotification}
-                            icon={<NotificationIcon />}
-                            customClassName="!bg-transparent font-semibold !text-black rounded-full !py-3 !px-3"
-                        />
+                        {
+                            !isMobileScreen &&
+                            <Button
+                                onClick={handleNotification}
+                                icon={<NotificationIcon />}
+                                customClassName="!bg-transparent font-semibold !text-black rounded-full !py-3 !px-3"
+                            />
+                        }
                         <Button
                             onClick={handleMySchedule}
                             title="My Schedule"
