@@ -175,9 +175,9 @@ export default function LearnersPage() {
             {isLoading ? (
                 <LottieLoader isLoading={true} />
             ) : isError ? (
-                <div>Error loading volunteers</div>
+                <div className="flex-center h-full w-full">Error loading volunteers</div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full pb-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full h-full pb-10">
                     {volunteerCardData.map((volunteer) => (
                         <VolunteerCard
                             key={volunteer.volunteerId}
@@ -185,7 +185,7 @@ export default function LearnersPage() {
                             {...volunteer}
                         />
                     ))}
-                    {volunteerCardData.length === 0 && <div>No Volunteer Found</div>}
+                    {volunteerCardData.length === 0 && <div className="flex-center h-full">No Volunteer Found</div>}
                 </div>
             )}
         </div>

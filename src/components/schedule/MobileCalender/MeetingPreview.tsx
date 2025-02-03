@@ -142,13 +142,13 @@ const MobileMeetingPreviewModal: React.FC<MobileMeetingPreviewModalProps> = ({
         const isFeedBackCompleted = (role === "volunteer" && feedBackCollectedFromVolunteer) || (role === "learner" && feedBackCollectedFromLearner)
         
         const feedBackStatus = {
-            label: isFeedBackCompleted ? "Meeting Completed" : "Complete Feedback",
-            value: isFeedBackCompleted ? <p className="text-green-700">Feedback Submited</p> : <p onClick={handleFeedBack} className="!text-sm underline text-primary">Complete Feedback</p>
+            label: isFeedBackCompleted ? "Feedback Submited" : "Meeting Completed",
+            value: isFeedBackCompleted ? <p className="text-green-700 text-sm font-semibold">Meeting Completed</p> : <p onClick={handleFeedBack} className="text-sm underline text-primary">Complete Feedback</p>
         }
         const statusMap = {
-            pending: { label: "Status", value: <p className="text-orange-700">Pending</p> },
-            rejected: { label: "Status", value: <p className="text-red-700">Unavailable</p> },
-            accepted: { label: "Status", value: <p className="text-green-700">Accepted</p> },
+            pending: { label: "Status", value: <p className="text-orange-700 text-sm">Pending</p> },
+            rejected: { label: "Status", value: <p className="text-red-700 text-sm">Unavailable</p> },
+            accepted: { label: "Status", value: <p className="text-green-700 text-sm">Accepted</p> },
             completed: feedBackStatus,
         };
     

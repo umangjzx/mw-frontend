@@ -19,6 +19,7 @@ import CardChips from "@/components/leaner/VolunteerCard/CardChips";
 import Button from "@/components/common/Button";
 import InnerWidth from "@/utils/innerWidth";
 import DummyProfile from "@/assets/images/DummyProfile.png";
+import LottieLoader from "@/components/common/Loader/Lottie";
 
 interface PaginationParams {
     page: number;
@@ -168,18 +169,21 @@ export default function VolunteerPage() {
             />
             {
                 isMobileScreen ?
-                    <div className="grid grid-cols-1">
-                        {
-                            volunteerData.map((volunteer, index) => (
-                                <VolunteerCard
-                                    key={index}
-                                    learner={volunteer}
-                                    handleMessage={() => handleMessageVolunteer(volunteer?.id)}
-                                    handleTestimonial={() => handleUploadTestimonial(volunteer?.id)}
-                                />
-                            ))
-                        }
-                    </div> :
+                    isLoading ? (
+                        <LottieLoader isLoading={true} />
+                    ) :
+                        <div className="grid grid-cols-1">
+                            {
+                                volunteerData.map((volunteer, index) => (
+                                    <VolunteerCard
+                                        key={index}
+                                        learner={volunteer}
+                                        handleMessage={() => handleMessageVolunteer(volunteer?.id)}
+                                        handleTestimonial={() => handleUploadTestimonial(volunteer?.id)}
+                                    />
+                                ))
+                            }
+                        </div> :
                     <VolunteerTable
                         data={volunteerData}
                         handleMessageVolunteer={handleMessageVolunteer}
@@ -195,6 +199,7 @@ export default function VolunteerPage() {
                         onChange={handleTableChange}
                     />
             }
+            {volunteerData?.length === 0 && <div className="flex-center h-full">No Volunteer Found</div>}
         </div>
     );
 }

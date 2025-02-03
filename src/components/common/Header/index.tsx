@@ -8,8 +8,10 @@ import { SideMenuIcon } from "@/assets/icons";
 import SideModal from "@/components/common/Modals/MobileSideModal";
 import Sidebar from "@/components/common/Sidebar";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 const CommonHeader: React.FC = () => {
+    const pathname = usePathname();
     const { headerOptions } = useComponentStore();
     const [searchQuery, setSearchQuery] = useQueryState("query");
     const {
@@ -34,7 +36,7 @@ const CommonHeader: React.FC = () => {
     
     useEffect(() => {
         setIsSideNavBarOpen(false);
-    }, [])
+    }, [pathname])
 
     const handleSearch = (value: string) => {
         setSearchQuery(value === "" ? "" : value);
@@ -52,7 +54,7 @@ const CommonHeader: React.FC = () => {
                             icon={isMobileScreen ? "" : titleIcon}
                             rootClassName={cn(
                                 "flex items-center justify-center lg:!w-10 lg:h-10 rounded-full hover:bg-gray-100 max-md:!p-0",
-                                titleIconClick ? "cursor-pointer lg:border-stroke lg:mr-2" : "!border-none"
+                                titleIconClick ? "cursor-pointer max-md:!border-none lg:border-stroke lg:mr-2" : "!border-none"
                             )}
                             onClick={titleIconClick}
                         />
