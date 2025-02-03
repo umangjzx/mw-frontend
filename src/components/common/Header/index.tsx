@@ -4,11 +4,12 @@ import Button from "@/components/common/Button";
 import { cn, formatString } from "@/utils/merge-class";
 import { useComponentStore } from "@/store/useComponenetStore";
 import InnerWidth from "@/utils/innerWidth";
-import { SideMenuIcon } from "@/assets/icons";
+import { FeedModalCloseIcon, SideMenuIcon } from "@/assets/icons";
 import SideModal from "@/components/common/Modals/MobileSideModal";
 import Sidebar from "@/components/common/Sidebar";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { IoIosSearch } from "react-icons/io";
 
 const CommonHeader: React.FC = () => {
     const pathname = usePathname();
@@ -32,8 +33,8 @@ const CommonHeader: React.FC = () => {
 
     const isMobileOrTabScreen = InnerWidth() < 1024;
     const [isSideNavBarOpen, setIsSideNavBarOpen] = useState<boolean>(false);
+    const [isSearchInputOpen, setIsSearchInputOpen] = useState<boolean>(false);
 
-    
     useEffect(() => {
         setIsSideNavBarOpen(false);
     }, [pathname])
@@ -43,7 +44,7 @@ const CommonHeader: React.FC = () => {
     };
 
     return (
-        <div className="w-full h-full">
+        <div className="w-full h-full relative">
             <div className="w-full h-full p-2 px-3 flex items-center justify-between">
                 <div className="flex items-center gap-5">
                     <div className="flex capitalize items-center">
@@ -77,16 +78,23 @@ const CommonHeader: React.FC = () => {
                     )}
                 >
                     {
-                        hideSearch ||
-                        <Input
-                            value={searchQuery ?? ""}
-                            inputType="search"
-                            name="search"
-                            inputClassName="!bg-transparent !rounded-xl gap-1 items-center max-md:w-[180px]"
-                            className="!bg-transparent !w-fit !mb-0"
-                            onChange={handleSearch}
-                            placeholder={searchPlaceholder ?? "Search"}
-                        />
+                        hideSearch || (isMobileOrTabScreen ?
+                            <Button
+                                icon={<IoIosSearch className="!text-xl" />}
+                                onClick={() => setIsSearchInputOpen(true)}
+                                customClassName="!rounded-full !p-2 !h-fit"
+                                btnVariant="tertiary"
+                            />
+                            :
+                            <Input
+                                value={searchQuery ?? ""}
+                                inputType="search"
+                                name="search"
+                                inputClassName="!bg-transparent !rounded-xl gap-1 items-center max-md:w-[180px]"
+                                className="!bg-transparent !w-fit !mb-0"
+                                onChange={handleSearch}
+                                placeholder={searchPlaceholder ?? "Search"}
+                            />)
                     }
                     {!isMobileOrTabScreen && showButton && (
                         <Button
@@ -109,6 +117,15 @@ const CommonHeader: React.FC = () => {
                 </div>
             </div>
             <div className="lg:hidden w-full flex gap-2 px-3 pb-2">
+                {showButton && (
+                    <Button
+                        title={actionButtonTitle}
+                        onClick={actionButtonOnClick}
+                        rootClassName={actionButtonClassName}
+                        size="small"
+                        icon={actionButtonIcon}
+                    />
+                )}
                 {leftButton?.showButton && (
                     <Button
                         title={leftButton?.buttonTitle}
@@ -128,6 +145,22 @@ const CommonHeader: React.FC = () => {
                     />
                 ))}
             </div>
+            {isMobileOrTabScreen &&
+                <div className={`absolute z-100 w-full h-full bg-white flex-center gap-2 px-5 transform transition-all duration-500 ${isSearchInputOpen ? "top-0 right-0" : "top-0 -right-full"}`}>
+                    <Input
+                        value={searchQuery ?? ""}
+                        inputType="search"
+                        name="search"
+                        inputClassName="bg-background-input rounded-xl gap-1 items-center w-full"
+                        className="!w-full !mb-0"
+                        onChange={handleSearch}
+                        placeholder={searchPlaceholder ?? "Search"}
+                    />
+                    <span onClick={() => setIsSearchInputOpen(false)} className="cursor-pointer">
+                        <FeedModalCloseIcon width="25" height="25" />
+                    </span>
+                </div>
+            }
             {
                 isMobileOrTabScreen &&
                 <SideModal isOpen={isSideNavBarOpen}>
