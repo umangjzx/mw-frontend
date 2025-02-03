@@ -55,12 +55,12 @@ const LearnerCard = ({ learner, handleTestimonial, handleMessage }: { learner: a
                     <CardChips label="Classes Taken" value={classesTaken || "0"} />
                 </div>
                 <div className="w-full border-t pt-3 mt-3 flex justify-between gap-2">
-                    <Button
+                    {/* <Button
                         title="Upload Testimonial"
                         customClassName="!px-2 !py-1 !h-auto !rounded-2xl !text-sm"
                         btnVariant="tertiary"
                         onClick={handleTestimonial}
-                    />
+                    /> */}
                     <Button
                         title="Message Learner"
                         customClassName="!px-2 !py-1 !h-auto !rounded-2xl !text-sm"
