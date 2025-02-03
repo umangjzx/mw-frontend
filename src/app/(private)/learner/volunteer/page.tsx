@@ -14,6 +14,7 @@ import { useQueryState } from "nuqs";
 import VolunteerFilterModal from "@/components/learners/Modals/VolunteerFilter";
 import { RiFilter3Line } from "react-icons/ri";
 import LottieLoader from "@/components/common/Loader/Lottie";
+import InnerWidth from "@/utils/innerWidth";
 
 interface VolunteerCardData {
     volunteerId: string;
@@ -51,6 +52,8 @@ export default function LearnersPage() {
     const [end_time] = useQueryState("end_time");
     const [volunteerId, setVolunteerId] = useQueryState("volunteerId");
     const [modalQuery, setModalQuery] = useQueryState("modal");
+
+    const isMobileScreen = InnerWidth() < 768;
 
     const { data, isLoading, isError } = useQuery({
         queryKey: [
@@ -150,7 +153,7 @@ export default function LearnersPage() {
             },
             actionButtons: [
                 {
-                    buttonTitle: "Volunteers I have worked with",
+                    buttonTitle: isMobileScreen ? "Volunteer History" : "Volunteers I have worked with",
                     buttonOnClick: () => router.push("/learner/my-volunteers"),
                     buttonClassName: "!bg-black !text-white hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4 !rounded-full",
                     buttonPlacement: "right",

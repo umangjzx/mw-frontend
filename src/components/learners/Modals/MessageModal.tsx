@@ -9,6 +9,7 @@ import Cookies from "js-cookie";
 import { toUserTimeZone } from "@/utils/timeFunctions";
 import Loader from "@/components/common/Loader";
 import { useAppStore } from "@/store/useAppStore"
+import InnerWidth from "@/utils/innerWidth";
 
 type MessageModalProps = {
     receiverId?: string | null;
@@ -27,8 +28,8 @@ type MessageProps = {
 
 const MessageModal = ({ receiverId, isOpen, onClose }: MessageModalProps) => {
     if (!receiverId) return;
-
     const { learnerDetails, volunteerDetails } = useAppStore();
+
 
     const [messages, setMessages] = useState<MessageProps[]>([]);
     const [message, setMessage] = useState<string>("");

@@ -71,7 +71,7 @@ export default function ProfilePage() {
 
     return (
         <div className="h-full animate-fadeIn">
-            <div className="h-full w-full grid grid-cols-[1fr,2fr] gap-10 p-5">
+            <div className="h-full w-full grid md:grid-cols-[1fr,2fr] gap-10 p-5">
                 <Bio data={learnerData.bio} />
                 <Overview data={learnerData.overview} reviewEndpoint={endpoints.learnerFeedback.get(learnerId)} />
             </div>

@@ -13,6 +13,7 @@ interface CenterModalProps {
     children: React.ReactNode;
     customClassName?: string;
     titleClassName?: string;
+    childrenClassName?: string;
     primaryActionProps?: ButtonProps;
     secondaryActionProps?: ButtonProps;
     hideFooter?: boolean;
