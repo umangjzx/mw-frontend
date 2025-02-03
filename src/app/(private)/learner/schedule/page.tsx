@@ -22,11 +22,10 @@ import MobileCalender from "@/components/schedule/MobileCalender";
 export default function LearnerSchedulePage() {
     const [isOpenSchedule, setIsOpenSchedule] = useState(false);
     const [isOpenFeedback, setIsOpenFeedback] = useState(false);
-    const [isCalendarScope, setIsCalendarScope] = useState("checking");
-
-    const isMobileScreen = InnerWidth() < 768;
 
     const router = useRouter();
+    const isMobileOrTabScreen = InnerWidth() < 1024;
+
     const { eventDetails, currentMonth } = useAppStore();
     const queryClient = useQueryClient();
 
@@ -77,7 +76,7 @@ export default function LearnerSchedulePage() {
             ) : (
                 <div className="w-full h-full animate-fadeIn">
                     {
-                        isMobileScreen ?
+                        isMobileOrTabScreen ?
                             <MobileCalender events={data || []} />
                             :
                             <Calendar events={data || []} />

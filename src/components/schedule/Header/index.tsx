@@ -20,7 +20,7 @@ const Header = (props: Props) => {
     const [isSideNavBarOpen, setIsSideNavBarOpen] = useState<boolean>(false);
 
     const innerWidth = InnerWidth();
-    const isMobileScreen = innerWidth < 768;
+    const isMobileOrTabScreen = innerWidth < 1024;
 
     const handleAddMeeting = () => {
         router.push("/learner/schedule?modal=add_new_meeting");
@@ -38,13 +38,13 @@ const Header = (props: Props) => {
         <div className="w-full h-full p-2 px-3 lg:flex items-center justify-between">
             <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                    <div className="md:hidden cursor-pointer" onClick={() => setIsSideNavBarOpen(true)}>
+                    <div className="lg:hidden cursor-pointer" onClick={() => setIsSideNavBarOpen(true)}>
                         <SideMenuIcon height="22px" width="22px" />
                     </div>
                     <Button
                         onClick={() => { }}
                         title="Schedule"
-                        icon={isMobileScreen ? "" : <CalendarIcon />}
+                        icon={isMobileOrTabScreen ? "" : <CalendarIcon />}
                         rootClassName="bg-transparent text-xl border-none font-medium shadow-none max-lg:!px-2"
                     />
                 </div>
@@ -65,7 +65,7 @@ const Header = (props: Props) => {
             </div>
             <div className="flex items-center gap-2 max-lg:mt-2">
                 {
-                    isMobileScreen &&
+                    isMobileOrTabScreen &&
                     <MonthYearPicker />
                 }
                 {/* <Button
@@ -77,12 +77,12 @@ const Header = (props: Props) => {
                     <Button
                         onClick={handleAddMeeting}
                         title="Add New Meeting"
-                        customClassName="!bg-black max-md:!text-sm !font-medium !text-white rounded-full p-2 lg:!p-3"
+                        customClassName="!bg-black max-lg:!text-sm !font-medium !text-white rounded-full p-2 lg:!p-3"
                     />
                 ) : (
                     <div className="flex items-center gap-2">
                         {
-                            !isMobileScreen &&
+                            !isMobileOrTabScreen &&
                             <Button
                                 onClick={handleNotification}
                                 icon={<NotificationIcon />}
@@ -98,7 +98,7 @@ const Header = (props: Props) => {
                 )}
             </div>
             {
-                isMobileScreen &&
+                isMobileOrTabScreen &&
                 <SideModal isOpen={isSideNavBarOpen}>
                     <Sidebar onClose={() => setIsSideNavBarOpen(!isSideNavBarOpen)} />
                 </SideModal>

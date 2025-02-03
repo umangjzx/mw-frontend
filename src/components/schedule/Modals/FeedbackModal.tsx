@@ -1,8 +1,13 @@
 "use client";
 
+import { FeedModalCloseIcon } from "@/assets/icons";
+import Button from "@/components/common/Button";
 import DetailsSection from "@/components/common/DetailsSection";
+import Divider from "@/components/common/Divider";
 import { Input } from "@/components/common/Input";
 import CenterModal from "@/components/common/Modals/CenterModal";
+import MobileSideModal from "@/components/common/Modals/MobileSideModal";
+import ViewModal from "@/components/common/Modals/ViewModal";
 import { LearnerFeedbackFormConstants } from "@/constants/schedule";
 import { useAppStore } from "@/store/useAppStore";
 import InnerWidth from "@/utils/innerWidth";
@@ -63,15 +68,10 @@ const FeedbackModal = ({
     };
 
     const buttonProps = {
-        primary: {
-            onClick: handleSubmit,
-            title: mode === "view" ? "Edit" : "Submit",
-            customClassName: "!rounded-xl hover:!bg-black hover:!text-white",
-        },
         secondary: {
             onClick: onClose,
             title: mode === "view" ? "Delete" : "Cancel",
-            btnVariant: "secondary" as const,
+            btnVariant: "tertiary" as const,
             customClassName: cn(
                 mode === "view"
                     ? "!text-error !bg-error-light !border-none"
@@ -79,35 +79,87 @@ const FeedbackModal = ({
                 "!rounded-xl"
             ),
         },
+        primary: {
+            onClick: handleSubmit,
+            title: mode === "view" ? "Edit" : "Submit",
+            btnVariant: "secondary" as const,
+            customClassName: "!rounded-xl hover:!bg-black hover:!text-white",
+        },
     };
 
-    return (
-        <CenterModal
-            title={feedbackTitle}
-            isOpen={isOpen}
-            onClose={onClose}
-            topContent={<DetailsSection data={feedBackEventDetails} />}
-            width={isMobileScreen ? "100%" : "40%"}
-            height={isMobileScreen ? "100%" : ""}
-            customClassName="max-md:!h-full md:max-h-[80vh] !rounded-2xl overflow-hidden"
-            secondaryActionProps={buttonProps.secondary}
-            primaryActionProps={buttonProps.primary}
-            loading={Loading}
-        >
-            {mode !== "view" ? (
-                LearnerFeedbackFormConstants.map((field: any) => (
-                    <Input
-                        key={field.name}
-                        {...field}
-                        value={formData[field.name]}
-                        onChange={(value: any) => handleChange(field.name, value)}
-                    />
-                ))
-            ) : (
-                <div>View</div>
-            )}
-        </CenterModal>
-    );
+    return (isMobileScreen ?
+        (
+            <MobileSideModal
+                placement="left"
+                isOpen={isOpen}
+                onClose={onClose}
+            >
+                <div className="flex flex-col justify-between h-full">
+                    <div className="p-4 flex items-center justify-between">
+                        <Button
+                            onClick={onClose}
+                            customClassName="!bg-transparent !border-none !p-0 !w-fit !h-fit"
+                        >
+                            <FeedModalCloseIcon width="30" height="30" />
+                        </Button>
+                        <div className="flex gap-2">
+                            {
+                                Object.values(buttonProps)?.map(button => (
+                                    <Button
+                                        title={button?.title}
+                                        btnVariant={button?.btnVariant}
+                                        onClick={button?.onClick}
+                                    />
+                                ))
+                            }
+                        </div>
+                    </div>
+                    <Divider />
+                    <div className="h-full p-4 flex flex-col gap-4">
+                        <h6 className="text-xl font-medium">Please Fill the Feedback</h6>
+                        <DetailsSection data={feedBackEventDetails} />
+                        {
+                            LearnerFeedbackFormConstants.map((field: any) => (
+                                <Input
+                                    key={field.name}
+                                    {...field}
+                                    value={formData[field.name]}
+                                    onChange={(value: any) => handleChange(field.name, value)}
+                                />
+                            ))
+                        }
+                    </div>
+                </div>
+            </MobileSideModal>
+        )
+        :
+        (
+            <CenterModal
+                title={feedbackTitle}
+                isOpen={isOpen}
+                onClose={onClose}
+                topContent={<DetailsSection data={feedBackEventDetails} />}
+                width={"40%"}
+                customClassName="max-md:!h-full md:max-h-[80vh] !rounded-2xl overflow-hidden"
+                secondaryActionProps={buttonProps.secondary}
+                primaryActionProps={buttonProps.primary}
+                loading={Loading}
+            >
+                {mode !== "view" ? (
+                    LearnerFeedbackFormConstants.map((field: any) => (
+                        <Input
+                            key={field.name}
+                            {...field}
+                            value={formData[field.name]}
+                            onChange={(value: any) => handleChange(field.name, value)}
+                        />
+                    ))
+                ) : (
+                    <div>View</div>
+                )}
+            </CenterModal>
+        )
+    )
 };
 
 export default FeedbackModal;

@@ -323,22 +323,12 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
         enabled: !!volunteerId,
     });
 
-    console.log(volunteerFeedback, "volunteerFeedback ");
-
     const handleTabChange = (tab: string) => {
         setActiveTab(tab);
     };
 
-    const ratingCard = {
-        profileImg: DummyProfileImg,
-        name: "Vinoth Kumar",
-        rating: 4.5,
-        day: "1d",
-        review: "Jane was so patient and attentive with my child. She made learning fun and engaging, and I could see real progress in just a few weeks!",
-    };
-
     if (isLoading) {
-        return <div></div>;
+        return <div>Loading...</div>;
     }
 
     if (isError) {

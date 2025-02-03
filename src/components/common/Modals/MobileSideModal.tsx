@@ -5,13 +5,14 @@ interface SideNavBarProps {
     children: React.ReactNode;
     isOpen: boolean;
     onClose?: () => void;
+    placement?: "right" | "left";
 }
 
-const MobileSideModal: React.FC<SideNavBarProps> = ({ children, isOpen, onClose }) => {
+const MobileSideModal: React.FC<SideNavBarProps> = ({ children, isOpen, onClose, placement }) => {
     return (
         <div>
             <Drawer
-                placement="right"
+                placement={placement || "right"}
                 closable={false}
                 onClose={onClose}
                 open={isOpen}

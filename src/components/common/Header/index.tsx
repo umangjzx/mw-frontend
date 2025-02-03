@@ -30,7 +30,7 @@ const CommonHeader: React.FC = () => {
         hideSearch
     } = headerOptions || {};
 
-    const isMobileScreen = InnerWidth() < 768;
+    const isMobileOrTabScreen = InnerWidth() < 1024;
     const [isSideNavBarOpen, setIsSideNavBarOpen] = useState<boolean>(false);
 
     
@@ -47,20 +47,20 @@ const CommonHeader: React.FC = () => {
             <div className="w-full h-full p-2 px-3 flex items-center justify-between">
                 <div className="flex items-center gap-5">
                     <div className="flex capitalize items-center">
-                        <div className="md:hidden cursor-pointer mr-2" onClick={() => setIsSideNavBarOpen(true)}>
+                        <div className="lg:hidden cursor-pointer mr-2" onClick={() => setIsSideNavBarOpen(true)}>
                             <SideMenuIcon height="22px" width="22px" />
                         </div>
                         <Button
-                            icon={isMobileScreen ? "" : titleIcon}
+                            icon={isMobileOrTabScreen ? "" : titleIcon}
                             rootClassName={cn(
-                                "flex items-center justify-center lg:!w-10 lg:h-10 rounded-full hover:bg-gray-100 max-md:!p-0",
-                                titleIconClick ? "cursor-pointer max-md:!border-none lg:border-stroke lg:mr-2" : "!border-none"
+                                "flex items-center justify-center lg:!w-10 lg:!h-10 rounded-full hover:bg-gray-100 max-lg:!p-0",
+                                titleIconClick ? "cursor-pointer max-lg:!border-none lg:border-stroke lg:mr-2" : "!border-none"
                             )}
                             onClick={titleIconClick}
                         />
                         <h1 className="text-lg font-medium">{formatString(title ?? "")}</h1>
                     </div>
-                    {!isMobileScreen && leftButton?.showButton && (
+                    {!isMobileOrTabScreen && leftButton?.showButton && (
                         <Button
                             title={leftButton?.buttonTitle}
                             onClick={leftButton?.buttonOnClick}
@@ -88,7 +88,7 @@ const CommonHeader: React.FC = () => {
                             placeholder={searchPlaceholder ?? "Search"}
                         />
                     }
-                    {!isMobileScreen && showButton && (
+                    {!isMobileOrTabScreen && showButton && (
                         <Button
                             title={actionButtonTitle}
                             onClick={actionButtonOnClick}
@@ -97,7 +97,7 @@ const CommonHeader: React.FC = () => {
                             icon={actionButtonIcon}
                         />
                     )}
-                    {!isMobileScreen && actionButtons?.map((button: ActionButtons) => (
+                    {!isMobileOrTabScreen && actionButtons?.map((button: ActionButtons) => (
                         <Button
                             title={button?.buttonTitle}
                             onClick={button?.buttonOnClick}
@@ -108,7 +108,7 @@ const CommonHeader: React.FC = () => {
                     ))}
                 </div>
             </div>
-            <div className="md:hidden w-full flex gap-2 px-3 pb-2">
+            <div className="lg:hidden w-full flex gap-2 px-3 pb-2">
                 {leftButton?.showButton && (
                     <Button
                         title={leftButton?.buttonTitle}
@@ -129,7 +129,7 @@ const CommonHeader: React.FC = () => {
                 ))}
             </div>
             {
-                isMobileScreen &&
+                isMobileOrTabScreen &&
                 <SideModal isOpen={isSideNavBarOpen}>
                     <Sidebar onClose={() => setIsSideNavBarOpen(!isSideNavBarOpen)} />
                 </SideModal>

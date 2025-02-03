@@ -7,7 +7,6 @@ import DetailCard from "@/components/profile/Bio/DetailCard";
 import DetailChipCard from "@/components/profile/Bio/DetailChipCard";
 import RatingCard from "@/components/profile/Overview/RatingCard";
 import RatingHeader from "@/components/profile/Overview/RatingHeader";
-import InnerWidth from "@/utils/innerWidth";
 import { useQuery } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 import Image from "next/image";
@@ -30,7 +29,7 @@ const ProfileInfo = ({
 }: {
     bioData: UserBioDataProps;
 }) => (
-    <div className="grid md:grid-cols-[1.7fr,2fr,2fr] gap-4 px-5 max-md:py-5">
+    <div className="gap-4 px-5 max-lg:py-5">
         <div className="flex items-center gap-3">
             <div className="relative w-[80px] h-[80px] rounded-full shrink-0">
                 <Image
@@ -41,20 +40,20 @@ const ProfileInfo = ({
                 />
             </div>
             <div className="flex flex-col gap-1 md:gap-2">
-                <p className="max-md:text-xl font-medium">
+                <p className="max-lg:text-xl font-medium">
                     {bioData?.full_name}
                 </p>
                 <OverViewCard
                     title="Hours Volunteered"
                     value={bioData?.total_hours || 0}
                     icon={""}
-                    className="rounded-xl md:hidden"
+                    className="rounded-xl"
                 />
                 <OverViewCard
                     title="Students Connected"
                     value={bioData?.connections}
                     icon={""}
-                    className="rounded-xl md:hidden"
+                    className="rounded-xl"
                 />
             </div>
         </div>
@@ -65,47 +64,27 @@ const TabButtons = ({
     activeTab,
     handleTabChange,
     rating,
-    totalReviews,
-    isMobileScreen,
+    totalReviews
 }: {
     activeTab: string;
     handleTabChange: (tab: string) => void;
     rating: number;
     totalReviews: number;
-    isMobileScreen?: boolean;
 }) => (
     <div className="px-5">
-        {
-            isMobileScreen ?
-                <div className="flex gap-2 px-2">
-                    {["overview", "reviews"].map((tab: any, index) => (
-                        <button
-                            key={tab || index}
-                            type="button"
-                            onClick={() => handleTabChange(tab)}
-                            className="w-full"
-                        >
-                            <p className={`text-base font-medium capitalize ${activeTab === tab ? "text-black" : "text-[#808080]"}`}>{tab}</p>
-                            <div className={`!h-[4px] !w-full mt-1 rounded-t-xl ${activeTab === tab ? 'bg-primary' : ''}`}></div>
-                        </button>
-                    ))}
-                </div>
-                :
-                <div className="flex items-center justify-between border-stroke border-2 rounded-full">
-                    {["overview", "reviews"].map((tab) => (
-                        <div
-                            key={tab}
-                            onClick={() => handleTabChange(tab)}
-                            className={`font-medium text-center w-[50%] rounded-full py-2.5 px-5 ${activeTab === tab
-                                ? "bg-[#dff5ff] border-primary border-2"
-                                : "border-2 border-transparent"
-                                } transition-all duration-200 cursor-pointer`}
-                        >
-                            {tab === "overview" ? "Overview" : `Reviews - ${rating} (${totalReviews})`}
-                        </div>
-                    ))}
-                </div>
-        }
+        <div className="flex gap-2 px-2">
+            {["overview", "reviews"].map((tab: any, index) => (
+                <button
+                    key={tab || index}
+                    type="button"
+                    onClick={() => handleTabChange(tab)}
+                    className="w-full"
+                >
+                    <p className={`text-base font-medium capitalize ${activeTab === tab ? "text-black" : "text-[#808080]"}`}>{tab}</p>
+                    <div className={`!h-[4px] !w-full mt-1 rounded-t-xl ${activeTab === tab ? 'bg-primary' : ''}`}></div>
+                </button>
+            ))}
+        </div>
     </div>
 );
 
@@ -199,13 +178,13 @@ const ReviewsContent = ({ userFeedback }: { userFeedback: any }) => {
 
     return (
         <div className="flex flex-col gap-3">
-            <div className="md:px-5">
+            <div className="lg:px-5">
                 <div className="flex flex-col gap-5">
                     <RatingHeader
                         rating={userFeedback?.overall_rating}
                         totalReviews={userFeedback?.feedbacks.length}
                     />
-                    <div className="max-md:bg-white max-md:rounded-xl max-md:p-3">
+                    <div className="bg-white rounded-xl p-3">
                         <div className="flex justify-between">
                             <p className="text-base font-semibold md:hidden">Reviews</p>
                             <p className="text-gray text-sm">Sort By: <span className="text-black">Recently added</span></p>
@@ -230,9 +209,6 @@ const ReviewsContent = ({ userFeedback }: { userFeedback: any }) => {
 };
 
 const MobileProfileView = ({ userData, reviewEndpoint }: { userData: any, reviewEndpoint: string }) => {
-    const innerWidth = InnerWidth();
-    const isMobileScreen = innerWidth < 768;
-
     const [activeTab, setActiveTab] = useState("overview");
 
     const getUserFeedback = async () => {
@@ -261,7 +237,6 @@ const MobileProfileView = ({ userData, reviewEndpoint }: { userData: any, review
                 handleTabChange={handleTabChange}
                 rating={rating}
                 totalReviews={totalReviews}
-                isMobileScreen={isMobileScreen}
             />
             <div className="relative h-full bg-background-input p-5 overflow-y-auto border-t border-t-2">
                 <div

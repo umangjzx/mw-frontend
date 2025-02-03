@@ -19,7 +19,7 @@ export default function ProfilePage() {
     const { setHeaderOptions } = useComponentStore();
     const { setLearnerDetails } = useAppStore();
     const router = useRouter();
-    const isMobileScreen = InnerWidth() < 768;
+    const isMobileOrTabScreen = InnerWidth() < 1024;
 
     const learnerId = Cookies.get("learner_id") || "";
     const [learnerData, setLearnerData] = useState({ bio: {}, overview: {} });
@@ -81,7 +81,7 @@ export default function ProfilePage() {
     return (
         <div className="h-full animate-fadeIn">
             {
-                isMobileScreen ?
+                isMobileOrTabScreen ?
                     <MobileProfileView
                         userData={learnerData?.bio}
                         reviewEndpoint={endpoints.learnerFeedback.get(learnerId)}

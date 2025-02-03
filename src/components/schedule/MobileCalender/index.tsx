@@ -87,9 +87,9 @@ const MobileCalender: React.FC<CalendarProps> = ({ events = [] }) => {
                 onChange={() => { }}
                 onClose={handleCloseModal}
             />
-            <div className="p-4 space-y-4">
+            <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 {groupedEvents.map((eventsByDate: any, index: number) => (
-                    <div key={index} className="w-full p-4 rounded-xl bg-white">
+                    <div key={index} className="h-full w-full p-4 rounded-xl bg-white">
                         <p className="font-medium text-sm mb-4">{eventsByDate[0]?.date && moment(eventsByDate[0]?.date).format("DD MMM YYYY")}</p>
                         <div className="space-y-2">
                             {eventsByDate.map((event: any, i: number) => (
