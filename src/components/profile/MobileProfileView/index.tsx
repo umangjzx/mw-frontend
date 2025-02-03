@@ -106,15 +106,15 @@ const OverviewContent = ({ userData }: { userData: any }) => {
         : [
             {
                 title: "Subjects I Teach",
-                tags: userData?.subjects?.map((subject: any) => subject?.subject_name),
+                tags: userData?.subjects?.map((subject: any) => subject?.subject_name || subject),
             },
             {
                 title: "Languages I Speak",
-                tags: userData?.languages?.map((lang: any) => lang?.language_name),
+                tags: userData?.languages?.map((lang: any) => lang?.language_name || lang),
             },
             {
                 title: "Skills",
-                tags: userData?.skills?.map((skill: any) => skill?.skill_name),
+                tags: userData?.skills?.map((skill: any) => skill?.skill_name || skill),
             },
         ];
 

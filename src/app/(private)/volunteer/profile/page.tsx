@@ -12,11 +12,14 @@ import { getIndividualVolunteer } from "@/api/volunteers";
 import { useAppStore } from "@/store/useAppStore";
 import { endpoints } from "@/api/constants";
 import LottieLoader from "@/components/common/Loader/Lottie";
+import MobileProfileView from "@/components/profile/MobileProfileView";
+import InnerWidth from "@/utils/innerWidth";
 
 export default function ProfilePage() {
     const { setHeaderOptions } = useComponentStore();
     const { setVolunteerDetails } = useAppStore();
     const router = useRouter();
+    const isMobileOrTabScreen = InnerWidth() < 1024;
 
     const volunteerId = Cookies.get("volunteer_id") || "";
     const [volunteerData, setVolunteerData] = useState({ bio: {}, overview: {} });
@@ -42,6 +45,7 @@ export default function ProfilePage() {
         setVolunteerDetails(data);
 
         const bioData = {
+            userId: volunteerId,
             full_name: `${data?.volunteer_first_name} ${data?.volunteer_last_name}`,
             bio_description: data?.volunteer_description,
             profile_picture: data?.profile_picture?.image_url,
@@ -49,7 +53,11 @@ export default function ProfilePage() {
             languages: data?.volunteer_languages?.map((language: any) => language?.language_name),
             skills: data?.volunteer_skills?.map((skill: any) => skill?.skill_name),
             experience: data?.volunteer_experience,
-            education: data?.volunteer_education,
+            education: data?.volunteer_education,            
+            country: data?.volunteer_contact_details?.country,
+            gender: data?.volunteer_gender,
+            connections: data?.students_connected,
+            total_hours: data?.total_volunteered_hours,
         };
 
         const overviewData = {
@@ -70,10 +78,18 @@ export default function ProfilePage() {
 
     return (
         <div className="h-full animate-fadeIn">
-            <div className="h-full w-full grid grid-cols-[1fr,2fr] gap-10 p-5">
-                <Bio data={volunteerData.bio} />
-                <Overview data={volunteerData.overview} reviewEndpoint={endpoints.volunterFeedback.get(volunteerId)} />
-            </div>
+            {
+                isMobileOrTabScreen ?
+                    <MobileProfileView
+                        userData={volunteerData?.bio}
+                        reviewEndpoint={endpoints.learnerFeedback.get(volunteerId)}
+                     />
+                    :
+                    <div className="h-full w-full grid grid-cols-[1fr,2fr] gap-10 p-5">
+                        <Bio data={volunteerData.bio} />
+                        <Overview data={volunteerData.overview} reviewEndpoint={endpoints.learnerFeedback.get(volunteerId)} />
+                    </div>
+            }
         </div>
     );
 }

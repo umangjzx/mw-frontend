@@ -15,10 +15,9 @@ import InnerWidth from "@/utils/innerWidth";
 import CardChips from "@/components/leaner/VolunteerCard/CardChips";
 import Image from "next/image";
 import DummyProfile from "@/assets/images/DummyProfile.png";
-import { Divider } from "antd";
-import { SeeMoreIcon } from "@/assets/icons";
 import Button from "@/components/common/Button";
 import MobileMessageModal from "@/components/learners/Modals/MobileMessageModal";
+import LottieLoader from "@/components/common/Loader/Lottie";
 
 interface PaginationParams {
     page: number;
@@ -151,7 +150,7 @@ export default function LearnersPage() {
             titleIcon: getHeaderIcon(pathname),
         });
     }, [setHeaderOptions]);
-    
+
     const LearnerMessageModal = isMobileScreen ? MobileMessageModal : MessageModal;
 
     return (
@@ -164,18 +163,21 @@ export default function LearnersPage() {
             />
             {
                 isMobileScreen ?
-                    <div className="grid grid-cols-1">
-                        {
-                            learnerData.map((learner, index) => (
-                                <LearnerCard
-                                    key={index}
-                                    learner={learner}
-                                    handleMessage={() => handleMessageLearner(learner?.id)}
-                                    handleTestimonial={() => handleUploadTestimonial(learner?.id)}
-                                />
-                            ))
-                        }
-                    </div> :
+                    isLoading ? (
+                        <LottieLoader isLoading={true} />
+                    ) :
+                        <div className="grid grid-cols-1">
+                            {
+                                learnerData.map((learner, index) => (
+                                    <LearnerCard
+                                        key={index}
+                                        learner={learner}
+                                        handleMessage={() => handleMessageLearner(learner?.id)}
+                                        handleTestimonial={() => handleUploadTestimonial(learner?.id)}
+                                    />
+                                ))
+                            }
+                        </div> :
                     <LearnersTable
                         data={learnerData}
                         handleMessageLearner={handleMessageLearner}

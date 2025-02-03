@@ -13,12 +13,13 @@ import {
     VolunteerIcon,
 } from "@/assets/icons";
 import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import InnerWidth from "@/utils/innerWidth";
+import Image from "next/image";
 
 const Sidebar = ({ onClose }: { onClose?: () => void }) => {
     const role = Cookies.get("role");
-    const router = useRouter();
+    const isMobileOrTabScreen = InnerWidth() < 1024;
 
     const baseLinksData = [
         {
@@ -78,17 +79,20 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
     return (
         <div className="bg-white w-full h-full lg:h-screen flex flex-col items-center justify-between p-6">
             <div className="w-full">
-                <div className="lg:hidden shrink-0 flex items-center justify-between">
-                    <LogoIcon />
-                    {onClose &&
-                        <span onClick={onClose} className="cursor-pointer">
-                            <FeedModalCloseIcon />
-                        </span>
-                    }
-                </div>
-                <Link href="/" className="max-lg:hidden">
-                    <Logo />
-                </Link>
+                {
+                    isMobileOrTabScreen ?
+                        <div className="shrink-0 flex items-center justify-between">
+                            <Image src="/logo.png" alt="Logo" height={44} width={50} />
+                            {onClose &&
+                                <span onClick={onClose} className="cursor-pointer">
+                                    <FeedModalCloseIcon />
+                                </span>
+                            }
+                        </div> :
+                        <Link href="/">
+                            <Logo />
+                        </Link>
+                }
                 <div className="flex flex-col items-center gap-3 w-full mt-[4rem]">
                     <Avatar />
                     <Divider className="max-md:!w-full" />

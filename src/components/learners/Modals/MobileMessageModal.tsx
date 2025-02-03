@@ -84,9 +84,9 @@ const MobileMessageModal = ({ receiverId, isOpen, onClose }: MobileMessageModalP
     };
 
     const handleClose = () => {
-        onClose()
         setMessage('');
         setMessages([]);
+        onClose()
     };
 
     useEffect(() => {
@@ -123,7 +123,7 @@ const MobileMessageModal = ({ receiverId, isOpen, onClose }: MobileMessageModalP
                     </Button>
                     {headerComponent}
                 </div>
-                <div className="flex flex-col gap-3 max-h-[80vh] overflow-y-auto p-4">
+                <div className="flex flex-col gap-3 max-h-[80vh] h-full overflow-y-auto p-4">
                     {isFetchingUser || isFetching ?
                         <div className="!h-full !w-full">
                             <Loader size="large" />
