@@ -20,7 +20,7 @@ const CommentInput = ({
     onPost,
 }: CommentInputProps) => {
     return (
-        <div className="bg-background-input border border-stroke flex items-center justify-between pr-4 !rounded-xl h-fit focus:!border-stroke focus:!bg-background-input ">
+        <div className="flex bg-background-input border border-stroke items-center justify-between pr-4 !rounded-xl h-fit focus:!border-stroke focus:!bg-background-input">
             <AntInput
                 name={name}
                 type="text"
@@ -30,19 +30,20 @@ const CommentInput = ({
                 disabled={disabled}
                 rootClassName={cn(
                     inputClassName ? "w-[49%]" : "",
-                    "border-none w-[90%] !rounded-xl h-fit focus:!border-stroke focus:!bg-background-input "
+                    "border-none w-[90%] !rounded-xl h-fit focus:!border-stroke focus:!bg-background-input"
                 )}
                 className={cn(
                     `text-sm p-2 rounded-md hover:bg-background-input bg-background-input`,
                     inputClassName
                 )}
             />
-            <span
+            <button
                 className={`font-medium text-primary ${value ? "opacity-100" : "opacity-50"}`}
                 onClick={onPost}
+                disabled={!value}
             >
                 Post
-            </span>
+            </button>
         </div>
     );
 };

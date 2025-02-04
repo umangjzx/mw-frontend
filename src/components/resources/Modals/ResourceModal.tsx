@@ -12,6 +12,8 @@ import { addResource, getSingleResource, updateResource } from "@/api/resources"
 import { showToast } from "@/components/common/Toast";
 import { useQuery } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import FeedHeader from "@/components/community/FeedHeader/index";
 
 type ResourceModalProps = {
     isOpen: boolean;
@@ -33,7 +35,13 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
     const { learnerName, volunteerName } = useAppStore();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { control, handleSubmit, formState: { errors }, setValue, reset } = useForm<FormData>({
+    const {
+        control,
+        handleSubmit,
+        formState: { errors },
+        setValue,
+        reset,
+    } = useForm<FormData>({
         resolver: zodResolver(ResourceFormSchema),
     });
 
@@ -57,7 +65,12 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
         setValue("created_by", role === "learner" ? learnerName : volunteerName);
     }, [currentMode]);
 
-    const handleResourceAction = async ({ data, actionFn, successMessage, errorMessage }: ResourceActionProps) => {
+    const handleResourceAction = async ({
+        data,
+        actionFn,
+        successMessage,
+        errorMessage,
+    }: ResourceActionProps) => {
         setIsSubmitting(true);
         try {
             const isSuccess = await actionFn(data);
@@ -95,30 +108,57 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
                 mode === "view"
                     ? "!text-error !bg-error-light !border-none"
                     : "!bg-transparent !text-black",
-                "!rounded-xl"
+                "!rounded-xl",
+                "sm:w-auto w-[72px]"
             ),
         },
         primary: {
             onClick: handleSubmit(onSubmit),
             title: isSubmitting ? (isEditMode ? "Saving" : "Adding") : isEditMode ? "Save" : "Add",
-            customClassName: "!rounded-xl hover:!bg-black hover:!text-white",
+            customClassName: cn(
+                "!rounded-xl hover:!bg-black hover:!text-white",
+                "sm:w-auto w-[72px]"
+            ),
             disabled: isSubmitting,
         },
     };
+
+    const isMobile = useMediaQuery("(max-width: 768px)");
 
     return (
         <CenterModal
             title={isEditMode ? "Edit Resource" : "Add New Resource"}
             isOpen={isOpen}
             onClose={onClose}
-            width="40%"
             loading={isSubmitting}
-            customClassName="max-h-[80vh] !rounded-2xl overflow-hidden"
+            headerComponent={
+                isMobile && (
+                    <FeedHeader
+                        title="Add New Resource"
+                        onClose={onClose}
+                        onSave={handleSubmit(onSubmit)}
+                        isSubmitting={isSubmitting}
+                    />
+                )
+            }
+            customClassName={cn(
+                "sm:max-h-screen overflow-hidden",
+                isMobile
+                    ? "[&_.ant-modal-content]:!p-0 !p-0 !m-0 !h-[100dvh] !max-h-none !w-screen !max-w-none rounded-none"
+                    : "!rounded-2xl"
+            )}
             secondaryActionProps={buttonProps.secondary}
             primaryActionProps={buttonProps.primary}
+            hideFooter={isMobile}
         >
             {mode !== "view" ? (
-                <form onSubmit={handleSubmit(onSubmit)}>
+                <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    className={cn(
+                        "flex flex-col gap-4",
+                        isMobile && "h-[100vh] overflow-y-auto  px-4 pb-4"
+                    )}
+                >
                     {ResourceFormConstants.map((field: any) => (
                         <Controller
                             key={field.name}
