@@ -47,16 +47,18 @@ const CenterModal: React.FC<CenterModalProps> = ({
     const footer = hideFooter || footerComponent || buttons.filter((button) => button);
 
     const header = headerComponent || title && (
-        <div className="flex gap-2 w-full flex-col border-b border-stroke items-start justify-between mb-4 pb-4">
-            <h2 className={`text-xl text-[${titleColor}] font-semibold ${titleClassName}`}>
-                {title}
-            </h2>
-            {topContent && topContent}
-        </div>
+            <div className="flex gap-2 w-full flex-col border-b border-stroke items-start justify-between mb-4 pb-4">
+                <h2 className={`text-xl text-[${titleColor}] font-semibold ${titleClassName}`}>
+                    {title}
+                </h2>
+                {topContent && topContent}
+            </div>
     );
 
     const classNames: ModalProps["classNames"] = {
         footer: "flex items-center justify-end",
+        mask: "!bg-[#00000099]",
+        content: "md:!rounded-2xl !rounded-none",
     };
 
     return (
@@ -69,7 +71,7 @@ const CenterModal: React.FC<CenterModalProps> = ({
             className={`custom-modal ${customClassName}`}
             classNames={classNames}
             closeIcon={
-                <CloseOutlined className="text-gray-500 text-sm active:scale-90 transition-all duration-200" />
+                <CloseOutlined className="hidden md:block text-gray-500 text-sm active:scale-90 transition-all duration-200" />
             }
             centered
             height={height}
@@ -83,7 +85,7 @@ const CenterModal: React.FC<CenterModalProps> = ({
             <div className={`flex w-full h-full flex-col`}>
                 {header}
                 {/* Modal Content */}
-                <div className="flex-1 overflow-y-auto max-h-[50vh] mb-4 pr-2 no-scrollbar">
+                <div className="flex-1 max-md:pt-4  overflow-y-auto max-h-[93vh] bg-[#F4F7FB] md:bg-white md:max-h-[50vh] mb-4 pr-2 no-scrollbar">
                     {children}
                 </div>
             </div>

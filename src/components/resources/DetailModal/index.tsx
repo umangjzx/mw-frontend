@@ -18,6 +18,7 @@ import { showToast } from "@/components/common/Toast";
 import { useState } from "react";
 import { HeartLikeIcon, UnlikeHeartIcon } from "@/assets/icons";
 import LottieLoader from "@/components/common/Loader/Lottie";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 type DetailModalProps = {
     isOpen: boolean;
@@ -27,7 +28,13 @@ type DetailModalProps = {
     handleReportClick?: (id: string) => void;
 };
 
-const DetailModal = ({ handleUserLikeAction, triggerReload, isOpen, onClose, handleReportClick }: DetailModalProps) => {
+const DetailModal = ({
+    handleUserLikeAction,
+    triggerReload,
+    isOpen,
+    onClose,
+    handleReportClick,
+}: DetailModalProps) => {
     const [category] = useQueryState("category");
     const [resourceId] = useQueryState("id");
     const [mode, setMode] = useQueryState("mode");
@@ -37,6 +44,7 @@ const DetailModal = ({ handleUserLikeAction, triggerReload, isOpen, onClose, han
     const [likedCount, setLikedCount] = useState(0);
 
     const isMyResource = category === "my-resources";
+    const isMobile = useMediaQuery("(max-width: 768px)");
 
     const { data: resource, isFetching } = useQuery({
         queryKey: ["resource-single", resourceId],
@@ -54,11 +62,11 @@ const DetailModal = ({ handleUserLikeAction, triggerReload, isOpen, onClose, han
         if (!resourceId) return;
         setIsLiked(status);
         setLikedCount((prev) => prev + (status ? 1 : -1));
-        handleUserLikeAction(resourceId, status)
+        handleUserLikeAction(resourceId, status);
         status ? await likeResource(resourceId) : await dislikeResource(resourceId);
     };
 
-    const handleEdit = () => setMode("edit")
+    const handleEdit = () => setMode("edit");
 
     const handleDelete = async () => {
         if (!resourceId) return;
@@ -101,20 +109,36 @@ const DetailModal = ({ handleUserLikeAction, triggerReload, isOpen, onClose, han
     if (!resourceId) return null;
 
     return (
-        <ViewModal modalOpen={isOpen} onClose={onClose} width={800} height="720px">
+        <ViewModal
+            modalOpen={isOpen}
+            onClose={onClose}
+            width={isMobile ? "100%" : 800}
+            height="100%"
+            className={isMobile ? "!p-0 !m-0 !h-screen !max-h-none !w-screen !max-w-none" : ""}
+        >
             {isFetching ? (
-                <div className="h-full w-full flex-center">
+                <div className={` w-full flex-center h-screen ${isMobile ? "h-screen" : ""}`}>
                     <LottieLoader isLoading={true} />
                 </div>
             ) : (
-                <>
-                    <div className="relative w-full h-[260px] rounded-t-xl">
+                <div className={`flex flex-col ${isMobile ? "h-screen" : ""}`}>
+                    <div
+                        className={`relative ${isMobile ? "h-[200px]" : "h-[260px]"} rounded-t-xl ${
+                            isMobile ? "!rounded-none" : ""
+                        }`}
+                    >
                         <Image
                             src={resource?.resource_image?.image_url || "/placeholder.png"}
                             fill
                             className="object-cover"
                             alt="Resource"
                         />
+                        <span
+                            onClick={onClose}
+                            className="cursor-pointer absolute top-4 left-4 md:static md:top-auto md:left-auto"
+                        >
+                            <ModalCloseIcon />
+                        </span>
                         <div className="flex items-center gap-4 w-fit absolute top-4 right-4">
                             {isMyResource ? (
                                 <Button
@@ -161,21 +185,31 @@ const DetailModal = ({ handleUserLikeAction, triggerReload, isOpen, onClose, han
                                         icon={<MdEdit size={16} />}
                                     />
                                 ) : (
-                                    <span onClick={() => handleReportClick?.(resource?.resource_id)}>
+                                    <span
+                                        onClick={() => handleReportClick?.(resource?.resource_id)}
+                                    >
                                         <ReportIcon />
                                     </span>
                                 )}
                             </span>
-                            <span onClick={onClose} className="cursor-pointer">
+                            <span onClick={onClose} className="md:block hidden cursor-pointer">
                                 <ModalCloseIcon />
                             </span>
                         </div>
                     </div>
-                    <div className="flex flex-col gap-4 px-8 pt-4">
+                    <div
+                        className={`flex flex-col gap-4 px-8 pt-4 ${
+                            isMobile ? "flex-1 overflow-y-auto pb-8" : ""
+                        }`}
+                    >
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <p className="text-2xl font-medium text-black">{resource?.resource_title}</p>
-                                <span className="text-sm font-medium text-gray-light">By {resource?.author?.name}</span>
+                                <p className="text-2xl font-medium text-black">
+                                    {resource?.resource_title}
+                                </p>
+                                <span className="text-sm font-medium text-gray-light">
+                                    By {resource?.author?.name}
+                                </span>
                             </div>
                             <p className="text-sm font-medium text-gray-light capitalize">
                                 Level: {resource?.difficulty_level || "N/A"}
@@ -183,7 +217,9 @@ const DetailModal = ({ handleUserLikeAction, triggerReload, isOpen, onClose, han
                         </div>
                         <div className="flex flex-col gap-2">
                             <p className="font-medium text-black">Description</p>
-                            <p className="text-sm text-gray-light">{resource?.resource_description || "No description provided."}</p>
+                            <p className="text-sm text-gray-light">
+                                {resource?.resource_description || "No description provided."}
+                            </p>
                         </div>
                         <Divider />
                         <div className="flex flex-col gap-2">
@@ -196,7 +232,7 @@ const DetailModal = ({ handleUserLikeAction, triggerReload, isOpen, onClose, han
                             <div className="flex flex-col gap-2">{renderCuratedLinks()}</div>
                         </div>
                     </div>
-                </>
+                </div>
             )}
         </ViewModal>
     );

@@ -1,16 +1,29 @@
 import React from "react";
 import { Modal } from "antd";
 
+interface ViewModalProps {
+    modalOpen: boolean;
+    onClose: () => void;
+    children: React.ReactNode;
+    width?: number | string;
+    height?: number | string;
+    style?: React.CSSProperties;
+    className?: string;
+    borderRadius?: string;
+}
+
 const ViewModal: React.FC<ViewModalProps> = ({
     modalOpen,
     onClose,
     children,
-    width,
-    height,
+    width = 800,
+    height = 720,
     style,
-    className,
+    className = "",
     borderRadius,
 }) => {
+    const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+
     return (
         <Modal
             className={className}
@@ -20,16 +33,31 @@ const ViewModal: React.FC<ViewModalProps> = ({
                 },
                 content: {
                     padding: 0,
-                    borderRadius: borderRadius || "1rem",
+                    borderRadius: isMobile ? 0 : borderRadius || "1rem",
                 },
                 body: {
                     padding: 0,
                     height: height,
                 },
+                mask: {
+                    backdropFilter: "blur(4px)",
+                },
             }}
-            style={style}
-            modalRender={node => (
-                <div style={{ borderRadius: borderRadius || "12px", overflow: "hidden" }}>{node}</div>
+            style={{
+                ...style,
+                margin: 0,
+                padding: 0,
+            }}
+            modalRender={(node) => (
+                <div
+                    style={{
+                        borderRadius: isMobile ? 0 : borderRadius || "12px",
+                        overflow: "hidden",
+                        width: "100%",
+                    }}
+                >
+                    {node}
+                </div>
             )}
             centered
             open={modalOpen}

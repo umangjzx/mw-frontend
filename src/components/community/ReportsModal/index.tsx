@@ -1,4 +1,3 @@
-
 import { Input } from "@/components/common/Input";
 import CenterModal from "@/components/common/Modals/CenterModal";
 
@@ -45,7 +44,7 @@ const CommunityReportModal = ({ postId, isOpen, onClose }: CommunityReportModalP
             showToast({ type: "error", message: message });
             return;
         }
-    
+
         setIsSubmitting(true);
         const payload = {
             resource_type_id: postId,
@@ -60,7 +59,7 @@ const CommunityReportModal = ({ postId, isOpen, onClose }: CommunityReportModalP
                 type: isSuccess ? "success" : "error",
                 message: isSuccess ? "Report Submitted!" : "Report Not Submitted!",
             });
-    
+
             if (isSuccess) onClose();
         } catch (error) {
             showToast({ type: "error", message: "Something went wrong!" });
@@ -68,7 +67,6 @@ const CommunityReportModal = ({ postId, isOpen, onClose }: CommunityReportModalP
             setIsSubmitting(false);
         }
     };
-    
 
     const buttonProps = {
         secondary: {
@@ -96,12 +94,13 @@ const CommunityReportModal = ({ postId, isOpen, onClose }: CommunityReportModalP
             onClose={onClose}
             width="40%"
             loading={isSubmitting}
-            customClassName="max-h-[80vh] !rounded-2xl overflow-hidden !z-[2000]"
+            customClassName="md:max-h-[80vh] !rounded-2xl overflow-hidden !z-[2000] "
             secondaryActionProps={buttonProps.secondary}
             primaryActionProps={buttonProps.primary}
         >
             <p className="text-base mb-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
+                incididunt ut labore et dolore magna aliqua.
             </p>
             <div>
                 <Radio.Group
@@ -110,11 +109,13 @@ const CommunityReportModal = ({ postId, isOpen, onClose }: CommunityReportModalP
                     onChange={(e) => setReportType(e.target.value)}
                     className="w-full"
                 >
-                    <div className="flex flex-col items-center gap-2 w-full h-full">
+                    <div className="flex flex-col items-center gap-2 ">
                         {options.map((option) => (
                             <div
                                 key={option.value}
-                                className={`flex w-full items-center hover:bg-background-input bg-background-input p-2 rounded-lg border ${reportType === option.value && 'border-black'}`}
+                                className={`flex w-full items-center hover:bg-background-input bg-background-input p-2 rounded-lg border ${
+                                    reportType === option.value && "border-black"
+                                }`}
                             >
                                 <Radio className="w-full" value={option.value}>
                                     <div>
