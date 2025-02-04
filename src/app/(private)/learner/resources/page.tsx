@@ -15,12 +15,22 @@ import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
+import { useWindowSize } from "@/hooks/useWindowSize";
 
 //TODO: Needs to be deleted
 const TopicData = [
     {
         title: "Basic",
     },
+    {
+        title: "skills",
+    },
+];
+
+const TabData = [
+    { id: "topics", label: "Topics" },
+    { id: "suggested", label: "Suggested for you" },
+    { id: "trending", label: "Trending" },
 ];
 
 export default function ResourcesPage() {
@@ -39,18 +49,18 @@ export default function ResourcesPage() {
     const { data: MyResources, refetch } = useQuery({
         queryKey: ["my-resource"],
         queryFn: getMyResources,
-    })
+    });
     const triggerReload = async () => await refetch();
 
     const { isFetching } = useQuery({
         queryKey: ["resources", searchQuery],
         queryFn: async () => {
-            setResources([])
+            setResources([]);
             const resources = await getResources({ query: searchQuery || "" });
-            setResources(resources?.items)
+            setResources(resources?.items);
             return resources;
         },
-    })
+    });
 
     const handleTopicClick = (title: string) => {
         setCategory(title);
@@ -105,23 +115,27 @@ export default function ResourcesPage() {
                 if (resource?.resource_id === resource_id) {
                     return {
                         ...resource,
-                        total_likes: resource?.total_likes + (likeStatus ? +1 : -1)
+                        total_likes: resource?.total_likes + (likeStatus ? +1 : -1),
                     };
                 }
                 return resource;
             })
         );
-    }
+    };
 
     const handleReportClick = (resource_id: string) => {
         setReportModalOpen(true);
         setReportModalResourceId(resource_id);
-    }
+    };
 
     const handleCloseReportModal = () => {
         setReportModalOpen(false);
         setReportModalResourceId("");
     };
+
+    const [activeTab, setActiveTab] = useState("topics");
+    const { width } = useWindowSize();
+    const isMobile = width < 768; // Define mobile breakpoint
 
     return (
         <div className="w-full h-full pt-8 flex flex-col gap-2 p-4 animate-fadeIn">
@@ -140,64 +154,101 @@ export default function ResourcesPage() {
             />
 
             {/* Detail Modal */}
-            <DetailModal 
-                handleUserLikeAction={handleUserLikeAction} 
-                triggerReload={triggerReload} 
-                isOpen={mode === "view"} 
+            <DetailModal
+                handleUserLikeAction={handleUserLikeAction}
+                triggerReload={triggerReload}
+                isOpen={mode === "view"}
                 onClose={handleCloseModal}
                 handleReportClick={handleReportClick}
             />
 
-            {/* Topics */}
-            <SectionWrapper
-                hideSectionHeader={category !== null}
-                data={TopicData}
-                title="Topics"
-                renderItem={(item, index) => (
-                    <TopicCard
-                        onClick={() => handleTopicClick(item.title)}
-                        index={index}
-                        item={item}
-                    />
-                )}
-            />
+            {/* Mobile Tabs - Only show on mobile */}
+            {isMobile && !category && (
+                <div className="overflow-x-auto flex gap-2 pb-4 hide-scrollbar md:hidden">
+                    {TabData.map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`whitespace-nowrap px-4 py-2 rounded-full text-sm ${
+                                activeTab === tab.id
+                                    ? "bg-[#DFF5FF] text-black border border-[#09BAEE] text-[14px] font-[500]"
+                                    : "bg-[#F4F7FB] border border-[#E0E0E0] text-[14px] font-[500] text-black"
+                            }`}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+            )}
 
-            {/* Resources */}
-            {category !== "my-resources" ?
+            {/* Desktop and Mobile Topics View */}
+            {(!isMobile || (isMobile && activeTab === "topics")) && !category && (
                 <SectionWrapper
-                    placeHolderComponent={undefined}
-                    onPlaceHolderClick={handleAddResourceClick}
-                    data={resources || []}
-                    isLoading={isFetching}
-                    title={category !== null ? undefined : "Resources"}
+                    hideSectionHeader={category !== null}
+                    data={TopicData}
+                    title={!isMobile ? "Topics" : undefined}
+                    
                     renderItem={(item, index) => (
-                        <Card 
-                            key={item?.resource_id || index} 
-                            resource={item} 
-                            onClick={() => handleViewOrEditResource("view", item?.resource_id)} 
-                            handleReportClick={handleReportClick}
+                        <TopicCard
+                            onClick={() => handleTopicClick(item.title)}
+                            index={index}
+                            item={item}
+                            
                         />
                     )}
                 />
-                :
-                <div className="grid grid-cols-12 p-10 gap-5">
-                    <div className="col-span-3">
+            )}
+
+            {/* Resources Section */}
+            {(!isMobile || (isMobile && activeTab === "suggested")) &&
+                !category &&
+                category !== "my-resources" && (
+                    <SectionWrapper
+                        placeHolderComponent={undefined}
+                        onPlaceHolderClick={handleAddResourceClick}
+                        data={resources || []}
+                        isLoading={isFetching}
+                        title={!isMobile && category === null ? "Resources" : undefined}
+                        renderItem={(item, index) => (
+                            <>
+                                <Card
+                                    className="w-full"
+                                    key={item?.resource_id || index}
+                                    resource={item}
+                                    onClick={() =>
+                                        handleViewOrEditResource("view", item?.resource_id)
+                                    }
+                                    handleReportClick={handleReportClick}
+                                />
+                            </>
+                        )}
+                    />
+                )}
+
+            {/* My Resources section */}
+            {category === "my-resources" && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 md:p-6">
+                    <div className="w-full col-span-1">
                         <AddResourceCard handleClick={handleAddResourceClick} />
                     </div>
-                    {
-                        MyResources?.items?.map((resource: any, index: number) => (
-                            <div className="col-span-3">
-                                <Card
-                                    key={resource?.resource_id || index}
-                                    resource={resource}
-                                    className="!w-full"
-                                    onClick={() => handleViewOrEditResource("view", resource?.resource_id)}
-                                />
-                            </div>
-                        ))
-                    }
+                    {MyResources?.items?.map((resource: any, index: number) => (
+                        <div key={resource?.resource_id || index} className="col-span-1">
+                            <Card
+                                resource={resource}
+                                className="w-full h-full"
+                                onClick={() =>
+                                    handleViewOrEditResource("view", resource?.resource_id)
+                                }
+                            />
+                        </div>
+                    ))}
                 </div>
-            }
-        </div >
+            )}
+
+            {/* Trending section - Mobile only */}
+            {isMobile && activeTab === "trending" && (
+                <div className="animate-fadeIn">{/* Add your trending content here */}</div>
+            )}
+        </div>
     );
 }

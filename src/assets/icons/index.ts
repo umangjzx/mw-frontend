@@ -24,3 +24,6 @@ export { default as CalendarAccessIcon } from "./CalendarAccessIcon";
 export { default as UnlikeHeartIcon } from "./UnlikeHeartIcon";
 export { default as HeartLikeIcon } from "./HeartLikeIcon";
 export { default as SideMenuIcon } from "./SideMenuIcon";
+export { default as MobileFlagIcon } from "./MobileFlagIcon";
+export { default as DeleteIcon } from "./DeleteIcon";
+export { default as EditIcon } from "./EditIcon";

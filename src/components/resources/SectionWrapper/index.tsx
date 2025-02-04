@@ -44,21 +44,21 @@ const SectionWrapper = ({
     };
 
     return (
-        <div hidden={hideSectionHeader} className='w-full'>
+        <div hidden={hideSectionHeader} className="w-full">
             {/* Title Section */}
             <div
                 className={cn("flex items-center justify-between mb-4 px-4", title ? "" : "hidden")}
             >
-                <h2 className='text-xl font-semibold text-gray-800'>{title}</h2>
-                <div className='flex gap-2'>
+                <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
+                <div className="flex gap-2">
                     <Button
-                        icon={<IoIosArrowBack className='text-lg' />}
-                        rootClassName='flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100'
+                        icon={<IoIosArrowBack className="text-lg" />}
+                        rootClassName="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100"
                         onClick={() => scroll("left")}
                     />
                     <Button
-                        icon={<IoIosArrowForward className='text-lg' />}
-                        rootClassName='flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100'
+                        icon={<IoIosArrowForward className="text-lg" />}
+                        rootClassName="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100"
                         onClick={() => scroll("right")}
                     />
                 </div>
@@ -67,25 +67,31 @@ const SectionWrapper = ({
             {/* Scrollable Content Section */}
             <div
                 ref={scrollContainerRef}
-                className='overflow-x-auto scrollbar-hide flex relative'
+                className="overflow-x-auto scrollbar-hide flex relative justify-center"
                 style={{
                     scrollbarWidth: "none",
                     msOverflowStyle: "none",
                 }}
             >
-                <div className='flex gap-4 px-4 pb-4'>
+                <div className="flex flex-row gap-2 md:flex-row px-2 md:gap-4 md:px-4 pb-4 w-[353px] md:w-full justify-center md:justify-normal">
                     {placeHolderComponent && (
-                        <div onClick={onPlaceHolderClick} className='cursor-pointer'>
+                        <div onClick={onPlaceHolderClick} className="cursor-pointer">
                             {placeHolderComponent}
                         </div>
                     )}
-                    { isLoading && <div className="min-w-[259px] min-h-[313px] h-full w-full flex-center">
-                        <LottieLoader isLoading={isLoading} />
-                    </div> }
-                    { !isLoading && Array.isArray(data) && data.map((item, index) => (
-                        <>{renderItem(item, index)}</>
-                    ))}
-                    { !isLoading && data?.length === 0 && <span className="min-w-[250px] min-h-[275px] h-full w-full flex-center">No Resource Found</span> }
+                    {isLoading && (
+                        <div className="min-w-[259px] min-h-[313px] h-full w-full flex-center">
+                            <LottieLoader isLoading={isLoading} />
+                        </div>
+                    )}
+                    {!isLoading &&
+                        Array.isArray(data) &&
+                        data.map((item, index) => <>{renderItem(item, index)}</>)}
+                    {!isLoading && data?.length === 0 && (
+                        <span className="min-w-[250px] min-h-[275px] h-full w-full flex-center">
+                            No Resource Found
+                        </span>
+                    )}
                 </div>
             </div>
         </div>

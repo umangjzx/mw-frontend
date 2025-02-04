@@ -193,6 +193,7 @@ export default function LearnersPage() {
                         onChange={handleTableChange}
                     />
             }
+            {learnerData?.length === 0 && <div className="flex-center h-full">No Learner Found</div>}
         </div>
     );
 }
