@@ -5,18 +5,21 @@ import SectionCard from "./SectionCard";
 import {
     CalendarIcon,
     CommunityIcon,
+    FeedModalCloseIcon,
     LearnerIcon,
+    LogoIcon,
     ResourceIcon,
     SignOutIcon,
     VolunteerIcon,
 } from "@/assets/icons";
 import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import InnerWidth from "@/utils/innerWidth";
+import Image from "next/image";
 
-const Sidebar = () => {
+const Sidebar = ({ onClose }: { onClose?: () => void }) => {
     const role = Cookies.get("role");
-    const router = useRouter();
+    const isMobileOrTabScreen = InnerWidth() < 1024;
 
     const baseLinksData = [
         {
@@ -30,15 +33,15 @@ const Sidebar = () => {
     const roleBasedLink =
         role === "volunteer"
             ? {
-                  href: "/learners",
-                  text: "Learners",
-                  icon: <LearnerIcon />,
-              }
+                href: "/learners",
+                text: "Learners",
+                icon: <LearnerIcon />,
+            }
             : {
-                  href: "/volunteer",
-                  text: "Seek Volunteer",
-                  icon: <VolunteerIcon />,
-              };
+                href: "/volunteer",
+                text: "Seek Volunteer",
+                icon: <VolunteerIcon />,
+            };
 
     const remainingLinks = [
         {
@@ -54,7 +57,7 @@ const Sidebar = () => {
     ];
 
     // Combine all links in the desired order
-    const linksData = [...baseLinksData, roleBasedLink];
+    const linksData = [...baseLinksData, roleBasedLink, ...remainingLinks];
 
     const handleSignOut = () => {
         const cookieSetting = { path: "/", secure: true };
@@ -74,16 +77,27 @@ const Sidebar = () => {
     };
 
     return (
-        <div className="bg-white w-full h-screen flex flex-col items-center justify-between p-6">
-            <div>
-                <Link href="/">
-                    <Logo />
-                </Link>
+        <div className="bg-white w-full h-full lg:h-screen flex flex-col items-center justify-between p-6">
+            <div className="w-full">
+                {
+                    isMobileOrTabScreen ?
+                        <div className="shrink-0 flex items-center justify-between">
+                            <Image src="/logo.png" alt="Logo" height={44} width={50} />
+                            {onClose &&
+                                <span onClick={onClose} className="cursor-pointer">
+                                    <FeedModalCloseIcon />
+                                </span>
+                            }
+                        </div> :
+                        <Link href="/">
+                            <Logo />
+                        </Link>
+                }
                 <div className="flex flex-col items-center gap-3 w-full mt-[4rem]">
                     <Avatar />
-                    <Divider />
+                    <Divider className="max-md:!w-full" />
                 </div>
-                <div className="flex flex-col items-center gap-[2.2rem] w-full mt-[2rem]">
+                <div className="flex flex-col items-center gap-5 lg:gap-[2.2rem] w-full mt-[2rem]">
                     {linksData.map((link) => (
                         <SectionCard key={link.href} {...link} />
                     ))}

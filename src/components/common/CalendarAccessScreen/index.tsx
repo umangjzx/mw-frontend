@@ -16,7 +16,7 @@ const CalendarAccessScreen = () => {
 
     return (
         <div className="w-full h-full">
-            <div className="flex flex-col h-full gap-4 justify-center items-center">
+            <div className="flex flex-col h-full gap-4 justify-center items-center px-5 text-center">
                 <span>
                     <CalendarAccessIcon />
                 </span>

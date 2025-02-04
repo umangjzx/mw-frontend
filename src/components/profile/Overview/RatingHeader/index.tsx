@@ -28,7 +28,7 @@ const RatingHeader = ({ rating, totalReviews }: RatingHeaderProps) => {
     };
 
     return (
-        <div className="flex items-center justify-between w-full gap-4 bg-[#f4f7fb] rounded-full px-5 py-6">
+        <div className="flex items-center justify-between w-full gap-4 bg-white md:bg-[#f4f7fb] rounded-xl md:rounded-full px-5 py-6">
             <p className="font-semibold">Rating</p>
             <div className="flex items-center gap-2">
                 <p className="text-[1.5rem] font-semibold">{rating}</p>

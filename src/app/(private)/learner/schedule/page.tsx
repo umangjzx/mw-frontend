@@ -16,13 +16,16 @@ import { useSendData } from "@/hooks/useReactQuery";
 import CalendarAccessScreen from "@/components/common/CalendarAccessScreen";
 import LottieLoader from "@/components/common/Loader/Lottie";
 import { useQueryState } from "nuqs";
+import InnerWidth from "@/utils/innerWidth";
+import MobileCalender from "@/components/schedule/MobileCalender";
 
 export default function LearnerSchedulePage() {
     const [isOpenSchedule, setIsOpenSchedule] = useState(false);
     const [isOpenFeedback, setIsOpenFeedback] = useState(false);
-    const [isCalendarScope, setIsCalendarScope] = useState("checking");
 
     const router = useRouter();
+    const isMobileOrTabScreen = InnerWidth() < 1024;
+
     const { eventDetails, currentMonth } = useAppStore();
     const queryClient = useQueryClient();
 
@@ -72,7 +75,12 @@ export default function LearnerSchedulePage() {
                 <LottieLoader isLoading={true} />
             ) : (
                 <div className="w-full h-full animate-fadeIn">
-                    <Calendar events={data || []} />
+                    {
+                        isMobileOrTabScreen ?
+                            <MobileCalender events={data || []} />
+                            :
+                            <Calendar events={data || []} />
+                    }
                     <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleNavigate} />
                     <FeedbackModal
                         mode="create"

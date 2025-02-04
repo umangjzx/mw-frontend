@@ -58,11 +58,11 @@ const LearnersTable: React.FC<LearnersTableProps> = ({
                         btnVariant="link"
                         title="Message Learner"
                     />
-                    <Button
+                    {/* <Button
                         onClick={() => handleUploadTestimonial(record.id)}
                         btnVariant="link"
                         title="Upload Testimonial"
-                    />
+                    /> */}
                 </div>
             ),
             className: "px-6 py-4",

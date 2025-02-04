@@ -28,7 +28,8 @@ export default function RootLayout({
             <body className={poppins.className}>
                 <GoogleOAuthProvider clientId={clientId}>
                     <RootLayoutClient>
-                        <DesktopVersionWrapper>{children}</DesktopVersionWrapper>
+                        {children}
+                        {/* <DesktopVersionWrapper>{children}</DesktopVersionWrapper> */}
                     </RootLayoutClient>
                 </GoogleOAuthProvider>
             </body>

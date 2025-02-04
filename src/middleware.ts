@@ -8,7 +8,7 @@ const LANDING_PAGE_ROUTES = ["/login", "/about-us", "/privacy-policy", "/terms-a
 
 export default function middleware(req: NextRequest) {
   const { pathname, origin } = req.nextUrl;
-  if (pathname === "/favicon.ico" || pathname.startsWith("/_next")) {
+  if (pathname === "/favicon.ico" || pathname === "/logo.png" || pathname.startsWith("/_next")) {
     return NextResponse.next();
   }
 

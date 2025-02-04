@@ -14,6 +14,7 @@ import { useQueryState } from "nuqs";
 import VolunteerFilterModal from "@/components/learners/Modals/VolunteerFilter";
 import { RiFilter3Line } from "react-icons/ri";
 import LottieLoader from "@/components/common/Loader/Lottie";
+import InnerWidth from "@/utils/innerWidth";
 
 interface VolunteerCardData {
     volunteerId: string;
@@ -51,6 +52,8 @@ export default function LearnersPage() {
     const [end_time] = useQueryState("end_time");
     const [volunteerId, setVolunteerId] = useQueryState("volunteerId");
     const [modalQuery, setModalQuery] = useQueryState("modal");
+
+    const isMobileScreen = InnerWidth() < 768;
 
     const { data, isLoading, isError } = useQuery({
         queryKey: [
@@ -150,7 +153,7 @@ export default function LearnersPage() {
             },
             actionButtons: [
                 {
-                    buttonTitle: "Volunteers I have worked with",
+                    buttonTitle: isMobileScreen ? "Volunteer History" : "Volunteers I have worked with",
                     buttonOnClick: () => router.push("/learner/my-volunteers"),
                     buttonClassName: "!bg-black !text-white hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4 !rounded-full",
                     buttonPlacement: "right",
@@ -161,7 +164,7 @@ export default function LearnersPage() {
     }, [pathname, setHeaderOptions, appliedFiltersCount]);
 
     return (
-        <div className="px-10 py-10 animate-fadeIn h-full">
+        <div className="p-5 py-8 lg:p-10 animate-fadeIn h-full">
             <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleModal} />
             <VolunteerViewModal isOpen={isOpen} onClose={handleModal} />
             <VolunteerFilterModal
@@ -172,9 +175,9 @@ export default function LearnersPage() {
             {isLoading ? (
                 <LottieLoader isLoading={true} />
             ) : isError ? (
-                <div>Error loading volunteers</div>
+                <div className="flex-center h-full w-full">Error loading volunteers</div>
             ) : (
-                <div className="grid grid-cols-3 gap-4 w-full">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full h-full pb-10">
                     {volunteerCardData.map((volunteer) => (
                         <VolunteerCard
                             key={volunteer.volunteerId}
@@ -182,7 +185,7 @@ export default function LearnersPage() {
                             {...volunteer}
                         />
                     ))}
-                    {volunteerCardData.length === 0 && <div>No Volunteer Found</div>}
+                    {volunteerCardData.length === 0 && <div className="flex-center h-full">No Volunteer Found</div>}
                 </div>
             )}
         </div>

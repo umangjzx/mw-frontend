@@ -13,6 +13,7 @@ interface CenterModalProps {
     children: React.ReactNode;
     customClassName?: string;
     titleClassName?: string;
+    childrenClassName?: string;
     primaryActionProps?: ButtonProps;
     secondaryActionProps?: ButtonProps;
     hideFooter?: boolean;
@@ -28,6 +29,7 @@ interface ViewModalProps {
     height?: number | string;
     style?: React.CSSProperties;
     className?: string;
+    borderRadius?: string;
 }
 
 interface SideModalProps {
@@ -42,7 +44,7 @@ interface SideModalProps {
     isDisabled?: boolean;
     isNeedButton?: boolean;
     isLoading?: boolean;
-    modalWidth?: number;
+    modalWidth?: number | string;
 }
 
 type ShowModalType = "view" | "edit" | "create" | null;

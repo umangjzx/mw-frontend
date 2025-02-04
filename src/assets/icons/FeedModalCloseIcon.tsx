@@ -1,9 +1,9 @@
-const FeedModalCloseIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => {
+const FeedModalCloseIcon = (props: React.SVGProps<SVGSVGElement>) => {
     return (
         <svg
             xmlns='http://www.w3.org/2000/svg'
-            width='40'
-            height='40'
+            width={props?.width || '40'}
+            height={props?.height || '40'}
             fill='none'
             viewBox='0 0 40 40'
             {...props}

@@ -14,6 +14,7 @@ const Button: React.FC<ButtonProps> = ({
     const variantStyles = {
         primary: "bg-primary text-white hover:bg-primary focus:bg-primary",
         secondary: "bg-black text-white hover:bg-black focus:bg-black",
+        tertiary: "bg-white text-black",
         error: "bg-error-light text-error hover:bg-error focus:bg-error-light",
         success: "bg-success-light text-success hover:bg-success focus:bg-success-light",
         link: "text-primary border-none shadow-none hover:underline !bg-transparent hover:!bg-transparent hover:!text-primary text-sm font-normal",

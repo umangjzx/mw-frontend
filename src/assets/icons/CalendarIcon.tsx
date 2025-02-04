@@ -1,8 +1,8 @@
-const SvgIcon: React.FC<React.HTMLAttributes<HTMLOrSVGElement>> = props => (
+const SvgIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg
         xmlns='http://www.w3.org/2000/svg'
-        width='20'
-        height='20'
+        width={props?.width || '20'}
+        height={props?.height || '20'}
         fill='none'
         viewBox='0 0 20 20'
         {...props}

@@ -16,7 +16,7 @@ export const useGlobalStore: StateCreator<UseGlobalStoreProps> = (set, get) => (
     documentId: null,
     setCurrentMonth: (date: string) => set({ currentMonth: date }),
     setEventDetails: (details: any) => {
-        const eventDetails = details?._def?.extendedProps;
+        const eventDetails = details?._def?.extendedProps  || details?.extendedProps;
         set({
             eventDetails: {
                 volunteer_id: eventDetails?.volunteerId,

@@ -11,6 +11,13 @@ import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
+import InnerWidth from "@/utils/innerWidth";
+import CardChips from "@/components/leaner/VolunteerCard/CardChips";
+import Image from "next/image";
+import DummyProfile from "@/assets/images/DummyProfile.png";
+import Button from "@/components/common/Button";
+import MobileMessageModal from "@/components/learners/Modals/MobileMessageModal";
+import LottieLoader from "@/components/common/Loader/Lottie";
 
 interface PaginationParams {
     page: number;
@@ -24,7 +31,52 @@ interface TableLearner {
     subject: string;
 }
 
+const LearnerCard = ({ learner, handleTestimonial, handleMessage }: { learner: any, handleTestimonial: () => void, handleMessage: () => void }) => {
+    const { profileImage = "image_url", name = "", classesTaken = "", location = "" } = learner;
+    return (
+        <div className="bg-white rounded-xl w-full p-4 space-y-4">
+            <div className="flex items-center gap-2">
+                <div className="w-[40px] h-[40px] rounded-full relative">
+                    <Image
+                        src={profileImage !== "image_url" ? profileImage : DummyProfile}
+                        alt="avatar"
+                        fill
+                        className="w-full h-full object-cover rounded-full"
+                    />
+                </div>
+                <div className="flex flex-col">
+                    <p className="text-base font-semibold">{name}</p>
+                    <p className="text-sm font-medium">{location && `From ${location}`}</p>
+                </div>
+            </div>
+            <div className="flex flex-col gap-1">
+                <div className="flex flex-wrap gap-1">
+                    <CardChips label="Classes Taken" value={classesTaken || "0"} />
+                </div>
+                <div className="w-full border-t pt-3 mt-3 flex justify-between gap-2">
+                    {/* <Button
+                        title="Upload Testimonial"
+                        customClassName="!px-2 !py-1 !h-auto !rounded-2xl !text-sm"
+                        btnVariant="tertiary"
+                        onClick={handleTestimonial}
+                    /> */}
+                    <Button
+                        title="Message Learner"
+                        customClassName="!px-2 !py-1 !h-auto !rounded-2xl !text-sm"
+                        btnVariant="tertiary"
+                        onClick={handleMessage}
+                    />
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function LearnersPage() {
+    const { setHeaderOptions } = useComponentStore();
+    const pathname = usePathname();
+    const isMobileScreen = InnerWidth() < 768;
+
     const [learnerData, setLearnerData] = useState<TableLearner[]>([]);
     const [pagination, setPagination] = useState<PaginationParams>({
         page: 1,
@@ -68,9 +120,6 @@ export default function LearnersPage() {
         });
     };
 
-    const { setHeaderOptions } = useComponentStore();
-    const pathname = usePathname();
-
     const [learnerId, setLearnerId] = useQueryState("id", {
         shallow: true,
     });
@@ -102,28 +151,48 @@ export default function LearnersPage() {
         });
     }, [setHeaderOptions]);
 
+    const LearnerMessageModal = isMobileScreen ? MobileMessageModal : MessageModal;
+
     return (
-        <div className="w-full h-full p-6 animate-fadeIn">
-            <MessageModal key={learnerId} receiverId={learnerId} isOpen={mode === "message"} onClose={handleClose} />
+        <div className="w-full h-full py-6 px-4 md:p-6 animate-fadeIn">
+            <LearnerMessageModal key={learnerId} receiverId={learnerId} isOpen={mode === "message"} onClose={handleClose} />
             <TestmonialModal
                 isOpen={mode === "testimonial"}
                 mode={"create"}
                 onClose={handleClose}
             />
-            <LearnersTable
-                data={learnerData}
-                handleMessageLearner={handleMessageLearner}
-                handleUploadTestimonial={handleUploadTestimonial}
-                loading={isLoading}
-                pagination={{
-                    current: pagination.page,
-                    pageSize: pagination.size,
-                    total: total,
-                    showSizeChanger: true,
-                    showQuickJumper: true,
-                }}
-                onChange={handleTableChange}
-            />
+            {
+                isMobileScreen ?
+                    isLoading ? (
+                        <LottieLoader isLoading={true} />
+                    ) :
+                        <div className="grid grid-cols-1">
+                            {
+                                learnerData.map((learner, index) => (
+                                    <LearnerCard
+                                        key={index}
+                                        learner={learner}
+                                        handleMessage={() => handleMessageLearner(learner?.id)}
+                                        handleTestimonial={() => handleUploadTestimonial(learner?.id)}
+                                    />
+                                ))
+                            }
+                        </div> :
+                    <LearnersTable
+                        data={learnerData}
+                        handleMessageLearner={handleMessageLearner}
+                        handleUploadTestimonial={handleUploadTestimonial}
+                        loading={isLoading}
+                        pagination={{
+                            current: pagination.page,
+                            pageSize: pagination.size,
+                            total: total,
+                            showSizeChanger: true,
+                            showQuickJumper: true,
+                        }}
+                        onChange={handleTableChange}
+                    />
+            }
         </div>
     );
 }
