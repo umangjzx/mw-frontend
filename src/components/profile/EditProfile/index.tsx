@@ -10,7 +10,7 @@ import { showToast } from "@/components/common/Toast";
 import { useQueryState } from "nuqs";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import FeedHeader from "@/components/community/FeedHeader/index";
-import { VolunteerProfileFormConstants, VolunteerProfileFormSchema } from "@/constants/profile";
+import { LearnerProfileFormConstants, LearnerProfileFormSchema, VolunteerProfileFormConstants, VolunteerProfileFormSchema } from "@/constants/profile";
 import { PUT_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 
@@ -28,9 +28,10 @@ const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditPro
 
     const role = Cookies.get("role");
     const isVolunteer = role === "volunteer";
-    
-    const UserProfileFormConstants = isVolunteer ? VolunteerProfileFormConstants : VolunteerProfileFormConstants;
-    const UserProfileFormSchema = isVolunteer ? VolunteerProfileFormSchema : VolunteerProfileFormSchema;
+
+    const UserProfileFormConstants = isVolunteer ? VolunteerProfileFormConstants : LearnerProfileFormConstants;
+    const UserProfileFormSchema = isVolunteer ? VolunteerProfileFormSchema : LearnerProfileFormSchema;
+
     type FormData = z.infer<typeof UserProfileFormSchema>;
 
     const {
@@ -44,15 +45,15 @@ const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditPro
 
     useEffect(() => {
         reset(data);
-    }, [currentMode])
+    }, [data])
 
     console.log("Errors:", errors);
 
-    const onSubmit = async(formData: FormData) => {
+    const onSubmit = async (formData: FormData) => {
         console.log("Form Data to submit:", formData);
         setIsSubmitting(true);
         try {
-            const endpoint = role === "volunteer" ? endpoints.volunteer.update(data?.userId || "") : endpoints.learner.update(data?.userId || "");
+            const endpoint = isVolunteer ? endpoints.volunteer.update(data?.userId || "") : endpoints.learner.update(data?.userId || "");
             const { status } = await PUT_API(endpoint, formData);
             if (status === 201) {
                 showToast({ message: "Profile updated" });
@@ -140,6 +141,7 @@ const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditPro
                                 error={errors[field.name as keyof FormData]?.message}
                                 value={value}
                                 onChange={onChange}
+                                rootClassName={"bg-white p-4 rounded-xl"}
                                 inputClassName={field?.inputClassName}
                                 labelClassName="[&_.inner-label]:!font-semibold [&_.inner-label]:!text-sm"
                             />

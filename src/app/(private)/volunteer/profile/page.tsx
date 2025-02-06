@@ -55,11 +55,15 @@ export default function ProfilePage() {
     useEffect(() => {
         if (!data) return;
         setVolunteerDetails(data);
+        
+        const {  volunteer_first_name, volunteer_last_name } = data?.volunteer_personal_info;
+        const description = data?.volunteer_special_needs?.description;
+
         setEditProfileData({
             userId: volunteerId,
-            volunteer_first_name: data?.volunteer_first_name,
-            volunteer_last_name: data?.volunteer_last_name,
-            volunteer_description: data?.volunteer_description,
+            volunteer_first_name: volunteer_first_name,
+            volunteer_last_name: volunteer_last_name,
+            volunteer_description: description,
             profile_picture: data?.profile_picture,
             volunteer_subjects: data?.volunteer_subjects,
             volunteer_languages: data?.volunteer_languages,
@@ -72,8 +76,8 @@ export default function ProfilePage() {
 
         const bioData = {
             userId: volunteerId,
-            full_name: `${data?.volunteer_first_name} ${data?.volunteer_last_name}`,
-            bio_description: data?.volunteer_description,
+            full_name: `${volunteer_first_name} ${volunteer_last_name}`,
+            bio_description: description,
             profile_picture: data?.profile_picture?.image_url,
             subjects: data?.volunteer_subjects?.map((subject: any) => subject?.subject_name),
             languages: data?.volunteer_languages?.map((language: any) => language?.language_name),
