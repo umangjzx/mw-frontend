@@ -127,9 +127,15 @@ const FeedViewModal = ({ isOpen, onClose, handleReportClick }: FeedViewModalProp
     };
 
     return (
-        <ViewModal modalOpen={isOpen} onClose={handleCloseModal} width={1200} height="720px">
-            <div className="grid grid-cols-[1fr,0.7fr] h-full">
-                <div className="relative w-full h-[720px]">
+        <ViewModal
+            className="md:!h-[90vh] lg:!h-[720px]"
+            modalOpen={isOpen}
+            onClose={handleCloseModal}
+            width={1200}
+            height="720px"
+        >
+            <div className="grid lg:grid-cols-[1fr,0.7fr] h-[720px]">
+                <div className="relative w-full md:h-[250px] lg:h-[720px]">
                     <Image
                         src={post?.images[0]?.image_url}
                         alt="feed image"
@@ -137,9 +143,12 @@ const FeedViewModal = ({ isOpen, onClose, handleReportClick }: FeedViewModalProp
                         className="object-cover"
                     />
                 </div>
-                <div className="flex flex-col h-[720px] relative">
+                <div className="flex flex-col lg:h-[720px] relative">
                     <div className="flex justify-end items-center px-5 pb-2 pt-5 gap-3">
-                        <span className="cursor-pointer" onClick={() => handleReportClick?.(post?.post_id)}>
+                        <span
+                            className="cursor-pointer"
+                            onClick={() => handleReportClick?.(post?.post_id)}
+                        >
                             <ReportIcon />
                         </span>
                         <FeedModalCloseIcon className="cursor-pointer" onClick={handleCloseModal} />

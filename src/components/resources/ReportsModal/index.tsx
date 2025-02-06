@@ -1,4 +1,3 @@
-
 import { Input } from "@/components/common/Input";
 import CenterModal from "@/components/common/Modals/CenterModal";
 
@@ -8,6 +7,7 @@ import { useEffect, useState } from "react";
 import { reportResource } from "@/api/resources";
 import { showToast } from "@/components/common/Toast";
 import { Radio } from "antd";
+import { useWindowSize } from "@/hooks/useWindowSize";
 
 type ResourceReportModalProps = {
     isOpen: boolean;
@@ -20,7 +20,7 @@ const options = [
     { label: "Spam or Advertising", value: "spam_or_advertising" },
     { label: "Misinformation", value: "misinformation" },
     { label: "Others", value: "others" },
-]
+];
 
 const ResourceReportModal = ({ resourceId, isOpen, onClose }: ResourceReportModalProps) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,25 +31,26 @@ const ResourceReportModal = ({ resourceId, isOpen, onClose }: ResourceReportModa
     useEffect(() => {
         setReportDescription("");
         setReportType("");
-    }, [isOpen])
+    }, [isOpen]);
 
     const handleSubmit = async () => {
         let message = "";
 
         if (!reportType) message = "Please, select the report";
         if (reportType === "others" && !reportDescription) message = "Description is required";
-        if (!resourceId)  message = "Resource ID is missing";
+        if (!resourceId) message = "Resource ID is missing";
 
         if (message) {
             showToast({ type: "error", message: message });
             return;
         }
-    
+
         setIsSubmitting(true);
         const payload = {
             resource_type_id: resourceId,
             report_type: "resource",
-            report_description: reportType === "others" ? `Others - ${reportDescription}` : reportType,
+            report_description:
+                reportType === "others" ? `Others - ${reportDescription}` : reportType,
         };
 
         try {
@@ -58,7 +59,7 @@ const ResourceReportModal = ({ resourceId, isOpen, onClose }: ResourceReportModa
                 type: isSuccess ? "success" : "error",
                 message: isSuccess ? "Report Submitted!" : "Report Not Submitted!",
             });
-    
+
             if (isSuccess) onClose();
         } catch (error) {
             showToast({ type: "error", message: "Something went wrong!" });
@@ -66,17 +67,13 @@ const ResourceReportModal = ({ resourceId, isOpen, onClose }: ResourceReportModa
             setIsSubmitting(false);
         }
     };
-    
 
     const buttonProps = {
         secondary: {
             onClick: onClose,
             title: "Cancel",
             btnVariant: "secondary",
-            customClassName: cn(
-                "!bg-transparent !text-black",
-                "!rounded-xl"
-            ),
+            customClassName: cn("!bg-transparent !text-black", "!rounded-xl"),
         },
         primary: {
             onClick: handleSubmit,
@@ -85,21 +82,24 @@ const ResourceReportModal = ({ resourceId, isOpen, onClose }: ResourceReportModa
             disabled: isSubmitting,
         },
     };
-
+    const { width } = useWindowSize();
+    const isMobile = width < 768;
+    const isTablet = width >= 768 && width < 1024;
     return (
         <CenterModal
             title={"Why do you want to report this resource?"}
             zIndex={2000}
             isOpen={isOpen}
             onClose={onClose}
-            width="40%"
+            width={isMobile ? "100%" : isTablet ? "60%" : "40%"}
             loading={isSubmitting}
             customClassName="max-h-[80vh] !rounded-2xl overflow-hidden !z-[2000]"
             secondaryActionProps={buttonProps.secondary}
             primaryActionProps={buttonProps.primary}
         >
             <p className="text-base mb-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
+                incididunt ut labore et dolore magna aliqua.
             </p>
             <div>
                 <Radio.Group
@@ -112,7 +112,9 @@ const ResourceReportModal = ({ resourceId, isOpen, onClose }: ResourceReportModa
                         {options.map((option) => (
                             <div
                                 key={option.value}
-                                className={`flex w-full items-center hover:bg-background-input bg-background-input p-2 rounded-lg border ${reportType === option.value && 'border-black'}`}
+                                className={`flex w-full items-center hover:bg-background-input bg-background-input p-2 rounded-lg border ${
+                                    reportType === option.value && "border-black"
+                                }`}
                             >
                                 <Radio className="w-full" value={option.value}>
                                     <div>
@@ -123,7 +125,7 @@ const ResourceReportModal = ({ resourceId, isOpen, onClose }: ResourceReportModa
                         ))}
                     </div>
                 </Radio.Group>
-                {reportType === 'others' &&
+                {reportType === "others" && (
                     <Input
                         name="description"
                         inputType="textarea"
@@ -132,7 +134,7 @@ const ResourceReportModal = ({ resourceId, isOpen, onClose }: ResourceReportModa
                         placeholder="Please tell us the details"
                         onChange={(event) => setReportDescription(event)}
                     />
-                }
+                )}
             </div>
         </CenterModal>
     );

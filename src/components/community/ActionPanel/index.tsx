@@ -9,9 +9,9 @@ const ActionPanel = () => {
         setActiveTab(tab);
     };
 
-    // Mobile view - Tags
-    const MobileView = () => (
-        <div className="flex gap-2 ">
+    // Mobile and Tablet view - Tags
+    const MobileTabletView = () => (
+        <div className="flex gap-2">
             {CommunityTabs.map((tab) => (
                 <button
                     key={tab.route}
@@ -53,10 +53,10 @@ const ActionPanel = () => {
 
     return (
         <>
-            <div className="block md:hidden">
-                <MobileView />
+            <div className="block lg:hidden">
+                <MobileTabletView />
             </div>
-            <div className="hidden md:block">
+            <div className="hidden lg:block">
                 <DesktopView />
             </div>
         </>

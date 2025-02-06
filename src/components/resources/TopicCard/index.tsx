@@ -15,7 +15,7 @@ const TopicCard = ({ index, item, onClick }: Props) => {
         <>
             <div
                 onClick={onClick}
-                className="w-[170px] md:w-[200px] cursor-pointer hover:opacity-80 transition-all duration-300 h-[100px] rounded-xl flex items-center justify-center"
+                className="w-full md:w-[200px] cursor-pointer hover:opacity-80 transition-all duration-300 h-[100px] rounded-xl flex items-center justify-center"
                 style={{
                     backgroundImage: index % 2 === 0 ? gradient : gradientReverse,
                 }}

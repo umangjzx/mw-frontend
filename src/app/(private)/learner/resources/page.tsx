@@ -138,7 +138,7 @@ export default function ResourcesPage() {
     const isMobile = width < 768; // Define mobile breakpoint
 
     return (
-        <div className="w-full h-full pt-8 flex flex-col gap-2 p-4 animate-fadeIn">
+        <div className="w-full  pt-8 flex flex-col gap-2 p-4 animate-fadeIn">
             {/* Resource Modal */}
             <ResourceModal
                 triggerReload={triggerReload}
@@ -187,13 +187,11 @@ export default function ResourcesPage() {
                     hideSectionHeader={category !== null}
                     data={TopicData}
                     title={!isMobile ? "Topics" : undefined}
-                    
                     renderItem={(item, index) => (
                         <TopicCard
                             onClick={() => handleTopicClick(item.title)}
                             index={index}
                             item={item}
-                            
                         />
                     )}
                 />

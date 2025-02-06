@@ -77,7 +77,7 @@ export default function CommunityPage() {
                 handleReportClick={handleReportClick}
             />
             <div className="col-span-12 flex flex-col min-h-0 flex-grow">
-                <div className="md:hidden w-full bg-white border-b sticky top-0 z-10">
+                <div className="lg:hidden w-full bg-white border-b sticky top-0 z-10">
                     <div className="w-full overflow-x-auto no-scrollbar px-4 py-3 bg-[#F4F7FB]">
                         <ActionPanel />
                     </div>
@@ -101,9 +101,9 @@ export default function CommunityPage() {
                     </div>
 
                     {/* Desktop Action Panel */}
-                    <div className="hidden md:block md:w-4/12 min-h-0">
-                        <div className="bg-white rounded-xl p-5 h-[calc(100dvh-120px)]">
-                            <div className="h-full overflow-auto no-scrollbar">
+                    <div className="hidden lg:block  min-h-0">
+                        <div className="bg-white rounded-xl p-5 w-[380px] h-[390px]">
+                            <div className="h-full w-[353px] overflow-auto no-scrollbar">
                                 <ActionPanel />
                             </div>
                         </div>
