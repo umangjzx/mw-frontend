@@ -17,7 +17,7 @@ const Card = ({ className, resource, onClick, handleReportClick }: CardProps) =>
 
     return (
         <div
-            className={`md:w-[259px] md:h-[313px] rounded-xl shadow-md border border-[#f7f7f7] flex flex-col justify-between ${className}`}
+            className={`w-[359px] md:w-[259px] md:h-[313px] rounded-xl shadow-md border border-[#f7f7f7] flex flex-col justify-between ${className}`}
         >
             <div className="w-full h-[120px] relative">
                 <span className="absolute top-2 right-2 flex items-center gap-1 text-white z-10">

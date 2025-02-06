@@ -55,7 +55,7 @@ export default function CommunityPage() {
     const handleReportClick = (resource_id: string) => {
         setReportModalOpen(true);
         setReportModalPostId(resource_id);
-    }
+    };
 
     const handleCloseReportModal = () => {
         setReportModalOpen(false);
@@ -63,8 +63,7 @@ export default function CommunityPage() {
     };
 
     return (
-        <div className="grid grid-cols-12 p-6 w-full h-full overflow-hidden animate-fadeIn">
-
+        <div className="grid grid-cols-12 h-[100dvh] overflow-hidden animate-fadeIn">
             <CommunityReportModal
                 postId={reportModalPostId}
                 isOpen={reportModalOpen}
@@ -72,18 +71,44 @@ export default function CommunityPage() {
             />
 
             <PostModal isOpen={mode === "add"} onClose={handleCloseModal} />
-            <FeedViewModal isOpen={mode === "view"} onClose={handleCloseModal} handleReportClick={handleReportClick} />
-            <div className="col-span-12 flex justify-between gap-4 overflow-hidden h-full w-full">
-                <div className="col-span-8 w-full bg-white rounded-3xl mb-6 h-full overflow-auto no-scrollbar p-6 flex flex-col gap-4">
-                    <h2>{title}</h2>
-                    {activeTab === "your_notifications" ? (
-                        <NotificationCard />
-                    ) : (
-                        <FeedCard onClick={handleFeedCardClick} />
-                    )}
+            <FeedViewModal
+                isOpen={mode === "view"}
+                onClose={handleCloseModal}
+                handleReportClick={handleReportClick}
+            />
+            <div className="col-span-12 flex flex-col min-h-0 flex-grow">
+                {/* Mobile Action Panel */}
+                <div className="lg:hidden w-full bg-white border-b sticky top-0 z-10">
+                    <div className="w-full overflow-x-auto no-scrollbar px-4 py-3 bg-[#F4F7FB]">
+                        <ActionPanel />
+                    </div>
                 </div>
-                <div className="col-span-3">
-                    <ActionPanel />
+
+                <div className="flex md:flex-row justify-between gap-4 md:p-6 flex-1 min-h-0 overflow-auto">
+                    {/* Main Content Area */}
+                    <div className="flex-1 md:w-8/12 bg-white p-0 md:p-0 md:rounded-3xl overflow-hidden flex flex-col">
+                        <div className="flex-1 overflow-auto no-scrollbar md:px-6 pb-2 md:pb-6">
+                            {activeTab === "your_notifications" ? (
+                                <NotificationCard />
+                            ) : (
+                                <div className="flex flex-col min-h-0 flex-grow">
+                                    <FeedCard
+                                        onClick={handleFeedCardClick}
+                                        isManagePost={activeTab === "manage_your_posts"}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Desktop Action Panel */}
+                    <div className="hidden lg:block  min-h-0">
+                        <div className="bg-white rounded-xl  lg:w-[380px] lg:h-[390px]">
+                            <div className="h-full overflow-auto no-scrollbar">
+                                <ActionPanel />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

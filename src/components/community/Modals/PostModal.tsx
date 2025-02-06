@@ -9,7 +9,8 @@ import { cn } from "@/utils/merge-class";
 import { useState } from "react";
 import Cookies from "js-cookie";
 import { useQueryClient } from "@tanstack/react-query";
-
+import { useWindowSize } from "@/hooks/useWindowSize";
+import FeedHeader from "../FeedHeader";
 type PostModalProps = {
     isOpen: boolean;
     onClose: () => void;
@@ -55,27 +56,51 @@ const PostModal = ({ isOpen, onClose }: PostModalProps) => {
             console.log("Error: ", err);
         },
     });
-
+    const { width } = useWindowSize();
+    const isMobile = width < 768;
+    const isTablet = width >= 768 && width < 1024;
     return (
         <CenterModal
-            title={"Add new post"}
             isOpen={isOpen}
             onClose={onClose}
             loading={isPending}
-            width="40%"
-            customClassName="max-h-[80vh] !rounded-2xl overflow-hidden"
-            secondaryActionProps={{
-                onClick: onSave,
-                title: "Share now",
-                customClassName: "!rounded-xl hover:!bg-black hover:!text-white",
-            }}
-            primaryActionProps={{
-                onClick: onClose,
-                title: "Cancel",
-                btnVariant: "secondary",
-                customClassName: cn("!bg-transparent !text-black", "!rounded-xl"),
-            }}
+            width={isMobile ? "100vw" : isTablet ? "60%" : "40%"}
+            height={isMobile ? "100vh" : "auto"}
+            customClassName={cn(
+                "max-h-[80vh] !rounded-2xl overflow-hidden",
+                isMobile && "!h-screen !max-h-[100dvh] !rounded-none  [&_.ant-modal-content]:!px-4"
+            )}
+            hideFooter={isMobile}
+            secondaryActionProps={
+                !isMobile
+                    ? {
+                          onClick: onSave,
+                          title: "Share now",
+                          customClassName: "!rounded-xl hover:!bg-black hover:!text-white",
+                      }
+                    : undefined
+            }
+            primaryActionProps={
+                !isMobile
+                    ? {
+                          onClick: onClose,
+                          title: "Cancel",
+                          btnVariant: "secondary",
+                          customClassName: cn("bg-transparent !text-black", "!rounded-xl"),
+                      }
+                    : undefined
+            }
         >
+            <div className="pb-2 hidden md:block">
+                <h2>Add New Post</h2>
+            </div>
+            <div className=" md:hidden">
+                <FeedHeader
+                    title="Add new post"
+                    onClose={onClose}
+                    onSave={() => onSave(undefined)}
+                />
+            </div>
             {LearnerCommunityFormConstants.map((field: any) => (
                 <Input
                     key={field.name}

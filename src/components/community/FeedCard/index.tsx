@@ -215,16 +215,13 @@ const FeedCard = ({ onClick, isManagePost = false }: FeedCardProps) => {
                                                     <EditIcon />
                                                 </span>
                                                 <span
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        onClick(post.post_id);
-                                                    }}
+                                                  onClick={() => {}}
                                                     className="cursor-pointer md:hidden"
                                                 >
                                                     <DeleteIcon />
                                                 </span>
                                                 <span
-                                                    onClick={() => onClick(post.post_id)}
+                                                    onClick={() => {}}
                                                     className="cursor-pointer hidden md:block"
                                                 >
                                                     <MenuDot />
@@ -232,7 +229,7 @@ const FeedCard = ({ onClick, isManagePost = false }: FeedCardProps) => {
                                             </>
                                         ) : (
                                             <span
-                                                onClick={() => onClick(post.post_id)}
+                                            onClick={() => {}}
                                                 className="cursor-pointer"
                                             >
                                                 <MenuDot />

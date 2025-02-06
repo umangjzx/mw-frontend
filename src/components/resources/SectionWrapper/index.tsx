@@ -67,13 +67,13 @@ const SectionWrapper = ({
             {/* Scrollable Content Section */}
             <div
                 ref={scrollContainerRef}
-                className="overflow-x-auto scrollbar-hide flex relative justify-center"
+                className=" overflow-y-auto h-full md:overflow-x-auto scrollbar-hide flex relative justify-center"
                 style={{
                     scrollbarWidth: "none",
                     msOverflowStyle: "none",
                 }}
             >
-                <div className="flex flex-row gap-2 md:flex-row px-2 md:gap-4 md:px-4 pb-4 w-[353px] md:w-full justify-center md:justify-normal">
+                <div className="flex flex-col items-center md:items-start gap-4 md:flex-row px-2 md:gap-4 md:px-4 pb-4 w-[353px] md:w-full justify-center md:justify-normal">
                     {placeHolderComponent && (
                         <div onClick={onPlaceHolderClick} className="cursor-pointer">
                             {placeHolderComponent}

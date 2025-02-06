@@ -144,8 +144,8 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
             customClassName={cn(
                 "sm:max-h-screen overflow-hidden",
                 isMobile
-                    ? "[&_.ant-modal-content]:!p-0 !p-0 !m-0 !h-[100dvh] !max-h-none !w-screen !max-w-none rounded-none"
-                    : "!rounded-2xl"
+                    ? "[&_.ant-modal-content]:!p-0 !p-0 !m-0 !h-[100dvh] !max-h-none !w-screen !max-w-none rounded-none bg-background-input"
+                    : "!rounded-2xl "
             )}
             secondaryActionProps={buttonProps.secondary}
             primaryActionProps={buttonProps.primary}
@@ -156,7 +156,7 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
                     onSubmit={handleSubmit(onSubmit)}
                     className={cn(
                         "flex flex-col gap-4",
-                        isMobile && "h-[100vh] overflow-y-auto  px-4 pb-4"
+                        isMobile && "h-[100vh] overflow-y-auto  px-4 pb-4  pt-2"
                     )}
                 >
                     {ResourceFormConstants.map((field: any) => (

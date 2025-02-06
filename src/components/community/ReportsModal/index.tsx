@@ -20,7 +20,7 @@ const options = [
     { label: "Spam or Advertising", value: "spam_or_advertising" },
     { label: "Misinformation", value: "misinformation" },
     { label: "Others", value: "others" },
-]
+];
 
 const CommunityReportModal = ({ postId, isOpen, onClose }: CommunityReportModalProps) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,14 +31,14 @@ const CommunityReportModal = ({ postId, isOpen, onClose }: CommunityReportModalP
     useEffect(() => {
         setReportDescription("");
         setReportType("");
-    }, [isOpen])
+    }, [isOpen]);
 
     const handleSubmit = async () => {
         let message = "";
 
         if (!reportType) message = "Please, select the report";
         if (reportType === "others" && !reportDescription) message = "Description is required";
-        if (!postId)  message = "Post ID is missing";
+        if (!postId) message = "Post ID is missing";
 
         if (message) {
             showToast({ type: "error", message: message });
@@ -73,10 +73,7 @@ const CommunityReportModal = ({ postId, isOpen, onClose }: CommunityReportModalP
             onClick: onClose,
             title: "Cancel",
             btnVariant: "secondary",
-            customClassName: cn(
-                "!bg-transparent !text-black",
-                "!rounded-xl"
-            ),
+            customClassName: cn("!bg-transparent !text-black", "!rounded-xl"),
         },
         primary: {
             onClick: handleSubmit,
@@ -126,7 +123,7 @@ const CommunityReportModal = ({ postId, isOpen, onClose }: CommunityReportModalP
                         ))}
                     </div>
                 </Radio.Group>
-                {reportType === 'others' &&
+                {reportType === "others" && (
                     <Input
                         name="description"
                         inputType="textarea"
@@ -135,7 +132,7 @@ const CommunityReportModal = ({ postId, isOpen, onClose }: CommunityReportModalP
                         placeholder="Please tell us the details"
                         onChange={(event) => setReportDescription(event)}
                     />
-                }
+                )}
             </div>
         </CenterModal>
     );
