@@ -14,12 +14,16 @@ import { endpoints } from "@/api/constants";
 import LottieLoader from "@/components/common/Loader/Lottie";
 import MobileProfileView from "@/components/profile/MobileProfileView";
 import InnerWidth from "@/utils/innerWidth";
+import { useQueryState } from "nuqs";
+import EditProfileModal from "@/components/profile/EditProfile";
 
 export default function ProfilePage() {
     const { setHeaderOptions } = useComponentStore();
-    const { setVolunteerDetails } = useAppStore();
+    const { volunteerDetails, setVolunteerDetails } = useAppStore();
     const router = useRouter();
     const isMobileOrTabScreen = InnerWidth() < 1024;
+    const [mode, setMode] = useQueryState("mode");
+    const [editProfileData, setEditProfileData] = useState({});
 
     const volunteerId = Cookies.get("volunteer_id") || "";
     const [volunteerData, setVolunteerData] = useState({ bio: {}, overview: {} });
@@ -35,14 +39,35 @@ export default function ProfilePage() {
             title: "Profile",
             titleIcon: <IoIosArrowBack className="text-lg" />,
             titleIconClick: () => router.back(),
-            showButton: false,
+            actionButtonTitle: "Edit Profile",
+            actionButtonClassName:
+                "lg:hidden !bg-black !text-white !rounded-xl hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4",
+            actionButtonOnClick: () => setMode("edit"),
+            actionButtonVariant: "secondary",
+            actionButtonPlacement: "right",
+            showButton: true,
             hideSearch: true
+
         });
     }, []);
 
     useEffect(() => {
         if (!data) return;
         setVolunteerDetails(data);
+        setEditProfileData({
+            userId: volunteerId,
+            volunteer_first_name: data?.volunteer_first_name,
+            volunteer_last_name: data?.volunteer_last_name,
+            volunteer_description: data?.volunteer_description,
+            profile_picture: data?.profile_picture,
+            volunteer_subjects: data?.volunteer_subjects,
+            volunteer_languages: data?.volunteer_languages,
+            volunteer_skills: data?.volunteer_skills,
+            volunteer_experience: data?.volunteer_experience,
+            volunteer_education: data?.volunteer_education,
+            country: data?.volunteer_contact_details?.country,
+            volunteer_gender: data?.volunteer_gender,
+        })
 
         const bioData = {
             userId: volunteerId,
@@ -53,7 +78,7 @@ export default function ProfilePage() {
             languages: data?.volunteer_languages?.map((language: any) => language?.language_name),
             skills: data?.volunteer_skills?.map((skill: any) => skill?.skill_name),
             experience: data?.volunteer_experience,
-            education: data?.volunteer_education,            
+            education: data?.volunteer_education,
             country: data?.volunteer_contact_details?.country,
             gender: data?.volunteer_gender,
             connections: data?.students_connected,
@@ -78,12 +103,18 @@ export default function ProfilePage() {
 
     return (
         <div className="h-full animate-fadeIn">
+            <EditProfileModal
+                data={editProfileData}
+                isOpen={mode === "edit"}
+                onClose={() => setMode(null)}
+                triggerReload={() => setMode("")}
+            />
             {
                 isMobileOrTabScreen ?
                     <MobileProfileView
                         userData={volunteerData?.bio}
                         reviewEndpoint={endpoints.learnerFeedback.get(volunteerId)}
-                     />
+                    />
                     :
                     <div className="h-full w-full grid grid-cols-[1fr,2fr] gap-10 p-5">
                         <Bio data={volunteerData.bio} />

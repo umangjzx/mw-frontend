@@ -10,7 +10,6 @@ import LottieLoader from "../../Loader/Lottie";
 
 const ImageUpload: React.FC<BaseUploaderProps> = ({ ...props }) => {
     const { value = [], maxFiles = 1, disabled = false, handleRemove, handleClick } = props;
-    console.log(props.fileType, "value for image upload");
     const pathname = usePathname();
     const isCommunity = pathname.includes("community");
 

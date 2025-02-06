@@ -350,7 +350,7 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
             modalOpen={isOpen}
             onClose={onClose}
             width={855}
-            height={isMobileScreen ? "100vh" : ""}
+            height={isMobileScreen ? "100dvh" : ""}
             borderRadius={isMobileScreen ? "0px" : ""}
             className="max-md:!w-full max-md:!max-w-full max-md:!m-0"
         >

@@ -11,6 +11,7 @@ type HeaderOptions = {
     actionButtonTitle?: string;
     actionButtonOnClick?: () => void;
     actionButtonClassName?: string;
+    actionButtonVariant?: "primary" | "secondary" | "tertiary" | string;
     actionButtonIcon?: React.ReactNode;
     actionButtonPlacement?: "left" | "right";
     searchPlaceholder?: string;

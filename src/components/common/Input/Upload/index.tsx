@@ -110,6 +110,7 @@ const Uploader = ({ maxFiles = 1, ...props }: UploadProps) => {
                         {...props}
                         handleRemove={handleRemove}
                         handleClick={handleClick}
+                        isLoading={isPending}
                     />
                 );
             case "cover-image":
