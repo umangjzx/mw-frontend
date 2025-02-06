@@ -19,7 +19,7 @@ import EditProfileModal from "@/components/profile/EditProfile";
 
 export default function ProfilePage() {
     const { setHeaderOptions } = useComponentStore();
-    const { volunteerDetails, setVolunteerDetails } = useAppStore();
+    const { setVolunteerDetails } = useAppStore();
     const router = useRouter();
     const isMobileOrTabScreen = InnerWidth() < 1024;
     const [mode, setMode] = useQueryState("mode");
@@ -28,11 +28,12 @@ export default function ProfilePage() {
     const volunteerId = Cookies.get("volunteer_id") || "";
     const [volunteerData, setVolunteerData] = useState({ bio: {}, overview: {} });
 
-    const { data, isLoading } = useQuery({
-        queryKey: ["volunteer", volunteerId],
+    const { data, isLoading, refetch } = useQuery({
+        queryKey: ["volunteer-profile", volunteerId],
         queryFn: () => getIndividualVolunteer(volunteerId),
         enabled: !!volunteerId
     });
+    const triggerReload = async () => await refetch();
 
     useEffect(() => {
         setHeaderOptions({
@@ -107,7 +108,7 @@ export default function ProfilePage() {
                 data={editProfileData}
                 isOpen={mode === "edit"}
                 onClose={() => setMode(null)}
-                triggerReload={() => setMode("")}
+                triggerReload={triggerReload}
             />
             {
                 isMobileOrTabScreen ?

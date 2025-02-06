@@ -29,9 +29,9 @@ const ProfileInfo = ({
 }: {
     bioData: UserBioDataProps;
 }) => (
-    <div className="gap-4 px-5 max-lg:py-5">
+    <div className="gap-4 px-5 max-md:py-5 max-lg:py-10 sm:mx-auto">
         <div className="flex items-center gap-3">
-            <div className="relative w-[80px] h-[80px] rounded-full shrink-0">
+            <div className="relative w-[80px] h-[80px] md:w-[100px] md:h-[100px] rounded-full shrink-0">
                 <Image
                     src={bioData?.profile_picture}
                     alt="avatar"
@@ -230,7 +230,7 @@ const MobileProfileView = ({ userData, reviewEndpoint }: { userData: any, review
     const totalReviews = userFeedback?.feedbacks.length;
 
     return (
-        <div className="flex flex-col gap-0 md:gap-4 pt-4 md:py-4 h-full">
+        <div className="flex flex-col gap-0 lg:gap-4 lg:py-4 h-full">
             <ProfileInfo bioData={userData} />
             <TabButtons
                 activeTab={activeTab}

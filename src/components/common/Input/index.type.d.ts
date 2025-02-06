@@ -14,6 +14,7 @@ type BaseInputProps = {
     required?: boolean;
     error?: any;
     disabled?: boolean;
+    rootClassName?: string;
     className?: string;
     labelClassName?: string;
     inputClassName?: string;

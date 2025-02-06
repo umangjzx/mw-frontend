@@ -38,6 +38,7 @@ export const Input: React.FC<InputProps> = (props) => {
         error,
         disabled = false,
         className = "",
+        rootClassName = "",
         labelClassName = "",
     } = props;
 
@@ -45,7 +46,7 @@ export const Input: React.FC<InputProps> = (props) => {
         if (!label) return null;
 
         const labelContent = (
-            <div className="max-lg:font-normal max-lg:text-sm">
+            <div className="inner-label max-lg:font-normal max-lg:text-sm">
                 <span>
                     {label}
                     {required && <span className="text-red-500">&nbsp;*</span>}
@@ -286,7 +287,7 @@ export const Input: React.FC<InputProps> = (props) => {
     };
 
     return (
-        <div className={`mb-1 lg:mb-4 w-full h-auto flex flex-col gap-2 ${className}`}>
+        <div className={`mb-1 lg:mb-4 w-full h-auto flex flex-col gap-2 ${className} ${rootClassName}`}>
             {renderLabel()}
             {renderInput()}
             {error && <p className="text-xs text-red-500 capitalize">{error}</p>}

@@ -28,7 +28,7 @@ const CommonHeader: React.FC = () => {
         titleIcon,
         title,
         titleIconClick,
-        actionButtons,
+        actionButtons = [],
         hideSearch
     } = headerOptions || {};
 
@@ -118,26 +118,30 @@ const CommonHeader: React.FC = () => {
                     ))}
                 </div>
             </div>
-            <div className="lg:hidden w-full flex gap-2 px-3 pb-2">
-                {leftButton?.showButton && (
-                    <Button
-                        title={leftButton?.buttonTitle}
-                        onClick={leftButton?.buttonOnClick}
-                        rootClassName={leftButton?.buttonClassName}
-                        size="small"
-                        icon={leftButton?.buttonIcon}
-                    />
-                )}
-                {actionButtons?.map((button: ActionButtons) => (
-                    <Button
-                        title={button?.buttonTitle}
-                        onClick={button?.buttonOnClick}
-                        rootClassName={button?.buttonClassName}
-                        size="small"
-                        icon={button?.buttonIcon}
-                    />
-                ))}
-            </div>
+            {
+                (leftButton?.showButton || actionButtons?.length > 0) && (
+                    <div className="lg:hidden w-full flex gap-2 px-3 pb-2">
+                        {leftButton?.showButton && (
+                            <Button
+                                title={leftButton?.buttonTitle}
+                                onClick={leftButton?.buttonOnClick}
+                                rootClassName={leftButton?.buttonClassName}
+                                size="small"
+                                icon={leftButton?.buttonIcon}
+                            />
+                        )}
+                        {actionButtons?.map((button: ActionButtons) => (
+                            <Button
+                                title={button?.buttonTitle}
+                                onClick={button?.buttonOnClick}
+                                rootClassName={button?.buttonClassName}
+                                size="small"
+                                icon={button?.buttonIcon}
+                            />
+                        ))}
+                    </div>
+                )
+            }
             {isMobileOrTabScreen &&
                 <div className={`absolute z-100 w-full h-full bg-white flex-center gap-2 px-5 transform transition-all duration-500 ${isSearchInputOpen ? "top-0 right-0" : "top-0 -right-full"}`}>
                     <Input

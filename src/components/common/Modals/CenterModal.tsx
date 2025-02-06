@@ -85,7 +85,7 @@ const CenterModal: React.FC<CenterModalProps> = ({
             <div className={`flex w-full h-full md:h-screen lg:h-full flex-col`}>
                 {header}
                 {/* Modal Content */}
-                <div className="flex-1 max-md:pt-4  overflow-y-auto max-h-[93vh]  md:bg-white md:max-h-[90vh] lg:max-h-[50vh] mb-4 pr-2 no-scrollbar">
+                <div className="flex-1 max-md:pt-4 overflow-y-auto max-h-[93vh] bg-[#F4F7FB] md:bg-white md:max-h-[50vh] mb-4 no-scrollbar">
                     {children}
                 </div>
             </div>
