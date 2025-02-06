@@ -1,65 +1,106 @@
-export const LearnerProfileFormConstants: FormField[] = [
+import { z } from "zod";
+import nationalities from "@/data/nationalities.json"
+
+export const VolunteerProfileFormSchema = z.object({
+    volunteer_first_name: z.string({ required_error: "First Name is required" }).min(1, "First Name  is required"),
+    volunteer_last_name: z.string({ required_error: "Last Name is required" }).min(1, "Last Name  is required"),
+    profile_picture: z
+        .object({
+            image_url: z.string(),
+            image_id: z.string(),
+        })
+        .or(z.undefined())
+        .refine((value) => value, {
+            message: "Please upload a single cover image.",
+        }),
+    volunteer_description: z
+        .string({ required_error: "Bio is required" })
+        .min(1, "Bio is required"),
+    country: z.string({ required_error: "Country selection is required" }).min(1, "Country selection is required"),
+    volunteer_subjects: z
+        .array(z.any(), { required_error: "At least one subject is required" })
+        .min(1, "At least one subject is required"),
+    volunteer_languages: z
+        .array(z.any(), { required_error: "At least one language is required" })
+        .min(1, "At least one language is required"),
+    volunteer_skills: z
+        .array(z.any(), { required_error: "At least one skill is required" })
+        .min(1, "At least one skill is required"),
+});
+
+export const VolunteerProfileFormConstants: FormField[] = [
     {
-        name: "username",
-        label: "Username",
+        name: "volunteer_first_name",
+        label: "First Name",
         inputType: "text",
-        placeholder: "John Smith",
-        disabled: true,
+        placeholder: "Eg. Walter",
+        gridCols: 1,
+        required: true,
     },
     {
-        name: "profileImage",
+        name: "volunteer_last_name",
+        label: "Last Name",
+        inputType: "text",
+        placeholder: "Eg. White",
+        gridCols: 1,
+        required: true,
+    },
+    {
+        name: "profile_picture",
+        fileType: "image/*",
         label: "Image",
         inputType: "upload",
         variant: "profile-image",
     },
     {
-        name: "bio",
+        name: "volunteer_description",
         label: "Bio",
         inputType: "textarea",
         placeholder: "Tell us about yourself...",
     },
     {
-        name: "location",
-        label: "Location",
-        inputType: "select",
-        placeholder: "Select Location",
-    },
-    {
-        name: "subjectsTeach",
-        label: "Subjects I Teach",
-        inputType: "multiselect",
-        placeholder: "Search and Select",
-        options: [
-            { label: "Music", value: "music" },
-            { label: "Math", value: "math" },
-            { label: "Physics", value: "physics" },
-            // Add more subjects as needed
-        ],
-    },
-    {
-        name: "languagesSpoken",
+        name: "volunteer_languages",
         label: "Languages Spoken",
-        inputType: "multiselect",
-        placeholder: "Search and Select",
-        options: [
-            { label: "English", value: "english" },
-            { label: "Spanish", value: "spanish" },
-            { label: "French", value: "french" },
-            // Add more languages as needed
-        ],
+        inputType: "async-select",
+        variant: "multi",
+        placeholder: "English, Tamil...",
+        endpoint: "languages",
+        responseAsLabel: "language_name",
+        responseAsValue: ["language_id", "language_name"],
+        required: true,
     },
     {
-        name: "skills",
+        name: "volunteer_subjects",
+        label: "Subjects I Teach",
+        inputType: "async-select",
+        placeholder: "Select Subjects",
+        creatable: true,
+        variant: "multi",
+        required: true,
+        endpoint: "subjects",
+        responseAsLabel: "subject_name",
+        responseAsValue: ["subject_id", "subject_name"],
+    },
+    {
+        name: "volunteer_skills",
         label: "Skills",
-        inputType: "multiselect",
-        placeholder: "Search and Select",
-        options: [
-            { label: "Music Therapy", value: "music_therapy" },
-            { label: "Early Childhood Education", value: "early_childhood_education" },
-            { label: "Language Development", value: "language_development" },
-            { label: "Art Therapy", value: "art_therapy" },
-            { label: "Behavioral Support", value: "behavioral_support" },
-            // Add more skills as needed
-        ],
+        inputType: "async-select",
+        placeholder: "Select skills",
+        creatable: true,
+        endpoint: "skills",
+        responseAsLabel: "skill_name",
+        responseAsValue: ["skill_id", "skill_name"],
+        variant: "multi",
+        required: true,
+    },
+    {
+        name: "country",
+        label: "Country",
+        inputType: "select",
+        placeholder: "Select Country",
+        options: nationalities,
+        showSearch: true,
+        gridCols: 1,
+        required: true,
     },
 ];

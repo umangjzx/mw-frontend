@@ -4,6 +4,7 @@ import TagComponent from "@/components/common/Tag";
 import Image from "next/image";
 import EditProfileIcon from "@/assets/icons/EditProfileIcon";
 import Cookies from "js-cookie"
+import Link from "next/link";
 
 const Bio = ({ data }: any) => {
     const text = Cookies.get("role") || "";
@@ -18,7 +19,9 @@ const Bio = ({ data }: any) => {
                         <TagComponent text={text} className="text-xs py-1 px-2" />
                     </div>
                 </div>
-                {/* <EditProfileIcon /> */}
+                <Link href={`/${text}/profile?mode=edit`}>
+                    <EditProfileIcon />
+                </Link>
             </div>
         </div>
     );

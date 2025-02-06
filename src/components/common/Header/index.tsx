@@ -22,6 +22,7 @@ const CommonHeader: React.FC = () => {
         actionButtonIcon,
         actionButtonPlacement,
         actionButtonTitle,
+        actionButtonVariant,
         showButton,
         leftButton,
         titleIcon,
@@ -96,12 +97,13 @@ const CommonHeader: React.FC = () => {
                                 placeholder={searchPlaceholder ?? "Search"}
                             />)
                     }
-                    {!isMobileOrTabScreen && showButton && (
+                    {showButton && (
                         <Button
                             title={actionButtonTitle}
                             onClick={actionButtonOnClick}
                             rootClassName={actionButtonClassName}
                             size="small"
+                            btnVariant={actionButtonVariant || ""}
                             icon={actionButtonIcon}
                         />
                     )}
@@ -117,15 +119,6 @@ const CommonHeader: React.FC = () => {
                 </div>
             </div>
             <div className="lg:hidden w-full flex gap-2 px-3 pb-2">
-                {showButton && (
-                    <Button
-                        title={actionButtonTitle}
-                        onClick={actionButtonOnClick}
-                        rootClassName={actionButtonClassName}
-                        size="small"
-                        icon={actionButtonIcon}
-                    />
-                )}
                 {leftButton?.showButton && (
                     <Button
                         title={leftButton?.buttonTitle}

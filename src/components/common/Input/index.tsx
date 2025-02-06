@@ -9,7 +9,6 @@ import { cn } from "@/utils/merge-class";
 import { IoIosSearch } from "react-icons/io";
 import RadioInput from "./RadioButton";
 import Uploader from "./Upload";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { AsyncSelect, MultiSelect } from "./Select";
 import { Select } from "./Select";
