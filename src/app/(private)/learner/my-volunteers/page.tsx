@@ -153,7 +153,8 @@ export default function VolunteerPage() {
             title: "My Volunteers",
             titleIcon: getHeaderIcon("backIcon"),
             titleIconClick: () => router.push("/learner/volunteer"),
-            searchPlaceholder: "Find your tutor"
+            searchPlaceholder: "Find your tutor",
+            showTitleButton: true,
         });
     }, [setHeaderOptions]);
 

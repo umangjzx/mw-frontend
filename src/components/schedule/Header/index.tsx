@@ -35,67 +35,64 @@ const Header = (props: Props) => {
     };
 
     return (
-        <div className="w-full h-full p-2 px-3 lg:flex items-center justify-between">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                    <div className="lg:hidden cursor-pointer" onClick={() => setIsSideNavBarOpen(true)}>
-                        <SideMenuIcon height="22px" width="22px" />
-                    </div>
-                    <Button
-                        onClick={() => { }}
-                        title="Schedule"
-                        icon={isMobileOrTabScreen ? "" : <CalendarIcon />}
-                        rootClassName="bg-transparent text-xl border-none font-medium shadow-none max-lg:!px-2"
-                    />
-                </div>
-                {role === "volunteer" &&
-                    <Button
-                        onClick={handleNotification}
-                        icon={<NotificationIcon height="21px" width="21px" />}
-                        customClassName="lg:hidden !border-none !bg-transparent font-semibold !text-black rounded-full !p-0"
-                    />
-                }
-            </div>
-            <div className="max-lg:hidden flex items-center gap-4">
-                <MonthYearSlider
-                    onChange={(date) => {
-                        console.log(date, "date from month year slider");
-                    }}
-                />
-            </div>
-            <div className="flex items-center gap-2 max-lg:mt-2">
-                {
-                    isMobileOrTabScreen &&
-                    <MonthYearPicker />
-                }
-                {/* <Button
-                    onClick={() => {}}
-                    icon={<IoIosSearch className="text-xl" />}
-                    customClassName="!bg-transparent font-semibold !text-black rounded-full !py-3 !px-3"
-                /> */}
-                {role === "learner" ? (
-                    <Button
-                        onClick={handleAddMeeting}
-                        title="Add New Meeting"
-                        customClassName="!bg-black max-lg:!text-sm !font-medium !text-white rounded-full p-2 lg:!p-3"
-                    />
-                ) : (
-                    <div className="flex items-center gap-2">
-                        {
-                            !isMobileOrTabScreen &&
-                            <Button
-                                onClick={handleNotification}
-                                icon={<NotificationIcon />}
-                                customClassName="!bg-transparent font-semibold !text-black rounded-full !py-3 !px-3"
-                            />
-                        }
+        <div className="w-full h-full p-2 px-3">
+            <div className="w-full h-full md:flex items-center justify-between">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                        <div className="lg:hidden cursor-pointer" onClick={() => setIsSideNavBarOpen(true)}>
+                            <SideMenuIcon height="22px" width="22px" />
+                        </div>
                         <Button
-                            onClick={handleMySchedule}
-                            title="My Schedule"
-                            customClassName="!bg-transparent font-medium !text-black rounded-full !py-3 !px-3"
+                            onClick={() => { }}
+                            title="Schedule"
+                            icon={isMobileOrTabScreen ? "" : <CalendarIcon />}
+                            rootClassName="bg-transparent text-xl border-none font-medium shadow-none max-lg:!px-2"
                         />
                     </div>
-                )}
+                    {role === "volunteer" &&
+                        <Button
+                            onClick={handleNotification}
+                            icon={<NotificationIcon height="21px" width="21px" />}
+                            customClassName="lg:hidden !border-none !bg-transparent font-semibold !text-black rounded-full !p-0"
+                        />
+                    }
+                </div>
+                <div className="max-lg:hidden flex items-center gap-4">
+                    <MonthYearSlider
+                        onChange={(date) => {
+                            console.log(date, "date from month year slider");
+                        }}
+                    />
+                </div>
+                <div className="flex items-center gap-2 max-lg:mt-1">
+                    {
+                        isMobileOrTabScreen &&
+                        <MonthYearPicker />
+                    }
+                    {role === "learner" ? (
+                        <Button
+                            onClick={handleAddMeeting}
+                            title="Add New Meeting"
+                            customClassName="!bg-black max-lg:!text-sm !font-medium !text-white rounded-full p-1 lg:!p-3"
+                        />
+                    ) : (
+                        <div className="flex items-center gap-2">
+                            {
+                                !isMobileOrTabScreen &&
+                                <Button
+                                    onClick={handleNotification}
+                                    icon={<NotificationIcon />}
+                                    customClassName="!bg-transparent font-semibold !text-black rounded-full !py-3 !px-3"
+                                />
+                            }
+                            <Button
+                                onClick={handleMySchedule}
+                                title="My Schedule"
+                                customClassName="!bg-transparent font-medium !text-black rounded-full !py-3 !px-3"
+                            />
+                        </div>
+                    )}
+                </div>
             </div>
             {
                 isMobileOrTabScreen &&

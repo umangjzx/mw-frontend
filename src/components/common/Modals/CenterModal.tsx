@@ -12,6 +12,7 @@ const CenterModal: React.FC<CenterModalProps> = ({
     width = 520,
     height,
     children,
+    rootClassName = "",
     customClassName = "",
     titleClassName = "",
     primaryActionProps,
@@ -82,7 +83,7 @@ const CenterModal: React.FC<CenterModalProps> = ({
                 },
             }}
         >
-            <div className={`flex w-full h-full md:h-screen lg:h-full flex-col`}>
+            <div className={`flex w-full h-full md:h-screen lg:h-full flex-col ${rootClassName}`}>
                 {header}
                 {/* Modal Content */}
                 <div className="flex-1 max-md:pt-4 overflow-y-auto max-h-[93vh] bg-[#F4F7FB] md:bg-white md:max-h-[50vh] mb-4 no-scrollbar">

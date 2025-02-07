@@ -15,6 +15,7 @@ type HeaderOptions = {
     actionButtonIcon?: React.ReactNode;
     actionButtonPlacement?: "left" | "right";
     searchPlaceholder?: string;
+    showTitleButton?: boolean;
     showButton?: boolean;
     hideSearch?: boolean;
     titleIcon?: React.ReactNode;

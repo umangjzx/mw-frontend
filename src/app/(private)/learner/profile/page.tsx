@@ -55,7 +55,7 @@ export default function ProfilePage() {
         if (!data) return;
         setLearnerDetails(data);
 
-        const {  learner_first_name, learner_last_name, learner_primary_language } = data?.learner_personal_info;
+        const { learner_first_name, learner_last_name, learner_primary_language } = data?.learner_personal_info;
         const description = data?.learner_special_needs?.description;
         const subjects = data?.learner_goals?.subjects_to_focus_on;
         const contactDetail = data?.learner_personal_info?.learner_contact_details;
@@ -106,18 +106,18 @@ export default function ProfilePage() {
 
     return (
         <div className="h-full animate-fadeIn">
-        <EditProfileModal
-            data={editProfileData}
-            isOpen={mode === "edit"}
-            onClose={() => setMode(null)}
-            triggerReload={triggerReload}
-        />
+            <EditProfileModal
+                data={editProfileData}
+                isOpen={mode === "edit"}
+                onClose={() => setMode(null)}
+                triggerReload={triggerReload}
+            />
             {
                 isMobileOrTabScreen ?
                     <MobileProfileView
                         userData={learnerData?.bio}
                         reviewEndpoint={endpoints.learnerFeedback.get(learnerId)}
-                     />
+                    />
                     :
                     <div className="h-full w-full grid grid-cols-[1fr,2fr] gap-10 p-5">
                         <Bio data={learnerData.bio} />

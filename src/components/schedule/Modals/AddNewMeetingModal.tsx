@@ -14,6 +14,7 @@ import AvailableSlots from "../AvailableSlots/AvailableSlots";
 import { useSearchParams } from "next/navigation";
 import { useSendData } from "@/hooks/useReactQuery";
 import { z } from "zod";
+import InnerWidth from "@/utils/innerWidth";
 
 // Define Zod schema for form validation
 const meetingFormSchema = z.object({
@@ -56,7 +57,6 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
 
     const [fetchingVolunteers, setFetchingVolunteers] = useState<boolean>(false);
     const [volunteers, setVolunteers] = useState<Array<{ label: string; value: string }>>([]);
-    const queryClient = useQueryClient();
     const searchParams = useSearchParams();
     const volunteerId = searchParams.get("volunteerId");
     const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
@@ -310,6 +310,8 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
         }
     }, [formData.select_volunteer]);
 
+    const isMobileScreen = InnerWidth() < 768;
+
     return (
         <SideModal
             title="Add New Meeting"
@@ -318,6 +320,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
             onSave={handleSubmit}
             isLoading={isPending}
             onCancel={onClose}
+            modalWidth={isMobileScreen ? 600 : 400}
         >
             <div className="flex flex-col max-lg:gap-3 px-5 mt-7">
                 {LearnerScheduleModalConstants.map((field: any) => {

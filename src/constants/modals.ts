@@ -37,9 +37,4 @@ export const VolunteerFilterModalConstants = [
         placeholder: "Available Time",
         clearable: true,
     },
-    {
-        name: "available_days",
-        label: "Available range of days",
-        inputType: "daterange",
-    }
 ];

@@ -125,8 +125,8 @@ export const Input: React.FC<InputProps> = (props) => {
                             "w-full !mb-0 border !border-stroke hover:!border-stroke h-fit focus:!border-stroke focus:!bg-background-input"
                         )}
                         className={cn(
-                            props.inputClassName,
-                            `!mb-0 text-sm p-[6px] rounded-md hover:!bg-background-input !bg-background-input`
+                            `!mb-0 text-sm p-[6px] rounded-md hover:!bg-background-input !bg-background-input`,
+                            props?.inputClassName,
                         )}
                     />
                 );

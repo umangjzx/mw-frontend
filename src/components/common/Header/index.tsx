@@ -23,6 +23,7 @@ const CommonHeader: React.FC = () => {
         actionButtonPlacement,
         actionButtonTitle,
         actionButtonVariant,
+        showTitleButton,
         showButton,
         leftButton,
         titleIcon,
@@ -46,20 +47,26 @@ const CommonHeader: React.FC = () => {
 
     return (
         <div className="w-full h-full relative">
-            <div className="w-full h-full p-2 px-3 flex items-center justify-between">
+            <div className="w-full h-auto lg:h-full p-2 px-3 flex items-center justify-between">
                 <div className="flex items-center gap-5">
                     <div className="flex capitalize items-center">
-                        <div className="lg:hidden cursor-pointer mr-2" onClick={() => setIsSideNavBarOpen(true)}>
-                            <SideMenuIcon height="22px" width="22px" />
-                        </div>
-                        <Button
-                            icon={isMobileOrTabScreen ? "" : titleIcon}
-                            rootClassName={cn(
-                                "flex items-center justify-center lg:!w-10 lg:!h-10 rounded-full hover:bg-gray-100 max-lg:!p-0",
-                                titleIconClick ? "cursor-pointer max-lg:!border-none lg:border-stroke lg:mr-2" : "!border-none"
-                            )}
-                            onClick={titleIconClick}
-                        />
+                        {
+                            showTitleButton ||
+                            <div className="lg:hidden cursor-pointer mr-2" onClick={() => setIsSideNavBarOpen(true)}>
+                                <SideMenuIcon height="22px" width="22px" />
+                            </div>
+                        }
+                        {
+                            (showTitleButton || !isMobileOrTabScreen) &&
+                            <Button
+                                icon={titleIcon}
+                                rootClassName={cn(
+                                    "flex items-center justify-center !w-10 !h-10 rounded-full hover:bg-gray-100",
+                                    titleIconClick ? "cursor-pointer border-stroke mr-2" : "!border-none"
+                                )}
+                                onClick={titleIconClick}
+                            />
+                        }
                         <h1 className="text-lg font-medium">{formatString(title ?? "")}</h1>
                     </div>
                     {!isMobileOrTabScreen && leftButton?.showButton && (
