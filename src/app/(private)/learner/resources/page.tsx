@@ -135,7 +135,7 @@ export default function ResourcesPage() {
 
     const [activeTab, setActiveTab] = useState("topics");
     const { width } = useWindowSize();
-    const isMobile = width < 768; // Define mobile breakpoint
+    const isMobile = width < 768;
 
     return (
         <div className="w-full  pt-8 flex flex-col gap-2 p-4 animate-fadeIn">

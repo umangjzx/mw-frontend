@@ -117,13 +117,13 @@ const DetailModal = ({
             className={isMobile ? "!p-0 !m-0 !h-screen !max-h-none !w-screen !max-w-none" : ""}
         >
             {isFetching ? (
-                <div className={` w-full flex-center h-screen ${isMobile ? "h-screen" : ""}`}>
+                <div className={` w-full flex-center ${isMobile ? "h-screen" : "min-h-[70vh]"}`}>
                     <LottieLoader isLoading={true} />
                 </div>
             ) : (
                 <div className={`flex flex-col ${isMobile ? "h-screen" : ""}`}>
                     <div
-                        className={`relative ${isMobile ? "h-[200px]" : "h-[260px]"} rounded-t-xl ${
+                        className={`relative ${isMobile ? "h-[200px] sm:h-[280px]" : "h-[260px]"} rounded-t-xl ${
                             isMobile ? "!rounded-none" : ""
                         }`}
                     >
@@ -198,8 +198,8 @@ const DetailModal = ({
                         </div>
                     </div>
                     <div
-                        className={`flex flex-col gap-4 px-8 pt-4 ${
-                            isMobile ? "flex-1 overflow-y-auto pb-8" : ""
+                        className={`flex flex-col gap-4 px-8 py-4 overflow-y-auto ${
+                            isMobile ? "flex-1 pb-8" : ""
                         }`}
                     >
                         <div className="flex items-center justify-between">

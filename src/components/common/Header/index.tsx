@@ -85,6 +85,16 @@ const CommonHeader: React.FC = () => {
                         "flex items-center justify-center gap-2"
                     )}
                 >
+                    {showButton && (
+                        <Button
+                            title={actionButtonTitle}
+                            onClick={actionButtonOnClick}
+                            rootClassName={actionButtonClassName}
+                            size="small"
+                            btnVariant={actionButtonVariant || ""}
+                            icon={actionButtonIcon}
+                        />
+                    )}
                     {
                         hideSearch || (isMobileOrTabScreen ?
                             <Button
@@ -104,16 +114,6 @@ const CommonHeader: React.FC = () => {
                                 placeholder={searchPlaceholder ?? "Search"}
                             />)
                     }
-                    {showButton && (
-                        <Button
-                            title={actionButtonTitle}
-                            onClick={actionButtonOnClick}
-                            rootClassName={actionButtonClassName}
-                            size="small"
-                            btnVariant={actionButtonVariant || ""}
-                            icon={actionButtonIcon}
-                        />
-                    )}
                     {!isMobileOrTabScreen && actionButtons?.map((button: ActionButtons) => (
                         <Button
                             title={button?.buttonTitle}

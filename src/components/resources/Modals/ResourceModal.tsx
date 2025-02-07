@@ -123,7 +123,7 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
         },
     };
 
-    const isMobile = useMediaQuery("(max-width: 768px)");
+    const isMobile = useMediaQuery("(max-width: 767px)");
 
     return (
         <CenterModal
@@ -134,7 +134,7 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
             headerComponent={
                 isMobile && (
                     <FeedHeader
-                        title="Add New Resource"
+                        title={isEditMode ? "Edit Resource" : "Add New Resource"}
                         onClose={onClose}
                         onSave={handleSubmit(onSubmit)}
                         isSubmitting={isSubmitting}
@@ -155,8 +155,8 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
                 <form
                     onSubmit={handleSubmit(onSubmit)}
                     className={cn(
-                        "flex flex-col gap-4",
-                        isMobile && "h-[100vh] overflow-y-auto  px-4 pb-4  pt-2"
+                        "flex flex-col gap-4 py-5",
+                        isMobile && "overflow-y-auto px-4 pb-5 pt-2"
                     )}
                 >
                     {ResourceFormConstants.map((field: any) => (
@@ -171,6 +171,7 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
                                     error={errors[field.name as keyof FormData]?.message}
                                     value={value}
                                     onChange={onChange}
+                                    rootClassName="bg-white p-4 rounded-xl"
                                     inputClassName={field.inputClassName}
                                 />
                             )}

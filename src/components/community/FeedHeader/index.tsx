@@ -10,7 +10,7 @@ interface FeedHeaderProps {
 
 const FeedHeader = ({ title, onClose, onSave, isSubmitting = false, rootClassName = "" }: FeedHeaderProps) => {
     return (
-        <div className={`flex justify-between items-center mb-2 p-2 ${rootClassName}`}>
+        <div className={`flex justify-between items-center px-3 py-2 ${rootClassName}`}>
             <button
                 onClick={onClose}
                 disabled={isSubmitting}
