@@ -7,13 +7,12 @@ import Divider from "@/components/common/Divider";
 import { Input } from "@/components/common/Input";
 import CenterModal from "@/components/common/Modals/CenterModal";
 import MobileSideModal from "@/components/common/Modals/MobileSideModal";
-import ViewModal from "@/components/common/Modals/ViewModal";
 import { LearnerFeedbackFormConstants } from "@/constants/schedule";
 import { useAppStore } from "@/store/useAppStore";
 import InnerWidth from "@/utils/innerWidth";
 import { cn } from "@/utils/merge-class";
 import Cookies from "js-cookie";
-import { useSearchParams } from "next/navigation";
+import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 
 const FeedbackModal = ({
@@ -21,14 +20,15 @@ const FeedbackModal = ({
     mode = "view",
     onClose,
     onSubmit,
-    data,
     Loading,
 }: FeedbackModalProps) => {
-    const isMobileScreen = InnerWidth() < 768;
+    const innerWidth = InnerWidth();
+    const isMobileScreen = innerWidth < 768;
+    const isTabletScreen = innerWidth < 1024;
+
     const [formData, setFormData] = useState<any>({});
-    const { userName, eventDetails } = useAppStore();
+    const { eventDetails } = useAppStore();
     const feedbackTitle = mode === "edit" ? "Edit Feedback" : "Please Fill the Feedback";
-    const searchParams = useSearchParams();
     const role = Cookies.get("role");
 
     const feedBackEventDetails = {
@@ -41,14 +41,13 @@ const FeedbackModal = ({
         }),
     };
 
-    const [extendedData, setExtendedData] = useState<any>([]);
-    console.log(extendedData, "extendedData for feedback");
-
     useEffect(() => {
-        if (data) {
-            setExtendedData(data?._def?.extendedProps);
+        const userName = role === "volunteer" ? eventDetails?.learner_name : eventDetails?.volunteer_name;
+        if (!userName || userName === "") {
+            onClose();
         }
-    }, [data]);
+    }, [])
+
 
     const handleSubmit = () => {
         const submissionData = {
@@ -115,19 +114,21 @@ const FeedbackModal = ({
                         </div>
                     </div>
                     <Divider />
-                    <div className="h-full p-4 flex flex-col gap-4">
+                    <div className="h-full p-4 flex flex-col gap-4 bg-background-input">
                         <h6 className="text-xl font-medium">Please Fill the Feedback</h6>
                         <DetailsSection data={feedBackEventDetails} />
-                        {
-                            LearnerFeedbackFormConstants.map((field: any) => (
-                                <Input
-                                    key={field.name}
-                                    {...field}
-                                    value={formData[field.name]}
-                                    onChange={(value: any) => handleChange(field.name, value)}
-                                />
-                            ))
-                        }
+                        <div className="flex flex-col gap-4 mt-3">
+                            {
+                                LearnerFeedbackFormConstants.map((field: any) => (
+                                    <Input
+                                        key={field.name}
+                                        {...field}
+                                        value={formData[field.name]}
+                                        onChange={(value: any) => handleChange(field.name, value)}
+                                    />
+                                ))
+                            }
+                        </div>
                     </div>
                 </div>
             </MobileSideModal>
@@ -139,24 +140,25 @@ const FeedbackModal = ({
                 isOpen={isOpen}
                 onClose={onClose}
                 topContent={<DetailsSection data={feedBackEventDetails} />}
-                width={"40%"}
-                customClassName="max-md:!h-full md:max-h-[80vh] !rounded-2xl overflow-hidden"
+                width={isTabletScreen ? "80%" : "40%"}
+                rootClassName="md:!h-auto"
+                customClassName="md:max-h-[90vh] lg:max-h-[80vh] !rounded-2xl overflow-hidden"
                 secondaryActionProps={buttonProps.secondary}
                 primaryActionProps={buttonProps.primary}
                 loading={Loading}
             >
-                {mode !== "view" ? (
-                    LearnerFeedbackFormConstants.map((field: any) => (
-                        <Input
-                            key={field.name}
-                            {...field}
-                            value={formData[field.name]}
-                            onChange={(value: any) => handleChange(field.name, value)}
-                        />
-                    ))
-                ) : (
-                    <div>View</div>
-                )}
+                <div className="flex flex-col max-lg:gap-2">
+                    {
+                        LearnerFeedbackFormConstants.map((field: any) => (
+                            <Input
+                                key={field.name}
+                                {...field}
+                                value={formData[field.name]}
+                                onChange={(value: any) => handleChange(field.name, value)}
+                            />
+                        ))
+                    }
+                </div>
             </CenterModal>
         )
     )

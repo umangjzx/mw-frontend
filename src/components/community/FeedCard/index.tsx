@@ -24,6 +24,7 @@ import SortDropdown from "../SortDropdown";
 // import buildFormatter from "react-timeago/lib/formatters/buildFormatter";
 import { DeleteIcon, EditIcon } from "@/assets/icons";
 import EditResource from "../EditResource";
+import LottieLoader from "@/components/common/Loader/Lottie";
 
 interface FeedCardProps {
     onClick: (postId: string) => void;
@@ -77,7 +78,9 @@ const FeedCard = ({ onClick, isManagePost = false }: FeedCardProps) => {
         queryFn: getPosts,
     });
 
-    if (isLoading) return <div>Loading...</div>;
+    if (isLoading) return (<div className="h-full w-full min-h-[80vh] flex-center">
+        <LottieLoader isLoading={true} />
+    </div>);
     if (isError) return <div>Error loading posts</div>;
     // const formatter = buildFormatter(englishStrings);
 
@@ -172,10 +175,10 @@ const FeedCard = ({ onClick, isManagePost = false }: FeedCardProps) => {
 
             {posts.map((post) => (
                 <div key={post.post_id} className="block w-full relative">
-                    <div className="pr-2 md:pr-4 md:px-0">
+                    <div className="px-2 py-1 md:pr-4 md:px-0">
                         {/* Profile and Name Section */}
                         <div className="flex items-start gap-2 md:gap-3 w-full p-2">
-                            <div className="w-[32px] h-[32px] md:w-[40px] md:h-[40px] relative flex-shrink-0 flex items-center justify-center">
+                            <div className="w-[40px] h-[40px] md:w-[40px] md:h-[40px] relative flex-shrink-0 flex items-center justify-center">
                                 <Image
                                     src={post.author.profile_picture?.image_url || DummyProfileImg}
                                     alt="profile picture"
@@ -242,7 +245,7 @@ const FeedCard = ({ onClick, isManagePost = false }: FeedCardProps) => {
                     </div>
 
                     {/* Post Content Section */}
-                    <div className="mt-2 md:mt-3">
+                    <div className="mt-2 md:mt-3 lg:mt-0">
                         <div className="p-2 md:px-0">
                             <p className="text-xs md:text-sm font-normal">
                                 {post.description}
@@ -351,7 +354,7 @@ const FeedCard = ({ onClick, isManagePost = false }: FeedCardProps) => {
                                 <SaveIcon />
                             </div>
                             {/* Only show comment input on desktop */}
-                            <div className="hidden md:block">
+                            <div className="hidden md:block mt-4">
                                 <CommentInput
                                     name="comment"
                                     value={comment}
@@ -393,7 +396,7 @@ const FeedCard = ({ onClick, isManagePost = false }: FeedCardProps) => {
                     <div className="p-4">
                         <textarea
                             className="w-full p-2 border rounded-md"
-                            defaultValue={selectedPost.description}
+                            defaultValue={selectedPost?.description || ""}
                         />
                         {/* Add more fields as needed */}
                     </div>

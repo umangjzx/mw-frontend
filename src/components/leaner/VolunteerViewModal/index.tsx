@@ -7,6 +7,7 @@ import LearnerConnectIcon from "@/assets/icons/LearnerConnectIcon";
 import DummyProfileImg from "@/assets/images/DummyProfileImg.png";
 import Button from "@/components/common/Button";
 import Divider from "@/components/common/Divider";
+import LottieLoader from "@/components/common/Loader/Lottie";
 import ViewModal from "@/components/common/Modals/ViewModal";
 import TagComponent from "@/components/common/Tag";
 import OverViewCard from "@/components/leaner/LeanerOverViewCard";
@@ -17,7 +18,6 @@ import RatingHeader from "@/components/profile/Overview/RatingHeader";
 import InnerWidth from "@/utils/innerWidth";
 import { getLocalStorage } from "@/utils/localStorage";
 import { useQuery } from "@tanstack/react-query";
-import Cookies from "js-cookie";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -327,10 +327,6 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
         setActiveTab(tab);
     };
 
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
-
     if (isError) {
         return (
             <ViewModal modalOpen={isOpen} onClose={onClose} width={855}>
@@ -351,58 +347,65 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
             onClose={onClose}
             width={855}
             height={isMobileScreen ? "100dvh" : ""}
-            borderRadius={isMobileScreen ? "0px" : ""}
+            borderRadius={isMobileScreen ? "0px" : "12px"}
             className="max-md:!w-full max-md:!max-w-full max-md:!m-0"
         >
-            <div className="flex flex-col gap-0 md:gap-4 pt-4 md:py-4 h-full">
-                <ProfileHeader
-                    text={text}
-                    onClose={onClose}
-                    onScheduleMeeting={handleScheduleMeeting}
-                />
-                <Divider className="max-md:hidden" />
-                <ProfileInfo text={text} volunteerData={volunteerData} />
-                <Divider className="max-md:hidden" />
-                <TabButtons
-                    activeTab={activeTab}
-                    handleTabChange={handleTabChange}
-                    rating={rating}
-                    totalReviews={totalReviews}
-                    isMobileScreen={isMobileScreen}
-                />
-                <div className="relative max-md:h-full max-md:bg-background-input max-md:p-5 overflow-y-auto max-md:border-t max-md:border-t-2">
-                    <div
-                        className={`transform transition-all duration-300 max-md:bg-white max-md:py-3 max-md:rounded-xl ${activeTab === "overview"
-                            ? "opacity-100 translate-x-0"
-                            : "opacity-0 -translate-x-8 absolute top-0 left-0 right-0"
-                            }`}
-                    >
-                        {activeTab === "overview" && (
-                            <OverviewContent volunteerData={volunteerData} />
-                        )}
+            {
+                isLoading ?
+                    <div className="h-full w-full flex-center min-h-[70vh]">
+                        <LottieLoader isLoading={true} />
                     </div>
-                    <div
-                        className={`transform transition-all duration-300 ${activeTab === "reviews"
-                            ? "opacity-100 translate-x-0"
-                            : "opacity-0 translate-x-8 absolute top-0 left-0 right-0"
-                            }`}
-                    >
-                        {activeTab === "reviews" && (
-                            <div>
-                                {volunteerFeedback?.feedbacks.length > 0 ? (
-                                    <ReviewsContent volunteerFeedback={volunteerFeedback} />
-                                ) : (
-                                    <div className="flex items-center justify-center h-full min-h-[300px]">
-                                        <p className="text-sm text-gray-light font-normal">
-                                            No reviews yet
-                                        </p>
+                    :
+                    <div className="flex flex-col gap-0 md:gap-4 pt-4 md:py-4 h-full">
+                        <ProfileHeader
+                            text={text}
+                            onClose={onClose}
+                            onScheduleMeeting={handleScheduleMeeting}
+                        />
+                        <Divider className="max-md:hidden" />
+                        <ProfileInfo text={text} volunteerData={volunteerData} />
+                        <Divider className="max-md:hidden" />
+                        <TabButtons
+                            activeTab={activeTab}
+                            handleTabChange={handleTabChange}
+                            rating={rating}
+                            totalReviews={totalReviews}
+                            isMobileScreen={isMobileScreen}
+                        />
+                        <div className="relative max-md:h-full max-md:bg-background-input max-md:p-5 overflow-y-auto max-md:border-t max-md:border-t-2">
+                            <div
+                                className={`transform transition-all duration-300 max-md:bg-white max-md:py-3 max-md:rounded-xl ${activeTab === "overview"
+                                    ? "opacity-100 translate-x-0"
+                                    : "opacity-0 -translate-x-8 absolute top-0 left-0 right-0"
+                                    }`}
+                            >
+                                {activeTab === "overview" && (
+                                    <OverviewContent volunteerData={volunteerData} />
+                                )}
+                            </div>
+                            <div
+                                className={`transform transition-all duration-300 ${activeTab === "reviews"
+                                    ? "opacity-100 translate-x-0"
+                                    : "opacity-0 translate-x-8 absolute top-0 left-0 right-0"
+                                    }`}
+                            >
+                                {activeTab === "reviews" && (
+                                    <div>
+                                        {volunteerFeedback?.feedbacks.length > 0 ? (
+                                            <ReviewsContent volunteerFeedback={volunteerFeedback} />
+                                        ) : (
+                                            <div className="flex items-center justify-center h-full min-h-[300px]">
+                                                <p className="text-sm text-gray-light font-normal">
+                                                    No reviews yet
+                                                </p>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
-                        )}
+                        </div>
                     </div>
-                </div>
-            </div>
+            }
         </ViewModal>
     );
 };

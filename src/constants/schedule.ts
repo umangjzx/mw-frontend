@@ -16,6 +16,7 @@ export const LearnerFeedbackFormConstants: FormField[] = [
         sublabel: "(In hrs)",
         sublabelAlignment: "right",
         min: 0,
+        inputClassName: "!bg-white",
     },
     {
         name: "rating",
@@ -29,13 +30,14 @@ export const LearnerFeedbackFormConstants: FormField[] = [
             { label: "Very Good", value: "4" },
             { label: "Excellent", value: "5" },
         ],
-        inputClassName: "justify-between p-2",
+        inputClassName: "mx-md:justify-start justify-between md:p-2",
     },
     {
         name: "notes",
         label: "Your comments",
         inputType: "textarea",
         placeholder: "Enter comments here",
+        inputClassName: "bg-white",
     },
     // {
     //     name: "uploadPictures",

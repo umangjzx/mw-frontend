@@ -51,13 +51,13 @@ const EditResource = ({ isOpen, onClose, zIndex }: EditResourceProps) => {
                     <div className="flex gap-2 flex-col mt-4 bg-white p-4 rounded-[12px]">
                         <h2 className="text-lg font-semibold">Upload Photos</h2>
                         <ImageUpload
-                            // name="resource-image"
-                            // inputType="upload"
-                            // value={null}
-                            // onChange={() => {}}
-                            // variant="file"
-                            // handleRemove={() => {}}
-                            // handleClick={() => {}}
+                            name="resource-image"
+                            inputType="upload"
+                            value={null}
+                            onChange={() => {}}
+                            variant="file"
+                            handleRemove={() => {}}
+                            handleClick={() => {}}
                         />
                     </div>
                 </div>

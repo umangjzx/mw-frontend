@@ -12,21 +12,27 @@ const MainLayout: FC<PropsWithChildren> = ({ children }) => {
     const isProfile = pathname.includes("profile");
 
     return (
-        <div className='h-[100dvh] w-screen overflow-hidden'>
-            <div className='grid grid-cols-12'>
-                <div hidden={isProfile} className='max-lg:hidden col-span-2'>
+        <div className='h-[100dvh] w-screen overflow-hidden flex'>
+            {!isProfile && (
+                <div className='max-lg:hidden w-1/6'>
                     <Sidebar />
                 </div>
-                <div className={cn("h-full bg-white", isProfile ? "col-span-12" : "col-span-12 lg:col-span-10")}>
-                    <div className='lg:h-[10dvh] w-full'>{header}</div>
-                    <div
-                        className={cn(
-                            "w-full bg-background-input h-[90dvh] overflow-y-auto",
-                            isProfile ? "" : "lg:rounded-tl-[50px]"
-                        )}
-                    >
-                        {children}
-                    </div>
+            )}
+
+            <div
+                className={cn(
+                    "flex flex-col w-full bg-white",
+                    isProfile ? "w-full" : "lg:w-5/6"
+                )}
+            >
+                <div className='w-full lg:min-h-[10vh]'>{header}</div>
+                <div
+                    className={cn(
+                        "flex-grow overflow-y-auto bg-background-input",
+                        isProfile ? "" : "lg:rounded-tl-[50px]"
+                    )}
+                >
+                    {children}
                 </div>
             </div>
         </div>

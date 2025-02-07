@@ -6,14 +6,11 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAppStore } from "@/store/useAppStore";
-import { getSingleResource, updateResource } from "@/api/resources";
 import { showToast } from "@/components/common/Toast";
-import { useQuery } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import FeedHeader from "@/components/community/FeedHeader/index";
-import { VolunteerProfileFormConstants, VolunteerProfileFormSchema } from "@/constants/profile";
+import { LearnerProfileFormConstants, LearnerProfileFormSchema, VolunteerProfileFormConstants, VolunteerProfileFormSchema } from "@/constants/profile";
 import { PUT_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 
@@ -24,10 +21,18 @@ type EditProfileModalProps = {
     triggerReload: () => void;
 };
 
-type FormData = z.infer<typeof VolunteerProfileFormSchema>;
 
 const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditProfileModalProps) => {
+    const [currentMode] = useQueryState("mode");
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const role = Cookies.get("role");
+    const isVolunteer = role === "volunteer";
+
+    const UserProfileFormConstants = isVolunteer ? VolunteerProfileFormConstants : LearnerProfileFormConstants;
+    const UserProfileFormSchema = isVolunteer ? VolunteerProfileFormSchema : LearnerProfileFormSchema;
+
+    type FormData = z.infer<typeof UserProfileFormSchema>;
 
     const {
         control,
@@ -35,33 +40,25 @@ const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditPro
         formState: { errors },
         reset,
     } = useForm<FormData>({
-        resolver: zodResolver(VolunteerProfileFormSchema),
+        resolver: zodResolver(UserProfileFormSchema),
     });
-
-    console.log("Errors: ", errors);
-    console.log("Data: ", data);
-
-    const role = Cookies.get("role");
-    const [currentMode] = useQueryState("mode");
 
     useEffect(() => {
         reset(data);
-    }, [currentMode])
+    }, [data])
 
-    useEffect(() => {
-        reset({});
-    }, [currentMode]);
+    console.log("Errors:", errors);
 
-    const onSubmit = async(formData: FormData) => {
+    const onSubmit = async (formData: FormData) => {
+        console.log("Form Data to submit:", formData);
         setIsSubmitting(true);
         try {
-            const endpoint = role === "volunteer" ? endpoints.volunteer.update(data?.userId || "") : endpoints.learner.update(data?.userId || "");
+            const endpoint = isVolunteer ? endpoints.volunteer.update(data?.userId || "") : endpoints.learner.update(data?.userId || "");
             const { status } = await PUT_API(endpoint, formData);
             if (status === 201) {
                 showToast({ message: "Profile updated" });
                 triggerReload();
                 onClose();
-                reset({});
             } else {
                 showToast({ message: "Profile not updated", type: "error" });
             }
@@ -95,7 +92,7 @@ const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditPro
         },
     };
 
-    const isMobile = useMediaQuery("(max-width: 768px)");
+    const isMobile = useMediaQuery("(max-width: 767px)");
 
     return (
         <CenterModal
@@ -111,6 +108,7 @@ const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditPro
                         onClose={onClose}
                         onSave={handleSubmit(onSubmit)}
                         isSubmitting={isSubmitting}
+                        rootClassName="!mb-0"
                     />
                 )
             }
@@ -127,23 +125,25 @@ const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditPro
             <form
                 onSubmit={handleSubmit(onSubmit)}
                 className={cn(
-                    "flex flex-col gap-1",
+                    "flex flex-col gap-2",
                     isMobile && "px-4 pb-4"
                 )}
             >
-                {VolunteerProfileFormConstants.map((field: any) => (
+                {UserProfileFormConstants.map((field: any) => (
                     <Controller
                         key={field?.name}
                         name={field?.name}
                         control={control}
                         render={({ field: { value, onChange } }) => (
                             <Input
-                                key={field.name}
+                                key={field?.name}
                                 {...field}
                                 error={errors[field.name as keyof FormData]?.message}
                                 value={value}
                                 onChange={onChange}
-                                inputClassName={field.inputClassName}
+                                rootClassName={"bg-white p-4 rounded-xl"}
+                                inputClassName={field?.inputClassName}
+                                labelClassName="[&_.inner-label]:!font-semibold [&_.inner-label]:!text-sm"
                             />
                         )}
                     />

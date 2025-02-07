@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { DatePicker, Button } from "antd";
+import { DatePicker } from "antd";
 import dayjs, { Dayjs } from "dayjs";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAppStore } from "@/store/useAppStore";
 import { CalendarIcon } from "@/assets/icons";
+import Button from "@/components/common/Button";
 
 const MonthYearPicker: React.FC = () => {
   const router = useRouter();
@@ -51,10 +52,11 @@ const MonthYearPicker: React.FC = () => {
       />
       <Button
         onClick={() => setOpen(true)}
-        className="text-sm bg-transparent font-medium rounded-full shadow-none flex items-center"
+        btnVariant="tertiary"
+        customClassName="text-sm font-medium rounded-full shadow-none flex items-center !px-3 !py-0"
       >
-        <CalendarIcon width="16" height="16" />
-        {selectedDate.format("MMMM YYYY")}
+        <CalendarIcon width="15" height="15" />
+        {selectedDate.format("MMM YYYY")}
       </Button>
     </div>
   );

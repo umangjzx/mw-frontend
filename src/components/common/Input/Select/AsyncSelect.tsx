@@ -200,7 +200,7 @@ const AsyncSelect = ({
                     MultiValueContainer: () => null,
                 }}
                 classNames={{
-                    container: () => (props.inputClassName ? "md:w-[49%]" : "w-full"),
+                    container: () => (props?.inputClassName ? "md:w-[49%]" : "w-full"),
                 }}
                 backspaceRemovesValue={false}
             />

@@ -18,25 +18,34 @@ const RadioInput: React.FC<RadioInputProps> = ({
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 disabled={disabled}
-                className={`flex flex-wrap gap-4 ${inputClassName}`}
+                className={`flex flex-wrap gap-3 md:gap-4 ${inputClassName}`}
             >
                 {options.map((option, index) => (
                     <div key={option.value} className="flex flex-col items-center gap-2">
                         <Radio.Button
                             value={option.value}
-                            className={`flex items-center justify-center w-12 h-12 rounded-full
-                            ${
-                                value === option.value
+                            className={`max-md:hidden flex items-center justify-center w-12 h-12 rounded-full
+                            ${value === option.value
                                     ? "bg-primary text-white border-primary"
                                     : "bg-background-input text-gray hover:border-primary"
-                            } transition-colors ${radioButtonClassName}`}
+                                } transition-colors ${radioButtonClassName}`}
                         >
                             {option.value}
                         </Radio.Button>
+                        <Radio.Button
+                            className="md:hidden !p-0"
+                            value={option.value}
+                        >
+                            <span
+                            className={`px-3 py-2 border !rounded-2xl !bg-white text-sm  ${value === option.value ? "!text-primary !border-primary" : "text-gray"
+                                }`}
+                            >
+                                {option.label}
+                            </span>
+                        </Radio.Button>
                         <span
-                            className={`text-sm ${
-                                value === option.value ? "text-primary" : "text-gray"
-                            }`}
+                            className={`max-md:hidden text-sm ${value === option.value ? "!text-primary" : "text-gray"
+                                }`}
                         >
                             {option.label}
                         </span>

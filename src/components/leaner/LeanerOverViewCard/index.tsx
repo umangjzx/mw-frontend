@@ -7,12 +7,12 @@ const OverViewCard: React.FC<OverViewCardProps> = ({ title, value, icon, classNa
 
     return (
         <div
-            className={`flex rounded-xl px-2 py-1 md:px-5 md:py-4 w-fit md:w-full md:gap-3 items-center ${className}`}
+            className={`flex rounded-xl px-2 py-1 lg:px-5 lg:py-4 w-fit lg:w-full lg:gap-3 items-center ${className}`}
             style={{ background: gradient }}
         >
             {icon}
-            <p className="md:hidden text-xs">{title}: <span className="font-semibold">{value}</span></p>
-            <div className="max-md:hidden flex flex-col gap-2 justify-center">
+            <p className="lg:hidden text-xs">{title}: <span className="font-semibold">{value}</span></p>
+            <div className="max-lg:hidden flex flex-col gap-2 justify-center">
                 <p className="text-[1.5rem] font-semibold">{value}</p>
                 <p className="font-medium text-xs">{title}</p>
             </div>

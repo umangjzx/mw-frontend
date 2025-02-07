@@ -65,11 +65,20 @@ const PostModal = ({ isOpen, onClose }: PostModalProps) => {
             onClose={onClose}
             loading={isPending}
             width={isMobile ? "100vw" : isTablet ? "60%" : "40%"}
-            height={isMobile ? "100vh" : "auto"}
+            height={isMobile ? "100dvh" : "auto"}
             customClassName={cn(
                 "max-h-[80vh] !rounded-2xl overflow-hidden",
-                isMobile && "!h-screen !max-h-[100dvh] !rounded-none  [&_.ant-modal-content]:!px-4"
+                isMobile && "!p-0 !m-0 !h-[100dvh] !max-h-none !w-screen !max-w-none !max-h-[100dvh] !rounded-none [&_.ant-modal-content]:!p-0"
             )}
+            headerComponent={
+                isMobile && (
+                    <FeedHeader
+                        title="Add New Resource"
+                        onClose={onClose}
+                        onSave={() => onSave(undefined)}
+                    />
+                )
+            }
             hideFooter={isMobile}
             secondaryActionProps={
                 !isMobile
@@ -91,15 +100,10 @@ const PostModal = ({ isOpen, onClose }: PostModalProps) => {
                     : undefined
             }
         >
+            <div className="flex flex-col gap-4 p-4">
+                
             <div className="pb-2 hidden md:block">
                 <h2>Add New Post</h2>
-            </div>
-            <div className=" md:hidden">
-                <FeedHeader
-                    title="Add new post"
-                    onClose={onClose}
-                    onSave={() => onSave(undefined)}
-                />
             </div>
             {LearnerCommunityFormConstants.map((field: any) => (
                 <Input
@@ -107,8 +111,10 @@ const PostModal = ({ isOpen, onClose }: PostModalProps) => {
                     {...field}
                     onChange={(value: any) => handleChange(field.name, value)}
                     value={field.name === "uploadPictures" ? uploadPictures : notes}
+                    rootClassName="bg-white p-4 rounded-xl"
                 />
             ))}
+            </div>
         </CenterModal>
     );
 };

@@ -78,7 +78,7 @@ export default function CommunityPage() {
             />
             <div className="col-span-12 flex flex-col min-h-0 flex-grow">
                 <div className="lg:hidden w-full bg-white border-b sticky top-0 z-10">
-                    <div className="w-full overflow-x-auto no-scrollbar px-4 py-3 bg-[#F4F7FB]">
+                    <div className="w-full overflow-x-auto no-scrollbar px-4 py-5 bg-[#F4F7FB]">
                         <ActionPanel />
                     </div>
                 </div>
