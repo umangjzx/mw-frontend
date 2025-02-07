@@ -56,7 +56,7 @@ export const Input: React.FC<InputProps> = (props) => {
 
         const sublabelContent = sublabel && (
             <p
-                className={`text-xs text-gray-light mb-2 text-gray-500 font-normal
+                className={`text-xs text-gray-light mb-1 text-gray-500 font-normal
                 ${sublabelAlignment === "right" ? "!mb-0" : "mt-1"}`}
             >
                 {sublabel}
@@ -66,7 +66,7 @@ export const Input: React.FC<InputProps> = (props) => {
         return (
             <label htmlFor={name} className={`text-sm font-medium text-gray-700 ${labelClassName}`}>
                 <div
-                    className={`flex ${sublabelAlignment === "right" ? "items-center" : "flex-col items-start"} gap-1`}
+                    className={`flex ${sublabelAlignment === "right" ? "items-center" : "flex-col items-start"}`}
                 >
                     {labelContent}
                     {sublabelContent}
@@ -287,7 +287,7 @@ export const Input: React.FC<InputProps> = (props) => {
     };
 
     return (
-        <div className={`mb-1 lg:mb-4 w-full h-auto flex flex-col gap-2 ${className} ${rootClassName}`}>
+        <div className={`mb-1 lg:mb-2 w-full h-auto flex flex-col gap-2 ${className} ${rootClassName}`}>
             {renderLabel()}
             {renderInput()}
             {error && <p className="text-xs text-red-500 capitalize">{error}</p>}

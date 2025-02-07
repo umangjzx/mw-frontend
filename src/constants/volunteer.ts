@@ -68,7 +68,7 @@ const ProfileDetailsFields: FormField[] = [
     },
     {
         id: "consented_from_parent",
-        label: "Parent Details are mandatory for volunteers younger than 18 years.",
+        label: "Parent Details are mandatory for minor volunteers",
         inputType: "checkbox",
         placeholder: "I've consent from my parent or guardian to be a volunteer.",
         gridCols: 2,
@@ -140,11 +140,19 @@ const ProfileDetailsFields: FormField[] = [
         responseAsValue: ["subject_id", "subject_name"],
     },
     {
-        id: "volunteer_experience",
+        id: "work_experience",
         label: "Work Experience",
         inputType: "text",
         placeholder: "Type here",
-        gridCols: 2,
+        gridCols: 1,
+        required: true,
+    },
+    {
+        id: "volunteer_experience",
+        label: "Prior Volunteer Experience",
+        inputType: "text",
+        placeholder: "Describe your volunteer work here",
+        gridCols: 1,    
         required: true,
     },
     {
@@ -347,7 +355,7 @@ const HealthSafetyAgreementFields: FormField[] = [
 const OtherConsentsDetailsFields: FormField[] = [
     {
         id: "consent_to_background_checks",
-        label: "Do you consent to a criminal background check, including child abuse registry and sex offender checks?",
+        label: "Do you consent to do child abuse registry and sex offender checks if needed?",
         inputType: "radio",
         options: [
             { label: "Yes", value: true },
@@ -388,17 +396,17 @@ const OtherConsentsDetailsFields: FormField[] = [
 ];
 
 const VolunteerExperienceDetailsFields: FormField[] = [
-    {
-        id: "previously_volunteered",
-        label: "Have you previously volunteered with children or vulnerable populations?",
-        inputType: "radio",
-        options: [
-            { label: "Yes", value: true },
-            { label: "No", value: false },
-        ],
-        gridCols: 2,
-        required: true,
-    },
+    // {
+    //     id: "previously_volunteered",
+    //     label: "Have you previously volunteered with children or vulnerable populations?",
+    //     inputType: "radio",
+    //     options: [
+    //         { label: "Yes", value: true },
+    //         { label: "No", value: false },
+    //     ],
+    //     gridCols: 2,
+    //     required: true,
+    // },
     {
         id: "invloved_in_complaints",
         label: "Have you ever been involved in any incidents or complaints during previous volunteer roles?",
