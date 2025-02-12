@@ -141,7 +141,7 @@ export default function LearnersPage() {
         setHeaderOptions({
             searchPlaceholder: "Find your tutor",
             actionButtonPlacement: "right",
-            title: "Volunteer",
+            title: "Volunteers",
             titleIcon: getHeaderIcon(pathname),
             leftButton: {
                 buttonTitle: `Filters (${appliedFiltersCount})`,
@@ -177,7 +177,7 @@ export default function LearnersPage() {
             ) : isError ? (
                 <div className="flex-center h-full w-full">Error loading volunteers</div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full h-auto p-5 py-10 lg:p-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full h-auto p-5 py-7 lg:p-10">
                     {volunteerCardData.map((volunteer) => (
                         <VolunteerCard
                             key={volunteer.volunteerId}

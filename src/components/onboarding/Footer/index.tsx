@@ -21,8 +21,8 @@ type SocialLink = {
 };
 
 const policyLinks: PolicyLink[] = [
-    { href: "/privacy-policy", target: "_black", label: "Privacy Policy" },
-    { href: "/terms-and-conditions", target: "_black", label: "Terms & Conditions" },
+    { href: "/privacy-policy", target: "_blank", label: "Privacy Policy" },
+    { href: "/terms-and-conditions", target: "_blank", label: "Terms & Conditions" },
 ];
 
 const socialLinks: SocialLink[] = [

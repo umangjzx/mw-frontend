@@ -13,6 +13,7 @@ import FeedHeader from "@/components/community/FeedHeader/index";
 import { LearnerProfileFormConstants, LearnerProfileFormSchema, VolunteerProfileFormConstants, VolunteerProfileFormSchema } from "@/constants/profile";
 import { PUT_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
+import { updateLearnerProfile } from "@/api/learners";
 
 type EditProfileModalProps = {
     data?: any;
@@ -53,8 +54,7 @@ const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditPro
         console.log("Form Data to submit:", formData);
         setIsSubmitting(true);
         try {
-            const endpoint = isVolunteer ? endpoints.volunteer.update(data?.userId || "") : endpoints.learner.update(data?.userId || "");
-            const { status } = await PUT_API(endpoint, formData);
+            const status = isVolunteer ? await updateLearnerProfile(data?.userId || "", formData) : await updateLearnerProfile(data?.userId || "", formData);
             if (status === 201) {
                 showToast({ message: "Profile updated" });
                 triggerReload();
@@ -112,6 +112,7 @@ const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditPro
                     />
                 )
             }
+            rootClassName="md:h-full [&_.modal-body]:md:max-h-[60dvh]"
             customClassName={cn(
                 "sm:max-h-screen overflow-hidden",
                 isMobile
@@ -125,7 +126,7 @@ const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditPro
             <form
                 onSubmit={handleSubmit(onSubmit)}
                 className={cn(
-                    "flex flex-col gap-2",
+                    "flex flex-col gap-2 md:gap-4",
                     isMobile && "px-4 pb-4"
                 )}
             >
@@ -141,7 +142,7 @@ const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditPro
                                 error={errors[field.name as keyof FormData]?.message}
                                 value={value}
                                 onChange={onChange}
-                                rootClassName={"bg-white p-4 rounded-xl"}
+                                rootClassName={"max-md:bg-white max-md:p-4 max-md:rounded-xl"}
                                 inputClassName={field?.inputClassName}
                                 labelClassName="[&_.inner-label]:!font-semibold [&_.inner-label]:!text-sm"
                             />

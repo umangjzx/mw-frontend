@@ -39,7 +39,6 @@ const MobileMessageModal = ({ receiverId, isOpen, onClose }: MobileMessageModalP
 
     const userRole = Cookies.get("role");
     const userTimezone = userRole === "learner" ? learnerDetails?.learner_personal_info?.learner_contact_details?.timezone : volunteerDetails?.volunteer_contact_details?.timezone
-    const senderId = userRole === "learner" ? Cookies.get("learner_id") : Cookies.get("volunteer_id");
 
     // Role Based endpoints
     const endpoint = userRole === "learner" ? {
@@ -93,7 +92,7 @@ const MobileMessageModal = ({ receiverId, isOpen, onClose }: MobileMessageModalP
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
-    }, [messages]);
+    }, [messages, isFetchingUser]);
 
     const headerComponent = isFetchingUser ?
         <div className="flex gap-2 w-full border-b border-stroke items-center animate-pulse">
@@ -146,7 +145,7 @@ const MobileMessageModal = ({ receiverId, isOpen, onClose }: MobileMessageModalP
                     <div ref={messagesEndRef} />
                 </div>
                 <div className="flex gap-2 w-full border-t border-stroke items-end mt-0 border-t p-3 h-[10vh]">
-                    <Input name="message" className="!mb-0" inputClassName="!text-md !w-full" inputType="text" placeholder="Type message here"
+                    <Input name="message" className="!mb-0 h-full" inputClassName="!text-md !w-full" inputType="textarea" rows={0} placeholder="Type message here"
                         onChange={(e) => setMessage(e.toString())}
                         value={message || ""}
                     />

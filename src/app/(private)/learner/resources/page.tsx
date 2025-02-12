@@ -13,24 +13,27 @@ import { useComponentStore } from "@/store/useComponenetStore";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useWindowSize } from "@/hooks/useWindowSize";
+import LottieLoader from "@/components/common/Loader/Lottie";
 
 //TODO: Needs to be deleted
 const TopicData = [
     {
+        url: "basic",
         title: "Basic",
     },
     {
-        title: "skills",
+        url: "skills",
+        title: "Skills",
     },
 ];
 
 const TabData = [
     { id: "topics", label: "Topics" },
     { id: "suggested", label: "Suggested for you" },
-    { id: "trending", label: "Trending" },
+    // { id: "trending", label: "Trending" },
 ];
 
 export default function ResourcesPage() {
@@ -76,7 +79,8 @@ export default function ResourcesPage() {
 
     // * Used to set topbar options
     useEffect(() => {
-        const headerTitle = category || "Resources";
+        const categoryTitle = TopicData.find((topic) => topic?.url === category)?.title;
+        const headerTitle = (category && categoryTitle) || "Resources";
         const titleIcon =
             category !== null ? <IoIosArrowBack className="text-lg" /> : getHeaderIcon(pathname);
 
@@ -89,6 +93,7 @@ export default function ResourcesPage() {
                 "!bg-black !text-white !rounded-xl hover:!bg-black hover:!text-white !h-[35px] !text-xs !py-2 px-4",
             actionButtonPlacement: "left",
             showButton: category === null,
+            showTitleButton: !!category,
             title: headerTitle,
             titleIcon,
             titleIconClick: category !== null ? handleBackClick : undefined,
@@ -137,8 +142,12 @@ export default function ResourcesPage() {
     const { width } = useWindowSize();
     const isMobile = width < 768;
 
+    const topicSingleTitle = useMemo(() => {
+        return TopicData.find((topic) => topic?.url === category)?.title;
+    }, [category]);
+
     return (
-        <div className="w-full  pt-8 flex flex-col gap-2 p-4 animate-fadeIn">
+        <div className="w-full pt-4 lg:pt-8 flex flex-col gap-2 p-4 animate-fadeIn">
             {/* Resource Modal */}
             <ResourceModal
                 triggerReload={triggerReload}
@@ -162,6 +171,37 @@ export default function ResourcesPage() {
                 handleReportClick={handleReportClick}
             />
 
+            {/* Topic  */}
+            {category && topicSingleTitle && (
+                <div className="flex flex-col md:p-5">
+                    <h2 className="mb-5 lg:mb-8 font-medium text-xl">Resources {">"} {topicSingleTitle}</h2>
+                    {isFetching && (
+                        <div className="min-w-full min-h-[80vh] md:min-w-[259px] md:min-h-[313px] h-full w-full flex-center">
+                            <LottieLoader isLoading={isFetching} />
+                        </div>
+                    )}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {resources?.map((resource: any, index: number) => (
+                            <div key={resource?.resource_id || index} className="col-span-1">
+                                <Card
+                                    resource={resource}
+                                    className="w-full h-full"
+                                    onClick={() =>
+                                        handleViewOrEditResource("view", resource?.resource_id)
+                                    }
+                                />
+                            </div>
+                        ))}
+                    </div>
+                    {!isFetching && resources?.length === 0 && (
+                        <span className="min-w-[250px] min-h-[275px] h-full w-full flex-center">
+                            No Resource Found
+                        </span>
+                    )}
+                </div>
+            )
+            }
+
             {/* Mobile Tabs - Only show on mobile */}
             {isMobile && !category && (
                 <div className="overflow-x-auto flex gap-2 pb-4 hide-scrollbar md:hidden">
@@ -169,11 +209,10 @@ export default function ResourcesPage() {
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`whitespace-nowrap px-4 py-2 rounded-full text-sm ${
-                                activeTab === tab.id
+                            className={`whitespace-nowrap px-4 py-2 rounded-full text-sm ${activeTab === tab.id
                                     ? "bg-[#DFF5FF] text-black border border-[#09BAEE] text-[14px] font-[500]"
                                     : "bg-[#F4F7FB] border border-[#E0E0E0] text-[14px] font-[500] text-black"
-                            }`}
+                                }`}
                         >
                             {tab.label}
                         </button>
@@ -189,7 +228,7 @@ export default function ResourcesPage() {
                     title={!isMobile ? "Topics" : undefined}
                     renderItem={(item, index) => (
                         <TopicCard
-                            onClick={() => handleTopicClick(item.title)}
+                            onClick={() => handleTopicClick(item?.url)}
                             index={index}
                             item={item}
                         />
@@ -199,8 +238,7 @@ export default function ResourcesPage() {
 
             {/* Resources Section */}
             {(!isMobile || (isMobile && activeTab === "suggested")) &&
-                !category &&
-                category !== "my-resources" && (
+                !category && (
                     <SectionWrapper
                         placeHolderComponent={undefined}
                         onPlaceHolderClick={handleAddResourceClick}
@@ -211,6 +249,7 @@ export default function ResourcesPage() {
                             <>
                                 <Card
                                     className="w-full"
+                                    imgClassName=""
                                     key={item?.resource_id || index}
                                     resource={item}
                                     onClick={() =>
@@ -233,7 +272,7 @@ export default function ResourcesPage() {
                         <div key={resource?.resource_id || index} className="col-span-1">
                             <Card
                                 resource={resource}
-                                className="w-full h-full"
+                                className="!w-full !h-full"
                                 onClick={() =>
                                     handleViewOrEditResource("view", resource?.resource_id)
                                 }

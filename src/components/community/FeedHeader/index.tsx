@@ -6,9 +6,10 @@ interface FeedHeaderProps {
     onSave: () => void;
     isSubmitting?: boolean;
     rootClassName?: string;
+    mode?: string;
 }
 
-const FeedHeader = ({ title, onClose, onSave, isSubmitting = false, rootClassName = "" }: FeedHeaderProps) => {
+const FeedHeader = ({ title, mode, onClose, onSave, isSubmitting = false, rootClassName = "" }: FeedHeaderProps) => {
     return (
         <div className={`flex justify-between items-center px-3 py-2 ${rootClassName}`}>
             <button
@@ -24,7 +25,7 @@ const FeedHeader = ({ title, onClose, onSave, isSubmitting = false, rootClassNam
                 disabled={isSubmitting}
                 className="flex items-center justify-center gap-2 bg-[#1E1E1E] border border-black text-white text-[14px] rounded-xl px-4 py-2 w-[72px]"
             >
-                {isSubmitting ? "Saving" : "Save"}
+                {isSubmitting ? (mode === "edit" ? "Saving" : "Adding") : (mode === "edit" ? "Save" : "Add")}
             </button>
         </div>
     );

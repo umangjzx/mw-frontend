@@ -47,8 +47,8 @@ export default function ProfilePage() {
             actionButtonVariant: "secondary",
             actionButtonPlacement: "right",
             showButton: true,
+            showTitleButton: true,
             hideSearch: true
-
         });
     }, []);
 
@@ -56,7 +56,8 @@ export default function ProfilePage() {
         if (!data) return;
         setVolunteerDetails(data);
         
-        const {  volunteer_first_name, volunteer_last_name } = data?.volunteer_personal_info;
+        const volunteer_first_name = data?.volunteer_first_name;
+        const volunteer_last_name = data?.volunteer_last_name;
         const description = data?.volunteer_special_needs?.description;
 
         setEditProfileData({

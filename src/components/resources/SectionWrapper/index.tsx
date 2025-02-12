@@ -73,14 +73,14 @@ const SectionWrapper = ({
                     msOverflowStyle: "none",
                 }}
             >
-                <div className="flex flex-col items-center md:items-start gap-4 md:flex-row px-2 md:gap-4 md:px-4 pb-4 w-[353px] md:w-full justify-center md:justify-normal">
+                <div className="flex flex-col items-center md:items-start gap-4 md:flex-row px-2 md:gap-4 md:px-4 pb-4 w-full justify-center md:justify-normal">
                     {placeHolderComponent && (
                         <div onClick={onPlaceHolderClick} className="cursor-pointer">
                             {placeHolderComponent}
                         </div>
                     )}
                     {isLoading && (
-                        <div className="min-w-[259px] min-h-[313px] h-full w-full flex-center">
+                        <div className="min-w-full min-h-[80vh] md:min-w-[259px] md:min-h-[313px] h-full w-full flex-center">
                             <LottieLoader isLoading={isLoading} />
                         </div>
                     )}

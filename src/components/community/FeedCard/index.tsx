@@ -73,14 +73,15 @@ const FeedCard = ({ onClick, isManagePost = false }: FeedCardProps) => {
         return response.data;
     };
 
-    const { data, isLoading, isError } = useQuery<PostResponse>({
+    const { data, isFetching, isError } = useQuery<PostResponse>({
         queryKey: ["get-posts"],
         queryFn: getPosts,
     });
 
-    if (isLoading) return (<div className="h-full w-full min-h-[80vh] flex-center">
-        <LottieLoader isLoading={true} />
+    if(isFetching) return (<div className="w-full h-full min-h-[70vh] lg:min-h-[90vh] flex-center">
+        <LottieLoader isLoading={true} zIndex="0" />
     </div>);
+
     if (isError) return <div>Error loading posts</div>;
     // const formatter = buildFormatter(englishStrings);
 
@@ -163,17 +164,22 @@ const FeedCard = ({ onClick, isManagePost = false }: FeedCardProps) => {
     };
 
     // Get the selected post data
-    const selectedPost = posts.find((post) => post.post_id === selectedPostId);
+    const selectedPost = posts.find((post) => post?.post_id === selectedPostId);
 
     return (
-        <div className="flex flex-col gap-6 w-full md:p-0 relative">
+        <div className="flex flex-col gap-6 h-full md:p-0 relative">
             <SortDropdown
                 selectedSort={selectedSort}
                 onSort={handleSort}
                 isManagePost={isManagePost}
             />
 
-            {posts.map((post) => (
+            {
+                isFetching ?
+                    <div className="w-full h-full min-h-[70vh] lg:min-h-[90vh] flex-center">
+                        <LottieLoader isLoading={true} />
+                    </div>
+                : posts.map((post) => (
                 <div key={post.post_id} className="block w-full relative">
                     <div className="px-2 py-1 md:pr-4 md:px-0">
                         {/* Profile and Name Section */}
