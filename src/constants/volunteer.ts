@@ -1,6 +1,8 @@
 import nationalities from "@/data/nationalities.json"
 import timezones from "@/data/timezones.json"
 
+export const ADULT_VOLUNTEER_AGE = 21;
+
 export const TestimonialFormConstants: FormField[] = [
     {
         name: "comments",
@@ -69,6 +71,7 @@ const ProfileDetailsFields: FormField[] = [
     {
         id: "consented_from_parent",
         label: "Parent Details are mandatory for minor volunteers",
+        sublabel: "(Below 18-21 depending on the US State)",
         inputType: "checkbox",
         placeholder: "I've consent from my parent or guardian to be a volunteer.",
         gridCols: 2,

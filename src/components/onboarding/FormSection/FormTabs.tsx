@@ -11,6 +11,7 @@ import moment from "moment";
 import { validateLearnerParentFields, validateVolunteerParentDetails } from "./config";
 import { UseFormSetError, useWatch } from "react-hook-form";
 import { calculateAge } from "@/utils/timeFunctions";
+import { ADULT_VOLUNTEER_AGE } from "@/constants/volunteer";
 
 const currentVersion = process.env.NEXT_PUBLIC_CURRENT_VERSION;
 
@@ -135,7 +136,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
     const fields = ["consented_from_parent", "volunteer_parent_name", "volunteer_parent_email"]
     const volunteerAge = () => {
         const age = Number(calculateAge(volunteer_birth_date));
-        return age >= 18;
+        return age >= ADULT_VOLUNTEER_AGE;
     }
 
     const hideFields = (field: any) => {
