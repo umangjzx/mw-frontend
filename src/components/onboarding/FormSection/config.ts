@@ -34,7 +34,7 @@ export const volunteerFormSchema = z.object({
         .min(1, { message: "Last Name cannot be empty" }),
     volunteer_birth_date: z.string({ required_error: "Please select your birthday" }),
     consented_from_parent: z.boolean().optional(),
-    volunteer_parent_fullname: z.string().optional(),
+    volunteer_parent_name: z.string().optional(),
     volunteer_parent_email: z.string().optional(),
     volunteer_gender: z.string({ required_error: "Please select your gender" }),
     volunteer_education: z
@@ -315,7 +315,7 @@ export function validateVolunteerParentDetails(data: any) {
     if (age < 18) {
         const requiredFields = {
             consented_from_parent: "Parent consent is required for volunteers under 18",
-            volunteer_parent_fullname: "Parent name is required for volunteers under 18",
+            volunteer_parent_name: "Parent name is required for volunteers under 18",
             volunteer_parent_email: "Parent email is required for volunteers under 18",
         };
 

@@ -132,7 +132,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
         tabButtonsRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [activeTab]);
 
-    const fields = ["consented_from_parent", "volunteer_parent_fullname", "volunteer_parent_email"]
+    const fields = ["consented_from_parent", "volunteer_parent_name", "volunteer_parent_email"]
     const volunteerAge = () => {
         const age = Number(calculateAge(volunteer_birth_date));
         return age >= 18;
