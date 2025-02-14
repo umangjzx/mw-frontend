@@ -56,6 +56,8 @@ type EndpointProps = {
         create: string;
         get: string;
         getMyResources: string,
+        getResourcesByCategory: (category: string) => string,
+        getCategories: string,
         getResource: (resource_id: string) => string,
         delete: (resource_id: string) => string,
         update: (resource_id: string) => string,
@@ -63,10 +65,17 @@ type EndpointProps = {
         dislike: (resource_id: string) => string,
     };
     post: {
-        getPosts: string;
         createPost: string;
+        getPosts: string;
+        getMyPosts: string;
+        getSavedPosts: string;
         getSinglePost: (post_id: string) => string;
         like: (post_id: string) => string;
+        save: (post_id: string) => string;
+        unsave: (post_id: string) => string;
+        getNotifications: string;
+        readNotifications: string;
+        updatePost: (id: string) => string;
     };
     comment: {
         createComment: string;

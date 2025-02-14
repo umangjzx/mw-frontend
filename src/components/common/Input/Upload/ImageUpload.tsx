@@ -99,7 +99,7 @@ const ImageUpload: React.FC<BaseUploaderProps> = ({ ...props }) => {
                     )}
                 >
                     {props.isLoading ?
-                        <LottieLoader isLoading={true} /> :
+                        <LottieLoader isLoading={true} customClassName="!w-full !h-full" /> :
                         <BiPlus className="text-2xl text-black bg-stroke rounded-full" />
                     }
                 </Button>

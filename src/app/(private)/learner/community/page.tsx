@@ -4,7 +4,6 @@ import ActionPanel from "@/components/community/ActionPanel";
 import FeedCard from "@/components/community/FeedCard";
 import FeedViewModal from "@/components/community/FeedViewModal";
 import { PostModal } from "@/components/community/Modals";
-import NotificationCard from "@/components/community/NotificationCard";
 import CommunityReportModal from "@/components/community/ReportsModal";
 import { getCurrentTab } from "@/constants/community";
 import { getHeaderIcon } from "@/layouts/helper";
@@ -12,6 +11,8 @@ import { useComponentStore } from "@/store/useComponenetStore";
 import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
+import NotificationSection from "@/components/community/NotificationSection";
+import EditCommunityPost from "@/components/community/EditPost";
 
 export default function CommunityPage() {
     const { setHeaderOptions } = useComponentStore();
@@ -52,18 +53,18 @@ export default function CommunityPage() {
         setMode("view");
     };
 
-    const handleReportClick = (resource_id: string) => {
+    const handleReportClick = (post_id: string) => {
         setReportModalOpen(true);
-        setReportModalPostId(resource_id);
+        setReportModalPostId(post_id);
     };
 
     const handleCloseReportModal = () => {
         setReportModalOpen(false);
         setReportModalPostId("");
     };
-
+    
     return (
-        <div className="grid grid-cols-12 h-[100dvh] overflow-hidden animate-fadeIn">
+        <div className="grid grid-cols-12 h-[90dvh] overflow-hidden animate-fadeIn">
             <CommunityReportModal
                 postId={reportModalPostId}
                 isOpen={reportModalOpen}
@@ -71,9 +72,12 @@ export default function CommunityPage() {
             />
 
             <PostModal isOpen={mode === "add"} onClose={handleCloseModal} />
+            <EditCommunityPost isOpen={mode === "edit"} onClose={handleCloseModal} />
+
             <FeedViewModal
                 isOpen={mode === "view"}
                 onClose={handleCloseModal}
+                isManagePost={activeTab === "manage_your_posts"}
                 handleReportClick={handleReportClick}
             />
             <div className="col-span-12 flex flex-col min-h-0 flex-grow">
@@ -83,16 +87,17 @@ export default function CommunityPage() {
                     </div>
                 </div>
 
-                <div className="flex md:flex-row justify-between gap-4 md:p-6 flex-1 min-h-0 overflow-auto">
+                <div className="flex md:flex-row justify-between gap-4 md:p-6 md:pb-0 flex-1 min-h-0 overflow-auto">
                     {/* Main Content Area */}
-                    <div className="flex-1 md:w-8/12 bg-white p-0 md:p-0 md:rounded-3xl overflow-hidden flex flex-col">
-                        <div className="flex-1 overflow-auto no-scrollbar md:px-6 pb-2 md:pb-6">
+                    <div className="flex-1 md:w-8/12 p-0 md:p-0 overflow-auto no-scrollbar md:rounded-3xl flex flex-col">
+                        <div className="flex-1 bg-white md:rounded-3xl md:p-6 pb-2 md:mb-6">
                             {activeTab === "your_notifications" ? (
-                                <NotificationCard />
+                                <NotificationSection />
                             ) : (
-                                <div className="flex flex-col min-h-0 flex-grow">
+                                <div className="flex flex-col min-h-0 flex-grow h-full">
                                     <FeedCard
                                         onClick={handleFeedCardClick}
+                                        handleReportClick={handleReportClick}
                                         isManagePost={activeTab === "manage_your_posts"}
                                     />
                                 </div>
@@ -101,9 +106,9 @@ export default function CommunityPage() {
                     </div>
 
                     {/* Desktop Action Panel */}
-                    <div className="hidden lg:block  min-h-0">
-                        <div className="bg-white rounded-xl p-5 w-[380px] h-[390px]">
-                            <div className="h-full w-[353px] overflow-auto no-scrollbar">
+                    <div className="hidden lg:block min-h-0">
+                        <div className="bg-white rounded-2xl p-4 min-w-[380px] min-h-[390px]">
+                            <div className="h-full overflow-auto no-scrollbar">
                                 <ActionPanel />
                             </div>
                         </div>

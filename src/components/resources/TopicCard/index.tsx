@@ -21,7 +21,7 @@ const TopicCard = ({ rootClassName, index, item, onClick }: Props) => {
                     backgroundImage: index % 2 === 0 ? gradient : gradientReverse,
                 }}
             >
-                <p className=" font-medium ">{item.title}</p>
+                <p className=" font-medium ">{item?.category_name}</p>
             </div>
         </>
     );

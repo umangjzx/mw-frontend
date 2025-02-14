@@ -3,7 +3,7 @@ import { endpoints } from "@/api/constants";
 import { POST_API } from "@/api/request";
 import { Input } from "@/components/common/Input";
 import CenterModal from "@/components/common/Modals/CenterModal";
-import { LearnerCommunityFormConstants } from "@/constants/community";
+import { CommunityFormConstants } from "@/constants/community";
 import { useSendData } from "@/hooks/useReactQuery";
 import { cn } from "@/utils/merge-class";
 import { useState } from "react";
@@ -11,6 +11,7 @@ import Cookies from "js-cookie";
 import { useQueryClient } from "@tanstack/react-query";
 import { useWindowSize } from "@/hooks/useWindowSize";
 import FeedHeader from "../FeedHeader";
+import { showToast } from "@/components/common/Toast";
 type PostModalProps = {
     isOpen: boolean;
     onClose: () => void;
@@ -32,6 +33,10 @@ const PostModal = ({ isOpen, onClose }: PostModalProps) => {
 
     const handleSubmit = async () => {
         console.log("Form Data to submit:", { notes, uploadPictures });
+        if (notes === "" || uploadPictures?.length <= 0) {
+            showToast({ message: "Please add a note and upload at least one picture", type: "error" });
+            return;
+        }
         const payload = {
             description: notes,
             images: uploadPictures.map((image) => ({
@@ -50,70 +55,71 @@ const PostModal = ({ isOpen, onClose }: PostModalProps) => {
             setNotes("");
             setUploadPictures([]);
             onClose();
-            queryClient.invalidateQueries({ queryKey: ["get-posts"] });
+            showToast({ message: "Post created successfully", type: "success" });
+            queryClient.invalidateQueries({ queryKey: ["get-posts", "manage_your_posts"] });
         },
         error: (err) => {
             console.log("Error: ", err);
+            showToast({ message: "Failed to create post", type: "error" });
         },
     });
+
     const { width } = useWindowSize();
     const isMobile = width < 768;
     const isTablet = width >= 768 && width < 1024;
+
     return (
         <CenterModal
+            title={!isMobile ? "Add New Post" : ""}
             isOpen={isOpen}
-            onClose={onClose}
             loading={isPending}
+            onClose={onClose}
             width={isMobile ? "100vw" : isTablet ? "60%" : "40%"}
             height={isMobile ? "100dvh" : "auto"}
             customClassName={cn(
-                "max-h-[80vh] !rounded-2xl overflow-hidden",
-                isMobile && "!p-0 !m-0 !h-[100dvh] !max-h-none !w-screen !max-w-none !max-h-[100dvh] !rounded-none [&_.ant-modal-content]:!p-0"
+                "max-h-[80vh] !rounded-2xl overflow-hidden [&_.ant-modal-footer]:!mt-0 [&_.modal-body]:!border-b [&_.modal-body]:!max-h-[80vh]",
+                isMobile &&
+                    "[&_.ant-modal-content]:!p-0 !p-0 !m-0 !h-[100dvh] !max-h-none !w-screen !max-w-none !max-h-[100dvh] !rounded-none"
             )}
             headerComponent={
                 isMobile && (
                     <FeedHeader
-                        title="Add New Resource"
+                        title="Add New Post"
                         onClose={onClose}
                         onSave={() => onSave(undefined)}
                     />
                 )
             }
             hideFooter={isMobile}
-            secondaryActionProps={
-                !isMobile
-                    ? {
-                          onClick: onSave,
-                          title: "Share now",
-                          customClassName: "!rounded-xl hover:!bg-black hover:!text-white",
-                      }
-                    : undefined
-            }
-            primaryActionProps={
-                !isMobile
-                    ? {
-                          onClick: onClose,
-                          title: "Cancel",
-                          btnVariant: "secondary",
-                          customClassName: cn("bg-transparent !text-black", "!rounded-xl"),
-                      }
-                    : undefined
-            }
+            secondaryActionProps={{
+                onClick: onClose,
+                disabled: isPending,
+                title: "Cancel",
+                btnVariant: "secondary",
+                customClassName: cn("bg-transparent !text-black", "!rounded-xl"),
+            }}
+            primaryActionProps={{
+                onClick: onSave,
+                disabled: isPending,
+                title: "Share now",
+                customClassName: "!rounded-xl hover:!bg-black hover:!text-white",
+            }}
         >
-            <div className="flex flex-col gap-4 p-4">
-                
-            <div className="pb-2 hidden md:block">
-                <h2>Add New Post</h2>
-            </div>
-            {LearnerCommunityFormConstants.map((field: any) => (
-                <Input
-                    key={field.name}
-                    {...field}
-                    onChange={(value: any) => handleChange(field.name, value)}
-                    value={field.name === "uploadPictures" ? uploadPictures : notes}
-                    rootClassName="bg-white p-4 rounded-xl"
-                />
-            ))}
+            <div className="flex flex-col gap-4 md:gap-2 p-4 md:p-0">
+                {CommunityFormConstants.map((field: any) => (
+                    <Input
+                        key={field.name}
+                        {...field}
+                        error={
+                            field.name === "uploadPictures"
+                                ? uploadPictures.length > 0 || "Please upload at least one picture"
+                                : !!notes || "Please add your comment"
+                        }
+                        value={field.name === "uploadPictures" ? uploadPictures : notes}
+                        onChange={(value: any) => handleChange(field.name, value)}
+                        rootClassName="bg-white p-2 rounded-xl !mb-0"
+                    />
+                ))}
             </div>
         </CenterModal>
     );

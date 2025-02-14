@@ -15,6 +15,7 @@ type CardProps = {
 
 const Card = ({ className, imgClassName, resource, onClick, handleReportClick }: CardProps) => {
     const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+    const resourceImage = resource?.resource_image?.image_url;
 
     return (
         <div
@@ -27,12 +28,16 @@ const Card = ({ className, imgClassName, resource, onClick, handleReportClick }:
                         {resource?.total_likes} {resource?.total_likes > 1 ? "likes" : "like"}
                     </span>
                 </span>
-                <Image
-                    src={resource?.resource_image?.image_url}
-                    alt="background"
-                    fill
-                    className={`object-cover rounded-t-xl ${imgClassName}`}
-                />
+                {
+                    resourceImage && (resourceImage?.startsWith("http") || resourceImage?.startsWith("https")) && (
+                        <Image
+                            src={resourceImage}
+                            alt="background"
+                            fill
+                            className={`object-cover rounded-t-xl ${imgClassName}`}
+                        />
+                    )
+                }
             </div>
             <div className="flex flex-col p-3 gap-4 flex-grow">
                 <div className="flex justify-between items-center gap-2">
