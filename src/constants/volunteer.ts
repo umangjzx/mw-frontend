@@ -75,7 +75,7 @@ const ProfileDetailsFields: FormField[] = [
         inputClassName: "max-md:text-sm w-fit"
     },
     {
-        id: "volunteer_parent_fullname",
+        id: "volunteer_parent_name",
         label: "Parent Full Name",
         inputType: "text",
         placeholder: "Enter Parent FullName",

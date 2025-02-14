@@ -101,7 +101,7 @@ export const VolunteerProfileFormConstants: FormField[] = [
         required: true,
         endpoint: "subjects",
         responseAsLabel: "subject_name",
-        responseAsValue: ["subject_id", "subject_name"],
+        responseAsValue: "subject_name",
     },
     {
         name: "volunteer_skills",
@@ -111,7 +111,7 @@ export const VolunteerProfileFormConstants: FormField[] = [
         creatable: true,
         endpoint: "skills",
         responseAsLabel: "skill_name",
-        responseAsValue: ["skill_id", "skill_name"],
+        responseAsValue: "skill_name",
         variant: "multi",
         required: true,
     },
@@ -144,10 +144,7 @@ export const LearnerProfileFormSchema = z.object({
         .string({ required_error: "Bio is required" })
         .min(1, "Bio is required"),
     learner_language: z
-        .object({
-            language_id: z.string(),
-            language_name: z.string(),
-        }, { required_error: "Language selection is required" }),
+        .string({ required_error: "Language selection is required" }),
     learner_subjects: z
         .array(z.any(), { required_error: "At least one subject is required" })
         .min(1, "At least one subject is required"),
@@ -196,7 +193,7 @@ export const LearnerProfileFormConstants: FormField[] = [
         placeholder: "Tamil...",
         endpoint: "languages",
         responseAsLabel: "language_name",
-        responseAsValue: ["language_id", "language_name"],
+        responseAsValue: "language_name",
         required: true,
     },
     {
@@ -209,7 +206,7 @@ export const LearnerProfileFormConstants: FormField[] = [
         required: true,
         endpoint: "subjects",
         responseAsLabel: "subject_name",
-        responseAsValue: ["subject_id", "subject_name"],
+        responseAsValue: "subject_name",
     },
     {
         name: "contact_number",

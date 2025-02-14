@@ -110,7 +110,8 @@ export default function ProfilePage() {
     return (
         <div className="h-full animate-fadeIn">
             <EditProfileModal
-                data={editProfileData}
+                data={data}
+                initialFormData={editProfileData}
                 isOpen={mode === "edit"}
                 onClose={() => setMode(null)}
                 triggerReload={triggerReload}

@@ -11,20 +11,18 @@ import { useQueryState } from "nuqs";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import FeedHeader from "@/components/community/FeedHeader/index";
 import { LearnerProfileFormConstants, LearnerProfileFormSchema, VolunteerProfileFormConstants, VolunteerProfileFormSchema } from "@/constants/profile";
-import { PUT_API } from "@/api/request";
-import { endpoints } from "@/api/constants";
 import { updateLearnerProfile } from "@/api/learners";
 
 type EditProfileModalProps = {
     data?: any;
+    initialFormData?: any;
     isOpen: boolean;
     onClose: () => void;
     triggerReload: () => void;
 };
 
 
-const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditProfileModalProps) => {
-    const [currentMode] = useQueryState("mode");
+const EditProfileModal = ({ data = {}, initialFormData = {}, triggerReload, isOpen, onClose }: EditProfileModalProps) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const role = Cookies.get("role");
@@ -45,16 +43,16 @@ const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditPro
     });
 
     useEffect(() => {
-        reset(data);
-    }, [data])
+        reset(initialFormData);
+    }, [isOpen])
 
     console.log("Errors:", errors);
 
     const onSubmit = async (formData: FormData) => {
-        console.log("Form Data to submit:", formData);
+        console.log("Form Data to submit:", data, formData);
         setIsSubmitting(true);
         try {
-            const status = isVolunteer ? await updateLearnerProfile(data?.userId || "", formData) : await updateLearnerProfile(data?.userId || "", formData);
+            const status = isVolunteer ? await updateLearnerProfile(initialFormData?.userId || "", data, formData) : await updateLearnerProfile(initialFormData?.userId || "", data, formData);
             if (status === 201) {
                 showToast({ message: "Profile updated" });
                 triggerReload();
@@ -105,6 +103,7 @@ const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditPro
                 isMobile && (
                     <FeedHeader
                         title="Edit Profile"
+                        mode="edit"
                         onClose={onClose}
                         onSave={handleSubmit(onSubmit)}
                         isSubmitting={isSubmitting}
@@ -112,7 +111,7 @@ const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditPro
                     />
                 )
             }
-            rootClassName="md:h-full [&_.modal-body]:md:max-h-[60dvh]"
+            rootClassName="md:!h-full [&_.modal-body]:md:max-h-[60dvh]"
             customClassName={cn(
                 "sm:max-h-screen overflow-hidden",
                 isMobile
