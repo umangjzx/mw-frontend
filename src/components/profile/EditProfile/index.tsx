@@ -7,23 +7,22 @@ import Cookies from "js-cookie";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { showToast } from "@/components/common/Toast";
-import { useQueryState } from "nuqs";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import FeedHeader from "@/components/community/FeedHeader/index";
 import { LearnerProfileFormConstants, LearnerProfileFormSchema, VolunteerProfileFormConstants, VolunteerProfileFormSchema } from "@/constants/profile";
-import { PUT_API } from "@/api/request";
-import { endpoints } from "@/api/constants";
+import { updateLearnerProfile } from "@/api/learners";
+import { updateVolunteerProfile } from "@/api/volunteers";
 
 type EditProfileModalProps = {
     data?: any;
+    initialFormData?: any;
     isOpen: boolean;
     onClose: () => void;
     triggerReload: () => void;
 };
 
 
-const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditProfileModalProps) => {
-    const [currentMode] = useQueryState("mode");
+const EditProfileModal = ({ data = {}, initialFormData = {}, triggerReload, isOpen, onClose }: EditProfileModalProps) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const role = Cookies.get("role");
@@ -44,17 +43,19 @@ const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditPro
     });
 
     useEffect(() => {
-        reset(data);
-    }, [data])
+        reset(initialFormData);
+    }, [isOpen])
 
     console.log("Errors:", errors);
 
     const onSubmit = async (formData: FormData) => {
-        console.log("Form Data to submit:", formData);
+        console.log("Form Data to submit:", data, formData);
         setIsSubmitting(true);
         try {
-            const endpoint = isVolunteer ? endpoints.volunteer.update(data?.userId || "") : endpoints.learner.update(data?.userId || "");
-            const { status } = await PUT_API(endpoint, formData);
+            const status = isVolunteer 
+                ? await updateVolunteerProfile(initialFormData?.userId || "", data, formData) 
+                : await updateLearnerProfile(initialFormData?.userId || "", data, formData);
+            
             if (status === 201) {
                 showToast({ message: "Profile updated" });
                 triggerReload();
@@ -63,10 +64,15 @@ const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditPro
                 showToast({ message: "Profile not updated", type: "error" });
             }
         } catch (error) {
+            console.log("Error: ", error);
             showToast({ message: "Something went wrong!", type: "error" });
         } finally {
             setIsSubmitting(false);
         }
+    };
+    
+    const onError = (formErrors: any) => {
+        showToast({ message: "Please enter all details.", type: "error" });
     };
 
     const buttonProps = {
@@ -82,7 +88,7 @@ const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditPro
             disabled: isSubmitting,
         },
         primary: {
-            onClick: handleSubmit(onSubmit),
+            onClick: handleSubmit(onSubmit, onError),
             title: isSubmitting ? "Saving" : "Save",
             customClassName: cn(
                 "!rounded-xl hover:!bg-black hover:!text-white",
@@ -105,13 +111,15 @@ const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditPro
                 isMobile && (
                     <FeedHeader
                         title="Edit Profile"
+                        mode="edit"
                         onClose={onClose}
-                        onSave={handleSubmit(onSubmit)}
+                        onSave={handleSubmit(onSubmit, onError)}
                         isSubmitting={isSubmitting}
                         rootClassName="!mb-0"
                     />
                 )
             }
+            rootClassName="md:!h-full [&_.modal-body]:md:max-h-[60dvh]"
             customClassName={cn(
                 "sm:max-h-screen overflow-hidden",
                 isMobile
@@ -123,9 +131,9 @@ const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditPro
             hideFooter={isMobile}
         >
             <form
-                onSubmit={handleSubmit(onSubmit)}
+                onSubmit={handleSubmit(onSubmit, onError)}
                 className={cn(
-                    "flex flex-col gap-2",
+                    "flex flex-col gap-2 md:gap-4",
                     isMobile && "px-4 pb-4"
                 )}
             >
@@ -141,7 +149,7 @@ const EditProfileModal = ({ data = {}, triggerReload, isOpen, onClose }: EditPro
                                 error={errors[field.name as keyof FormData]?.message}
                                 value={value}
                                 onChange={onChange}
-                                rootClassName={"bg-white p-4 rounded-xl"}
+                                rootClassName={"max-md:bg-white max-md:p-4 max-md:rounded-xl"}
                                 inputClassName={field?.inputClassName}
                                 labelClassName="[&_.inner-label]:!font-semibold [&_.inner-label]:!text-sm"
                             />

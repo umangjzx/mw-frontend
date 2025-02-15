@@ -1,5 +1,6 @@
 import { z, ZodError, ZodIssue } from "zod";
 import moment from "moment";
+import { ADULT_VOLUNTEER_AGE } from "@/constants/volunteer";
 
 const contactNumberValidation = z
     .object({
@@ -34,7 +35,7 @@ export const volunteerFormSchema = z.object({
         .min(1, { message: "Last Name cannot be empty" }),
     volunteer_birth_date: z.string({ required_error: "Please select your birthday" }),
     consented_from_parent: z.boolean().optional(),
-    volunteer_parent_fullname: z.string().optional(),
+    volunteer_parent_name: z.string().optional(),
     volunteer_parent_email: z.string().optional(),
     volunteer_gender: z.string({ required_error: "Please select your gender" }),
     volunteer_education: z
@@ -226,9 +227,6 @@ export const volunteerFormSchema = z.object({
             ),
         volunteer_experience_details: z
             .object({
-                previously_volunteered: z.boolean({
-                    required_error: "Please specify if you previously volunteered",
-                }),
                 invloved_in_complaints: z.boolean({
                     required_error: "Please specify if you were involved in complaints",
                 }),
@@ -236,15 +234,15 @@ export const volunteerFormSchema = z.object({
             })
             .refine(
                 (fields) => {
-                    const { previously_volunteered, invloved_in_complaints, description } = fields;
+                    const { invloved_in_complaints, description } = fields;
                     return (
-                        !(previously_volunteered || invloved_in_complaints) ||
+                        !(invloved_in_complaints) ||
                         (description && description.trim().length > 0)
                     );
                 },
                 {
                     message:
-                        'Description is required if previously volunteered or involved in complaints is marked as "yes".',
+                        'Description is required if involved in complaints is marked as "yes".',
                     path: ["description"],
                 }
             ),
@@ -312,11 +310,11 @@ export function validateVolunteerParentDetails(data: any) {
 
     const age = moment().diff(moment(data.volunteer_birth_date, "DD-MM-YYYY"), 'years');
 
-    if (age < 18) {
+    if (age < ADULT_VOLUNTEER_AGE) {
         const requiredFields = {
-            consented_from_parent: "Parent consent is required for volunteers under 18",
-            volunteer_parent_fullname: "Parent name is required for volunteers under 18",
-            volunteer_parent_email: "Parent email is required for volunteers under 18",
+            consented_from_parent: `Parent consent is required for volunteers under ${ADULT_VOLUNTEER_AGE}`,
+            volunteer_parent_name: `Parent name is required for volunteers under ${ADULT_VOLUNTEER_AGE}`,
+            volunteer_parent_email: `Parent email is required for volunteers under ${ADULT_VOLUNTEER_AGE}`,
         };
 
         Object.entries(requiredFields).forEach(([key, errorMessage]) => {

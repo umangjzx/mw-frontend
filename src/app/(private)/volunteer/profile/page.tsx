@@ -47,8 +47,8 @@ export default function ProfilePage() {
             actionButtonVariant: "secondary",
             actionButtonPlacement: "right",
             showButton: true,
+            showTitleButton: true,
             hideSearch: true
-
         });
     }, []);
 
@@ -56,8 +56,9 @@ export default function ProfilePage() {
         if (!data) return;
         setVolunteerDetails(data);
         
-        const {  volunteer_first_name, volunteer_last_name } = data?.volunteer_personal_info;
-        const description = data?.volunteer_special_needs?.description;
+        const volunteer_first_name = data?.volunteer_first_name;
+        const volunteer_last_name = data?.volunteer_last_name;
+        const description = data?.volunteer_description;
 
         setEditProfileData({
             userId: volunteerId,
@@ -109,7 +110,8 @@ export default function ProfilePage() {
     return (
         <div className="h-full animate-fadeIn">
             <EditProfileModal
-                data={editProfileData}
+                data={data}
+                initialFormData={editProfileData}
                 isOpen={mode === "edit"}
                 onClose={() => setMode(null)}
                 triggerReload={triggerReload}

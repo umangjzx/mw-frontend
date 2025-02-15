@@ -12,7 +12,7 @@ import { useComponentStore } from "@/store/useComponenetStore";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import ResourceReportModal from "@/components/resources/ReportsModal";
 import { useWindowSize } from "@/hooks/useWindowSize";
@@ -21,20 +21,19 @@ import { divide } from "lodash";
 //TODO: Needs to be deleted
 const TopicData = [
     {
+        url: "basic",
         title: "Basic",
     },
     {
-        title: "Skill",
-    },
-    {
-        title: "Skill",
+        url: "skills",
+        title: "Skills",
     },
 ];
 
 const TabData = [
     { id: "topics", label: "Topics" },
     { id: "suggested", label: "Suggested for you" },
-    { id: "trending", label: "Trending" },
+    // { id: "trending", label: "Trending" },
 ];
 
 export default function ResourcesPage() {
@@ -80,7 +79,8 @@ export default function ResourcesPage() {
 
     // * Used to set topbar options
     useEffect(() => {
-        const headerTitle = category || "Resources";
+        const categoryTitle = TopicData.find((topic) => topic?.url === category)?.title;
+        const headerTitle = (category && categoryTitle) || "Resources";
         const titleIcon =
             category !== null ? <IoIosArrowBack className="text-lg" /> : getHeaderIcon(pathname);
 
@@ -93,6 +93,7 @@ export default function ResourcesPage() {
                 "!bg-black !text-white !rounded-xl hover:!bg-black hover:!text-white !h-[35px] !text-xs !py-2 px-4",
             actionButtonPlacement: "left",
             showButton: category === null,
+            showTitleButton: !!category,
             title: headerTitle,
             titleIcon,
             titleIconClick: category !== null ? handleBackClick : undefined,
@@ -140,9 +141,13 @@ export default function ResourcesPage() {
     const [activeTab, setActiveTab] = useState("topics");
     const { width } = useWindowSize();
     const isMobile = width < 768;
+    
+        const topicSingleTitle = useMemo(() => {
+            return TopicData.find((topic) => topic?.url === category)?.title;
+        }, [category]);
 
     return (
-        <div className="w-full  pt-8 flex flex-col gap-2 p-4 animate-fadeIn">
+        <div className="w-full pt-4 lg:pt-8 flex flex-col gap-2 p-4 animate-fadeIn">
             {/* Resource Modal */}
             <ResourceModal
                 triggerReload={triggerReload}
@@ -166,6 +171,32 @@ export default function ResourcesPage() {
                 handleReportClick={handleReportClick}
             />
 
+            {/* Topic  */}
+            {category && topicSingleTitle && (
+                <div className="flex flex-col md:p-5">
+                    <h2 className="mb-5 lg:mb-8 font-medium text-xl">Resources {">"} {topicSingleTitle}</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {resources?.map((resource: any, index: number) => (
+                            <div key={resource?.resource_id || index} className="col-span-1">
+                                <Card
+                                    resource={resource}
+                                    className="w-full h-full"
+                                    onClick={() =>
+                                        handleViewOrEditResource("view", resource?.resource_id)
+                                    }
+                                />
+                            </div>
+                        ))}
+                    </div>
+                    {!isFetching && resources?.length === 0 && (
+                        <span className="min-w-[250px] min-h-[275px] h-full w-full flex-center">
+                            No Resource Found
+                        </span>
+                    )}
+                </div>
+            )
+            }
+
             {/* Add Mobile Tabs */}
             {isMobile && !category && (
                 <div className="overflow-x-auto  flex gap-2 pb-4 hide-scrollbar md:hidden">
@@ -186,8 +217,8 @@ export default function ResourcesPage() {
             )}
 
             {/* Update Topics section */}
-            {  activeTab === "topics"&& !category && (isMobile ?
-                <div className="grid grid-cols-2 gap-4 place-items-center">
+            { activeTab === "topics" && !category && (isMobile ?
+                <div className="grid grid-cols-1 gap-4 place-items-center">
                     {TopicData.map((item, index) => (
                         <TopicCard
                             onClick={() => handleTopicClick(item.title)}
@@ -203,7 +234,7 @@ export default function ResourcesPage() {
                     title={!isMobile ? "Topics" : undefined}
                     renderItem={(item, index) => (
                         <TopicCard
-                            onClick={() => handleTopicClick(item.title)}
+                            onClick={() => handleTopicClick(item?.url)}
                             index={index}
                             item={item}
                         />
@@ -213,8 +244,7 @@ export default function ResourcesPage() {
 
             {/* Update Resources section */}
             {(!isMobile || (isMobile && activeTab === "suggested")) &&
-                !category &&
-                category !== "my-resources" && (
+                !category && (
                     <SectionWrapper
                         placeHolderComponent={undefined}
                         onPlaceHolderClick={handleAddResourceClick}

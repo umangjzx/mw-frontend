@@ -3,8 +3,8 @@ import * as React from "react";
 const EditIcon: React.FC<React.SVGProps<SVGElement>> = (props) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
-    width='32'
-    height='33'
+    width={props.width || 32}
+    height={props.height || 33}
     fill='none'
     viewBox='0 0 32 33'
   >

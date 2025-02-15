@@ -8,9 +8,10 @@ type Props = {
     isLoading: boolean;
     customClassName?: string;
     children?: React.ReactNode;
+    zIndex?: string | number;
 };
 
-const LottieLoader: React.FC<Props> = ({ isLoading, customClassName }) => {
+const LottieLoader: React.FC<Props> = ({ isLoading, customClassName, zIndex }) => {
     const role = Cookies.get("role");
 
     useEffect(() => {
@@ -27,7 +28,7 @@ const LottieLoader: React.FC<Props> = ({ isLoading, customClassName }) => {
         <>
             {isLoading && (
                 <div
-                    style={{ zIndex: "9999999" }}
+                    style={{ zIndex: zIndex || "1" }}
                     className="w-full h-full flex-center">
                     <div className={`w-[6rem] md:w-[8rem] lg:w-[9rem] h-[6rem] md:h-[8rem] lg:h-[9rem] ${customClassName}`}>
                         <Lottie

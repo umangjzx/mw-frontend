@@ -8,6 +8,14 @@ type UserTimeZoneProps = {
 
 const localTimeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone || moment.tz.guess();
 
+export const timesAgo = (date: string) => {
+    if (!date) return "";
+    const createdAt = moment.utc(date).local();
+    const diffInMinutes = moment().diff(createdAt, "minutes");    
+    const timeAgo = diffInMinutes < 1 ? "Just now" : createdAt.fromNow();
+    return timeAgo;
+};
+
 export const toUserTimeZone = ({
     date,
     timeZone = localTimeZone,

@@ -47,6 +47,7 @@ export default function ProfilePage() {
             actionButtonVariant: "secondary",
             actionButtonPlacement: "right",
             showButton: true,
+            showTitleButton: true,
             hideSearch: true
         });
     }, []);
@@ -55,7 +56,9 @@ export default function ProfilePage() {
         if (!data) return;
         setLearnerDetails(data);
 
-        const { learner_first_name, learner_last_name, learner_primary_language } = data?.learner_personal_info;
+        const learner_first_name = data?.learner_personal_info?.learner_first_name;
+        const learner_last_name = data?.learner_personal_info?.learner_last_name;
+        const learner_primary_language = data?.learner_personal_info?.learner_primary_language;
         const description = data?.learner_special_needs?.description;
         const subjects = data?.learner_goals?.subjects_to_focus_on;
         const contactDetail = data?.learner_personal_info?.learner_contact_details;
@@ -107,7 +110,8 @@ export default function ProfilePage() {
     return (
         <div className="h-full animate-fadeIn">
             <EditProfileModal
-                data={editProfileData}
+                data={data}
+                initialFormData={editProfileData}
                 isOpen={mode === "edit"}
                 onClose={() => setMode(null)}
                 triggerReload={triggerReload}

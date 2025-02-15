@@ -7,6 +7,12 @@ export const getResources = async (params?: any) => {
     return data || {};
 }
 
+export const getResourcesByCategory = async (category_id: string) => {
+    const endpoint = endpoints.resources.getResourcesByCategory(category_id);
+    const { data } = await GET_API(endpoint);
+    return data || {};
+}
+
 export const getMyResources = async () => {
     const endpoint = endpoints.resources.getMyResources;
     const { data } = await GET_API(endpoint);

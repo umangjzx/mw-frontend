@@ -2,33 +2,36 @@
 import Image from "next/image";
 import DummyProfileImg from "@/assets/images/DummyProfileImg.png";
 import TagComponent from "@/components/common/Tag";
-import MenuDot from "@/assets/icons/MenuDot";
-import FeedImg from "@/assets/images/FeedImage.png";
 import { HeartLikeIcon, UnlikeHeartIcon } from "@/assets/icons";
 import CommentIcon from "@/assets/icons/CommentIcon";
-import SaveIcon from "@/assets/icons/SaveIcon";
 import { endpoints } from "@/api/constants";
 import { DELETE_API, GET_API, POST_API } from "@/api/request";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import ReactTimeAgo from "react-time-ago";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import CommentInput from "../CommentInput";
 import Cookies from "js-cookie";
 import { showToast } from "@/components/common/Toast";
-import CommentCard from "../CommentCard";
 import MobileCommentPanel from "../MobileCommentPanel";
 import SortDropdown from "../SortDropdown";
 // import TimeAgo from "react-timeago";
 // import englishStrings from "react-timeago/lib/language-strings/en";
 // import buildFormatter from "react-timeago/lib/formatters/buildFormatter";
 import { DeleteIcon, EditIcon } from "@/assets/icons";
-import EditResource from "../EditResource";
-import LottieLoader from "@/components/common/Loader/Lottie";
+import { getCurrentTab } from "@/constants/community";
+import { useQueryState } from "nuqs";
+import PostSkeleton from "./skeleton";
+import { timesAgo } from "@/utils/timeFunctions";
+import ReportIcon from "@/assets/icons/ReportIcon";
+import ErrorMsg from "@/components/common/Messages/ErrorMsg";
+import { useInView } from "react-intersection-observer";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { BsFillBookmarkFill, BsBookmark } from "react-icons/bs";
 
 interface FeedCardProps {
     onClick: (postId: string) => void;
     isManagePost?: boolean;
+    handleReportClick?: (postId: string) => void;
 }
 
 interface Author {
@@ -46,6 +49,7 @@ interface PostData {
     created_by: string;
     images: Array<{ image_url: string }>;
     is_liked: boolean;
+    is_saved: boolean;
     total_likes: number;
     total_comments: number;
 }
@@ -57,57 +61,140 @@ interface PostResponse {
     total: number;
 }
 
-const FeedCard = ({ onClick, isManagePost = false }: FeedCardProps) => {
-    const [posts, setPosts] = useState<PostData[]>([]);
+const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCardProps) => {
     const queryClient = useQueryClient();
     const [comment, setComment] = useState<string>("");
     const role = Cookies.get("role");
+    const [activeTab, setActiveTab] = useQueryState("tab");
     const [activeCommentPostId, setActiveCommentPostId] = useState<string | null>(null);
+
+    const [mode, setMode] = useQueryState("mode");
+    const [_, setId] = useQueryState("id");
     const [selectedSort, setSelectedSort] = useState<string>("recent");
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+    const { ref, inView } = useInView();
 
-    const getPosts = async () => {
-        const response = await GET_API(endpoints.post.getPosts);
-        setPosts(response.data.items);
+    const getPosts = async ({ pageParam = 1 }) => {
+        let endpoint = endpoints.post.getPosts;
+
+        switch (activeTab) {
+            case "saved_posts":
+                endpoint = endpoints.post.getSavedPosts;
+                break;
+            case "manage_your_posts":
+                endpoint = endpoints.post.getPosts;
+                break;
+            // case "suggestion_posts":
+            //     endpoint = endpoints.post.getSuggestionPosts;
+            //     break;
+            default:
+                endpoint = endpoints.post.getPosts;
+        }
+
+        const response = await GET_API(`${endpoint}?page=${pageParam}&limit=10`);
         return response.data;
     };
 
-    const { data, isLoading, isError } = useQuery<PostResponse>({
-        queryKey: ["get-posts"],
+    const {
+        data,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        isFetching,
+        isError
+    } = useInfiniteQuery({
+        queryKey: ["posts", activeTab],
         queryFn: getPosts,
+        getNextPageParam: (lastPage) => {
+            if (lastPage.items.length < 10) return undefined;
+            return lastPage.page + 1;
+        },
+        initialPageParam: 1,
     });
 
-    if (isLoading) return (<div className="h-full w-full min-h-[80vh] flex-center">
-        <LottieLoader isLoading={true} />
-    </div>);
-    if (isError) return <div>Error loading posts</div>;
-    // const formatter = buildFormatter(englishStrings);
+    useEffect(() => {
+        if (inView && hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+        }
+    }, [inView, fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+    const posts = data?.pages.flatMap((page) => page.items) ?? [];
+
+    if (isError) return <ErrorMsg />;
 
     const handleLike = (postId: string, currentLikeStatus: boolean) => {
-        setPosts((prevPosts) =>
-            prevPosts.map((post) => {
-                if (post.post_id === postId) {
-                    return {
-                        ...post,
-                        is_liked: !currentLikeStatus,
-                        total_likes: currentLikeStatus
-                            ? post.total_likes - 1
-                            : post.total_likes + 1,
-                    };
-                }
-                return post;
-            })
+        queryClient.setQueryData(
+            ["posts", activeTab],
+            (oldData: any) => {
+                return {
+                    ...oldData,
+                    pages: oldData.pages.map((page: any) => ({
+                        ...page,
+                        items: page.items.map((post: PostData) =>
+                            post.post_id === postId
+                                ? {
+                                    ...post,
+                                    is_liked: !currentLikeStatus,
+                                    total_likes: currentLikeStatus
+                                        ? post.total_likes - 1
+                                        : post.total_likes + 1,
+                                }
+                                : post
+                        ),
+                    })),
+                };
+            }
         );
 
         if (!currentLikeStatus) {
-            POST_API(endpoints.post.like(postId)).then(() => {
-                queryClient.invalidateQueries({ queryKey: ["get-posts"] });
-            });
+            POST_API(endpoints.post.like(postId))
+                .then(() => {
+                    queryClient.invalidateQueries({ queryKey: ["posts"] });
+                    queryClient.invalidateQueries({ queryKey: ["get-post"] });
+                });
         } else {
-            DELETE_API(endpoints.post.like(postId)).then(() => {
-                queryClient.invalidateQueries({ queryKey: ["get-posts"] });
-            });
+            DELETE_API(endpoints.post.like(postId))
+                .then(() => {
+                    queryClient.invalidateQueries({ queryKey: ["posts"] });
+                    queryClient.invalidateQueries({ queryKey: ["get-post"] });
+                });
+        }
+    };
+
+    const handleSave = (postId: string, currentSaveStatus: boolean) => {
+        queryClient.setQueryData(
+            ["posts", activeTab],
+            (oldData: any) => {
+                return {
+                    ...oldData,
+                    pages: oldData.pages.map((page: any) => ({
+                        ...page,
+                        items: page.items.map((post: PostData) =>
+                            post.post_id === postId
+                                ? {
+                                    ...post,
+                                    is_saved: !currentSaveStatus,
+                                }
+                                : post
+                        ),
+                    })),
+                };
+            }
+        );
+
+        if (currentSaveStatus) {
+            DELETE_API(endpoints.post.unsave(postId))
+                .then(() => {
+                    queryClient.invalidateQueries({ queryKey: ["posts"] });
+                    queryClient.invalidateQueries({ queryKey: ["get-post"] });
+                });
+        } else {
+            POST_API(endpoints.post.save(postId))
+                .then(() => {
+                    queryClient.invalidateQueries({ queryKey: ["posts"] });
+                    queryClient.invalidateQueries({ queryKey: ["get-post"] });
+                });
         }
     };
 
@@ -141,267 +228,288 @@ const FeedCard = ({ onClick, isManagePost = false }: FeedCardProps) => {
     };
 
     const handleCommentClick = (postId: string) => {
-        // For mobile devices, show the sliding panel
         if (window.innerWidth < 768) {
             toggleCommentPanel(postId);
         } else {
-            // For desktop, use the existing onClick behavior
             onClick(postId);
         }
     };
 
     const handleSort = (value: string) => {
         setSelectedSort(value);
-        // Here you can add the sorting logic based on the selected value
-        // For now, we'll just update the state
     };
 
     const handleEditClick = (postId: string, e: React.MouseEvent) => {
         e.stopPropagation();
-        setSelectedPostId(postId);
-        setShowEditModal(true);
+        setMode("edit");
+        setId(postId);
     };
 
     // Get the selected post data
-    const selectedPost = posts.find((post) => post.post_id === selectedPostId);
+    const selectedPost = posts.find((post) => post?.post_id === selectedPostId);
 
     return (
-        <div className="flex flex-col gap-6 w-full md:p-0 relative">
+        <div className="flex flex-col gap-2 h-full md:p-0 relative">
+            <h2 className="text-xl font-medium max-md:hidden">{getCurrentTab(activeTab)?.name}</h2>
             <SortDropdown
                 selectedSort={selectedSort}
                 onSort={handleSort}
                 isManagePost={isManagePost}
             />
 
-            {posts.map((post) => (
-                <div key={post.post_id} className="block w-full relative">
-                    <div className="px-2 py-1 md:pr-4 md:px-0">
-                        {/* Profile and Name Section */}
-                        <div className="flex items-start gap-2 md:gap-3 w-full p-2">
-                            <div className="w-[40px] h-[40px] md:w-[40px] md:h-[40px] relative flex-shrink-0 flex items-center justify-center">
-                                <Image
-                                    src={post.author.profile_picture?.image_url || DummyProfileImg}
-                                    alt="profile picture"
-                                    fill
-                                    className="rounded-full object-cover"
-                                    sizes="(max-width: 768px) 32px, 40px"
-                                />
-                            </div>
+            {isFetching && posts.length === 0 ? (
+                <PostSkeleton />
+            ) : (
+                <div className="flex flex-col gap-3 h-full divide-y divide-gray-200">
+                    {posts.map((post) => (
+                        <div key={post.post_id} className="block w-full relative py-2">
+                            <div className="px-2 py-1 md:px-0">
+                                {/* Profile and Name Section */}
+                                <div className="flex items-start gap-2 md:gap-3 w-full p-2">
+                                    <div className="w-[40px] h-[40px] md:w-[40px] md:h-[40px] relative flex-shrink-0 flex items-center justify-center">
+                                        <Image
+                                            src={
+                                                post.author.profile_picture?.image_url ||
+                                                DummyProfileImg
+                                            }
+                                            alt="profile picture"
+                                            fill
+                                            className="rounded-full object-cover"
+                                            sizes="(max-width: 768px) 32px, 40px"
+                                        />
+                                    </div>
 
-                            <div className="flex-1">
-                                <div className="flex items-center justify-between w-full min-h-[32px] md:min-h-[40px]">
-                                    <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2">
-                                        <p className="font-semibold text-sm md:text-base text-black">
-                                            {post.author.name}
-                                        </p>
-                                        <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-black"></div>
-                                        <div className="flex items-center gap-1 md:gap-2">
-                                            <TagComponent
-                                                text={post.created_by}
-                                                className="w-fit text-xs md:text-sm"
-                                            />
-                                            <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
-                                            <p className="font-semibold text-sm md:text-base text-black">
-                                                {/* TimeAgo components */}
-                                            </p>
+                                    <div className="flex-1">
+                                        <div className="flex items-center justify-between w-full min-h-[32px] md:min-h-[40px]">
+                                            <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2">
+                                                <p className="font-semibold text-sm md:text-base text-black">
+                                                    {post?.author?.name}
+                                                </p>
+                                                <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-black"></div>
+                                                <div className="flex items-center gap-1 md:gap-2">
+                                                    {isManagePost || (
+                                                        <div className="flex items-center">
+                                                            <TagComponent
+                                                                text={post?.created_by}
+                                                                className="w-fit text-xs md:text-sm"
+                                                            />
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
+                                                        </div>
+                                                    )}
+                                                    <p className="font-semibold text-sm md:text-base text-black">
+                                                        {timesAgo(post?.created_at)}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                {isManagePost ? (
+                                                    <div className="flex items-center gap-2">
+                                                        <div
+                                                            onClick={(e) =>
+                                                                handleEditClick(post.post_id, e)
+                                                            }
+                                                            className="cursor-pointer"
+                                                        >
+                                                            <EditIcon width={40} height={40} />
+                                                        </div>
+                                                        <div
+                                                            onClick={() => {}}
+                                                            className="cursor-pointer"
+                                                        >
+                                                            <DeleteIcon width={40} height={40} />
+                                                        </div>
+                                                        {/* <div
+                                                            onClick={() => {}}
+                                                            className="cursor-pointer hidden md:block"
+                                                        >
+                                                            <MenuDot />
+                                                        </div> */}
+                                                    </div>
+                                                ) : (
+                                                    <span
+                                                        onClick={() => handleReportClick?.(post?.post_id)}
+                                                        className="cursor-pointer border rounded-full"
+                                                    >
+                                                        <ReportIcon />
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        {isManagePost ? (
-                                            <>
-                                                <span
-                                                    onClick={(e) =>
-                                                        handleEditClick(post.post_id, e)
-                                                    }
-                                                    className="cursor-pointer md:hidden"
-                                                >
-                                                    <EditIcon />
-                                                </span>
-                                                <span
-                                                  onClick={() => {}}
-                                                    className="cursor-pointer md:hidden"
-                                                >
-                                                    <DeleteIcon />
-                                                </span>
-                                                <span
-                                                    onClick={() => {}}
-                                                    className="cursor-pointer hidden md:block"
-                                                >
-                                                    <MenuDot />
-                                                </span>
-                                            </>
-                                        ) : (
+                                </div>
+                            </div>
+
+                            {/* Post Content Section */}
+                            <div className="mt-2 md:mt-3 lg:mt-0 md:!pl-[50px]">
+                                <div className="p-2 md:px-0">
+                                    <p className="text-xs md:text-sm font-normal">
+                                        {post.description}
+                                        {post.description.length > 150 && (
                                             <span
-                                            onClick={() => {}}
-                                                className="cursor-pointer"
+                                                onClick={() => onClick(post.post_id)}
+                                                className="cursor-pointer text-primary font-medium text-[#ffac71]"
                                             >
-                                                <MenuDot />
+                                                See More
                                             </span>
                                         )}
-                                    </div>
+                                    </p>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    {/* Post Content Section */}
-                    <div className="mt-2 md:mt-3 lg:mt-0">
-                        <div className="p-2 md:px-0">
-                            <p className="text-xs md:text-sm font-normal">
-                                {post.description}
-                                {post.description.length > 150 && (
-                                    <span
-                                        onClick={() => onClick(post.post_id)}
-                                        className="cursor-pointer text-primary font-medium text-[#ffac71]"
-                                    >
-                                        See More
-                                    </span>
+                                {post.images.length > 0 && (
+                                    <div className="mt-2 md:mt-3 w-full h-full min-h-[240px] max-h-[350px] md:min-h-[360px] md:max-h-[420px] 2xl:min-h-[400px] 2xl:max-h-[450px] relative">
+                                        <Image
+                                            src={post.images[0].image_url}
+                                            alt="post image"
+                                            fill
+                                            onClick={() => onClick(post.post_id)}
+                                            className="object-cover cursor-pointer md:rounded-xl"
+                                        />
+                                    </div>
                                 )}
-                            </p>
-                        </div>
 
-                        {post.images.length > 0 && (
-                            <div className="mt-2 md:mt-3 w-full h-[240px] md:h-[360px] 2xl:h-[400px] relative">
-                                <Image
-                                    src={post.images[0].image_url}
-                                    alt="post image"
-                                    fill
-                                    onClick={() => onClick(post.post_id)}
-                                    className="object-cover cursor-pointer"
-                                />
-                            </div>
-                        )}
-
-                        <div className="p-2 md:pr-4 md:px-0 mt-2 md:mt-3">
-                            <div className="flex justify-between items-center gap-2">
-                                <div className="flex items-center gap-6">
-                                    {/* Like button section */}
-                                    <div className="flex items-center gap-1 cursor-pointer w-10">
-                                        <div>
-                                            <AnimatePresence mode="wait">
-                                                {post.is_liked ? (
-                                                    <motion.div
-                                                        key="liked"
-                                                        initial={{ scale: 0 }}
-                                                        animate={{ scale: 1 }}
-                                                        exit={{ scale: 0 }}
-                                                        transition={{
-                                                            duration: 0.2,
-                                                            ease: "easeInOut",
-                                                        }}
-                                                        onClick={() =>
-                                                            handleLike(post.post_id, true)
-                                                        }
-                                                    >
-                                                        <HeartLikeIcon />
-                                                    </motion.div>
-                                                ) : (
-                                                    <motion.div
-                                                        key="unliked"
-                                                        initial={{ scale: 0 }}
-                                                        animate={{ scale: 1 }}
-                                                        exit={{ scale: 0 }}
-                                                        transition={{
-                                                            duration: 0.2,
-                                                            ease: "easeInOut",
-                                                        }}
-                                                        onClick={() =>
-                                                            handleLike(post.post_id, false)
-                                                        }
-                                                    >
-                                                        <UnlikeHeartIcon />
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
+                                <div className="p-2 md:pr-4 md:px-0 mt-2 md:mt-3">
+                                    <div className="flex justify-between items-center gap-2">
+                                        <div className="flex items-center gap-6">
+                                            {/* Like button section */}
+                                            <div className="flex items-center gap-1 cursor-pointer w-10">
+                                                <div>
+                                                    <AnimatePresence mode="wait">
+                                                        {post.is_liked ? (
+                                                            <motion.div
+                                                                key="liked"
+                                                                initial={{ scale: 0 }}
+                                                                animate={{ scale: 1 }}
+                                                                exit={{ scale: 0 }}
+                                                                transition={{
+                                                                    duration: 0.2,
+                                                                    ease: "easeInOut",
+                                                                }}
+                                                                onClick={() =>
+                                                                    handleLike(post.post_id, true)
+                                                                }
+                                                            >
+                                                                <HeartLikeIcon />
+                                                            </motion.div>
+                                                        ) : (
+                                                            <motion.div
+                                                                key="unliked"
+                                                                initial={{ scale: 0 }}
+                                                                animate={{ scale: 1 }}
+                                                                exit={{ scale: 0 }}
+                                                                transition={{
+                                                                    duration: 0.2,
+                                                                    ease: "easeInOut",
+                                                                }}
+                                                                onClick={() =>
+                                                                    handleLike(post.post_id, false)
+                                                                }
+                                                            >
+                                                                <UnlikeHeartIcon />
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
+                                                </div>
+                                                <motion.p
+                                                    className="font-medium"
+                                                    animate={{
+                                                        scale: post.is_liked ? [1, 1.2, 1] : 1,
+                                                        color: post.is_liked ? "#EF4444" : "black",
+                                                    }}
+                                                    transition={{ duration: 0.2 }}
+                                                >
+                                                    {post?.total_likes}
+                                                </motion.p>
+                                            </div>
+                                            {/* Comment button section */}
+                                            <div
+                                                onClick={() => handleCommentClick(post.post_id)}
+                                                className="flex items-center gap-1 cursor-pointer"
+                                            >
+                                                <motion.div
+                                                    whileHover={{ scale: 1.1 }}
+                                                    whileTap={{ scale: 0.95 }}
+                                                    transition={{ duration: 0.2 }}
+                                                >
+                                                    <CommentIcon />
+                                                </motion.div>
+                                                <motion.p
+                                                    className="font-medium text-black"
+                                                    initial={{ scale: 1 }}
+                                                    whileHover={{ scale: 1.1 }}
+                                                    animate={{
+                                                        scale:
+                                                            post.total_comments > 0
+                                                                ? [1, 1.1, 1]
+                                                                : 1,
+                                                        opacity: post.total_comments > 0 ? 1 : 0.7,
+                                                    }}
+                                                    transition={{ duration: 0.2 }}
+                                                >
+                                                    {post.total_comments}
+                                                </motion.p>
+                                            </div>
                                         </div>
-                                        <motion.p
-                                            className="font-medium text-[#EF4444]"
-                                            animate={{
-                                                scale: post.is_liked ? [1, 1.2, 1] : 1,
-                                                opacity: post.is_liked ? 1 : 0,
-                                            }}
-                                            transition={{ duration: 0.2 }}
+                                        <div
+                                            className="cursor-pointer"
+                                            onClick={() =>
+                                                handleSave(post?.post_id, post?.is_saved)
+                                            }
                                         >
-                                            {post.total_likes}
-                                        </motion.p>
+                                            {
+                                                post?.is_saved ? (
+                                                    <BsFillBookmarkFill size={24} />
+                                                ) : (
+                                                    <BsBookmark size={24} />
+                                                )
+                                            }
+                                        </div>
                                     </div>
-                                    {/* Comment button section */}
-                                    <div
-                                        onClick={() => handleCommentClick(post.post_id)}
-                                        className="flex items-center gap-1 cursor-pointer"
-                                    >
-                                        <motion.div
-                                            whileHover={{ scale: 1.1 }}
-                                            whileTap={{ scale: 0.95 }}
-                                            transition={{ duration: 0.2 }}
-                                        >
-                                            <CommentIcon />
-                                        </motion.div>
-                                        <motion.p
-                                            className="font-medium text-black"
-                                            initial={{ scale: 1 }}
-                                            whileHover={{ scale: 1.1 }}
-                                            animate={{
-                                                scale: post.total_comments > 0 ? [1, 1.1, 1] : 1,
-                                                opacity: post.total_comments > 0 ? 1 : 0.7,
-                                            }}
-                                            transition={{ duration: 0.2 }}
-                                        >
-                                            {post.total_comments}
-                                        </motion.p>
+                                    {/* Only show comment input on desktop */}
+                                    <div className="hidden md:block mt-4">
+                                        <CommentInput
+                                            name="comment"
+                                            value={comment || ""}
+                                            onChange={(e) => setComment(e.target.value)}
+                                            disabled={false}
+                                            inputClassName=""
+                                            onPost={() => handleComment(post.post_id)}
+                                        />
                                     </div>
                                 </div>
-                                <SaveIcon />
                             </div>
-                            {/* Only show comment input on desktop */}
-                            <div className="hidden md:block mt-4">
-                                <CommentInput
-                                    name="comment"
-                                    value={comment}
-                                    onChange={(e) => setComment(e.target.value)}
-                                    disabled={false}
-                                    inputClassName=""
-                                    onPost={() => handleComment(post.post_id)}
-                                />
-                            </div>
+
+                            {/* Mobile-only sliding comment panel */}
+                            <AnimatePresence>
+                                {activeCommentPostId === post.post_id && (
+                                    <MobileCommentPanel
+                                        postId={post.post_id}
+                                        totalComments={post.total_comments}
+                                        comment={comment}
+                                        setComment={setComment}
+                                        onClose={() => setActiveCommentPostId(null)}
+                                        handleComment={handleComment}
+                                    />
+                                )}
+                            </AnimatePresence>
                         </div>
-                    </div>
-
-                    {/* Mobile-only sliding comment panel */}
-                    <AnimatePresence>
-                        {activeCommentPostId === post.post_id && (
-                            <MobileCommentPanel
-                                postId={post.post_id}
-                                totalComments={post.total_comments}
-                                comment={comment}
-                                setComment={setComment}
-                                onClose={() => setActiveCommentPostId(null)}
-                                handleComment={handleComment}
-                            />
+                    ))}
+                    
+                    {/* Loading indicator */}
+                    <div ref={ref} className="w-full">
+                        {isFetchingNextPage ? (
+                            <PostSkeleton size={2} />
+                        ) : (
+                            <div className="w-full text-center font-semibold text-success mt-4">You’ve reached the end. No more posts to show!</div>
                         )}
-                    </AnimatePresence>
-                </div>
-            ))}
-
-            {/* Update the EditResource Modal */}
-            <EditResource
-                isOpen={showEditModal}
-                onClose={() => {
-                    setShowEditModal(false);
-                    setSelectedPostId(null);
-                }}
-                
-            >
-                {selectedPost && (
-                    <div className="p-4">
-                        <textarea
-                            className="w-full p-2 border rounded-md"
-                            defaultValue={selectedPost?.description || ""}
-                        />
-                        {/* Add more fields as needed */}
                     </div>
-                )}
-            </EditResource>
+                    
+                    {posts.length === 0 && (
+                        <div className="flex-center w-full h-full min-h-[50vh]">
+                            No Posts Found
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 };

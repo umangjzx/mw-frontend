@@ -8,13 +8,15 @@ const CenterModal: React.FC<CenterModalProps> = ({
     onClose,
     title = "",
     topContent = "",
-    titleColor = "#1a1a1a", // default dark color
+    titleColor = "#1a1a1a",
     width = 520,
     height,
     children,
     rootClassName = "",
+    bodyClassName = "",
     customClassName = "",
     titleClassName = "",
+    headerRootClassName = "",
     primaryActionProps,
     secondaryActionProps,
     loading = false,
@@ -48,7 +50,7 @@ const CenterModal: React.FC<CenterModalProps> = ({
     const footer = hideFooter || footerComponent || buttons.filter((button) => button);
 
     const header = headerComponent || title && (
-            <div className="flex gap-2 w-full flex-col border-b border-stroke items-start justify-between mb-4 pb-4">
+            <div className={`flex gap-2 w-full flex-col border-b border-stroke items-start justify-between mb-4 pb-4 ${headerRootClassName}`}>
                 <h2 className={`text-xl text-[${titleColor}] font-semibold ${titleClassName}`}>
                     {title}
                 </h2>
@@ -86,7 +88,7 @@ const CenterModal: React.FC<CenterModalProps> = ({
             <div className={`flex w-full h-full md:h-screen lg:h-full flex-col ${rootClassName}`}>
                 {header}
                 {/* Modal Content */}
-                <div className="flex-1 max-md:pt-4 overflow-y-auto max-h-[93vh] bg-[#F4F7FB] md:bg-white md:max-h-[50vh] mb-4 no-scrollbar">
+                <div className={`modal-body flex-1 max-md:pt-4 overflow-y-auto max-h-[93vh] bg-[#F4F7FB] md:bg-white md:max-h-[50vh] mb-4 no-scrollbar ${bodyClassName}`}>
                     {children}
                 </div>
             </div>

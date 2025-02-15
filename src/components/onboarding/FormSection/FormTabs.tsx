@@ -11,6 +11,7 @@ import moment from "moment";
 import { validateLearnerParentFields, validateVolunteerParentDetails } from "./config";
 import { UseFormSetError, useWatch } from "react-hook-form";
 import { calculateAge } from "@/utils/timeFunctions";
+import { ADULT_VOLUNTEER_AGE } from "@/constants/volunteer";
 
 const currentVersion = process.env.NEXT_PUBLIC_CURRENT_VERSION;
 
@@ -132,10 +133,10 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
         tabButtonsRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [activeTab]);
 
-    const fields = ["consented_from_parent", "volunteer_parent_fullname", "volunteer_parent_email"]
+    const fields = ["consented_from_parent", "volunteer_parent_name", "volunteer_parent_email"]
     const volunteerAge = () => {
         const age = Number(calculateAge(volunteer_birth_date));
-        return age >= 18;
+        return age >= ADULT_VOLUNTEER_AGE;
     }
 
     const hideFields = (field: any) => {
@@ -179,9 +180,9 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                 {formData.map((section: any, index) => (
                     <div key={index} className={`!bg-white p-10 lg:rounded-3xl mx-auto px-6 lg:px-8 ${activeTab === index ? 'block' : 'hidden'}`}>
                         {section?.title && (
-                            <h2 className="text-2xl lg:text-3xl font-medium lg:font-semibold mb-4 lg:mb-8">{section?.title}</h2>
+                            <h2 className="text-2xl lg:text-3xl font-medium lg:font-semibold mb-4 lg:mb-6">{section?.title}</h2>
                         )}
-                        <div className="grid grid-cols-2 w-full gap-3 lg:gap-6">
+                        <div className={`grid grid-cols-2 w-full gap-3 ${section?.type === "card" ? "lg:gap-6" : "lg:gap-4"}`}>
                             {section?.fields?.filter((field: any) => !hideFields(field)).map((field: any, index: number) => {
                                 if (section?.type === "card") {
                                     const parent = section?.parent

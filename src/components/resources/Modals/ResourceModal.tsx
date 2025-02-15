@@ -14,6 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import FeedHeader from "@/components/community/FeedHeader/index";
+import LottieLoader from "@/components/common/Loader/Lottie";
 
 type ResourceModalProps = {
     isOpen: boolean;
@@ -41,6 +42,7 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
         formState: { errors },
         setValue,
         reset,
+        getValues
     } = useForm<FormData>({
         resolver: zodResolver(ResourceFormSchema),
     });
@@ -51,9 +53,10 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
     const isEditMode = currentMode === "edit";
 
     // Fetch resource data if in edit mode
-    useQuery({
+    const { isFetching } = useQuery({
         queryKey: ["getSingleResource", resourceId],
         queryFn: async () => {
+            if(!resourceId) return null;
             const resource = await getSingleResource(resourceId || "");
             reset(resource);
         },
@@ -62,8 +65,11 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
 
     useEffect(() => {
         reset({});
+        console.log("Hello World! ============");
+        console.log(getValues());
+        
         setValue("created_by", role === "learner" ? learnerName : volunteerName);
-    }, [currentMode]);
+    }, [currentMode, resourceId]);
 
     const handleResourceAction = async ({
         data,
@@ -131,9 +137,11 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
             isOpen={isOpen}
             onClose={onClose}
             loading={isSubmitting}
+            width={600}
             headerComponent={
                 isMobile && (
                     <FeedHeader
+                        mode={currentMode || ""}
                         title={isEditMode ? "Edit Resource" : "Add New Resource"}
                         onClose={onClose}
                         onSave={handleSubmit(onSubmit)}
@@ -142,11 +150,12 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
                 )
             }
             customClassName={cn(
-                "sm:max-h-screen overflow-hidden",
+                "md:max-h-screen overflow-hidden",
                 isMobile
                     ? "[&_.ant-modal-content]:!p-0 !p-0 !m-0 !h-[100dvh] !max-h-none !w-screen !max-w-none rounded-none bg-background-input"
                     : "!rounded-2xl "
             )}
+            rootClassName="md:!h-auto"
             secondaryActionProps={buttonProps.secondary}
             primaryActionProps={buttonProps.primary}
             hideFooter={isMobile}
@@ -155,28 +164,33 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
                 <form
                     onSubmit={handleSubmit(onSubmit)}
                     className={cn(
-                        "flex flex-col gap-4 py-5",
-                        isMobile && "overflow-y-auto px-4 pb-5 pt-2"
+                        "flex flex-col gap-4 py-3",
+                        isMobile && "overflow-y-auto px-4 pb-20 pt-2"
                     )}
                 >
-                    {ResourceFormConstants.map((field: any) => (
-                        <Controller
-                            key={field.name}
-                            name={field.name}
-                            control={control}
-                            render={({ field: { value, onChange } }) => (
-                                <Input
-                                    key={field.name}
-                                    {...field}
-                                    error={errors[field.name as keyof FormData]?.message}
-                                    value={value}
-                                    onChange={onChange}
-                                    rootClassName="bg-white p-4 rounded-xl"
-                                    inputClassName={field.inputClassName}
-                                />
-                            )}
-                        />
-                    ))}
+                    {
+                        isEditMode && isFetching ? (
+                            <div className={`w-full flex-center ${isMobile ? "min-h-[90vh]" : "min-h-[45vh]"}`}>
+                                <LottieLoader isLoading={true} customClassName="md:w-[5rem] md:h-[5rem] lg:w-[6rem] lg:h-[6rem]" />
+                            </div>
+                        ) : ResourceFormConstants.map((field: any) => (
+                            <Controller
+                                key={field.name}
+                                name={field.name}
+                                control={control}
+                                render={({ field: { value, onChange } }) => (
+                                    <Input
+                                        key={field.name}
+                                        {...field}
+                                        error={errors[field.name as keyof FormData]?.message}
+                                        value={value}
+                                        onChange={onChange}
+                                        rootClassName="max-md:bg-white max-md:p-4 max-md:rounded-xl"
+                                        inputClassName={field.inputClassName}
+                                    />
+                                )}
+                            />
+                        ))}
                 </form>
             ) : (
                 <div>View</div>

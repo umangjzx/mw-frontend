@@ -10,6 +10,7 @@ interface ViewModalProps {
     style?: React.CSSProperties;
     className?: string;
     borderRadius?: string;
+    showCloseIcon?: boolean;
 }
 
 const ViewModal: React.FC<ViewModalProps> = ({
@@ -21,6 +22,7 @@ const ViewModal: React.FC<ViewModalProps> = ({
     style,
     className = "",
     borderRadius,
+    showCloseIcon = false,
 }) => {
     const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
 
@@ -61,7 +63,8 @@ const ViewModal: React.FC<ViewModalProps> = ({
             )}
             centered
             open={modalOpen}
-            closeIcon={false}
+            closeIcon={showCloseIcon}
+            onCancel={onClose}
             footer={null}
             width={width}
         >
