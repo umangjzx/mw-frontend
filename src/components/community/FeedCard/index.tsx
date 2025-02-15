@@ -1,4 +1,5 @@
 "use client";
+
 import Image from "next/image";
 import DummyProfileImg from "@/assets/images/DummyProfileImg.png";
 import TagComponent from "@/components/common/Tag";
@@ -6,17 +7,14 @@ import { HeartLikeIcon, UnlikeHeartIcon } from "@/assets/icons";
 import CommentIcon from "@/assets/icons/CommentIcon";
 import { endpoints } from "@/api/constants";
 import { DELETE_API, GET_API, POST_API } from "@/api/request";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import CommentInput from "../CommentInput";
 import Cookies from "js-cookie";
-import { showToast } from "@/components/common/Toast";
+import { callbackToast } from "@/components/common/Toast";
 import MobileCommentPanel from "../MobileCommentPanel";
 import SortDropdown from "../SortDropdown";
-// import TimeAgo from "react-timeago";
-// import englishStrings from "react-timeago/lib/language-strings/en";
-// import buildFormatter from "react-timeago/lib/formatters/buildFormatter";
 import { DeleteIcon, EditIcon } from "@/assets/icons";
 import { getCurrentTab } from "@/constants/community";
 import { useQueryState } from "nuqs";
@@ -54,26 +52,19 @@ interface PostData {
     total_comments: number;
 }
 
-interface PostResponse {
-    items: PostData[];
-    page: number;
-    size: number;
-    total: number;
-}
-
 const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCardProps) => {
     const queryClient = useQueryClient();
-    const [comment, setComment] = useState<string>("");
     const role = Cookies.get("role");
-    const [activeTab, setActiveTab] = useQueryState("tab");
+    const [activeTab] = useQueryState("tab");
+
+    const [comment, setComment] = useState<string>("");
+    const [isCommentLoading, setIsCommentLoading] = useState<boolean>(false);
     const [activeCommentPostId, setActiveCommentPostId] = useState<string | null>(null);
 
     const [mode, setMode] = useQueryState("mode");
     const [_, setId] = useQueryState("id");
-    const [selectedSort, setSelectedSort] = useState<string>("recent");
-    const [showEditModal, setShowEditModal] = useState(false);
-    const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
     const { ref, inView } = useInView();
+    const [selectedSort, setSelectedSort] = useState<string>("recent");
 
     const getPosts = async ({ pageParam = 1 }) => {
         let endpoint = endpoints.post.getPosts;
@@ -83,7 +74,7 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                 endpoint = endpoints.post.getSavedPosts;
                 break;
             case "manage_your_posts":
-                endpoint = endpoints.post.getPosts;
+                endpoint = endpoints.post.getMyPosts;
                 break;
             // case "suggestion_posts":
             //     endpoint = endpoints.post.getSuggestionPosts;
@@ -92,26 +83,20 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                 endpoint = endpoints.post.getPosts;
         }
 
-        const response = await GET_API(`${endpoint}?page=${pageParam}&limit=10`);
+        const response = await GET_API(`${endpoint}?page=${pageParam}&size=10`);
         return response.data;
     };
 
-    const {
-        data,
-        fetchNextPage,
-        hasNextPage,
-        isFetchingNextPage,
-        isFetching,
-        isError
-    } = useInfiniteQuery({
-        queryKey: ["posts", activeTab],
-        queryFn: getPosts,
-        getNextPageParam: (lastPage) => {
-            if (lastPage.items.length < 10) return undefined;
-            return lastPage.page + 1;
-        },
-        initialPageParam: 1,
-    });
+    const { data, fetchNextPage, hasNextPage, isLoading, isFetching, isFetchingNextPage, isError } =
+        useInfiniteQuery({
+            queryKey: ["get-posts", activeTab],
+            queryFn: getPosts,
+            getNextPageParam: (lastPage) => {
+                if (lastPage.items.length < 10) return undefined;
+                return lastPage.page + 1;
+            },
+            initialPageParam: 1,
+        });
 
     useEffect(() => {
         if (inView && hasNextPage && !isFetchingNextPage) {
@@ -121,102 +106,82 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
 
     const posts = data?.pages.flatMap((page) => page.items) ?? [];
 
-    if (isError) return <ErrorMsg />;
-
+    // Handle Like
     const handleLike = (postId: string, currentLikeStatus: boolean) => {
-        queryClient.setQueryData(
-            ["posts", activeTab],
-            (oldData: any) => {
-                return {
-                    ...oldData,
-                    pages: oldData.pages.map((page: any) => ({
-                        ...page,
-                        items: page.items.map((post: PostData) =>
-                            post.post_id === postId
-                                ? {
-                                    ...post,
-                                    is_liked: !currentLikeStatus,
-                                    total_likes: currentLikeStatus
-                                        ? post.total_likes - 1
-                                        : post.total_likes + 1,
-                                }
-                                : post
-                        ),
-                    })),
-                };
-            }
-        );
+        queryClient.setQueryData(["get-posts", activeTab], (oldData: any) => {
+            return {
+                ...oldData,
+                pages: oldData.pages.map((page: any) => ({
+                    ...page,
+                    items: page.items.map((post: PostData) =>
+                        post.post_id === postId
+                            ? {
+                                  ...post,
+                                  is_liked: !currentLikeStatus,
+                                  total_likes: currentLikeStatus
+                                      ? post.total_likes - 1
+                                      : post.total_likes + 1,
+                              }
+                            : post
+                    ),
+                })),
+            };
+        });
 
         if (!currentLikeStatus) {
-            POST_API(endpoints.post.like(postId))
-                .then(() => {
-                    queryClient.invalidateQueries({ queryKey: ["posts"] });
-                    queryClient.invalidateQueries({ queryKey: ["get-post"] });
-                });
+            POST_API(endpoints.post.like(postId));
         } else {
-            DELETE_API(endpoints.post.like(postId))
-                .then(() => {
-                    queryClient.invalidateQueries({ queryKey: ["posts"] });
-                    queryClient.invalidateQueries({ queryKey: ["get-post"] });
-                });
+            DELETE_API(endpoints.post.like(postId));
         }
     };
 
+    // Handle Save
     const handleSave = (postId: string, currentSaveStatus: boolean) => {
-        queryClient.setQueryData(
-            ["posts", activeTab],
-            (oldData: any) => {
-                return {
-                    ...oldData,
-                    pages: oldData.pages.map((page: any) => ({
-                        ...page,
-                        items: page.items.map((post: PostData) =>
-                            post.post_id === postId
-                                ? {
-                                    ...post,
-                                    is_saved: !currentSaveStatus,
-                                }
-                                : post
-                        ),
-                    })),
-                };
-            }
-        );
+        queryClient.setQueryData(["get-posts", activeTab], (oldData: any) => {
+            return {
+                ...oldData,
+                pages: oldData.pages.map((page: any) => ({
+                    ...page,
+                    items: page.items.map((post: PostData) =>
+                        post.post_id === postId
+                            ? {
+                                  ...post,
+                                  is_saved: !currentSaveStatus,
+                              }
+                            : post
+                    ),
+                })),
+            };
+        });
 
         if (currentSaveStatus) {
-            DELETE_API(endpoints.post.unsave(postId))
-                .then(() => {
-                    queryClient.invalidateQueries({ queryKey: ["posts"] });
-                    queryClient.invalidateQueries({ queryKey: ["get-post"] });
-                });
+            DELETE_API(endpoints.post.unsave(postId));
         } else {
-            POST_API(endpoints.post.save(postId))
-                .then(() => {
-                    queryClient.invalidateQueries({ queryKey: ["posts"] });
-                    queryClient.invalidateQueries({ queryKey: ["get-post"] });
-                });
+            POST_API(endpoints.post.save(postId));
         }
     };
 
-    const handleComment = (postId: string) => {
+    // Handle Comment
+    const handleComment = async (postId: string) => {
+        setIsCommentLoading(true);
+
         let payload = {
             comment_text: comment,
             created_by: role,
             post_id: postId,
             parent_id: "",
         };
-        POST_API(endpoints.comment.createComment, payload)
-            .then(() => {
-                queryClient.invalidateQueries({ queryKey: ["get-posts"] });
-                setComment("");
-                showToast({
-                    message: "Comment posted successfully",
-                    type: "success",
-                });
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+
+        await callbackToast({
+            apiCall: POST_API(endpoints.comment.createComment, payload),
+            loadingMsg: "Posting Comment",
+            successMsg: "Comment Posted Successfully",
+            errorMsg: "Failed to Post Comment",
+        }).then(() => {
+            queryClient.invalidateQueries({ queryKey: ["get-posts", activeTab] });
+            setComment("");
+            setIsCommentLoading(false);
+        });
     };
 
     const toggleCommentPanel = (postId: string) => {
@@ -245,23 +210,35 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
         setId(postId);
     };
 
-    // Get the selected post data
-    const selectedPost = posts.find((post) => post?.post_id === selectedPostId);
+    const hanldeDeleteEvent = (postId: string) => {
+        if (!confirm("Are you Sure?")) return;
+        callbackToast({
+            apiCall: DELETE_API(endpoints.post.deletePost(postId)),
+            loadingMsg: "Deleting Post",
+            errorMsg: "Post not Deleted",
+            successMsg: "Post Deleted",
+        }).then(() => {
+            queryClient.invalidateQueries({ queryKey: ["get-posts", "manage_your_posts"] });
+        });
+    };
+
+    if (isError) return <ErrorMsg />;
 
     return (
         <div className="flex flex-col gap-2 h-full md:p-0 relative">
             <h2 className="text-xl font-medium max-md:hidden">{getCurrentTab(activeTab)?.name}</h2>
-            <SortDropdown
-                selectedSort={selectedSort}
-                onSort={handleSort}
-                isManagePost={isManagePost}
-            />
 
-            {isFetching && posts.length === 0 ? (
+            {/* {isManagePost && <SortDropdown selectedSort={selectedSort} onSort={handleSort} />} */}
+
+            {isLoading ? (
                 <PostSkeleton />
             ) : (
                 <div className="flex flex-col gap-3 h-full divide-y divide-gray-200">
-                    {posts.map((post) => (
+                    {posts.map((post) => {
+                        const postImage = post?.images[0]?.image_url;
+                        const validImageUrl = postImage && postImage.startsWith("http") ? postImage : "";
+
+                        return(
                         <div key={post.post_id} className="block w-full relative py-2">
                             <div className="px-2 py-1 md:px-0">
                                 {/* Profile and Name Section */}
@@ -313,7 +290,7 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                                                             <EditIcon width={40} height={40} />
                                                         </div>
                                                         <div
-                                                            onClick={() => {}}
+                                                            onClick={() => hanldeDeleteEvent(post?.post_id)}
                                                             className="cursor-pointer"
                                                         >
                                                             <DeleteIcon width={40} height={40} />
@@ -358,7 +335,7 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                                 {post.images.length > 0 && (
                                     <div className="mt-2 md:mt-3 w-full h-full min-h-[240px] max-h-[350px] md:min-h-[360px] md:max-h-[420px] 2xl:min-h-[400px] 2xl:max-h-[450px] relative">
                                         <Image
-                                            src={post.images[0].image_url}
+                                            src={validImageUrl}
                                             alt="post image"
                                             fill
                                             onClick={() => onClick(post.post_id)}
@@ -455,13 +432,11 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                                                 handleSave(post?.post_id, post?.is_saved)
                                             }
                                         >
-                                            {
-                                                post?.is_saved ? (
-                                                    <BsFillBookmarkFill size={24} />
-                                                ) : (
-                                                    <BsBookmark size={24} />
-                                                )
-                                            }
+                                            {post?.is_saved ? (
+                                                <BsFillBookmarkFill size={24} />
+                                            ) : (
+                                                <BsBookmark size={24} />
+                                            )}
                                         </div>
                                     </div>
                                     {/* Only show comment input on desktop */}
@@ -470,7 +445,7 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                                             name="comment"
                                             value={comment || ""}
                                             onChange={(e) => setComment(e.target.value)}
-                                            disabled={false}
+                                            disabled={isCommentLoading}
                                             inputClassName=""
                                             onPost={() => handleComment(post.post_id)}
                                         />
@@ -492,21 +467,23 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                                 )}
                             </AnimatePresence>
                         </div>
-                    ))}
-                    
+                    )})}
+
                     {/* Loading indicator */}
-                    <div ref={ref} className="w-full">
-                        {isFetchingNextPage ? (
-                            <PostSkeleton size={2} />
-                        ) : (
-                            <div className="w-full text-center font-semibold text-success mt-4">You’ve reached the end. No more posts to show!</div>
-                        )}
-                    </div>
-                    
-                    {posts.length === 0 && (
-                        <div className="flex-center w-full h-full min-h-[50vh]">
-                            No Posts Found
+                    {posts.length !== 0 && (
+                        <div ref={ref} className="w-full">
+                            {isFetchingNextPage ? (
+                                <PostSkeleton size={2} />
+                            ) : (
+                                <div className="w-full text-center font-semibold text-success mt-4">
+                                    You’ve reached the end. No more posts to show!
+                                </div>
+                            )}
                         </div>
+                    )}
+
+                    {posts.length === 0 && (
+                        <div className="flex-center w-full h-full min-h-[50vh]">No Posts Found</div>
                     )}
                 </div>
             )}

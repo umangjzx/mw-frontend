@@ -44,7 +44,7 @@ const SectionWrapper = ({
     };
 
     return (
-        <div hidden={hideSectionHeader} className="w-full">
+        <div hidden={hideSectionHeader} className="w-full h-full md:h-auto">
             {/* Title Section */}
             <div
                 className={cn("flex items-center justify-between mb-4 px-4", title ? "" : "hidden")}

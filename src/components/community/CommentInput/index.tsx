@@ -27,7 +27,6 @@ const CommentInput = ({
                 placeholder="Add your comment"
                 value={value}
                 onChange={onChange}
-                disabled={disabled}
                 rootClassName={cn(
                     inputClassName ? "w-[49%]" : "",
                     "border-none w-[90%] !rounded-xl h-fit focus:!border-stroke focus:!bg-background-input"
@@ -38,9 +37,9 @@ const CommentInput = ({
                 )}
             />
             <button
-                className={`font-medium text-primary ${value ? "opacity-100" : "opacity-50"}`}
+                className={`font-medium text-primary ${value && !disabled ? "opacity-100" : "opacity-50"}`}
                 onClick={onPost}
-                disabled={!value}
+                disabled={!value || disabled}
             >
                 Post
             </button>

@@ -67,7 +67,8 @@ export const endpoints: EndpointProps = {
         unsave: (post_id: string) => `post/${post_id}/unsave`,
         getNotifications: "post/notifications/all",
         readNotifications: "post/notifications/read",
-        updatePost: (id: string) => `/posts/${id}`,
+        updatePost: (id: string) => `/post/${id}`,
+        deletePost: (id: string) => `/post/${id}`,
     },
     comment: {
         createComment: "comment",

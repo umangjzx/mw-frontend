@@ -4,9 +4,16 @@ import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import { getNotifications, markNotificationsAsRead } from "@/api/community";
 import NotificationProfileImg from "@/assets/images/NotificationProfileImg.png";
 import PostImg from "@/assets/images/PostImg.png";
-import Loader from "@/components/common/Loader";
 import { Spin } from "antd";
-import ErrorImage from "@/assets/images/SomethingWentWrong.gif";
+import ErrorMsg from "@/components/common/Messages/ErrorMsg";
+
+interface Author {
+    name: string;
+    profile_picture: {
+        image_url: string;
+        image_id: string;
+    }
+}
 
 interface Notification {
     notification_id: string;
@@ -16,6 +23,8 @@ interface Notification {
     user_id: string;
     created_by: string;
     post_id: string;
+    post_image: string;
+    author: Author;
     // Add any additional fields from API response
 }
 
@@ -47,24 +56,24 @@ const NotificationCard: React.FC<{ notification: Notification }> = ({ notificati
             <div className="flex items-start sm:items-center gap-2 sm:gap-3 flex-1">
                 <div className="w-[40px] h-[40px] sm:w-[48px] sm:h-[48px] relative flex-shrink-0">
                     <Image
-                        src={NotificationProfileImg}
+                        src={notification?.author?.profile_picture?.image_url || NotificationProfileImg}
                         alt="Profile"
                         fill
-                        className="rounded-full"
+                        className="rounded-full object-cover"
                     />
                 </div>
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                     <p className="text-gray-light font-medium text-sm sm:text-base">
                         {getNotificationMessage(
                             notification.notification_type,
-                            notification.created_by
+                            notification?.author?.name
                         )}
                     </p>
                 </div>
             </div>
             {/* Optional: Add post preview image if available */}
-            <div className="w-[40px] h-[40px] sm:w-[48px] sm:h-[48px] relative flex-shrink-0">
-                <Image src={PostImg} alt="Post preview" fill className="rounded-md" />
+            <div className="w-[40px] h-[40px] md:w-[50px] md:h-[50px] relative flex-shrink-0">
+                <Image src={notification?.post_image || PostImg} alt="Post preview" fill className="rounded-md object-cover" />
             </div>
         </div>
     );
@@ -74,11 +83,11 @@ const NotificationSection: React.FC = () => {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [visibleIds, setVisibleIds] = useState<string[]>([]);
 
-    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError } =
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching, isError } =
         useInfiniteQuery<NotificationPage>({
             queryKey: ["notifications"],
             queryFn: ({ pageParam = 1 }) =>
-                getNotifications({ page: pageParam as number, limit: 20 }),
+                getNotifications({ page: pageParam as number, size: 20 }),
             getNextPageParam: (lastPage) => {
                 const nextPage = lastPage.page + 1;
                 const totalPages = Math.ceil(lastPage.total / lastPage.size);
@@ -130,25 +139,15 @@ const NotificationSection: React.FC = () => {
         };
     }, [visibleIds, hasNextPage, isFetchingNextPage]);
 
-    // if (isError) return (
-    //         <div className="flex-center min-h-[50vh] w-full h-full max-h-[80vh]">
-    //             <Image
-    //                 src={ErrorImage}
-    //                 alt="error"
-    //                 className="w-full h-full object-cover max-w-[600px]"
-    //             />
-    //         </div>
-    //     );
-
-    if (data?.pages.length === 0) {
-        return <div className="flex-center min-h-[50vh] w-full h-full">No Notifications</div>;
-    }
+    if (isError) return (<ErrorMsg />);
 
     return (
-        <div ref={containerRef} className="h-full overflow-y-auto p-4 md:p-0">
+        <div ref={containerRef} className="flex flex-col h-full overflow-y-auto p-4 lg::p-0 no-scrollbar">
             <h2 className="text-xl font-medium max-md:hidden">Notifications</h2>
-            {true ? (
-                <NotificationSkeleton />
+            {isFetching ? (
+                <NotificationSkeleton size={10} />
+            ) : (data?.pages[0]?.items?.length === 0) ? (
+                <div className="flex-center min-h-[50vh] w-full h-full">Notifications is Empty</div>
             ) : (
                 data?.pages.map((page, i) => (
                     <React.Fragment key={i}>
@@ -176,17 +175,17 @@ const NotificationSection: React.FC = () => {
 // Add NotificationSkeleton component
 const NotificationSkeleton = ({ size = 5 }: { size?: number }) => {
     return (
-        <div className="p-4 space-y-4">
+        <div className="md:p-4 space-y-4">
             {[...Array(size)].map((_, i) => (
                 <div key={i} className="flex items-center justify-between gap-3 animate-pulse">
-                    <div className="flex items-center gap-3 w-full">
-                        <div className="w-12 h-12 bg-gray-200 rounded-full" />
+                    <div className="flex items-center gap-1 md:gap-3 w-full">
+                        <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-200 rounded-full max-md:mr-2" />
                         <div className="h-4 bg-gray-200 rounded w-1/2" />
                         <div className="h-2 bg-gray-200 rounded-full w-2" />
                         <div className="h-4 bg-gray-200 rounded w-16" />
                     </div>
                     <div className="space-y-2">
-                        <div className="h-11 w-11 bg-gray-200 rounded" />
+                        <div className="h-9 w-9 md:h-11 md:w-11 bg-gray-200 rounded" />
                     </div>
                 </div>
             ))}
