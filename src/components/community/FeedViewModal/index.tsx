@@ -10,18 +10,17 @@ import CommentCard from "@/components/community/CommentCard";
 import { DeleteIcon, EditIcon, FeedModalCloseIcon } from "@/assets/icons";
 import ReportIcon from "@/assets/icons/ReportIcon";
 
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { endpoints } from "@/api/constants";
 import { GET_API, DELETE_API } from "@/api/request";
 import CommentInput from "../CommentInput";
 import React, { useState } from "react";
 import { POST_API } from "@/api/request";
-import { showToast } from "@/components/common/Toast";
+import { callbackToast } from "@/components/common/Toast";
 import Cookies from "js-cookie";
 import { IoIosClose } from "react-icons/io";
 import LottieLoader from "@/components/common/Loader/Lottie";
-import SaveIcon from "@/assets/icons/SaveIcon";
 import CommentSkeleton from "../CommentCard/skeleton";
 import ErrorMsg from "@/components/common/Messages/ErrorMsg";
 import { useQueryState } from "nuqs";
@@ -62,12 +61,16 @@ const FeedViewModal = ({
     handleReportClick,
     isManagePost,
 }: FeedViewModalProps) => {
-    const [activeTab, setActiveTab] = useQueryState("tab");
+    const queryClient = useQueryClient();
+    const [activeTab] = useQueryState("tab");
+    const [mode] = useQueryState("mode");
     const searchParams = useSearchParams();
     const id = searchParams.get("id");
-    const [comment, setComment] = useState("");
-    const queryClient = useQueryClient();
     const role = Cookies.get("role");
+
+    const [comment, setComment] = useState("");
+    const [isCommentLoading, setIsCommentLoading] = useState(false);
+    
     const [replyTo, setReplyTo] = useState({
         name: "",
         id: "",
@@ -79,9 +82,9 @@ const FeedViewModal = ({
     };
 
     const { data, isLoading, isError } = useQuery({
-        queryKey: ["get-post", id],
+        queryKey: ["get-single-post", id],
         queryFn: getIndividualPost,
-        enabled: !!id,
+        enabled: !!id && (mode === "view"),
     });
 
     const getPostComments = async () => {
@@ -140,27 +143,25 @@ const FeedViewModal = ({
         }
     };
 
-    const handleComment = (postId: string) => {
+    const handleComment = async (postId: string) => {
+        setIsCommentLoading(true);
+
         let payload = {
             comment_text: comment,
             created_by: role,
             post_id: postId,
             parent_comment_id: replyTo.id || "",
         };
-        POST_API(endpoints.comment.createComment, payload)
-            .then(() => {
-                queryClient.invalidateQueries({ queryKey: ["posts", activeTab] });
-                queryClient.invalidateQueries({ queryKey: ["get-post-comments", id] });
-                setComment("");
-                handleReplyClose();
-                showToast({
-                    message: "Comment posted successfully",
-                    type: "success",
-                });
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+        await callbackToast({
+            apiCall: POST_API(endpoints.comment.createComment, payload),
+            loadingMsg: "Posting Comment",
+            successMsg: "Comment Posted Successfully",
+            errorMsg: "Failed to Post Comment",
+        }).then(() => {
+            queryClient.invalidateQueries({ queryKey: ["get-post-comments", id] });
+            setComment("");
+            setIsCommentLoading(false);
+        });
     };
 
     const handleReplyClose = () => {
@@ -364,7 +365,7 @@ const FeedViewModal = ({
                                 name="comment"
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
-                                disabled={false}
+                                disabled={isCommentLoading}
                                 inputClassName=""
                             />
                         </div>

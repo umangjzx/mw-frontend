@@ -4,17 +4,17 @@ import { POST_API } from "@/api/request";
 export const handleConvertBasedOnContentType = (data: any, fileType: string | undefined) => {
     if (fileType?.startsWith("image/")) {
         return {
-            image_url: data.url,
-            image_id: data.image_id,
+            image_url: data?.url || data?.image_url,
+            image_id: data?.image_id,
         };
     } else if (fileType?.startsWith("video/")) {
         return {
-            video_url: data.url,
-            video_id: data.video_id,
+            video_url: data?.url || data?.video_url,
+            video_id: data?.video_id,
         };
     } else if (fileType?.startsWith("application/")) {
         return {
-            document_url: data.url,
+            document_url: data?.url || data?.document_url,
             document_id: data?.document_id || data?.image_id,
         };
     }

@@ -16,19 +16,9 @@ import { useEffect, useMemo, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import ResourceReportModal from "@/components/resources/ReportsModal";
 import { useWindowSize } from "@/hooks/useWindowSize";
-import { divide } from "lodash";
-
-//TODO: Needs to be deleted
-const TopicData = [
-    {
-        url: "basic",
-        title: "Basic",
-    },
-    {
-        url: "skills",
-        title: "Skills",
-    },
-];
+import { GET_API } from "@/api/request";
+import { endpoints } from "@/api/constants";
+import CategorySection from "@/components/resources/CategorySection";
 
 const TabData = [
     { id: "topics", label: "Topics" },
@@ -38,14 +28,18 @@ const TabData = [
 
 export default function ResourcesPage() {
     const { setHeaderOptions } = useComponentStore();
+    const pathname = usePathname();
+    const { width } = useWindowSize();
+    const isMobile = width < 768;
+    const isTabletScreen = width < 1024;
+
     const [category, setCategory] = useQueryState("category");
     const [_, setId] = useQueryState("id");
     const [mode, setMode] = useQueryState("mode");
     const [searchQuery] = useQueryState("query");
 
-    const pathname = usePathname();
+    const [activeTab, setActiveTab] = useState("topics");
     const [resources, setResources] = useState([]);
-
     const [reportModalOpen, setReportModalOpen] = useState(false);
     const [reportModalResourceId, setReportModalResourceId] = useState("");
 
@@ -53,10 +47,9 @@ export default function ResourcesPage() {
         queryKey: ["my-resource"],
         queryFn: getMyResources,
     });
-    const triggerReload = async () => await refetch();
 
     const { isFetching } = useQuery({
-        queryKey: ["resources", searchQuery],
+        queryKey: ["resources", searchQuery, category],
         queryFn: async () => {
             setResources([]);
             const resources = await getResources({ query: searchQuery || "" });
@@ -65,45 +58,23 @@ export default function ResourcesPage() {
         },
     });
 
-    const handleTopicClick = (title: string) => {
-        setCategory(title);
-    };
+    const { data: ResourceCategories, isFetching: isFetchingCategories } = useQuery({
+        queryKey: ["resource-categories"],
+        queryFn: async () => {
+            const categories = await GET_API(endpoints.resources.getCategories);
+            return categories?.data;
+        },
+    });
 
-    const handleMyResourcesClick = () => {
-        setCategory("my-resources");
-    };
+    const topicSingleTitle = useMemo(() => {
+        return ResourceCategories?.find((topic: any) => topic?.category_id === category)
+            ?.category_name;
+    }, [category, ResourceCategories]);
 
-    const handleBackClick = () => {
-        setCategory(null);
-    };
-
-    // * Used to set topbar options
-    useEffect(() => {
-        const categoryTitle = TopicData.find((topic) => topic?.url === category)?.title;
-        const headerTitle = (category && categoryTitle) || "Resources";
-        const titleIcon =
-            category !== null ? <IoIosArrowBack className="text-lg" /> : getHeaderIcon(pathname);
-
-        //* Used zustand to update the props of common header component
-        setHeaderOptions({
-            searchPlaceholder: "Search resources",
-            actionButtonTitle: "My Resources",
-            actionButtonOnClick: handleMyResourcesClick,
-            actionButtonClassName:
-                "!bg-black !text-white !rounded-xl hover:!bg-black hover:!text-white !h-[35px] !text-xs !py-2 px-4",
-            actionButtonPlacement: "left",
-            showButton: category === null,
-            showTitleButton: !!category,
-            title: headerTitle,
-            titleIcon,
-            titleIconClick: category !== null ? handleBackClick : undefined,
-        });
-    }, [category, pathname, setHeaderOptions]);
-
-    const handleAddResourceClick = () => {
-        setMode("create");
-    };
-
+    const handleTopicClick = (title: string) => setCategory(title);
+    const handleMyResourcesClick = () => setCategory("my-resources");
+    const handleBackClick = () => setCategory(null);
+    const handleAddResourceClick = () => setMode("create");
     const handleCloseModal = () => {
         setMode(null);
         setId(null);
@@ -116,15 +87,14 @@ export default function ResourcesPage() {
 
     const handleUserLikeAction = (resource_id: string, likeStatus: boolean) => {
         setResources((prevResources: any) =>
-            prevResources?.map((resource: any) => {
-                if (resource?.resource_id === resource_id) {
-                    return {
-                        ...resource,
-                        total_likes: resource?.total_likes + (likeStatus ? +1 : -1),
-                    };
-                }
-                return resource;
-            })
+            prevResources?.map((resource: any) =>
+                resource?.resource_id === resource_id
+                    ? {
+                          ...resource,
+                          total_likes: resource?.total_likes + (likeStatus ? 1 : -1),
+                      }
+                    : resource
+            )
         );
     };
 
@@ -138,19 +108,33 @@ export default function ResourcesPage() {
         setReportModalResourceId("");
     };
 
-    const [activeTab, setActiveTab] = useState("topics");
-    const { width } = useWindowSize();
-    const isMobile = width < 768;
-    
-        const topicSingleTitle = useMemo(() => {
-            return TopicData.find((topic) => topic?.url === category)?.title;
-        }, [category]);
+    useEffect(() => {
+        const categoryTitle = ResourceCategories?.find(
+            (topic: any) => topic?.category_id === category
+        )?.category_name;
+        const headerTitle = (category && categoryTitle) || "Resources";
+        const titleIcon =
+            category !== null ? <IoIosArrowBack className="text-lg" /> : getHeaderIcon(pathname);
+
+        setHeaderOptions({
+            searchPlaceholder: "Search resources",
+            actionButtonTitle: "My Resources",
+            actionButtonOnClick: handleMyResourcesClick,
+            actionButtonClassName:
+                "!bg-black !text-white !rounded-xl hover:!bg-black hover:!text-white !h-[35px] !text-xs !py-2 px-4",
+            actionButtonPlacement: "left",
+            showButton: category === null,
+            showTitleButton: !!category,
+            title: headerTitle,
+            titleIcon,
+            titleIconClick: category !== null ? handleBackClick : undefined,
+        });
+    }, [category, pathname, setHeaderOptions, ResourceCategories]);
 
     return (
-        <div className="w-full pt-4 lg:pt-8 flex flex-col gap-2 p-4 animate-fadeIn">
-            {/* Resource Modal */}
+        <div className="h-full w-full pt-4 lg:pt-8 flex flex-col gap-2 p-4 animate-fadeIn">
             <ResourceModal
-                triggerReload={triggerReload}
+                triggerReload={refetch}
                 isOpen={mode !== null && mode !== "view"}
                 mode={mode as ShowModalType}
                 onClose={handleCloseModal}
@@ -162,43 +146,23 @@ export default function ResourcesPage() {
                 onClose={handleCloseReportModal}
             />
 
-            {/* Detail Modal */}
             <DetailModal
                 handleUserLikeAction={handleUserLikeAction}
-                triggerReload={triggerReload}
+                triggerReload={refetch}
                 isOpen={mode === "view"}
                 onClose={handleCloseModal}
                 handleReportClick={handleReportClick}
             />
 
-            {/* Topic  */}
             {category && topicSingleTitle && (
-                <div className="flex flex-col md:p-5">
-                    <h2 className="mb-5 lg:mb-8 font-medium text-xl">Resources {">"} {topicSingleTitle}</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {resources?.map((resource: any, index: number) => (
-                            <div key={resource?.resource_id || index} className="col-span-1">
-                                <Card
-                                    resource={resource}
-                                    className="w-full h-full"
-                                    onClick={() =>
-                                        handleViewOrEditResource("view", resource?.resource_id)
-                                    }
-                                />
-                            </div>
-                        ))}
-                    </div>
-                    {!isFetching && resources?.length === 0 && (
-                        <span className="min-w-[250px] min-h-[275px] h-full w-full flex-center">
-                            No Resource Found
-                        </span>
-                    )}
-                </div>
-            )
-            }
+                <CategorySection
+                    topicSingleTitle={topicSingleTitle}
+                    handleViewOrEditResource={handleViewOrEditResource}
+                />
+            )}
 
-            {/* Add Mobile Tabs */}
-            {isMobile && !category && (
+            {/* Tab Section */}
+            {isTabletScreen && !category && (
                 <div className="overflow-x-auto  flex gap-2 pb-4 hide-scrollbar md:hidden">
                     {TabData.map((tab) => (
                         <button
@@ -216,54 +180,52 @@ export default function ResourcesPage() {
                 </div>
             )}
 
-            {/* Update Topics section */}
-            { activeTab === "topics" && !category && (isMobile ?
-                <div className="grid grid-cols-1 gap-4 place-items-center">
-                    {TopicData.map((item, index) => (
-                        <TopicCard
-                            onClick={() => handleTopicClick(item.title)}
-                            index={index}
-                            item={item}
-                        />
-                    ))}
-                </div>
-                :
-                <SectionWrapper
-                    hideSectionHeader={category !== null}
-                    data={TopicData}
-                    title={!isMobile ? "Topics" : undefined}
-                    renderItem={(item, index) => (
-                        <TopicCard
-                            onClick={() => handleTopicClick(item?.url)}
-                            index={index}
-                            item={item}
-                        />
-                    )}
-                />
+            {/* Topics Section */}
+            {isMobile && activeTab === "topics" && ResourceCategories?.length <= 0 && (
+                <div className="h-full w-full flex-center">No Topics Found</div>
             )}
-
-            {/* Update Resources section */}
-            {(!isMobile || (isMobile && activeTab === "suggested")) &&
+            {!isFetchingCategories &&
+                ResourceCategories?.length > 0 &&
+                (!isMobile || (isMobile && activeTab === "topics")) &&
                 !category && (
                     <SectionWrapper
-                        placeHolderComponent={undefined}
-                        onPlaceHolderClick={handleAddResourceClick}
-                        data={resources}
-                        isLoading={isFetching}
-                        title={!isMobile && category === null ? "Resources" : undefined}
+                        hideSectionHeader={category !== null}
+                        data={ResourceCategories}
+                        title={!isMobile ? "Topics" : undefined}
                         renderItem={(item, index) => (
-                            <Card
-                                className="w-full"
-                                key={item?.resource_id || index}
-                                resource={item}
-                                onClick={() => handleViewOrEditResource("view", item?.resource_id)}
-                                handleReportClick={handleReportClick}
+                            <TopicCard
+                                onClick={() => handleTopicClick(item?.category_id)}
+                                index={index}
+                                item={item}
                             />
                         )}
                     />
                 )}
 
-            {/* Update My Resources section */}
+            {/* Resources Section */}
+            {(!isMobile || (isMobile && activeTab === "suggested")) && !category && (
+                <SectionWrapper
+                    placeHolderComponent={undefined}
+                    onPlaceHolderClick={handleAddResourceClick}
+                    data={resources || []}
+                    isLoading={isFetching}
+                    title={!isMobile && category === null ? "Resources" : undefined}
+                    renderItem={(item, index) => (
+                        <div className="lg:w-[250px]">
+                            <Card
+                                className="w-full"
+                                imgClassName=""
+                                key={item?.resource_id || index}
+                                resource={item}
+                                onClick={() => handleViewOrEditResource("view", item?.resource_id)}
+                                handleReportClick={handleReportClick}
+                            />
+                        </div>
+                    )}
+                />
+            )}
+
+            {/* My Resources Section */}
             {category === "my-resources" && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 md:p-6">
                     <div className="w-full col-span-1">
@@ -273,7 +235,7 @@ export default function ResourcesPage() {
                         <div key={resource?.resource_id || index} className="col-span-1">
                             <Card
                                 resource={resource}
-                                className="w-full h-full"
+                                className="!w-full !h-full"
                                 onClick={() =>
                                     handleViewOrEditResource("view", resource?.resource_id)
                                 }
@@ -281,11 +243,6 @@ export default function ResourcesPage() {
                         </div>
                     ))}
                 </div>
-            )}
-
-            {/* Add Trending section for mobile */}
-            {isMobile && activeTab === "trending" && (
-                <div className="animate-fadeIn">{/* Add your trending content here */}</div>
             )}
         </div>
     );

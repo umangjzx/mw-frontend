@@ -36,10 +36,8 @@ const sortOptions: SortOption[] = [
     { label: "Most Comments", value: "comments" },
 ];
 
-const SortDropdown = ({ selectedSort, onSort, isManagePost = false }: SortDropdownProps) => {
+const SortDropdown = ({ selectedSort, onSort }: SortDropdownProps) => {
     const [showSortDropdown, setShowSortDropdown] = useState(false);
-
-    if (!isManagePost) return null;
 
     const handleSort = (value: string) => {
         onSort(value);

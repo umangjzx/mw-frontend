@@ -1,8 +1,8 @@
 import { endpoints } from "../constants";
 import { GET_API, PUT_API } from "../request";
 
-export const getNotifications = async ({ page = 1, limit = 20 }: { page?: number, limit?: number }) => {
-    const response: any = await GET_API(endpoints.post.getNotifications);
+export const getNotifications = async ({ page = 1, size = 20 }: { page?: number, size?: number }) => {
+    const response: any = await GET_API(`${endpoints.post.getNotifications}?page=${page}&size=${size}`);
     return response.data;
 }
 

@@ -12,6 +12,8 @@ interface CenterModalProps {
     minHeight?: number | string;
     children: React.ReactNode;
     rootClassName?: string;
+    bodyClassName?: string;
+    headerRootClassName?: string;
     customClassName?: string;
     titleClassName?: string;
     childrenClassName?: string;

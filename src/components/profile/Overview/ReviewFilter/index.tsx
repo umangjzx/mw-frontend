@@ -8,7 +8,7 @@ const ReviewFilter = () => {
     return (
         <div className="flex items-center justify-between w-full">
             <p className="text-xl font-medium">Reviews</p>
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
                 <p className="text-sm font-medium text-gray-light whitespace-nowrap">Sort By:</p>
                 <Input
                     className="!w-[170px] !mb-0 !rounded-2xl"
@@ -18,7 +18,7 @@ const ReviewFilter = () => {
                     value={sort}
                     onChange={(e) => setSort(e as string)}
                 />
-            </div>
+            </div> */}
         </div>
     );
 };

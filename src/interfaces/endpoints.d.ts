@@ -76,6 +76,7 @@ type EndpointProps = {
         getNotifications: string;
         readNotifications: string;
         updatePost: (id: string) => string;
+        deletePost: (id: string) => string;
     };
     comment: {
         createComment: string;

@@ -37,12 +37,12 @@ export default function ResourcesPage() {
     const [_, setId] = useQueryState("id");
     const [mode, setMode] = useQueryState("mode");
     const [searchQuery] = useQueryState("query");
+    
     const [activeTab, setActiveTab] = useState("topics");
     const [resources, setResources] = useState([]);
     const [reportModalOpen, setReportModalOpen] = useState(false);
     const [reportModalResourceId, setReportModalResourceId] = useState("");
 
-    // Queries
     const { data: MyResources, refetch } = useQuery({
         queryKey: ["my-resource"],
         queryFn: getMyResources,
@@ -70,7 +70,6 @@ export default function ResourcesPage() {
         return ResourceCategories?.find((topic: any) => topic?.category_id === category)?.category_name;
     }, [category, ResourceCategories]);
 
-    // Handlers
     const handleTopicClick = (title: string) => setCategory(title);
     const handleMyResourcesClick = () => setCategory("my-resources");
     const handleBackClick = () => setCategory(null);

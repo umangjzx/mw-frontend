@@ -3,16 +3,14 @@
 import ActionPanel from "@/components/community/ActionPanel";
 import FeedCard from "@/components/community/FeedCard";
 import FeedViewModal from "@/components/community/FeedViewModal";
-import { PostModal } from "@/components/community/Modals";
 import CommunityReportModal from "@/components/community/ReportsModal";
-import { getCurrentTab } from "@/constants/community";
 import { getHeaderIcon } from "@/layouts/helper";
 import { useComponentStore } from "@/store/useComponenetStore";
 import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import NotificationSection from "@/components/community/NotificationSection";
-import EditCommunityPost from "@/components/community/EditPost";
+import CommunityPostModal from "@/components/community/CommunityPostModal";
 
 export default function CommunityPage() {
     const { setHeaderOptions } = useComponentStore();
@@ -20,7 +18,6 @@ export default function CommunityPage() {
     const [mode, setMode] = useQueryState("mode");
     const [_, setId] = useQueryState("id");
     const [activeTab] = useQueryState("tab");
-    const title = getCurrentTab(activeTab)?.name;
 
     const [reportModalOpen, setReportModalOpen] = useState(false);
     const [reportModalPostId, setReportModalPostId] = useState("");
@@ -71,8 +68,7 @@ export default function CommunityPage() {
                 onClose={handleCloseReportModal}
             />
 
-            <PostModal isOpen={mode === "add"} onClose={handleCloseModal} />
-            <EditCommunityPost isOpen={mode === "edit"} onClose={handleCloseModal} />
+            <CommunityPostModal isOpen={mode === "add" || mode === "edit"} onClose={handleCloseModal} />
 
             <FeedViewModal
                 isOpen={mode === "view"}
@@ -80,6 +76,7 @@ export default function CommunityPage() {
                 isManagePost={activeTab === "manage_your_posts"}
                 handleReportClick={handleReportClick}
             />
+            
             <div className="col-span-12 flex flex-col min-h-0 flex-grow">
                 <div className="lg:hidden w-full border-b sticky top-0 z-10 px-4 py-5 bg-[#F4F7FB]">
                     <div className="w-full overflow-x-auto no-scrollbar">

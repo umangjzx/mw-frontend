@@ -1,16 +1,17 @@
 "use client";
+
 import { endpoints } from "@/api/constants";
 import { POST_API, PUT_API } from "@/api/request";
 import { Input } from "@/components/common/Input";
 import CenterModal from "@/components/common/Modals/CenterModal";
 import { CommunityFormConstants } from "@/constants/community";
 import { cn } from "@/utils/merge-class";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useWindowSize } from "@/hooks/useWindowSize";
 import FeedHeader from "../FeedHeader";
-import { showToast } from "@/components/common/Toast";
+import { callbackToast, showToast } from "@/components/common/Toast";
 import { useQueryState } from "nuqs";
 import { getSinglePost } from "@/api/community";
 import { Controller, useForm } from "react-hook-form";
@@ -19,7 +20,7 @@ import { PostFormSchema } from "@/constants/community";
 import { z } from "zod";
 import LottieLoader from "@/components/common/Loader/Lottie";
 
-type PostModalProps = {
+type CommunityPostModalProps = {
     isOpen: boolean;
     onClose: () => void;
     triggerReload?: () => void;
@@ -27,18 +28,13 @@ type PostModalProps = {
 
 type FormData = z.infer<typeof PostFormSchema>;
 
-type PostActionProps = {
-    data: FormData;
-    actionFn: (data: FormData) => Promise<any>;
-    successMessage: string;
-    errorMessage: string;
-};
-
-const PostModal = ({ isOpen, onClose, triggerReload }: PostModalProps) => {
+const CommunityPostModal = ({ isOpen, onClose }: CommunityPostModalProps) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const role = Cookies.get("role");
     const queryClient = useQueryClient();
+
     const [postId] = useQueryState("id");
+    const [activeTab] = useQueryState("tab");
     const [currentMode] = useQueryState("mode");
     const isEditMode = currentMode === "edit";
 
@@ -46,51 +42,49 @@ const PostModal = ({ isOpen, onClose, triggerReload }: PostModalProps) => {
         control,
         handleSubmit,
         formState: { errors },
-        reset,
-        setValue,
-        getValues
+        reset
     } = useForm<FormData>({
         resolver: zodResolver(PostFormSchema),
-        defaultValues: {
-            notes: "",
-            uploadPictures: []
-        }
+        defaultValues: { description: "", images: [] },
     });
 
+    useEffect(() => {
+        if (currentMode === "add") {
+            reset({ description: "", images: [] });
+        }
+    }, [currentMode, reset]);
+
+    // Fetch post details when in edit mode
     const { isFetching } = useQuery({
-        queryKey: ["getSinglePost", postId],
+        queryKey: ["get-single-post", postId],
         queryFn: async () => {
-            if(!postId) return null;
-            const post = await getSinglePost(postId || "");
-            if (post) {
-                reset({
-                    notes: post.description || "",
-                    uploadPictures: post.images || []
-                });
+            if (!postId) return null;
+            const post = await getSinglePost(postId);
+            if (post && isEditMode) {
+                reset({ description: post.description || "", images: post.images || [] });
             }
             return post;
         },
         enabled: isEditMode && !!postId,
     });
 
-    const handlePostAction = async ({
-        data,
-        actionFn,
-        successMessage,
-        errorMessage,
-    }: PostActionProps) => {
+    const handlePostAction = async (
+        actionFn: () => Promise<any>, 
+        successMessage: string, 
+        errorMessage: string
+    ) => {
         setIsSubmitting(true);
         try {
-            const isSuccess = await actionFn(data);
-            if (isSuccess) {
-                showToast({ message: successMessage });
-                if (triggerReload) triggerReload();
-                queryClient.invalidateQueries({ queryKey: ["get-posts", "manage_your_posts"] });
-                onClose();
-                reset();
-            } else {
-                showToast({ message: errorMessage, type: "error" });
-            }
+            await callbackToast({
+                apiCall: actionFn(),
+                loadingMsg: isEditMode ? "Updating Post..." : "Creating Post...",
+                successMsg: successMessage,
+                errorMsg: errorMessage,
+            });
+
+            queryClient.invalidateQueries({ queryKey: ["get-posts", activeTab] });
+            onClose();
+            reset({ description: "", images: [] });
         } catch (error) {
             showToast({ message: "Something went wrong!", type: "error" });
         } finally {
@@ -100,27 +94,16 @@ const PostModal = ({ isOpen, onClose, triggerReload }: PostModalProps) => {
 
     const onSubmit = (data: FormData) => {
         const payload = {
-            description: data.notes,
-            images: data.uploadPictures.map((image) => ({
-                image_url: image.url,
-                image_id: image.image_id,
-            })),
+            description: data.description,
+            images: data?.images?.map(image => ({ image_url: image.image_url, image_id: image.image_id })),
             created_by: role,
         };
 
-        const actionFn = isEditMode
-            ? () => PUT_API(endpoints.post.updatePost(postId || ""), payload)
-            : () => POST_API(endpoints.post.createPost, payload);
-
-        const successMessage = isEditMode ? "Post updated successfully" : "Post created successfully";
-        const errorMessage = isEditMode ? "Failed to update post" : "Failed to create post";
-
-        handlePostAction({ 
-            data, 
-            actionFn, 
-            successMessage, 
-            errorMessage 
-        });
+        handlePostAction(
+            () => (isEditMode ? PUT_API(endpoints.post.updatePost(postId || ""), payload) : POST_API(endpoints.post.createPost, payload)),
+            isEditMode ? "Post updated successfully" : "Post created successfully",
+            isEditMode ? "Failed to update post" : "Failed to create post"
+        );
     };
 
     const { width } = useWindowSize();
@@ -133,22 +116,19 @@ const PostModal = ({ isOpen, onClose, triggerReload }: PostModalProps) => {
             isOpen={isOpen}
             loading={isSubmitting}
             onClose={onClose}
-            width={isMobile ? "100vw" : isTablet ? "60%" : "40%"}
+            width={isMobile ? "100%" : isTablet ? "70%" : "40%"}
             height={isMobile ? "100dvh" : "auto"}
             customClassName={cn(
-                "max-h-[80vh] !rounded-2xl overflow-hidden [&_.ant-modal-footer]:!mt-0 [&_.modal-body]:!border-b [&_.modal-body]:!max-h-[80vh]",
-                isMobile &&
-                    "[&_.ant-modal-content]:!p-0 !p-0 !m-0 !h-[100dvh] !max-h-none !w-screen !max-w-none !max-h-[100dvh] !rounded-none"
+                "md:max-h-screen overflow-hidden [&_.ant-modal-footer]:!mt-0 [&_.modal-body]:!border-b",
+                isMobile
+                    ? "[&_.ant-modal-content]:!p-0 !p-0 !m-0 !h-[100dvh] !max-h-none !w-screen !max-w-none rounded-none bg-background-input"
+                    : "!rounded-2xl"
             )}
+            rootClassName="md:!h-auto"
+            bodyClassName="max-md:!max-h-none max-md:!p-0 max-md:!m-0"
+            headerRootClassName="md:mb-0 md:pb-2"
             headerComponent={
-                isMobile && (
-                    <FeedHeader
-                        title={isEditMode ? "Edit Post" : "Add New Post"}
-                        onClose={onClose}
-                        onSave={handleSubmit(onSubmit)}
-                        isSubmitting={isSubmitting}
-                    />
-                )
+                isMobile && <FeedHeader title={isEditMode ? "Edit Post" : "Add New Post"} onClose={onClose} onSave={handleSubmit(onSubmit)} isSubmitting={isSubmitting} />
             }
             hideFooter={isMobile}
             secondaryActionProps={{
@@ -161,29 +141,23 @@ const PostModal = ({ isOpen, onClose, triggerReload }: PostModalProps) => {
             primaryActionProps={{
                 onClick: handleSubmit(onSubmit),
                 disabled: isSubmitting,
-                title: isSubmitting ? (isEditMode ? "Saving..." : "Creating...") : (isEditMode ? "Save" : "Create"),
+                title: isSubmitting ? (isEditMode ? "Saving..." : "Creating...") : isEditMode ? "Save" : "Create",
                 customClassName: "!rounded-xl hover:!bg-black hover:!text-white",
             }}
         >
             {isFetching ? (
                 <div className="flex-center min-h-[45vh]">
-                    <LottieLoader isLoading={true} customClassName="w-[6rem] h-[6rem]" />
+                    <LottieLoader isLoading={true} customClassName="!w-[6rem] !h-[6rem]" />
                 </div>
             ) : (
-                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 md:gap-2 p-4 md:p-0">
+                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 md:gap-2 lg:gap-0 p-4 md:p-0 md:py-2">
                     {CommunityFormConstants.map((field: any) => (
                         <Controller
                             key={field.name}
                             name={field.name as keyof FormData}
                             control={control}
                             render={({ field: { value, onChange } }) => (
-                                <Input
-                                    {...field}
-                                    error={errors[field.name as keyof FormData]?.message}
-                                    value={value}
-                                    onChange={onChange}
-                                    rootClassName="bg-white p-2 rounded-xl !mb-0"
-                                />
+                                <Input {...field} error={errors[field.name as keyof FormData]?.message} value={value} onChange={onChange} rootClassName="bg-white p-4 md:p-2 rounded-xl !mb-0" />
                             )}
                         />
                     ))}
@@ -193,4 +167,4 @@ const PostModal = ({ isOpen, onClose, triggerReload }: PostModalProps) => {
     );
 };
 
-export default PostModal;
+export default CommunityPostModal;

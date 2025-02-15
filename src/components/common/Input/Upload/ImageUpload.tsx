@@ -9,9 +9,10 @@ import { usePathname } from "next/navigation";
 import LottieLoader from "../../Loader/Lottie";
 
 const ImageUpload: React.FC<BaseUploaderProps> = ({ ...props }) => {
-    const { value = [], maxFiles = 1, disabled = false, handleRemove, handleClick } = props;
     const pathname = usePathname();
     const isCommunity = pathname.includes("community");
+
+    const { value = [], maxFiles = 1, disabled = false, isLoading, handleRemove, handleClick } = props;
 
     return (
         <div
@@ -32,7 +33,7 @@ const ImageUpload: React.FC<BaseUploaderProps> = ({ ...props }) => {
                         )}
                     >
                         <div className="relative w-full h-full">
-                            {maxFiles > 1 && file.url ? (
+                            {maxFiles > 1 && (file?.url || file?.image_url) ? (
                                 <span
                                     // @ts-ignore
                                     onClick={() => handleRemove(index, "image/*", file?.image_id)}
@@ -42,7 +43,7 @@ const ImageUpload: React.FC<BaseUploaderProps> = ({ ...props }) => {
                                 </span>
                             ) : null}
                             <Image
-                                src={file.url}
+                                src={file?.url || file?.image_url}
                                 alt={`Upload ${index + 1}`}
                                 className="w-full absolute top-0 rounded-lg left-0 h-full object-cover transition-opacity duration-300 opacity-0"
                                 width={400}
@@ -66,7 +67,7 @@ const ImageUpload: React.FC<BaseUploaderProps> = ({ ...props }) => {
                         )}
                     </div>
                 ))}
-            {maxFiles === 1 && !props.isLoading && value?.image_url &&
+            {maxFiles === 1 && !isLoading && value?.image_url &&
                 <div className={cn(
                     "flex flex-col items-center justify-center group rounded-lg border",
                     props.variant === "cover-image" ? "h-[250px] active:!scale-100 w-full" : "h-24 w-24")} >
@@ -89,17 +90,17 @@ const ImageUpload: React.FC<BaseUploaderProps> = ({ ...props }) => {
                 </div>
             }
 
-            {(value?.length < maxFiles || props.isLoading) && (
+            {(value?.length < maxFiles || isLoading) && (
                 <Button
-                    onClick={props.isLoading || handleClick}
+                    onClick={isLoading || handleClick}
                     disabled={disabled}
                     className={cn(
                         "w-24 h-24 border-2 group border-stroke !bg-transparent rounded-lg flex items-center justify-center text-gray hover:border-primary hover:text-primary transition-colors",
                         props.variant === "cover-image" ? "!h-[250px] active:!scale-100 w-full" : ""
                     )}
                 >
-                    {props.isLoading ?
-                        <LottieLoader isLoading={true} customClassName="!w-full !h-full" /> :
+                    {isLoading ?
+                        <LottieLoader isLoading={true} customClassName={maxFiles === 1 ? "" : "!w-full !h-full"} /> :
                         <BiPlus className="text-2xl text-black bg-stroke rounded-full" />
                     }
                 </Button>
