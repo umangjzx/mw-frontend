@@ -101,7 +101,7 @@ export const VolunteerProfileFormConstants: FormField[] = [
         required: true,
         endpoint: "subjects",
         responseAsLabel: "subject_name",
-        responseAsValue: "subject_name",
+        responseAsValue: ["subject_name", "subject_id"],
     },
     {
         name: "volunteer_skills",
@@ -111,7 +111,7 @@ export const VolunteerProfileFormConstants: FormField[] = [
         creatable: true,
         endpoint: "skills",
         responseAsLabel: "skill_name",
-        responseAsValue: "skill_name",
+        responseAsValue: ["skill_name", "skill_id"],
         variant: "multi",
         required: true,
     },

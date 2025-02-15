@@ -58,7 +58,7 @@ export default function ProfilePage() {
         
         const volunteer_first_name = data?.volunteer_first_name;
         const volunteer_last_name = data?.volunteer_last_name;
-        const description = data?.volunteer_special_needs?.description;
+        const description = data?.volunteer_description;
 
         setEditProfileData({
             userId: volunteerId,

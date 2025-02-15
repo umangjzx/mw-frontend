@@ -7,11 +7,11 @@ import Cookies from "js-cookie";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { showToast } from "@/components/common/Toast";
-import { useQueryState } from "nuqs";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import FeedHeader from "@/components/community/FeedHeader/index";
 import { LearnerProfileFormConstants, LearnerProfileFormSchema, VolunteerProfileFormConstants, VolunteerProfileFormSchema } from "@/constants/profile";
 import { updateLearnerProfile } from "@/api/learners";
+import { updateVolunteerProfile } from "@/api/volunteers";
 
 type EditProfileModalProps = {
     data?: any;
@@ -52,7 +52,10 @@ const EditProfileModal = ({ data = {}, initialFormData = {}, triggerReload, isOp
         console.log("Form Data to submit:", data, formData);
         setIsSubmitting(true);
         try {
-            const status = isVolunteer ? await updateLearnerProfile(initialFormData?.userId || "", data, formData) : await updateLearnerProfile(initialFormData?.userId || "", data, formData);
+            const status = isVolunteer 
+                ? await updateVolunteerProfile(initialFormData?.userId || "", data, formData) 
+                : await updateLearnerProfile(initialFormData?.userId || "", data, formData);
+            
             if (status === 201) {
                 showToast({ message: "Profile updated" });
                 triggerReload();
@@ -61,10 +64,15 @@ const EditProfileModal = ({ data = {}, initialFormData = {}, triggerReload, isOp
                 showToast({ message: "Profile not updated", type: "error" });
             }
         } catch (error) {
+            console.log("Error: ", error);
             showToast({ message: "Something went wrong!", type: "error" });
         } finally {
             setIsSubmitting(false);
         }
+    };
+    
+    const onError = (formErrors: any) => {
+        showToast({ message: "Please enter all details.", type: "error" });
     };
 
     const buttonProps = {
@@ -80,7 +88,7 @@ const EditProfileModal = ({ data = {}, initialFormData = {}, triggerReload, isOp
             disabled: isSubmitting,
         },
         primary: {
-            onClick: handleSubmit(onSubmit),
+            onClick: handleSubmit(onSubmit, onError),
             title: isSubmitting ? "Saving" : "Save",
             customClassName: cn(
                 "!rounded-xl hover:!bg-black hover:!text-white",
@@ -105,7 +113,7 @@ const EditProfileModal = ({ data = {}, initialFormData = {}, triggerReload, isOp
                         title="Edit Profile"
                         mode="edit"
                         onClose={onClose}
-                        onSave={handleSubmit(onSubmit)}
+                        onSave={handleSubmit(onSubmit, onError)}
                         isSubmitting={isSubmitting}
                         rootClassName="!mb-0"
                     />
@@ -123,7 +131,7 @@ const EditProfileModal = ({ data = {}, initialFormData = {}, triggerReload, isOp
             hideFooter={isMobile}
         >
             <form
-                onSubmit={handleSubmit(onSubmit)}
+                onSubmit={handleSubmit(onSubmit, onError)}
                 className={cn(
                     "flex flex-col gap-2 md:gap-4",
                     isMobile && "px-4 pb-4"
