@@ -41,8 +41,6 @@ interface AddNewMeetingModalProps {
 }
 
 export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingModalProps) {
-    if (!isOpen) return null;
-
     const [formData, setFormData] = useState<FormData>({
         title_of_the_meeting: "",
         select_volunteer: "",
@@ -69,7 +67,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
         setFetchingVolunteers(true);
         const response = await GET_API(endpoints.volunteer.getAllVolunteers);
         const volunteerOptions = response.data.items.map((volunteer: any) => ({
-            label: volunteer.volunteer_first_name + " " + volunteer.volunteer_last_name, // Adjust according to your API response structure
+            label: volunteer.volunteer_first_name + " " + volunteer.volunteer_last_name,
             value: volunteer.volunteer_id,
         }));
         if (volunteerId) {
@@ -121,9 +119,6 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
     };
 
     const {
-        data: availableDays,
-        isLoading: isLoadingAvailableDays,
-        isError: isErrorAvailableDays,
         refetch: refetchAvailableDays,
     } = useQuery({
         queryKey: ["availableDays"],
@@ -208,7 +203,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
     };
 
     const getFieldProps = (field: any) => {
-        if (field.name === "select_volunteer") {
+        if (field?.name === "select_volunteer") {
             return {
                 ...field,
                 options: volunteers,
@@ -312,6 +307,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
 
     const isMobileScreen = InnerWidth() < 768;
 
+    if (!isOpen) return null;
     return (
         <SideModal
             title="Add New Meeting"
