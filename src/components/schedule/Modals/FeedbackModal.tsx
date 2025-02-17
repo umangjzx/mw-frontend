@@ -7,12 +7,12 @@ import Divider from "@/components/common/Divider";
 import { Input } from "@/components/common/Input";
 import CenterModal from "@/components/common/Modals/CenterModal";
 import MobileSideModal from "@/components/common/Modals/MobileSideModal";
+import { showToast } from "@/components/common/Toast";
 import { LearnerFeedbackFormConstants } from "@/constants/schedule";
 import { useAppStore } from "@/store/useAppStore";
 import InnerWidth from "@/utils/innerWidth";
 import { cn } from "@/utils/merge-class";
 import Cookies from "js-cookie";
-import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 
 const FeedbackModal = ({
@@ -42,8 +42,8 @@ const FeedbackModal = ({
     };
 
     useEffect(() => {
-        const userName = role === "volunteer" ? eventDetails?.learner_name : eventDetails?.volunteer_name;
-        if (!userName || userName === "") {
+        const userId = role === "volunteer" ? eventDetails?.learner_id : eventDetails?.volunteer_id;
+        if (!userId || userId === "") {
             onClose();
         }
     }, [])
@@ -59,6 +59,11 @@ const FeedbackModal = ({
                 },
             ],
         };
+        if(!submissionData?.notes || !submissionData?.rating || !submissionData?.classDuration ){
+            showToast({message: "Please fill the feedback", type: "error"});
+            return;
+        }
+        
         onSubmit(submissionData);
     };
 
@@ -141,8 +146,6 @@ const FeedbackModal = ({
                 onClose={onClose}
                 topContent={<DetailsSection data={feedBackEventDetails} />}
                 width={isTabletScreen ? "80%" : "40%"}
-                rootClassName="md:!h-auto"
-                customClassName="md:max-h-[90vh] lg:max-h-[80vh] !rounded-2xl overflow-hidden"
                 secondaryActionProps={buttonProps.secondary}
                 primaryActionProps={buttonProps.primary}
                 loading={Loading}

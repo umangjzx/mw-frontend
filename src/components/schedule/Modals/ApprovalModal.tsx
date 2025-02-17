@@ -1,6 +1,7 @@
 import SideModal from "@/components/common/Modals/SideModal";
 import React, { useState, useEffect } from "react";
 import NotificationCard from "@/components/schedule/NotificationCard";
+import { NotificationCardSkeleton } from "@/components/schedule/NotificationCard";
 import { useQuery } from "@tanstack/react-query";
 import { GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
@@ -39,9 +40,10 @@ const ApprovalModal: React.FC<ApprovalModalProps> = ({ isOpen, onClose }) => {
         return response?.data;
     };
 
-    const { data, isLoading, isError } = useQuery({
-        queryKey: ["approval-notifications"], // TODO: change to queryKey: ["notifications", { id: "0fd651c9-f10c-4e40-ad7c-13c1c4932fe3" }],
+    const { data, isFetching, isError } = useQuery({
+        queryKey: ["approval-notifications", isOpen],
         queryFn: () => getNotifications(),
+        enabled: isOpen,
     });
 
     useEffect(() => {
@@ -62,8 +64,12 @@ const ApprovalModal: React.FC<ApprovalModalProps> = ({ isOpen, onClose }) => {
             modalWidth={isMobileScreen ? "100%" : 400}
         >
             <div className="flex flex-col gap-4 px-5 mt-5">
-                {isLoading ? (
-                    <p>Loading...</p>
+                {isFetching ? (
+                    <div className="flex flex-col gap-4">
+                        {Array.from({ length: 10 }).map((_, index) => (
+                            <NotificationCardSkeleton key={index} />
+                        ))}
+                    </div>
                 ) : isError ? (
                     <p>Error loading notifications</p>
                 ) : notificationsData.length > 0 ? (
@@ -81,7 +87,7 @@ const ApprovalModal: React.FC<ApprovalModalProps> = ({ isOpen, onClose }) => {
                         </div>
                     ))
                 ) : (
-                    <div className="flex flex-col gap-4 border rounded-xl p-4 border-[#E0E0E0] h-fit w-[360px] items-center justify-center">
+                    <div className="flex flex-col gap-4 border rounded-xl p-4 border-[#E0E0E0] h-fit lg:w-[360px] items-center justify-center">
                         <p className="text-gray-light text-sm font-medium">
                             No Notifications Available
                         </p>

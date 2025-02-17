@@ -56,6 +56,7 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
     const queryClient = useQueryClient();
     const role = Cookies.get("role");
     const [activeTab] = useQueryState("tab");
+    const [searchQuery] = useQueryState("tab");
 
     const [comment, setComment] = useState<string>("");
     const [isCommentLoading, setIsCommentLoading] = useState<boolean>(false);
@@ -83,7 +84,7 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                 endpoint = endpoints.post.getPosts;
         }
 
-        const response = await GET_API(`${endpoint}?page=${pageParam}&size=10`);
+        const response = await GET_API(`${endpoint}?page=${pageParam}&size=10&query=${searchQuery}`);
         return response.data;
     };
 
@@ -106,8 +107,8 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
 
     const posts = data?.pages.flatMap((page) => page.items) ?? [];
 
-    // Handle Like
-    const handleLike = (postId: string, currentLikeStatus: boolean) => {
+    // Handle Like & DisLike
+    const handleLikeAction = (postId: string, currentLikeStatus: boolean) => {
         queryClient.setQueryData(["get-posts", activeTab], (oldData: any) => {
             return {
                 ...oldData,
@@ -131,7 +132,7 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
         if (!currentLikeStatus) {
             POST_API(endpoints.post.like(postId));
         } else {
-            DELETE_API(endpoints.post.like(postId));
+            DELETE_API(endpoints.post.unlike(postId));
         }
     };
 
@@ -362,7 +363,7 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                                                                     ease: "easeInOut",
                                                                 }}
                                                                 onClick={() =>
-                                                                    handleLike(post.post_id, true)
+                                                                    handleLikeAction(post.post_id, true)
                                                                 }
                                                             >
                                                                 <HeartLikeIcon />
@@ -378,7 +379,7 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                                                                     ease: "easeInOut",
                                                                 }}
                                                                 onClick={() =>
-                                                                    handleLike(post.post_id, false)
+                                                                    handleLikeAction(post.post_id, false)
                                                                 }
                                                             >
                                                                 <UnlikeHeartIcon />

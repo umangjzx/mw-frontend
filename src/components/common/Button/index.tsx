@@ -9,11 +9,11 @@ const Button: React.FC<ButtonProps> = ({
     ...props
 }) => {
     const baseStyles =
-        "rounded-2xl px-4 py-4 font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-95";
+        "rounded-2xl px-4 py-4 font-medium disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-200 active:scale-95";
 
     const variantStyles = {
         primary: "bg-primary text-white hover:bg-primary focus:bg-primary",
-        secondary: "bg-black text-white hover:bg-black focus:bg-black",
+        secondary: "bg-black text-white hover:bg-black hover:text-white focus:bg-black focus:text-white",
         tertiary: "bg-white text-black",
         error: "bg-error-light text-error hover:bg-error focus:bg-error-light",
         success: "bg-success-light text-success hover:bg-success focus:bg-success-light",

@@ -3,7 +3,7 @@
 import Calendar from "@/components/schedule/Calender";
 import MyScheduleModal from "@/components/schedule/Modals/MyScheduleModal";
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import ApprovalModal from "@/components/schedule/Modals/ApprovalModal";
 import { POST_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
@@ -11,9 +11,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import FeedbackModal from "@/components/schedule/Modals/FeedbackModal";
 import { useAppStore } from "@/store/useAppStore";
 import Cookies from "js-cookie";
-import { checkCalendarScope, getCalendarEvents } from "@/utils/calender";
+import { getCalendarEvents } from "@/utils/calender";
 import { useSendData } from "@/hooks/useReactQuery";
-import CalendarAccessScreen from "@/components/common/CalendarAccessScreen";
 import LottieLoader from "@/components/common/Loader/Lottie";
 import { useQueryState } from "nuqs";
 import MobileCalender from "@/components/schedule/MobileCalender";
@@ -24,7 +23,6 @@ export default function SchedulePage() {
     const [isOpenApproval, setIsOpenApproval] = useState(false);
     const [isOpenFeedback, setIsOpenFeedback] = useState(false);
     const queryClient = useQueryClient();
-    const [isCalendarScope, setIsCalendarScope] = useState("checking");
 
     const isMobileScreen = InnerWidth() < 768;
 
