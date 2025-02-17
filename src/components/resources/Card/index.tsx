@@ -28,16 +28,15 @@ const Card = ({ className, imgClassName, resource, onClick, handleReportClick }:
                         {resource?.total_likes} {resource?.total_likes > 1 ? "likes" : "like"}
                     </span>
                 </span>
-                {
-                    resourceImage && (resourceImage?.startsWith("http") || resourceImage?.startsWith("https")) && (
+                {resourceImage &&
+                    (resourceImage?.startsWith("http") || resourceImage?.startsWith("https")) && (
                         <Image
                             src={resourceImage}
                             alt="background"
                             fill
                             className={`object-cover rounded-t-xl ${imgClassName}`}
                         />
-                    )
-                }
+                    )}
             </div>
             <div className="flex flex-col p-3 gap-4 flex-grow">
                 <div className="flex justify-between items-center gap-2">
@@ -94,6 +93,34 @@ const Card = ({ className, imgClassName, resource, onClick, handleReportClick }:
                             <FlagIcon />
                         </span>
                     )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export const CardSkeleton = () => {
+    return (
+        <div className=" md:max-h-[313px] !w-full rounded-xl shadow-md border border-[#f7f7f7] flex flex-col justify-between">
+            <div className="w-full h-[120px] relative">
+                <div className="w-full h-full bg-gray-400 animate-pulse rounded-t-xl" />
+            </div>
+            <div className="flex flex-col p-3 gap-4 flex-grow">
+                <div className="flex justify-between items-center gap-2">
+                    <div className="w-20 h-3 bg-gray-400 animate-pulse rounded-md" />
+                    <div className="w-10 h-4 bg-gray-400 animate-pulse rounded-md" />
+                </div>
+                <div className="flex flex-col gap-2">
+                    <div className="w-full h-3 bg-gray-400 animate-pulse rounded-md" />
+                    <div className="w-3/4 h-3 bg-gray-400 animate-pulse rounded-md" />
+                </div>
+                <div className="flex flex-col gap-2">
+                    <div className="w-1/4 h-2 bg-gray-400 animate-pulse rounded-md" />
+                    <div className="w-3/4 h-2 bg-gray-400 animate-pulse rounded-md" />
+                </div>
+                <div className="flex justify-between items-center gap-2">
+                    <div className="w-20 h-2 bg-gray-400 animate-pulse rounded-md" />
+                    <div className="w-3 h-3 bg-gray-400 animate-pulse rounded-md" />
                 </div>
             </div>
         </div>

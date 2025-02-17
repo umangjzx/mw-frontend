@@ -124,3 +124,14 @@ export const ResourceFormSchema = z.object({
         .min(1, "Notes is required" )
         .max(200, "Notes cannot exceed 200 characters")
 });
+
+export const ResourceFormDefaultValues = {
+    resource_image: {},
+    resource_title: "",
+    created_by: "",
+    difficulty_level: "",
+    resource_description: "",
+    resource_skills: [],
+    resource_category: {},
+    resource_notes: "",
+};

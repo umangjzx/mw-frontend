@@ -7,15 +7,15 @@ export const getResources = async (params?: any) => {
     return data || {};
 }
 
-export const getResourcesByCategory = async (category_id: string) => {
+export const getResourcesByCategory = async (category_id: string, params?: any) => {
     const endpoint = endpoints.resources.getResourcesByCategory(category_id);
-    const { data } = await GET_API(endpoint);
+    const { data } = await GET_API(`${endpoint}?${new URLSearchParams({ ...params })}`);
     return data || {};
 }
 
-export const getMyResources = async () => {
+export const getMyResources = async (params?: any) => {
     const endpoint = endpoints.resources.getMyResources;
-    const { data } = await GET_API(endpoint);
+    const { data } = await GET_API(`${endpoint}?${new URLSearchParams({ ...params })}`);
     return data || {};
 }
 

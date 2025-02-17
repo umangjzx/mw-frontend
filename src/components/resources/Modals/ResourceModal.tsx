@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { Input } from "@/components/common/Input";
 import CenterModal from "@/components/common/Modals/CenterModal";
-import { ResourceFormConstants, ResourceFormSchema } from "@/constants/resources";
+import { ResourceFormConstants, ResourceFormDefaultValues, ResourceFormSchema } from "@/constants/resources";
 import { cn } from "@/utils/merge-class";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
@@ -36,22 +36,21 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
     const { learnerName, volunteerName } = useAppStore();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const role = Cookies.get("role");
+    const [resourceId] = useQueryState("id") || "";
+    const [currentMode] = useQueryState("mode");
+    const isEditMode = currentMode === "edit";
+
     const {
         control,
         handleSubmit,
         formState: { errors },
         setValue,
         reset,
-        getValues
     } = useForm<FormData>({
         resolver: zodResolver(ResourceFormSchema),
     });
-
-    const role = Cookies.get("role");
-    const [resourceId] = useQueryState("id") || "";
-    const [currentMode] = useQueryState("mode");
-    const isEditMode = currentMode === "edit";
-
+    
     // Fetch resource data if in edit mode
     const { isFetching } = useQuery({
         queryKey: ["getSingleResource", resourceId],
@@ -64,12 +63,14 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
     });
 
     useEffect(() => {
-        reset({});
-        console.log("Hello World! ============");
-        console.log(getValues());
-        
         setValue("created_by", role === "learner" ? learnerName : volunteerName);
     }, [currentMode, resourceId]);
+
+    useEffect(() => {
+        if (currentMode === "create") {
+            reset({...ResourceFormDefaultValues});
+        }
+    }, [currentMode, reset]);
 
     const handleResourceAction = async ({
         data,
@@ -105,6 +106,10 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
         handleResourceAction({ data, actionFn, successMessage, errorMessage });
     };
 
+    const onError = () => {
+        showToast({ message: "Please enter all details.", type: "error" });
+    };
+
     const buttonProps = {
         secondary: {
             onClick: onClose,
@@ -119,7 +124,7 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
             ),
         },
         primary: {
-            onClick: handleSubmit(onSubmit),
+            onClick: handleSubmit(onSubmit, onError),
             title: isSubmitting ? (isEditMode ? "Saving" : "Adding") : isEditMode ? "Save" : "Add",
             customClassName: cn(
                 "!rounded-xl hover:!bg-black hover:!text-white",
@@ -143,29 +148,26 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
                     <FeedHeader
                         mode={currentMode || ""}
                         title={isEditMode ? "Edit Resource" : "Add New Resource"}
+                        rootClassName="!w-full !p-1"
                         onClose={onClose}
-                        onSave={handleSubmit(onSubmit)}
+                        onSave={handleSubmit(onSubmit, onError)}
                         isSubmitting={isSubmitting}
                     />
                 )
             }
-            customClassName={cn(
-                "md:max-h-screen overflow-hidden",
-                isMobile
-                    ? "[&_.ant-modal-content]:!p-0 !p-0 !m-0 !h-[100dvh] !max-h-none !w-screen !max-w-none rounded-none bg-background-input"
-                    : "!rounded-2xl "
-            )}
-            rootClassName="md:!h-auto"
+            hideCloseIcon={isMobile}
+            rootClassName="md:!h-auto md:!max-h-[70dvh]"
+            bodyClassName="max-md:!bg-background-input"
             secondaryActionProps={buttonProps.secondary}
             primaryActionProps={buttonProps.primary}
             hideFooter={isMobile}
         >
             {mode !== "view" ? (
                 <form
-                    onSubmit={handleSubmit(onSubmit)}
+                    onSubmit={handleSubmit(onSubmit, onError)}
                     className={cn(
-                        "flex flex-col gap-4 py-3",
-                        isMobile && "overflow-y-auto px-4 pb-20 pt-2"
+                        "flex flex-col gap-2 md:gap-4 py-3",
+                        isMobile && "overflow-y-auto px-4 pt-2"
                     )}
                 >
                     {
