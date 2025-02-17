@@ -71,6 +71,7 @@ type EndpointProps = {
         getSavedPosts: string;
         getSinglePost: (post_id: string) => string;
         like: (post_id: string) => string;
+        unlike: (post_id: string) => string;
         save: (post_id: string) => string;
         unsave: (post_id: string) => string;
         getNotifications: string;

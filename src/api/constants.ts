@@ -63,6 +63,7 @@ export const endpoints: EndpointProps = {
         getSavedPosts: "post/saved_posts/all",
         getSinglePost: (post_id: string) => `post/${post_id}`,
         like: (post_id: string) => `post/${post_id}/like`,
+        unlike: (post_id: string) => `post/${post_id}/unlike`,
         save: (post_id: string) => `post/${post_id}/save`,
         unsave: (post_id: string) => `post/${post_id}/unsave`,
         getNotifications: "post/notifications/all",
