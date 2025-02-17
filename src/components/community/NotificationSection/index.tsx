@@ -6,6 +6,7 @@ import NotificationProfileImg from "@/assets/images/NotificationProfileImg.png";
 import PostImg from "@/assets/images/PostImg.png";
 import { Spin } from "antd";
 import ErrorMsg from "@/components/common/Messages/ErrorMsg";
+import { timesAgo } from "@/utils/timeFunctions";
 
 interface Author {
     name: string;
@@ -22,10 +23,10 @@ interface Notification {
     read: boolean;
     user_id: string;
     created_by: string;
+    created_at: string;
     post_id: string;
     post_image: string;
     author: Author;
-    // Add any additional fields from API response
 }
 
 interface NotificationPage {
@@ -42,6 +43,10 @@ const NotificationCard: React.FC<{ notification: Notification }> = ({ notificati
                 return `${createdBy} liked your post`;
             case "comment":
                 return `${createdBy} commented on your post`;
+            case "liked_on_your_comment":
+                return `${createdBy} liked your comment`;
+            case "replied_to_your_comment":
+                return `${createdBy} replied to your comment`;
             default:
                 return `${createdBy} interacted with your post`;
         }
@@ -49,7 +54,7 @@ const NotificationCard: React.FC<{ notification: Notification }> = ({ notificati
 
     return (
         <div
-            className={`flex gap-2 sm:gap-3 items-start sm:items-center justify-between p-2 pt-4 ${
+            className={`flex gap-2 sm:gap-3 items-start sm:items-center justify-between py-2 ${
                 notification.read ? "opacity-50" : ""
             }`}
         >
@@ -70,6 +75,10 @@ const NotificationCard: React.FC<{ notification: Notification }> = ({ notificati
                         )}
                     </p>
                 </div>
+                <div className="w-2 h-2 bg-gray-300 rounded-full" />
+                <p className="text-gray-light font-medium text-sm sm:text-base">
+                    {timesAgo(notification?.created_at)}                    
+                </p>
             </div>
             {/* Optional: Add post preview image if available */}
             <div className="w-[40px] h-[40px] md:w-[50px] md:h-[50px] relative flex-shrink-0">
@@ -175,7 +184,7 @@ const NotificationSection: React.FC = () => {
 // Add NotificationSkeleton component
 const NotificationSkeleton = ({ size = 5 }: { size?: number }) => {
     return (
-        <div className="md:p-4 space-y-4">
+        <div className="py-4 space-y-2">
             {[...Array(size)].map((_, i) => (
                 <div key={i} className="flex items-center justify-between gap-3 animate-pulse">
                     <div className="flex items-center gap-1 md:gap-3 w-full">
