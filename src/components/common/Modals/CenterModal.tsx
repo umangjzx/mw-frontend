@@ -1,7 +1,8 @@
 import React from "react";
 import { Modal, ModalProps } from "antd";
-import { CloseOutlined } from "@ant-design/icons";
 import Button from "../Button";
+import { cn } from "@/utils/merge-class";
+import ModalCloseIcon from "@/assets/icons/ModalCloseIcon";
 
 const CenterModal: React.FC<CenterModalProps> = ({
     isOpen,
@@ -23,7 +24,8 @@ const CenterModal: React.FC<CenterModalProps> = ({
     headerComponent,
     footerComponent,
     zIndex = 1000,
-    hideFooter = false
+    hideFooter = false,
+    hideCloseIcon = false
 }) => {
     const defaultButtonStyles = {
         primaryActionProps: {
@@ -47,10 +49,10 @@ const CenterModal: React.FC<CenterModalProps> = ({
         <Button {...defaultButtonStyles.primaryActionProps} loading={loading} />,
     ];
 
-    const footer = hideFooter || footerComponent || buttons.filter((button) => button);
+    const footer = footerComponent || <div className="w-full flex gap-3 justify-end">{buttons.filter((button) => button)}</div>;
 
     const header = headerComponent || title && (
-            <div className={`flex gap-2 w-full flex-col border-b border-stroke items-start justify-between mb-4 pb-4 ${headerRootClassName}`}>
+            <div className={`flex gap-2 w-full flex-col items-start justify-between ${headerRootClassName}`}>
                 <h2 className={`text-xl text-[${titleColor}] font-semibold ${titleClassName}`}>
                     {title}
                 </h2>
@@ -59,23 +61,20 @@ const CenterModal: React.FC<CenterModalProps> = ({
     );
 
     const classNames: ModalProps["classNames"] = {
-        footer: "flex items-center justify-end",
+        footer: "!hidden",
         mask: "!bg-[#00000099]",
-        content: "md:!rounded-2xl !rounded-none",
+        content: "flex flex-col !rounded-none md:!rounded-2xl !p-0 !m-0",
     };
 
     return (
         <Modal
             open={isOpen}
             onCancel={onClose}
-            footer={footer}
             zIndex={zIndex}
             width={width}
-            className={`custom-modal ${customClassName}`}
+            className={`custom-modal max-md:!w-screen md:!max-w-[95vw] max-md:!max-w-none max-md:!m-0 [&_.ant-modal-close]:!bg-transparent ${customClassName}`}
             classNames={classNames}
-            closeIcon={
-                <CloseOutlined className="hidden md:block text-gray-500 text-sm active:scale-90 transition-all duration-200" />
-            }
+            closeIcon={hideCloseIcon ? null : <ModalCloseIcon className="active:scale-90 transition-all duration-200" />}
             centered
             height={height}
             styles={{
@@ -85,12 +84,13 @@ const CenterModal: React.FC<CenterModalProps> = ({
                 },
             }}
         >
-            <div className={`flex w-full h-full md:h-screen lg:h-full flex-col ${rootClassName}`}>
-                {header}
+            <div className={cn("flex flex-col w-full h-full max-h-[100vh] max-w-screen md:max-h-[95vh] md:max-w-[95vw]", rootClassName)}>
+                {header && <div className="flex px-2 md:px-4 lg:px-6 py-2 md:py-4 border-b border-stroke flex-center">{header}</div>}
                 {/* Modal Content */}
-                <div className={`modal-body flex-1 max-md:pt-4 overflow-y-auto max-h-[93vh] bg-[#F4F7FB] md:bg-white md:max-h-[50vh] mb-4 no-scrollbar ${bodyClassName}`}>
+                <div className={`flex-1 px-2 md:px-4 lg:px-6 py-2 md:py-3 bg-white overflow-y-auto no-scrollbar md:max-h-[90vh] ${bodyClassName}`}>
                     {children}
                 </div>
+                {hideFooter || footer && <div className="flex px-2 md:px-4 lg:px-6 py-2 md:py-4 border-t border-stroke flex-center">{footer}</div>}
             </div>
         </Modal>
     );

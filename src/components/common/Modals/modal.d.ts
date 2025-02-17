@@ -20,6 +20,7 @@ interface CenterModalProps {
     primaryActionProps?: ButtonProps;
     secondaryActionProps?: ButtonProps;
     hideFooter?: boolean;
+    hideCloseIcon?: boolean;
     loading?: boolean;
     zIndex?: number;
 }
