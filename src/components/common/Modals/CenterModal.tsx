@@ -45,8 +45,8 @@ const CenterModal: React.FC<CenterModalProps> = ({
     };
 
     const buttons = [
-        <Button {...defaultButtonStyles.secondaryActionProps} />,
-        <Button {...defaultButtonStyles.primaryActionProps} loading={loading} />,
+        <Button key={1} {...defaultButtonStyles.secondaryActionProps} disabled={loading} />,
+        <Button key={2} {...defaultButtonStyles.primaryActionProps} loading={loading} disabled={loading} />,
     ];
 
     const footer = footerComponent || <div className="w-full flex gap-3 justify-end">{buttons.filter((button) => button)}</div>;
@@ -85,7 +85,7 @@ const CenterModal: React.FC<CenterModalProps> = ({
             }}
         >
             <div className={cn("flex flex-col w-full h-full max-h-[100vh] max-w-screen md:max-h-[95vh] md:max-w-[95vw]", rootClassName)}>
-                {header && <div className="flex px-2 md:px-4 lg:px-6 py-2 md:py-4 border-b border-stroke flex-center">{header}</div>}
+                {header && <div className="flex px-2 md:px-4 lg:px-6 py-2 md:py-4 lg:pt-5 border-b border-stroke flex-center">{header}</div>}
                 {/* Modal Content */}
                 <div className={`flex-1 px-2 md:px-4 lg:px-6 py-2 md:py-3 bg-white overflow-y-auto no-scrollbar md:max-h-[90vh] ${bodyClassName}`}>
                     {children}

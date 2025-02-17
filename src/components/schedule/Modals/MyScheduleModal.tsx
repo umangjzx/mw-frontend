@@ -224,7 +224,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
         <SideModal
             title="My Schedule"
             onClose={onClose}
-            saveButtonText="Save Changes"
+            saveButtonText="Save Schedule"
             cancelButtonText="Cancel"
             isOpen={isOpen}
             onSave={() => onSave({})}

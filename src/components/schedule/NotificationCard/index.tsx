@@ -95,7 +95,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ data }) => {
     });
 
     return (
-        <div className="flex flex-col gap-4 border rounded-xl p-4 border-[#E0E0E0] h-fit w-[360px]">
+        <div className="flex flex-col gap-4 border rounded-xl p-4 border-[#E0E0E0] h-fit min-w-[250px] md:w-[360px]">
             <div className="flex items-center gap-2">
                 <div>
                     <Image src={data?.learner_picture?.image_url || DummyProfileImg} alt="notification" width={40} height={40} className="h-[40px] w-[40px] object-cover rounded-full" />
@@ -159,6 +159,35 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ data }) => {
                 >
                     Accept
                 </Button>
+            </div>
+        </div>
+    );
+};
+
+export const NotificationCardSkeleton = () => {
+    return (
+        <div className="flex flex-col gap-4 border rounded-xl p-4 border-[#E0E0E0] h-fit min-w-[250px] md:w-[360px] animate-pulse">
+            <div className="flex items-center gap-2">
+                <div className="h-[40px] w-[40px] rounded-full bg-gray-300"></div>
+                <div className="h-[16px] w-3/4 rounded-full bg-gray-300"></div>
+            </div>
+            <div className="flex gap-2 items-center justify-between">
+                <div className="flex flex-col gap-1">
+                    <div className="h-3 w-10 rounded-full bg-gray-300"></div>
+                    <div className="h-2 w-20 rounded-full bg-gray-300"></div>
+                </div>
+                <div className="flex flex-col gap-1">
+                    <div className="h-3 w-10 rounded-full bg-gray-300"></div>
+                    <div className="h-2 w-20 rounded-full bg-gray-300"></div>
+                </div>
+                <div className="flex flex-col gap-1">
+                    <div className="h-3 w-10 rounded-full bg-gray-300"></div>
+                    <div className="h-2 w-20 rounded-full bg-gray-300"></div>
+                </div>
+            </div>
+            <div className="flex justify-between items-center gap-3">
+                <div className="h-6 w-1/2 rounded-full bg-gray-300"></div>
+                <div className="h-6 w-1/2 rounded-full bg-gray-300"></div>
             </div>
         </div>
     );

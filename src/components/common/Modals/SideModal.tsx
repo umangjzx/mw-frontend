@@ -45,6 +45,7 @@ const SideModal: React.FC<SideModalProps> = ({
                                 <Button
                                     onClick={onCancel}
                                     title={cancelButtonText}
+                                    disabled={isLoading}
                                     className="w-fit px-4 py-2 !text-sm !text-black !bg-white !border !border-stroke-light rounded-xl"
                                 />
                                 <Button

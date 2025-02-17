@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { Input } from "@/components/common/Input";
 import CenterModal from "@/components/common/Modals/CenterModal";
-import MobileSideModal from "@/components/common/Modals/MobileSideModal";
 import { useEffect, useState, useMemo } from "react";
 import Cookies from "js-cookie";
 import { Controller, useForm } from "react-hook-form";
