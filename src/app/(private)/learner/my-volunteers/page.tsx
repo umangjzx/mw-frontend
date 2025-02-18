@@ -33,14 +33,14 @@ interface TableVolunteer {
     subject: string;
 }
 
-const VolunteerCard = ({ learner, handleTestimonial, handleMessage }: { learner: any, handleTestimonial: () => void, handleMessage: () => void }) => {
-    const { profileImage = "image_url", name = "", classesTaken = "", location = "" } = learner;
+const VolunteerCard = ({ volunteer, handleMessage }: { volunteer: any, handleMessage: () => void }) => {
+    const { profile_picture = "", name = "", classesTaken = "", country = "" } = volunteer;
     return (
         <div className="bg-white rounded-xl w-full p-4 space-y-4">
             <div className="flex items-center gap-2">
                 <div className="w-[40px] h-[40px] rounded-full relative">
                     <Image
-                        src={profileImage !== "image_url" ? profileImage : DummyProfile}
+                        src={profile_picture?.image_url ? profile_picture?.image_url : DummyProfile}
                         alt="avatar"
                         fill
                         className="w-full h-full object-cover rounded-full"
@@ -48,12 +48,12 @@ const VolunteerCard = ({ learner, handleTestimonial, handleMessage }: { learner:
                 </div>
                 <div className="flex flex-col">
                     <p className="text-base font-semibold">{name}</p>
-                    <p className="text-sm font-medium">{location && `From ${location}`}</p>
+                    <p className="text-sm font-medium">{country && `From ${country}`}</p>
                 </div>
             </div>
             <div className="flex flex-col gap-1">
                 <div className="flex flex-wrap gap-1">
-                    <CardChips label="Classes Taken" value={classesTaken || "0"} />
+                    <CardChips label="Classes Taken" value={classesTaken || "-"} />
                 </div>
                 <div className="w-full border-t pt-3 mt-3 flex justify-between gap-2">
                     {/* <Button
@@ -107,7 +107,9 @@ export default function VolunteerPage() {
             const transformedData = volunteers.items.map((volunteer: any) => ({
                 id: volunteer.volunteer_id,
                 name: `${volunteer.volunteer_name}`,
-                classesTaken: volunteer.total_sessions
+                classesTaken: volunteer.total_sessions,
+                country: volunteer.country,
+                profile_picture: volunteer.profile_picture,
             }));
             setVolunteerData(transformedData);
             setTotal(volunteers.total);
@@ -178,9 +180,8 @@ export default function VolunteerPage() {
                                 volunteerData.map((volunteer, index) => (
                                     <VolunteerCard
                                         key={index}
-                                        learner={volunteer}
+                                        volunteer={volunteer}
                                         handleMessage={() => handleMessageVolunteer(volunteer?.id)}
-                                        handleTestimonial={() => handleUploadTestimonial(volunteer?.id)}
                                     />
                                 ))
                             }
