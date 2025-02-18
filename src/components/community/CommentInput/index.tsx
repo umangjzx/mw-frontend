@@ -6,6 +6,7 @@ interface CommentInputProps {
     name: string;
     value: string;
     onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    loading?: boolean;
     disabled: boolean;
     inputClassName: string;
     onPost: () => void;
@@ -15,6 +16,7 @@ const CommentInput = ({
     name,
     value,
     onChange,
+    loading,
     disabled,
     inputClassName,
     onPost,
@@ -41,7 +43,7 @@ const CommentInput = ({
                 onClick={onPost}
                 disabled={!value || disabled}
             >
-                Post
+                {loading ? "Posting..." : "Post"}
             </button>
         </div>
     );

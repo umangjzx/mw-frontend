@@ -4,7 +4,7 @@ import Button from "@/components/common/Button";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { useRef } from "react";
 import { cn } from "@/utils/merge-class";
-import LottieLoader from "@/components/common/Loader/Lottie";
+import { CardSkeleton } from "../Card";
 
 const SCROLL_AMOUNT = 300;
 
@@ -79,18 +79,23 @@ const SectionWrapper = ({
                             {placeHolderComponent}
                         </div>
                     )}
-                    {isLoading && (
-                        <div className="min-w-full min-h-[80vh] md:min-w-[259px] md:min-h-[313px] h-full w-full flex-center">
-                            <LottieLoader isLoading={isLoading} />
+                    {isLoading ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 w-full">
+                            {Array.from({ length: 5 }).map((_, index) => (
+                                <CardSkeleton key={index} />
+                            ))}
                         </div>
-                    )}
-                    {!isLoading &&
-                        Array.isArray(data) &&
-                        data.map((item, index) => <>{renderItem(item, index)}</>)}
-                    {!isLoading && data?.length === 0 && (
-                        <span className="min-w-[250px] min-h-[275px] h-full w-full flex-center">
-                            No Resource Found
-                        </span>
+                    ) : (
+                        <>
+                            {data?.length === 0 ? (
+                                <span className="min-w-[250px] min-h-[275px] h-full w-full flex-center">
+                                    No Resource Found
+                                </span>
+                            ) : (
+                                Array.isArray(data) &&
+                                data.map((item, index) => <>{renderItem(item, index)}</>)
+                            )}
+                        </>
                     )}
                 </div>
             </div>

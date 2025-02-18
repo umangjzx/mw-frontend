@@ -32,6 +32,7 @@ export default function ResourcesPage() {
     const pathname = usePathname();
     const { width } = useWindowSize();
     const isMobile = width < 768;
+    const isTabletScreen = width < 1024;
 
     const [category, setCategory] = useQueryState("category");
     const [_, setId] = useQueryState("id");
@@ -44,18 +45,23 @@ export default function ResourcesPage() {
     const [reportModalResourceId, setReportModalResourceId] = useState("");
 
     const { data: MyResources, refetch } = useQuery({
-        queryKey: ["my-resource"],
-        queryFn: getMyResources,
+        queryKey: ["my-resources", searchQuery],
+        queryFn: async () => {
+            const myResources = await getMyResources({ query: searchQuery || "" });
+            return myResources?.items || [];
+        },
+        enabled: category === "my-resources",
     });
 
     const { isFetching } = useQuery({
-        queryKey: ["resources", searchQuery, category],
+        queryKey: ["resources", searchQuery],
         queryFn: async () => {
             setResources([]);
             const allResources = await getResources({ query: searchQuery || "" });
-            setResources(allResources?.items);
+            setResources(allResources?.items || []);
             return allResources;
         },
+        enabled: !category,
     });
 
     const { data: ResourceCategories, isFetching: isFetchingCategories } = useQuery({
@@ -65,10 +71,6 @@ export default function ResourcesPage() {
             return categories?.data;
         },
     });
-
-    const topicSingleTitle = useMemo(() => {
-        return ResourceCategories?.find((topic: any) => topic?.category_id === category)?.category_name;
-    }, [category, ResourceCategories]);
 
     const handleTopicClick = (title: string) => setCategory(title);
     const handleMyResourcesClick = () => setCategory("my-resources");
@@ -107,10 +109,14 @@ export default function ResourcesPage() {
         setReportModalResourceId("");
     };
 
+    const topicSingleTitle = useMemo(
+        () => ResourceCategories?.find((topic: any) => topic?.category_id === category)?.category_name,
+        [ResourceCategories, category]
+    );
+
     // Header setup
     useEffect(() => {
-        const categoryTitle = ResourceCategories?.find((topic: any) => topic?.category_id === category)?.category_name;
-        const headerTitle = (category && categoryTitle) || "Resources";
+        const headerTitle = topicSingleTitle || "Resources";
         const titleIcon = category !== null ? <IoIosArrowBack className="text-lg" /> : getHeaderIcon(pathname);
 
         setHeaderOptions({
@@ -157,7 +163,11 @@ export default function ResourcesPage() {
                 />
             )}
 
-            {isMobile && !category && (
+            {/* Topics Section */}
+            {isTabletScreen && activeTab === "topics" && ResourceCategories?.length <= 0 && (
+                <div className="h-full w-full flex-center">No Topics Found</div>
+            )}
+            {isTabletScreen && !category && (
                 <div className="overflow-x-auto flex gap-2 pb-4 hide-scrollbar md:hidden">
                     {TabData.map((tab) => (
                         <button
@@ -198,9 +208,9 @@ export default function ResourcesPage() {
                     isLoading={isFetching}
                     title={!isMobile && category === null ? "Resources" : undefined}
                     renderItem={(item, index) => (
-                        <div className="lg:w-[250px]">
+                        <div className="w-full md:w-[250px]">
                             <Card
-                                className="w-full"
+                                className="!w-full"
                                 imgClassName=""
                                 key={item?.resource_id || index}
                                 resource={item}
@@ -212,12 +222,13 @@ export default function ResourcesPage() {
                 />
             )}
 
+            {/* My Resources Section */}
             {category === "my-resources" && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 md:p-6">
                     <div className="w-full col-span-1">
                         <AddResourceCard handleClick={handleAddResourceClick} />
                     </div>
-                    {MyResources?.items?.map((resource: any, index: number) => (
+                    {MyResources?.map((resource: any, index: number) => (
                         <div key={resource?.resource_id || index} className="col-span-1">
                             <Card
                                 resource={resource}

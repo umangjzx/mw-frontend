@@ -24,9 +24,10 @@ export default function SchedulePage() {
     const [isOpenFeedback, setIsOpenFeedback] = useState(false);
     const queryClient = useQueryClient();
 
-    const isMobileScreen = InnerWidth() < 768;
-
+    
     const router = useRouter();
+    const isMobileOrTabScreen = InnerWidth() < 1024;
+
     const { eventDetails, currentMonth } = useAppStore();
 
     const [modal] = useQueryState("modal");
@@ -77,7 +78,7 @@ export default function SchedulePage() {
             ) : (
                 <>
                     {
-                        isMobileScreen ?
+                        isMobileOrTabScreen ?
                             <MobileCalender events={data || []} />
                             :
                             <Calendar events={data || []} />

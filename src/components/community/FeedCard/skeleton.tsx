@@ -30,7 +30,7 @@ const PostSkeleton = ({ size = 3 }: { size?: number }) => {
                     </div>
 
                     {/* Post Content */}
-                    <div className="mt-2 md:mt-3 lg:mt-0 md:!pl-[50px]">
+                    <div className="mt-2 md:mt-3 lg:mt-0 lg:!pl-[50px]">
                         {/* Text Content */}
                         <div className="p-2 md:px-0">
                             <div className="h-4 w-full bg-gray-300 rounded mb-2" />

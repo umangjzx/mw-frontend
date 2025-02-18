@@ -42,7 +42,7 @@ const CommunityPostModal = ({ isOpen, onClose }: CommunityPostModalProps) => {
         control,
         handleSubmit,
         formState: { errors },
-        reset
+        reset,
     } = useForm<FormData>({
         resolver: zodResolver(PostFormSchema),
         defaultValues: { description: "", images: [] },
@@ -69,8 +69,8 @@ const CommunityPostModal = ({ isOpen, onClose }: CommunityPostModalProps) => {
     });
 
     const handlePostAction = async (
-        actionFn: () => Promise<any>, 
-        successMessage: string, 
+        actionFn: () => Promise<any>,
+        successMessage: string,
         errorMessage: string
     ) => {
         setIsSubmitting(true);
@@ -95,15 +95,25 @@ const CommunityPostModal = ({ isOpen, onClose }: CommunityPostModalProps) => {
     const onSubmit = (data: FormData) => {
         const payload = {
             description: data.description,
-            images: data?.images?.map(image => ({ image_url: image.image_url, image_id: image.image_id })),
+            images: data?.images?.map((image) => ({
+                image_url: image.image_url,
+                image_id: image.image_id,
+            })),
             created_by: role,
         };
 
         handlePostAction(
-            () => (isEditMode ? PUT_API(endpoints.post.updatePost(postId || ""), payload) : POST_API(endpoints.post.createPost, payload)),
+            () =>
+                isEditMode
+                    ? PUT_API(endpoints.post.updatePost(postId || ""), payload)
+                    : POST_API(endpoints.post.createPost, payload),
             isEditMode ? "Post updated successfully" : "Post created successfully",
             isEditMode ? "Failed to update post" : "Failed to create post"
         );
+    };
+
+    const onError = () => {
+        showToast({ message: "Please, fill all the required fields!", type: "error" });
     };
 
     const { width } = useWindowSize();
@@ -118,18 +128,23 @@ const CommunityPostModal = ({ isOpen, onClose }: CommunityPostModalProps) => {
             onClose={onClose}
             width={isMobile ? "100%" : isTablet ? "70%" : "40%"}
             height={isMobile ? "100dvh" : "auto"}
-            customClassName={cn(
-                "md:max-h-screen overflow-hidden [&_.ant-modal-footer]:!mt-0 [&_.modal-body]:!border-b",
-                isMobile
-                    ? "[&_.ant-modal-content]:!p-0 !p-0 !m-0 !h-[100dvh] !max-h-none !w-screen !max-w-none rounded-none bg-background-input"
-                    : "!rounded-2xl"
-            )}
+            customClassName="lg:min-w-[700px]"
             rootClassName="md:!h-auto"
-            bodyClassName="max-md:!max-h-none max-md:!p-0 max-md:!m-0"
+            bodyClassName="max-md:!max-h-none max-md:!p-0 max-md:!m-0 max-md:!bg-background-input"
             headerRootClassName="md:mb-0 md:pb-2"
             headerComponent={
-                isMobile && <FeedHeader title={isEditMode ? "Edit Post" : "Add New Post"} onClose={onClose} onSave={handleSubmit(onSubmit)} isSubmitting={isSubmitting} />
+                isMobile && (
+                    <FeedHeader
+                        title={isEditMode ? "Edit Post" : "Add New Post"}
+                        mode={currentMode || ""}
+                        rootClassName="!w-full !p-1"
+                        onClose={onClose}
+                        onSave={handleSubmit(onSubmit, onError)}
+                        isSubmitting={isSubmitting}
+                    />
+                )
             }
+            hideCloseIcon={isMobile}
             hideFooter={isMobile}
             secondaryActionProps={{
                 onClick: onClose,
@@ -139,9 +154,15 @@ const CommunityPostModal = ({ isOpen, onClose }: CommunityPostModalProps) => {
                 customClassName: cn("bg-transparent !text-black", "!rounded-xl"),
             }}
             primaryActionProps={{
-                onClick: handleSubmit(onSubmit),
+                onClick: handleSubmit(onSubmit, onError),
                 disabled: isSubmitting,
-                title: isSubmitting ? (isEditMode ? "Saving..." : "Creating...") : isEditMode ? "Save" : "Create",
+                title: isSubmitting
+                    ? isEditMode
+                        ? "Saving..."
+                        : "Creating..."
+                    : isEditMode
+                    ? "Save"
+                    : "Create",
                 customClassName: "!rounded-xl hover:!bg-black hover:!text-white",
             }}
         >
@@ -150,14 +171,23 @@ const CommunityPostModal = ({ isOpen, onClose }: CommunityPostModalProps) => {
                     <LottieLoader isLoading={true} customClassName="!w-[6rem] !h-[6rem]" />
                 </div>
             ) : (
-                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 md:gap-2 lg:gap-0 p-4 md:p-0 md:py-2">
+                <form
+                    onSubmit={handleSubmit(onSubmit, onError)}
+                    className="flex flex-col gap-4 md:gap-2 lg:gap-0 p-4 md:p-0 md:py-2"
+                >
                     {CommunityFormConstants.map((field: any) => (
                         <Controller
                             key={field.name}
                             name={field.name as keyof FormData}
                             control={control}
                             render={({ field: { value, onChange } }) => (
-                                <Input {...field} error={errors[field.name as keyof FormData]?.message} value={value} onChange={onChange} rootClassName="bg-white p-4 md:p-2 rounded-xl !mb-0" />
+                                <Input
+                                    {...field}
+                                    error={errors[field.name as keyof FormData]?.message}
+                                    value={value}
+                                    onChange={onChange}
+                                    rootClassName="bg-white p-4 md:p-2 rounded-xl !mb-0"
+                                />
                             )}
                         />
                     ))}

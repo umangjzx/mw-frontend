@@ -72,7 +72,7 @@ const MessageModal = ({ receiverId, isOpen, onClose }: MessageModalProps) => {
         setMessages(data?.items)
         return data;
     }
-    const { data: userMessages, isFetching } = useQuery({ queryKey: [userRole, "messages"], queryFn: getUserMessages })
+    const { isFetching } = useQuery({ queryKey: [userRole, "messages"], queryFn: getUserMessages })
 
     const handleSubmit = async (message: string) => {
         if (!message) return;
@@ -91,17 +91,17 @@ const MessageModal = ({ receiverId, isOpen, onClose }: MessageModalProps) => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
-    }, [messages]);
+    }, [messages, isFetchingUser]);
 
     const headerComponent = isFetchingUser ?
-        <div className="flex gap-2 w-full border-b border-stroke items-center mb-4 pb-4 animate-pulse">
+        <div className="flex gap-2 w-full items-center animate-pulse">
             <div className="h-[50px] w-[50px] bg-gray-200 rounded-full dark:bg-gray-700"></div>
             <div>
                 <div className="h-[15px] w-[160px] bg-gray-200 rounded-full dark:bg-gray-500 mb-2"></div>
                 <div className="h-[10px] w-[200px] bg-gray-200 rounded-full dark:bg-gray-500"></div>
             </div>
         </div> :
-        <div className="flex gap-2 w-full border-b border-stroke items-center mb-4 pb-4">
+        <div className="flex gap-2 w-full items-center">
             <img src={userData?.profile_picture} alt={userData?.fullName} className="h-[50px] w-[50px] object-cover border rounded-full" />
             <div>
                 <h5 className="font-medium !text-xl">{userData?.fullName}</h5>
@@ -110,7 +110,7 @@ const MessageModal = ({ receiverId, isOpen, onClose }: MessageModalProps) => {
         </div>
 
     const footerComponent = <>
-        <div className="flex gap-2 w-full border-t border-stroke items-end mt-0 pt-4">
+        <div className="flex gap-2 w-full items-end">
             <Input name="message" className="!mb-0" inputClassName="!text-md !max-h-[80px]" inputType="textarea" placeholder="Type message here" 
                 onChange={(e) => setMessage(e.toString())}
                 onKeyDown={(event: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -141,12 +141,12 @@ const MessageModal = ({ receiverId, isOpen, onClose }: MessageModalProps) => {
             headerComponent={headerComponent}
             footerComponent={footerComponent}
         >
-            <div className="flex flex-col gap-3 min-h-[40vh] overflow-y-auto">
+            <div className="flex flex-col gap-3 min-h-[60vh] overflow-y-auto">
                 {isFetchingUser || isFetching ?
-                    <div className="!h-[40vh] !w-full">
+                    <div className="!h-[60vh] !w-full">
                         <Loader size="large" />
                     </div> :
-                    messages?.length === 0 && <div className="flex-center !h-[40vh] !w-full">No Message Found</div>
+                    messages?.length === 0 && <div className="flex-center !h-[60vh] !w-full">No Message Found</div>
                 }
                 {!isFetchingUser && !isFetching && Array.isArray(messages) &&
                     messages.map((message: MessageProps, index: number) => (

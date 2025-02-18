@@ -24,7 +24,7 @@ const ViewModal: React.FC<ViewModalProps> = ({
     borderRadius,
     showCloseIcon = false,
 }) => {
-    const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 
     return (
         <Modal

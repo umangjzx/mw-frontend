@@ -42,7 +42,7 @@ const CommonHeader: React.FC = () => {
     }, [pathname])
 
     const handleSearch = (value: string) => {
-        setSearchQuery(value === "" ? "" : value);
+        setSearchQuery(value === "" ? null : value);
     };
 
     return (

@@ -171,7 +171,7 @@ const NotificationSection: React.FC = () => {
     if (isError) return (<ErrorMsg />);
 
     return (
-        <div ref={containerRef} className="flex flex-col h-full overflow-y-auto p-4 lg::p-0 no-scrollbar">
+        <div ref={containerRef} className="flex flex-col h-full overflow-y-auto p-4 md:p-0 no-scrollbar">
             <h2 className="text-xl font-medium max-md:hidden mb-4">Notifications</h2>
             {isFetching ? (
                 <NotificationSkeleton size={10} />

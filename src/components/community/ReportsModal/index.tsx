@@ -4,7 +4,7 @@ import CenterModal from "@/components/common/Modals/CenterModal";
 import { cn } from "@/utils/merge-class";
 import { useEffect, useState } from "react";
 
-import { showToast } from "@/components/common/Toast";
+import { callbackToast, showToast } from "@/components/common/Toast";
 import { Radio } from "antd";
 import { POST_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
@@ -37,7 +37,7 @@ const CommunityReportModal = ({ postId, isOpen, onClose }: CommunityReportModalP
         let message = "";
 
         if (!reportType) message = "Please, select the report";
-        if (reportType === "others" && !reportDescription) message = "Description is required";
+        if (reportType === "others" && !reportDescription) message = "Please, fill the report details";
         if (!postId) message = "Post ID is missing";
 
         if (message) {
@@ -51,34 +51,33 @@ const CommunityReportModal = ({ postId, isOpen, onClose }: CommunityReportModalP
             report_type: "post",
             report_description: reportDescription,
         };
-
-        try {
-            const { status } = await POST_API(endpoints.report.create, payload);
-            const isSuccess = status === 201;
-            showToast({
-                type: isSuccess ? "success" : "error",
-                message: isSuccess ? "Report Submitted!" : "Report Not Submitted!",
-            });
-
-            if (isSuccess) onClose();
-        } catch (error) {
+        
+        await callbackToast({
+            apiCall: POST_API(endpoints.report.create, payload),
+            loadingMsg: "Submitting Report",
+            successMsg: "Report Submitted!",
+            errorMsg: "Report Not Submitted!",
+        }).then(() => {
+            onClose();
+        }).catch(() => {
             showToast({ type: "error", message: "Something went wrong!" });
-        } finally {
-            setIsSubmitting(false);
-        }
+        });
+        setIsSubmitting(false);
     };
 
     const buttonProps = {
         secondary: {
             onClick: onClose,
             title: "Cancel",
-            btnVariant: "secondary",
-            customClassName: cn("!bg-transparent !text-black", "!rounded-xl"),
+            btnVariant: "tertiary",
+            customClassName: "!rounded-xl",
+            disabled: isSubmitting,
         },
         primary: {
             onClick: handleSubmit,
             title: isSubmitting ? "Submiting Report" : "Submit Report",
-            customClassName: "!rounded-xl hover:!bg-black hover:!text-white",
+            btnVariant: "secondary",
+            customClassName: "!rounded-xl",
             disabled: isSubmitting,
         },
     };
@@ -91,7 +90,7 @@ const CommunityReportModal = ({ postId, isOpen, onClose }: CommunityReportModalP
             onClose={onClose}
             width="40%"
             loading={isSubmitting}
-            customClassName="md:max-h-[80vh] !rounded-2xl overflow-hidden !z-[2000] "
+            customClassName="md:max-h-[80vh] !rounded-2xl overflow-hidden max-md:!w-[95%] md:!min-w-[500px] lg:!min-w-[40%]"
             secondaryActionProps={buttonProps.secondary}
             primaryActionProps={buttonProps.primary}
         >

@@ -1,51 +1,63 @@
 import { getResourcesByCategory } from "@/api/resources";
-import LottieLoader from "@/components/common/Loader/Lottie";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
 import React from "react";
-import Card from "../Card";
+import Card, { CardSkeleton } from "../Card";
 
-type CategorySectionProps = {   
+type CategorySectionProps = {
     topicSingleTitle: string;
     isFetching?: boolean;
     handleViewOrEditResource: (mode: ShowModalType, resourceId: string) => void;
 };
 
 const CategorySection = ({ topicSingleTitle, handleViewOrEditResource }: CategorySectionProps) => {
-    const [category, setCategory] = useQueryState("category");
+    const [category] = useQueryState("category");
+    const [searchQuery] = useQueryState("query");
 
     const { data: categories, isFetching } = useQuery({
-        queryKey: ["resources-by-category", category],
+        queryKey: ["resources-by-category", category, searchQuery],
         queryFn: async () => {
-            const resources = await getResourcesByCategory(category || "");
-            return resources;
+            const resources = await getResourcesByCategory(category || "", {
+                query: searchQuery || "",
+            });
+            return resources?.items || [];
         },
     });
+
     return (
-        <div className="flex flex-col md:p-5">
+        <div className="flex flex-col px-5">
             <h2 className="mb-5 lg:mb-8 font-medium text-xl">
                 Resources {">"} {topicSingleTitle}
             </h2>
-            {isFetching && (
-                <div className="min-w-full min-h-[80vh] md:min-w-[259px] md:min-h-[313px] h-full w-full flex-center">
-                    <LottieLoader isLoading={isFetching} />
+            {isFetching ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                    {Array.from({ length: 10 }).map((_, index) => (
+                        <CardSkeleton key={index} />
+                    ))}
                 </div>
-            )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {categories?.map((resource: any, index: number) => (
-                    <div key={resource?.resource_id || index} className="col-span-1">
-                        <Card
-                            resource={resource}
-                            className="w-full h-full"
-                            onClick={() => handleViewOrEditResource("view", resource?.resource_id)}
-                        />
+            ) : (
+                <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {categories &&
+                            categories?.length > 0 &&
+                            categories?.map((resource: any, index: number) => (
+                                <div key={resource?.resource_id || index} className="col-span-1">
+                                    <Card
+                                        resource={resource}
+                                        className="w-full h-full"
+                                        onClick={() =>
+                                            handleViewOrEditResource("view", resource?.resource_id)
+                                        }
+                                    />
+                                </div>
+                            ))}
                     </div>
-                ))}
-            </div>
-            {!isFetching && categories?.length === 0 && (
-                <span className="min-w-[250px] min-h-[275px] h-full w-full flex-center">
-                    No Resource Found
-                </span>
+                    {categories?.length === 0 && (
+                        <span className="min-w-[250px] min-h-[275px] h-full w-full flex-center">
+                            No Resource Found
+                        </span>
+                    )}
+                </>
             )}
         </div>
     );

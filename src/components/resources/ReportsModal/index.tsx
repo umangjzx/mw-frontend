@@ -91,9 +91,12 @@ const ResourceReportModal = ({ resourceId, isOpen, onClose }: ResourceReportModa
             zIndex={2000}
             isOpen={isOpen}
             onClose={onClose}
-            width={isMobile ? "100%" : isTablet ? "60%" : "40%"}
+            width={isMobile ? "95%" : isTablet ? "60%" : "40%"}
             loading={isSubmitting}
-            customClassName="max-h-[80vh] !rounded-2xl overflow-hidden !z-[2000]"
+            customClassName="max-h-[80vh] !rounded-2xl overflow-hidden max-md:!max-w-[95vw]"
+            headerClassName="max-md:!p-3"
+            bodyClassName="max-md:!p-3"
+            footerClassName="max-md:!p-3"
             secondaryActionProps={buttonProps.secondary}
             primaryActionProps={buttonProps.primary}
         >

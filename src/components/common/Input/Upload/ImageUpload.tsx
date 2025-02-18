@@ -90,7 +90,7 @@ const ImageUpload: React.FC<BaseUploaderProps> = ({ ...props }) => {
                 </div>
             }
 
-            {(value?.length < maxFiles || isLoading) && (
+            {((maxFiles === 1 && !value?.image_url) || value?.length < maxFiles || isLoading) && (
                 <Button
                     onClick={isLoading || handleClick}
                     disabled={disabled}
@@ -100,7 +100,7 @@ const ImageUpload: React.FC<BaseUploaderProps> = ({ ...props }) => {
                     )}
                 >
                     {isLoading ?
-                        <LottieLoader isLoading={true} customClassName={maxFiles === 1 ? "" : "!w-full !h-full"} /> :
+                        <LottieLoader isLoading={true} customClassName={maxFiles === 1 ? "lg:w-[5rem] lg:h-[5rem]" : "!w-full !h-full"} /> :
                         <BiPlus className="text-2xl text-black bg-stroke rounded-full" />
                     }
                 </Button>
