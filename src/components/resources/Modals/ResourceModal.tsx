@@ -33,7 +33,7 @@ type ResourceActionProps = {
 };
 
 const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: ResourceModalProps) => {
-    const { learnerName, volunteerName } = useAppStore();
+    const { userName } = useAppStore();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const role = Cookies.get("role");
@@ -63,12 +63,12 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
     });
 
     useEffect(() => {
-        setValue("created_by", role === "learner" ? learnerName : volunteerName);
+        setValue("created_by", userName || role || "");
     }, [currentMode, resourceId]);
 
     useEffect(() => {
         if (currentMode === "create") {
-            reset({...ResourceFormDefaultValues});
+            reset({...ResourceFormDefaultValues, created_by: userName || role || ""});
         }
     }, [currentMode, reset]);
 
