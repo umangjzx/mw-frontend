@@ -198,7 +198,7 @@ const DetailModal = ({
                         </div>
                     </div>
                     <div
-                        className={`flex flex-col gap-4 px-8 py-4 overflow-y-auto ${
+                        className={`flex flex-col gap-4 px-4 md:px-6 lg:px-8 py-4 overflow-y-auto ${
                             isMobile ? "flex-1 pb-8" : ""
                         }`}
                     >

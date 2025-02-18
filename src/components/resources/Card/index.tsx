@@ -21,7 +21,7 @@ const Card = ({ className, imgClassName, resource, onClick, handleReportClick }:
         <div
             className={`w-[359px] md:w-[259px] md:h-[313px] rounded-xl shadow-md border border-[#f7f7f7] flex flex-col justify-between ${className}`}
         >
-            <div className="w-full h-[120px] relative">
+            <div className="w-full h-[150px] md:h-[135px] lg:h-[120px] relative">
                 <span className="absolute top-2 right-2 flex items-center gap-1 text-white z-10">
                     <TrendArrow />
                     <span className="text-[0.75rem] font-medium text-white">
@@ -101,8 +101,8 @@ const Card = ({ className, imgClassName, resource, onClick, handleReportClick }:
 
 export const CardSkeleton = () => {
     return (
-        <div className=" md:max-h-[313px] !w-full rounded-xl shadow-md border border-[#f7f7f7] flex flex-col justify-between">
-            <div className="w-full h-[120px] relative">
+        <div className="md:max-h-[313px] !w-full rounded-xl shadow-md border border-[#f7f7f7] flex flex-col justify-between">
+            <div className="w-full h-[150px] lg:h-[120px] relative">
                 <div className="w-full h-full bg-gray-400 animate-pulse rounded-t-xl" />
             </div>
             <div className="flex flex-col p-3 gap-4 flex-grow">

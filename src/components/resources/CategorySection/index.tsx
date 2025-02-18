@@ -25,7 +25,7 @@ const CategorySection = ({ topicSingleTitle, handleViewOrEditResource }: Categor
     });
 
     return (
-        <div className="flex flex-col px-5">
+        <div className="flex flex-col md:px-5">
             <h2 className="mb-5 lg:mb-8 font-medium text-xl">
                 Resources {">"} {topicSingleTitle}
             </h2>
