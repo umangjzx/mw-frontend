@@ -40,6 +40,9 @@ const Uploader = ({ maxFiles = 1, ...props }: UploadProps) => {
     });
 
     const handleClick = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
         fileInputRef.current?.click();
     };
 
@@ -67,8 +70,8 @@ const Uploader = ({ maxFiles = 1, ...props }: UploadProps) => {
     };
 
     const handleRemove = (index: number, type?: string, image_id?: string) => {
-        if(!confirm("Are you sure?")) return null;
-        
+        if (!confirm("Are you sure?")) return null;
+
         if (type === "image/*") {
             DELETE_API(
                 endpoints.media_uploader.deleteImage((imageId as string) || (image_id as string))

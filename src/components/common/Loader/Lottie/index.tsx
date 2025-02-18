@@ -30,7 +30,7 @@ const LottieLoader: React.FC<Props> = ({ isLoading, customClassName, zIndex }) =
                 <div
                     style={{ zIndex: zIndex || "1" }}
                     className="w-full h-full flex-center">
-                    <div className={`w-[6rem] md:w-[8rem] lg:w-[9rem] h-[6rem] md:h-[8rem] lg:h-[9rem] ${customClassName}`}>
+                    <div className={`w-[6rem] md:w-[8rem] lg:w-[9rem] h-[6rem] md:h-[8rem] lg:h-[9rem] flex-center ${customClassName}`}>
                         <Lottie
                             loop
                             play

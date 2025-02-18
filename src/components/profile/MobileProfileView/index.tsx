@@ -187,7 +187,7 @@ const ReviewsContent = ({ userFeedback }: { userFeedback: any }) => {
                     <div className="bg-white rounded-xl p-3">
                         <div className="flex justify-between">
                             <p className="text-base font-semibold md:hidden">Reviews</p>
-                            <p className="text-gray text-sm">Sort By: <span className="text-black">Recently added</span></p>
+                            {/* <p className="text-gray text-sm">Sort By: <span className="text-black">Recently added</span></p> */}
                         </div>
                         <div className="flex flex-col gap-5 divide-y">
                             {ratingCardData?.map((item: any, index: number) => (
