@@ -44,18 +44,23 @@ export default function ResourcesPage() {
     const [reportModalResourceId, setReportModalResourceId] = useState("");
 
     const { data: MyResources, refetch } = useQuery({
-        queryKey: ["my-resource"],
-        queryFn: getMyResources,
+        queryKey: ["my-resources", searchQuery],
+        queryFn: async () => {
+            const myResources = await getMyResources({ query: searchQuery || "" });
+            return myResources?.items || [];
+        },
+        enabled: category === "my-resources",
     });
 
     const { isFetching } = useQuery({
-        queryKey: ["resources", searchQuery, category],
+        queryKey: ["resources", searchQuery],
         queryFn: async () => {
             setResources([]);
-            const resources = await getResources({ query: searchQuery || "" });
-            setResources(resources?.items);
-            return resources;
+            const allResources = await getResources({ query: searchQuery || "" });
+            setResources(allResources?.items || []);
+            return allResources;
         },
+        enabled: !category,
     });
 
     const { data: ResourceCategories, isFetching: isFetchingCategories } = useQuery({
@@ -65,11 +70,6 @@ export default function ResourcesPage() {
             return categories?.data;
         },
     });
-
-    const topicSingleTitle = useMemo(() => {
-        return ResourceCategories?.find((topic: any) => topic?.category_id === category)
-            ?.category_name;
-    }, [category, ResourceCategories]);
 
     const handleTopicClick = (title: string) => setCategory(title);
     const handleMyResourcesClick = () => setCategory("my-resources");
@@ -108,11 +108,13 @@ export default function ResourcesPage() {
         setReportModalResourceId("");
     };
 
+    const topicSingleTitle = useMemo(
+        () => ResourceCategories?.find((topic: any) => topic?.category_id === category)?.category_name,
+        [ResourceCategories, category]
+    );
+
     useEffect(() => {
-        const categoryTitle = ResourceCategories?.find(
-            (topic: any) => topic?.category_id === category
-        )?.category_name;
-        const headerTitle = (category && categoryTitle) || "Resources";
+        const headerTitle = topicSingleTitle || "Resources";
         const titleIcon =
             category !== null ? <IoIosArrowBack className="text-lg" /> : getHeaderIcon(pathname);
 
@@ -161,6 +163,10 @@ export default function ResourcesPage() {
                 />
             )}
 
+            {/* Topics Section */}
+            {isTabletScreen && activeTab === "topics" && ResourceCategories?.length <= 0 && (
+                <div className="h-full w-full flex-center">No Topics Found</div>
+            )}
             {/* Tab Section */}
             {isTabletScreen && !category && (
                 <div className="overflow-x-auto  flex gap-2 pb-4 hide-scrollbar md:hidden">
@@ -180,10 +186,6 @@ export default function ResourcesPage() {
                 </div>
             )}
 
-            {/* Topics Section */}
-            {isMobile && activeTab === "topics" && ResourceCategories?.length <= 0 && (
-                <div className="h-full w-full flex-center">No Topics Found</div>
-            )}
             {!isFetchingCategories &&
                 ResourceCategories?.length > 0 &&
                 (!isMobile || (isMobile && activeTab === "topics")) &&
@@ -211,9 +213,9 @@ export default function ResourcesPage() {
                     isLoading={isFetching}
                     title={!isMobile && category === null ? "Resources" : undefined}
                     renderItem={(item, index) => (
-                        <div className="lg:w-[250px]">
+                        <div className="w-full lg:w-[250px]">
                             <Card
-                                className="w-full"
+                                className="!w-full"
                                 imgClassName=""
                                 key={item?.resource_id || index}
                                 resource={item}
@@ -231,7 +233,7 @@ export default function ResourcesPage() {
                     <div className="w-full col-span-1">
                         <AddResourceCard handleClick={handleAddResourceClick} />
                     </div>
-                    {MyResources?.items?.map((resource: any, index: number) => (
+                    {MyResources?.map((resource: any, index: number) => (
                         <div key={resource?.resource_id || index} className="col-span-1">
                             <Card
                                 resource={resource}

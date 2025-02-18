@@ -61,7 +61,7 @@ export default function CommunityPage() {
     };
 
     return (
-        <div className="grid grid-cols-12 h-full md:h-[90dvh] overflow-hidden animate-fadeIn">
+        <div className="grid grid-cols-12 max-lg:h-full lg:h-[90dvh] overflow-hidden animate-fadeIn">
             <CommunityReportModal
                 postId={reportModalPostId}
                 isOpen={reportModalOpen}
@@ -77,8 +77,8 @@ export default function CommunityPage() {
                 handleReportClick={handleReportClick}
             />
 
-            <div className="col-span-12 flex flex-col min-h-0 flex-grow">
-                <div className="lg:hidden w-full border-b sticky top-0 z-10 px-4 py-5 bg-[#F4F7FB]">
+            <div className="col-span-12 flex flex-col min-h-0 h-full flex-grow">
+                <div className="lg:hidden w-full border-b sticky top-0 z-10 px-2 md:px-3 py-4 lg:px-4 md:py-5 bg-[#F4F7FB]">
                     <div className="w-full overflow-x-auto no-scrollbar">
                         <ActionPanel />
                     </div>

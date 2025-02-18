@@ -163,7 +163,7 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
     };
 
     // Handle Comment
-    const handleComment = async (postId: string) => {
+    const handleComment = async (postId: string, parentId?: string) => {
         setIsCommentLoading(true);
 
         let payload = {
@@ -318,8 +318,8 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                             </div>
 
                             {/* Post Content Section */}
-                            <div className="mt-2 md:mt-3 lg:mt-0 md:!pl-[50px]">
-                                <div className="p-2 md:px-0">
+                            <div className="mt-0 md:mt-3 lg:mt-0 lg:!pl-[50px]">
+                                <div className="px-3 md:px-0">
                                     <p className="text-xs md:text-sm font-normal">
                                         {post.description}
                                         {post.description.length > 150 && (
@@ -454,19 +454,6 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                                 </div>
                             </div>
 
-                            {/* Mobile-only sliding comment panel */}
-                            <AnimatePresence>
-                                {activeCommentPostId === post.post_id && (
-                                    <MobileCommentPanel
-                                        postId={post.post_id}
-                                        totalComments={post.total_comments}
-                                        comment={comment}
-                                        setComment={setComment}
-                                        onClose={() => setActiveCommentPostId(null)}
-                                        handleComment={handleComment}
-                                    />
-                                )}
-                            </AnimatePresence>
                         </div>
                     )})}
 
@@ -476,7 +463,7 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                             {isFetchingNextPage ? (
                                 <PostSkeleton size={2} />
                             ) : (
-                                <div className="w-full text-center font-semibold text-success mt-4">
+                                <div className="w-full text-center font-semibold text-success mt-4 px-5">
                                     You’ve reached the end. No more posts to show!
                                 </div>
                             )}
@@ -486,6 +473,20 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                     {posts.length === 0 && (
                         <div className="flex-center w-full h-full min-h-[50vh]">No Posts Found</div>
                     )}
+
+                    <AnimatePresence>
+                        {activeCommentPostId && (
+                            <MobileCommentPanel
+                                postId={activeCommentPostId}
+                                totalComments={20}
+                                comment={comment}
+                                setComment={setComment}
+                                onClose={() => setActiveCommentPostId(null)}
+                                handleComment={handleComment}
+                            />
+                        )}
+                    </AnimatePresence>
+
                 </div>
             )}
         </div>

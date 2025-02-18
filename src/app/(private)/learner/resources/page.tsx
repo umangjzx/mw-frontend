@@ -32,6 +32,7 @@ export default function ResourcesPage() {
     const pathname = usePathname();
     const { width } = useWindowSize();
     const isMobile = width < 768;
+    const isTabletScreen = width < 1024;
 
     const [category, setCategory] = useQueryState("category");
     const [_, setId] = useQueryState("id");
@@ -162,7 +163,11 @@ export default function ResourcesPage() {
                 />
             )}
 
-            {isMobile && !category && (
+            {/* Topics Section */}
+            {isTabletScreen && activeTab === "topics" && ResourceCategories?.length <= 0 && (
+                <div className="h-full w-full flex-center">No Topics Found</div>
+            )}
+            {isTabletScreen && !category && (
                 <div className="overflow-x-auto flex gap-2 pb-4 hide-scrollbar md:hidden">
                     {TabData.map((tab) => (
                         <button
@@ -217,6 +222,7 @@ export default function ResourcesPage() {
                 />
             )}
 
+            {/* My Resources Section */}
             {category === "my-resources" && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 md:p-6">
                     <div className="w-full col-span-1">

@@ -1,8 +1,6 @@
 "use client";
 
 import ViewModal from "@/components/common/Modals/ViewModal";
-import FeedImg from "@/assets/images/FeedImage.png";
-import DummyProfileImg from "@/assets/images/DummyProfileImg.png";
 import Image from "next/image";
 import TagComponent from "@/components/common/Tag";
 import Divider from "@/components/common/Divider";
@@ -94,8 +92,7 @@ const FeedViewModal = ({
 
     const {
         data: commentsData,
-        isLoading: commentsLoading,
-        isError: commentsError,
+        isLoading: commentsLoading
     } = useQuery({
         queryKey: ["get-post-comments", id],
         queryFn: getPostComments,
@@ -214,7 +211,7 @@ const FeedViewModal = ({
 
     return (
         <ViewModal
-            className="md:!h-[90vh] lg:!h-[720px]"
+            className="md:!h-[90vh] lg:!h-[720px] md:!rounded-xl"
             modalOpen={isOpen}
             onClose={handleCloseModal}
             width={1200}
@@ -366,6 +363,7 @@ const FeedViewModal = ({
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
                                 disabled={isCommentLoading}
+                                loading={isCommentLoading}
                                 inputClassName=""
                             />
                         </div>
