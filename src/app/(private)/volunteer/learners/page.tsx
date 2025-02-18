@@ -31,14 +31,14 @@ interface TableLearner {
     subject: string;
 }
 
-const LearnerCard = ({ learner, handleTestimonial, handleMessage }: { learner: any, handleTestimonial: () => void, handleMessage: () => void }) => {
-    const { profileImage = "image_url", name = "", classesTaken = "", location = "" } = learner;
+const LearnerCard = ({ learner, handleMessage }: { learner: any, handleMessage: () => void }) => {
+    const { profile_picture = "", name = "", classesTaken = "", country = "" } = learner;
     return (
         <div className="bg-white rounded-xl w-full p-4 space-y-4">
             <div className="flex items-center gap-2">
                 <div className="w-[40px] h-[40px] rounded-full relative">
                     <Image
-                        src={profileImage !== "image_url" ? profileImage : DummyProfile}
+                        src={profile_picture?.image_url ? profile_picture?.image_url : DummyProfile}
                         alt="avatar"
                         fill
                         className="w-full h-full object-cover rounded-full"
@@ -46,12 +46,12 @@ const LearnerCard = ({ learner, handleTestimonial, handleMessage }: { learner: a
                 </div>
                 <div className="flex flex-col">
                     <p className="text-base font-semibold">{name}</p>
-                    <p className="text-sm font-medium">{location && `From ${location}`}</p>
+                    <p className="text-sm font-medium">{country && `From ${country}`}</p>
                 </div>
             </div>
             <div className="flex flex-col gap-1">
                 <div className="flex flex-wrap gap-1">
-                    <CardChips label="Classes Taken" value={classesTaken || "0"} />
+                    <CardChips label="Classes Taken" value={classesTaken || "-"} />
                 </div>
                 <div className="w-full border-t pt-3 mt-3 flex justify-between gap-2">
                     {/* <Button
@@ -106,7 +106,9 @@ export default function LearnersPage() {
             const transformedData = learners.items.map((learner: any) => ({
                 id: learner.learner_id,
                 name: `${learner.learner_name}`,
-                classesTaken: learner.total_sessions
+                classesTaken: learner.total_sessions,
+                country: learner.country,
+                profile_picture: learner.profile_picture,
             }));
             setLearnerData(transformedData);
             setTotal(learners.total);
@@ -173,7 +175,6 @@ export default function LearnersPage() {
                                         key={index}
                                         learner={learner}
                                         handleMessage={() => handleMessageLearner(learner?.id)}
-                                        handleTestimonial={() => handleUploadTestimonial(learner?.id)}
                                     />
                                 ))
                             }
