@@ -56,7 +56,7 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
     const queryClient = useQueryClient();
     const role = Cookies.get("role");
     const [activeTab] = useQueryState("tab");
-    const [searchQuery] = useQueryState("tab");
+    const [searchQuery] = useQueryState("query");
 
     const [comment, setComment] = useState<string>("");
     const [isCommentLoading, setIsCommentLoading] = useState<boolean>(false);
@@ -84,7 +84,7 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                 endpoint = endpoints.post.getPosts;
         }
 
-        const response = await GET_API(`${endpoint}?page=${pageParam}&size=10&query=${searchQuery}`);
+        const response = await GET_API(`${endpoint}?page=${pageParam}&size=10&query=${searchQuery || ""}`);
         return response.data;
     };
 

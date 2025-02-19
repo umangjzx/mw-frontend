@@ -238,7 +238,7 @@ const MobileProfileView = ({ userData, reviewEndpoint }: { userData: any, review
                 rating={rating}
                 totalReviews={totalReviews}
             />
-            <div className="relative h-full bg-background-input p-5 overflow-y-auto border-t border-t-2">
+            <div className="relative h-full bg-background-input p-5 overflow-y-auto border-t">
                 <div
                     className={`transform transition-all duration-300 bg-white py-3 rounded-xl ${activeTab === "overview"
                         ? "opacity-100 translate-x-0"
