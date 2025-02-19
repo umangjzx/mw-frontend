@@ -8,7 +8,6 @@ import CommentCard from "@/components/community/CommentCard";
 import { DeleteIcon, EditIcon, FeedModalCloseIcon } from "@/assets/icons";
 import ReportIcon from "@/assets/icons/ReportIcon";
 
-import { useSearchParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { endpoints } from "@/api/constants";
 import { GET_API, DELETE_API } from "@/api/request";
@@ -23,6 +22,7 @@ import CommentSkeleton from "../CommentCard/skeleton";
 import ErrorMsg from "@/components/common/Messages/ErrorMsg";
 import { useQueryState } from "nuqs";
 import { BsFillBookmarkFill, BsBookmark } from "react-icons/bs";
+import { useMediaQuery } from "@mui/material";
 
 type FeedViewModalProps = {
     isOpen: boolean;
@@ -61,14 +61,15 @@ const FeedViewModal = ({
 }: FeedViewModalProps) => {
     const queryClient = useQueryClient();
     const [activeTab] = useQueryState("tab");
-    const [mode] = useQueryState("mode");
-    const searchParams = useSearchParams();
-    const id = searchParams.get("id");
+
     const role = Cookies.get("role");
+
+    const [mode, setMode] = useQueryState("mode");
+    const [id, setId] = useQueryState("id");
 
     const [comment, setComment] = useState("");
     const [isCommentLoading, setIsCommentLoading] = useState(false);
-    
+
     const [replyTo, setReplyTo] = useState({
         name: "",
         id: "",
@@ -82,7 +83,7 @@ const FeedViewModal = ({
     const { data, isLoading, isError } = useQuery({
         queryKey: ["get-single-post", id],
         queryFn: getIndividualPost,
-        enabled: !!id && (mode === "view"),
+        enabled: !!id && mode === "view",
     });
 
     const getPostComments = async () => {
@@ -90,10 +91,7 @@ const FeedViewModal = ({
         return response.data;
     };
 
-    const {
-        data: commentsData,
-        isLoading: commentsLoading
-    } = useQuery({
+    const { data: commentsData, isLoading: commentsLoading } = useQuery({
         queryKey: ["get-post-comments", id],
         queryFn: getPostComments,
         enabled: !!id,
@@ -109,8 +107,26 @@ const FeedViewModal = ({
         setReplyTo({ name, id });
     };
 
+    const handleEditClick = (postId: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setMode("edit");
+        setId(postId);
+    };
+
+    const hanldeDeleteEvent = (postId: string) => {
+        if (!confirm("Are you Sure?")) return;
+        callbackToast({
+            apiCall: DELETE_API(endpoints.post.deletePost(postId)),
+            loadingMsg: "Deleting Post",
+            errorMsg: "Post not Deleted",
+            successMsg: "Post Deleted",
+        }).then(() => {
+            queryClient.invalidateQueries({ queryKey: ["get-posts", "manage_your_posts"] });
+        });
+    };
+
     const handleSavePost = (postId: string, currentSaveStatus: boolean) => {
-        queryClient.setQueryData(["posts", activeTab], (oldData: any) => {
+        queryClient.setQueryData(["get-posts", activeTab], (oldData: any) => {
             return {
                 ...oldData,
                 pages: oldData.pages.map((page: any) => ({
@@ -127,16 +143,15 @@ const FeedViewModal = ({
             };
         });
 
+        queryClient.setQueryData(["get-single-post", id], (oldData: any) => ({
+            ...oldData,
+            is_saved: !currentSaveStatus,
+        }));
+
         if (currentSaveStatus) {
-            DELETE_API(endpoints.post.unsave(postId)).then(() => {
-                queryClient.invalidateQueries({ queryKey: ["posts"] });
-                queryClient.invalidateQueries({ queryKey: ["get-post"] });
-            });
+            DELETE_API(endpoints.post.unsave(postId));
         } else {
-            POST_API(endpoints.post.save(postId)).then(() => {
-                queryClient.invalidateQueries({ queryKey: ["posts"] });
-                queryClient.invalidateQueries({ queryKey: ["get-post"] });
-            });
+            POST_API(endpoints.post.save(postId));
         }
     };
 
@@ -165,86 +180,90 @@ const FeedViewModal = ({
         setReplyTo({ name: "", id: "" });
     };
 
-    const handleLike = (postId: string) => {
-        // Optimistic update for the modal view
-        queryClient.setQueryData(["get-post", id], (oldData: any) => ({
-            ...oldData,
-            is_liked: !oldData.is_liked,
-            total_likes: oldData.is_liked ? oldData.total_likes - 1 : oldData.total_likes + 1,
-        }));
-
-        // Also update the post in the main feed
-        queryClient.setQueryData(["posts", activeTab], (oldData: any) => {
-            if (!oldData) return oldData;
-            return {
-                ...oldData,
-                pages: oldData.pages.map((page: any) => ({
-                    ...page,
-                    items: page.items.map((post: PostData) =>
-                        post.post_id === postId
-                            ? {
-                                  ...post,
-                                  is_liked: !post.is_liked,
-                                  total_likes: post.is_liked
-                                      ? post.total_likes - 1
-                                      : post.total_likes + 1,
-                              }
-                            : post
-                    ),
-                })),
-            };
-        });
-
-        // Make API call
-        if (!post.is_liked) {
-            POST_API(endpoints.post.like(postId)).then(() => {
-                queryClient.invalidateQueries({ queryKey: ["posts"] });
-                queryClient.invalidateQueries({ queryKey: ["get-post"] });
-            });
-        } else {
-            DELETE_API(endpoints.post.like(postId)).then(() => {
-                queryClient.invalidateQueries({ queryKey: ["posts"] });
-                queryClient.invalidateQueries({ queryKey: ["get-post"] });
-            });
-        }
-    };
+    const isMobile = useMediaQuery("(max-width: 767px)");
 
     return (
         <ViewModal
-            className="md:!h-[90vh] lg:!h-[720px] md:!rounded-xl"
+            className="max-md:!w-full max-md:!max-w-none max-md:!h-full lg:!h-[720px] md:!rounded-xl"
             modalOpen={isOpen}
             onClose={handleCloseModal}
-            width={1200}
-            height="720px"
+            width={isMobile ? "100%" : 1200}
+            height={isMobile ? "100%" : "720px"}
             showCloseIcon={isError}
         >
             {isLoading ? (
-                <div className="h-full w-full min-h-[80vh] flex-center">
+                <div className="h-full w-full max-md:!h-[100dvh] min-h-[80vh] flex-center">
                     <LottieLoader isLoading={true} />
                 </div>
             ) : isError ? (
                 <ErrorMsg />
             ) : (
-                <div className="grid lg:grid-cols-[1fr,0.7fr] h-[720px]">
-                    <div className="relative w-full md:h-[250px] lg:h-[720px]">
+                <div className="grid lg:grid-cols-[1fr,0.7fr] lg:h-[720px] max-md:!flex max-md:!flex-col">
+                    <div className="relative w-full h-[250px] lg:h-[720px]">
                         <Image
                             src={post?.images[0]?.image_url}
                             alt="feed image"
                             fill
                             className="object-cover"
                         />
-                    </div>
-                    <div className="flex flex-col lg:h-[720px] relative">
-                        <div className="flex justify-end items-center px-5 pb-2 pt-5 gap-3">
+                        <div className="md:hidden absolute top-0 left-0 !w-full flex justify-between items-center px-5 pb-2 pt-5 gap-3">
+                            <FeedModalCloseIcon
+                                className="cursor-pointer"
+                                onClick={handleCloseModal}
+                            />
                             {isManagePost ? (
                                 <div className="flex items-center gap-2">
                                     <span
-                                        // onClick={(e) => handleEditClick(post.post_id, e)}
+                                        onClick={(e) => handleEditClick(post.post_id, e)}
                                         className="cursor-pointer"
                                     >
                                         <EditIcon width={40} height={40} />
                                     </span>
-                                    <span onClick={() => {}} className="cursor-pointer">
+                                    <span
+                                        onClick={() => hanldeDeleteEvent(post.post_id)}
+                                        className="cursor-pointer"
+                                    >
+                                        <DeleteIcon width={40} height={40} />
+                                    </span>
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-3">
+                                    <span
+                                        className="cursor-pointer bg-white rounded-full p-2.5"
+                                        onClick={() =>
+                                            handleSavePost(post?.post_id, post?.is_saved)
+                                        }
+                                    >
+                                        {post?.is_saved ? (
+                                            <BsFillBookmarkFill size={20} />
+                                        ) : (
+                                            <BsBookmark size={20} />
+                                        )}
+                                    </span>
+                                    <span
+                                        className="cursor-pointer border rounded-full"
+                                        onClick={() => handleReportClick?.(post?.post_id)}
+                                    >
+                                        <ReportIcon />
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    <div className="flex flex-col lg:h-[720px] relative">
+                        <div className="max-md:hidden flex justify-end items-center px-5 pb-2 pt-5 gap-3">
+                            {isManagePost ? (
+                                <div className="flex items-center gap-2">
+                                    <span
+                                        onClick={(e) => handleEditClick(post.post_id, e)}
+                                        className="cursor-pointer"
+                                    >
+                                        <EditIcon width={40} height={40} />
+                                    </span>
+                                    <span
+                                        onClick={() => hanldeDeleteEvent(post.post_id)}
+                                        className="cursor-pointer"
+                                    >
                                         <DeleteIcon width={40} height={40} />
                                     </span>
                                 </div>
@@ -288,7 +307,7 @@ const FeedViewModal = ({
                                         />
                                     </div>
                                     <div className="ml-3 flex-1 flex flex-col ">
-                                        <div className="flex items-center gap-3 w-full min-h-[40px]">
+                                        <div className="flex max-md:flex-wrap items-center gap-3 w-full min-h-[40px]">
                                             <p className="font-semibold text-black">
                                                 {post?.author?.name}
                                             </p>

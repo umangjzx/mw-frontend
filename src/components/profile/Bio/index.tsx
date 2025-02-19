@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 import ContactDetails from "./ContactDetails";
 import { FaPhoneAlt } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
+import TagComponent from "@/components/common/Tag";
 
 const index = ({ data }: any) => {
     const role = Cookies.get("role") || "";
@@ -45,10 +46,23 @@ const index = ({ data }: any) => {
                         {data?.bio_description}
                     </p>
                 </div>
-                {/* <div className="px-5 flex items-center justify-between gap-3">
-                    <p className="font-medium ">Location</p>
-                    <TagComponent text="New York, NY" className="text-xs py-1 font-medium px-2" />
-                </div> */}
+                {
+                    data?.country &&
+                    <div className="px-5 flex items-center justify-between gap-3">
+                        <p className="font-medium ">Location</p>
+                        <TagComponent text={data?.country || ""} className="text-xs py-1 font-medium px-2" />
+                    </div>
+                }
+                {
+                    data?.gender &&
+                    <div className={`px-5 flex items-center justify-between`}>
+                        <p className="font-medium">Gender</p>
+                        <TagComponent
+                            text={data?.gender || ""}
+                            className="text-xs py-1 font-medium px-2"
+                        />
+                    </div>
+                }
                 {details.map((detail) => (
                     <DetailChipCard key={detail.title} tags={detail.tags} title={detail?.title} />
                 ))}

@@ -3,11 +3,11 @@ import Image from "next/image";
 import DummyProfileImg from "@/assets/images/DummyProfileImg.png";
 import TagComponent from "@/components/common/Tag";
 import { HeartLikeIcon, UnlikeHeartIcon } from "@/assets/icons";
-import { DELETE_API, GET_API, POST_API } from "@/api/request";
+import { DELETE_API, POST_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { queryClient } from "@/api/query-client";
+import { useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
+import { timesAgo } from "@/utils/timeFunctions";
 
 const CommentCard: React.FC<CommentCardProps> = ({ reply, comment, onReply }) => {
     const queryClient = useQueryClient();
@@ -48,8 +48,6 @@ const CommentCard: React.FC<CommentCardProps> = ({ reply, comment, onReply }) =>
     };
 
     const handleReply = (comment: any) => {
-        // If replying to a reply (nested comment), use parent_comment_id
-        // If replying to a parent comment, use comment_id
         console.log(comment, "COMMENT DATA");
         const replyId = reply ? comment.parent_comment_id : comment.comment_id;
         onReply(comment.author.name, replyId);
@@ -68,7 +66,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ reply, comment, onReply }) =>
                         />
                     </div>
                     <div className="ml-1 flex-1 flex flex-col gap-1">
-                        <div className="flex items-center gap-2 w-full">
+                        <div className="flex flex-wrap items-center gap-2 w-full">
                             <p className="font-semibold text-black text-sm">
                                 {comment.author.name}
                             </p>
@@ -79,7 +77,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ reply, comment, onReply }) =>
                             />
                             <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
                             <p className="font-semibold text-black text-sm">
-                                {formatDate(comment.created_at)}
+                                {timesAgo(comment.created_at)}
                             </p>
                         </div>
                         <p className="text-[12px] font-normal">{comment.comment_text}</p>

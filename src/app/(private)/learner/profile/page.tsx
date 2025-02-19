@@ -39,7 +39,7 @@ export default function ProfilePage() {
         setHeaderOptions({
             title: "Profile",
             titleIcon: <IoIosArrowBack className="text-lg" />,
-            titleIconClick: () => router.back(),
+            titleIconClick: () => router.push("/learner/schedule"),
             actionButtonTitle: "Edit Profile",
             actionButtonClassName:
                 "lg:hidden !bg-black !text-white !rounded-xl hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4",
@@ -124,8 +124,8 @@ export default function ProfilePage() {
                     />
                     :
                     <div className="h-full w-full grid grid-cols-[1fr,2fr] gap-10 p-5">
-                        <Bio data={learnerData.bio} />
-                        <Overview data={learnerData.overview} reviewEndpoint={endpoints.learnerFeedback.get(learnerId)} />
+                        <Bio data={learnerData?.bio} />
+                        <Overview data={learnerData?.overview} reviewEndpoint={endpoints.learnerFeedback.get(learnerId)} />
                     </div>
             }
         </div>
