@@ -11,7 +11,7 @@ type CategorySectionProps = {
 };
 
 const CategorySection = ({ topicSingleTitle, handleViewOrEditResource }: CategorySectionProps) => {
-    const [category] = useQueryState("category");
+    const [category, setCategory] = useQueryState("category");
     const [searchQuery] = useQueryState("query");
 
     const { data: categories, isFetching } = useQuery({
@@ -24,10 +24,14 @@ const CategorySection = ({ topicSingleTitle, handleViewOrEditResource }: Categor
         },
     });
 
+    const handleBackClick = () => {
+        setCategory(null);
+    };
+
     return (
         <div className="flex flex-col md:px-5">
             <h2 className="mb-5 lg:mb-8 font-medium text-xl">
-                Resources {">"} {topicSingleTitle}
+                <button onClick={handleBackClick} className="hover:underline">Resources</button> {">"} {topicSingleTitle}
             </h2>
             {isFetching ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">

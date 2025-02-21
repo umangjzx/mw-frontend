@@ -47,9 +47,10 @@ const CommunityReportModal = ({ postId, isOpen, onClose }: CommunityReportModalP
 
         setIsSubmitting(true);
         const payload = {
-            resource_type_id: postId,
+            report_type_id: postId,
+            report_status: "pending",
             report_type: "post",
-            report_description: reportDescription,
+            report_description: reportType === "others" ? `Others - ${reportDescription}` : reportType,
         };
         
         await callbackToast({
