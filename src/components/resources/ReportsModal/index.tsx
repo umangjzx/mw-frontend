@@ -47,7 +47,8 @@ const ResourceReportModal = ({ resourceId, isOpen, onClose }: ResourceReportModa
 
         setIsSubmitting(true);
         const payload = {
-            resource_type_id: resourceId,
+            report_type_id: resourceId,
+            report_status: "pending",
             report_type: "resource",
             report_description:
                 reportType === "others" ? `Others - ${reportDescription}` : reportType,

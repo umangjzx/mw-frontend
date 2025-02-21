@@ -50,12 +50,12 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
     } = useForm<FormData>({
         resolver: zodResolver(ResourceFormSchema),
     });
-    
+
     // Fetch resource data if in edit mode
     const { isFetching } = useQuery({
         queryKey: ["getSingleResource", resourceId],
         queryFn: async () => {
-            if(!resourceId) return null;
+            if (!resourceId) return null;
             const resource = await getSingleResource(resourceId || "");
             reset(resource);
         },
@@ -68,7 +68,7 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
 
     useEffect(() => {
         if (currentMode === "create") {
-            reset({...ResourceFormDefaultValues, created_by: userName || role || ""});
+            reset({ ...ResourceFormDefaultValues, created_by: userName || role || "" });
         }
     }, [currentMode, reset]);
 

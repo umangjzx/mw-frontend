@@ -36,6 +36,11 @@ const Header = ({ handleModalLogin }: HeaderProps) => {
         setIsLoginModalOpen(!isLoginModalOpen);
     };
 
+    const handleCloseSideNavBar = () => {
+        setIsLoginModalOpen(false);
+        setIsSideNavBarOpen(!isSideNavBarOpen);
+    }
+
     const links = [
         { title: "About Us", link: "/about-us" },
         // { title: "Blogs", link: "/blogs" },
@@ -70,7 +75,7 @@ const Header = ({ handleModalLogin }: HeaderProps) => {
             <div
                 className={`${
                     isLoginModalOpen ? "opacity-50 visible" : "opacity-0 invisible"
-                } transition-all duration-300 ease-in-out fixed top-0 left-0 w-full h-full bg-black z-30`}
+                } transition-all duration-300 ease-in-out fixed top-0 left-0 w-full h-full bg-black z-30 max-md:!hidden`}
             ></div>
 
             <div className="w-full mx-auto flex justify-between items-center 2xl:px-[4%] px-[5%] py-5 ">
@@ -134,7 +139,7 @@ const Header = ({ handleModalLogin }: HeaderProps) => {
                     <SideMenuIcon />
                 </div>
             </div>
-            <SideNavBar isOpen={isSideNavBarOpen} onClose={handleSideNavBar}>
+            <SideNavBar isOpen={isSideNavBarOpen} onClose={handleCloseSideNavBar}>
                 <div className="flex justify-between items-center px-4">
                     <Link href="/" className="cursor-pointer">
                         <Logo />
@@ -153,11 +158,46 @@ const Header = ({ handleModalLogin }: HeaderProps) => {
                             {link.title}
                         </div>
                     ))}
-                    {/* <Button
-                        title="Log In"
-                        className="!bg-black !px-[2rem] !py-1 text-white hover:!bg-black hover:!text-white text-base !rounded-xl"
-                        onClick={handleLoginModal}
-                    /> */}
+                    <div className="relative w-full flex-center">
+                        <Button
+                            title="Log In"
+                            className="!bg-black !px-3 !py-1 text-white hover:!bg-black hover:!text-white text-sm !rounded-lg min-w-[150px]"
+                            onClick={handleLoginModal}
+                        />
+                        <div
+                            className={`absolute right-0 bottom-[-13rem] max-md:w-full w-[500px] py-4 px-6 h-fit flex flex-col gap-5 bg-gray-200 rounded-3xl z-40 
+                                transform transition-all duration-300 ease-in-out
+                                ${
+                                    isLoginModalOpen
+                                        ? "opacity-100 scale-100 translate-y-0 visible"
+                                        : "opacity-0 scale-95 translate-y-2 invisible"
+                                }`}
+                        >
+                            <div className="flex justify-between items-center">
+                                <p className="text-xl font-medium">Login As</p>
+                                <div onClick={handleLoginModal} className="cursor-pointer">
+                                    <ModalCloseIcon />
+                                </div>
+                            </div>
+                            <div>
+                                <LoginRadio
+                                    name="loginAs"
+                                    value={loginAs}
+                                    // @ts-ignore
+                                    onChange={handleLoginAs}
+                                    options={loginAsRadio.options}
+                                    inputClassName="w-full"
+                                />
+                            </div>
+                            <Button
+                                loading={isSignBtnLoading}
+                                onClick={handleLoginClick}
+                                title="Sign In With Google"
+                                className="!bg-black w-full !px-3 !py-1 text-white hover:!bg-black hover:!text-white text-sm !rounded-xl"
+                                icon={<GoogleIcon />}
+                            />
+                        </div>
+                    </div>
                 </div>
             </SideNavBar>
         </div>

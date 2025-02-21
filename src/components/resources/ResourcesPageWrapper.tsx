@@ -126,7 +126,7 @@ export default function ResourcesPageWrapper({ variant }: ResourcesPageWrapperPr
             searchPlaceholder: "Search resources",
             actionButtonTitle: "My Resources",
             actionButtonOnClick: handleMyResourcesClick,
-            actionButtonClassName: "!bg-black !text-white !rounded-xl hover:!bg-black hover:!text-white !h-[35px] !text-xs !py-2 px-4",
+            actionButtonClassName: "!h-full !bg-black !text-white !rounded-xl hover:!bg-black hover:!text-white !text-xs !py-3 px-4",
             actionButtonPlacement: "left",
             showButton: category === null,
             showTitleButton: !!category,
