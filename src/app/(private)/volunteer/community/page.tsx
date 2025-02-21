@@ -7,7 +7,7 @@ import { getHeaderIcon } from "@/layouts/helper";
 import { useComponentStore } from "@/store/useComponenetStore";
 import { usePathname } from "next/navigation";
 import { useQueryState } from "nuqs";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CommunityReportModal from "@/components/community/ReportsModal";
 import NotificationSection from "@/components/community/NotificationSection";
 import CommunityPostModal from "@/components/community/CommunityPostModal";
@@ -32,7 +32,7 @@ export default function CommunityPage() {
             actionButtonTitle: "Add new post",
             actionButtonOnClick: handleAddNewPost,
             actionButtonClassName:
-                "!bg-background-secondary hover:!border-none !text-black !rounded-xl hover:!bg-background-secondary hover:!text-black !h-[35px] !text-xs !py-2 px-4",
+                "!h-full !bg-background-secondary !text-black !rounded-xl hover:!bg-background-secondary hover:!text-black !text-xs !py-3 px-4",
             actionButtonPlacement: "right",
             showButton: true,
             title: "Community",
@@ -59,6 +59,13 @@ export default function CommunityPage() {
         setReportModalOpen(false);
         setReportModalPostId("");
     };
+
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [activeTab]);
 
     return (
         <div className="grid grid-cols-12 max-lg:h-full lg:h-[90dvh] overflow-hidden animate-fadeIn">
@@ -87,6 +94,7 @@ export default function CommunityPage() {
                 <div className="flex max-md:h-full md:flex-row justify-between gap-4 md:p-6 md:pb-0 flex-1 min-h-0 overflow-auto">
                     {/* Main Content Area */}
                     <div className="flex-1 md:w-8/12 p-0 md:p-0 overflow-auto no-scrollbar md:rounded-3xl flex flex-col">
+                        <div ref={messagesEndRef} />
                         <div className="flex-1 bg-white md:rounded-3xl md:p-6 pb-2 md:mb-6">
                             {activeTab === "your_notifications" ? (
                                 <NotificationSection />

@@ -3,9 +3,9 @@ import { z } from "zod";
 export const CommunityFormConstants: FormField[] = [
     {
         name: "description",
-        label: "Your comments",
+        label: "Post Description",
         inputType: "textarea",
-        placeholder: "Enter comments here",
+        placeholder: "Enter description here",
         rows: 8,
     },
     {
