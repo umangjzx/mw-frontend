@@ -45,6 +45,11 @@ const CommonHeader: React.FC = () => {
         setSearchQuery(value === "" ? null : value);
     };
 
+    const handleMobileSearchClose = () => {
+        setSearchQuery(null)
+        setIsSearchInputOpen(false);
+    }
+
     return (
         <div className="w-full h-full relative">
             <div className="w-full h-auto lg:h-full p-2 px-3 flex items-center justify-between">
@@ -160,7 +165,7 @@ const CommonHeader: React.FC = () => {
                         onChange={handleSearch}
                         placeholder={searchPlaceholder ?? "Search"}
                     />
-                    <span onClick={() => setIsSearchInputOpen(false)} className="cursor-pointer">
+                    <span onClick={handleMobileSearchClose} className="cursor-pointer">
                         <FeedModalCloseIcon width="25" height="25" />
                     </span>
                 </div>
