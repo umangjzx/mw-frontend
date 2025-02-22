@@ -5,14 +5,6 @@ import { Select } from "../Input/Select";
 const mobileCountryCodes = [
     { label: "+1", value: "+1", phoneLength: 10 },
     { label: "+91", value: "+91", phoneLength: 10 },
-    { label: "+86", value: "+86", phoneLength: 11 },
-    { label: "+49", value: "+49", phoneLength: 10 },
-    { label: "+81", value: "+81", phoneLength: 10 },
-    { label: "+55", value: "+55", phoneLength: 11 },
-    { label: "+33", value: "+33", phoneLength: 9 },
-    { label: "+61", value: "+61", phoneLength: 9 },
-    { label: "+27", value: "+27", phoneLength: 9 },
-    { label: "+44", value: "+44", phoneLength: 10 }
 ];
 
 

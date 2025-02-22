@@ -44,16 +44,16 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
             };
 
     const remainingLinks: any[] = [
-        {
-            href: "/resources",
-            text: "Resources",
-            icon: <ResourceIcon />,
-        },
-        {
-            href: "/community",
-            text: "Community",
-            icon: <CommunityIcon />,
-        },
+        // {
+        //     href: "/resources",
+        //     text: "Resources",
+        //     icon: <ResourceIcon />,
+        // },
+        // {
+        //     href: "/community",
+        //     text: "Community",
+        //     icon: <CommunityIcon />,
+        // },
     ];
 
     // Combine all links in the desired order
