@@ -23,6 +23,49 @@ import ErrorMsg from "@/components/common/Messages/ErrorMsg";
 import { useQueryState } from "nuqs";
 import { BsFillBookmarkFill, BsBookmark } from "react-icons/bs";
 import { useMediaQuery } from "@mui/material";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { toUserTimeZone } from "@/utils/timeFunctions";
+
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
+const CustomNextArrow = (props: any) => {
+    const { onClick } = props;
+    return (
+        <div
+            onClick={onClick}
+            className="!z-50 absolute right-3 top-1/2 transform -translate-y-1/2 text-primary border border-primary p-2 rounded-full shadow-md cursor-pointer"
+        >
+            <FaChevronRight className="text-xs md:text-lg" />
+        </div>
+    );
+};
+
+const CustomPrevArrow = (props: any) => {
+    const { onClick } = props;
+    return (
+        <div
+            onClick={onClick}
+            className="!z-50 absolute left-3 top-1/2 transform -translate-y-1/2 text-primary border border-primary p-2 rounded-full shadow-md cursor-pointer"
+        >
+            <FaChevronLeft className="text-xs md:text-lg" />
+        </div>
+    );
+};
+
+const sliderSettings = {
+    infinite: true,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    speed: 1000,
+    arrows: true,
+    adaptiveHeight: false,
+    nextArrow: <CustomNextArrow />,
+    prevArrow: <CustomPrevArrow />,
+};
 
 type FeedViewModalProps = {
     isOpen: boolean;
@@ -134,9 +177,9 @@ const FeedViewModal = ({
                     items: page.items.map((post: PostData) =>
                         post.post_id === postId
                             ? {
-                                  ...post,
-                                  is_saved: !currentSaveStatus,
-                              }
+                                ...post,
+                                is_saved: !currentSaveStatus,
+                            }
                             : post
                     ),
                 })),
@@ -181,14 +224,15 @@ const FeedViewModal = ({
     };
 
     const isMobile = useMediaQuery("(max-width: 767px)");
+    const isTablet = useMediaQuery("(max-width: 1024px)");
 
     return (
         <ViewModal
             className="max-md:!w-full max-md:!max-w-none max-md:!h-full lg:!h-[720px] md:!rounded-xl"
             modalOpen={isOpen}
             onClose={handleCloseModal}
-            width={isMobile ? "100%" : 1200}
-            height={isMobile ? "100%" : "720px"}
+            width={isMobile ? "100dvw" : isTablet ? "95dvw" : 1200}
+            height={isMobile ? "100dvh" : isTablet ? "95dvh" : "720px"}
             showCloseIcon={isError}
         >
             {isLoading ? (
@@ -198,15 +242,21 @@ const FeedViewModal = ({
             ) : isError ? (
                 <ErrorMsg />
             ) : (
-                <div className="grid lg:grid-cols-[1fr,0.7fr] lg:h-[720px] max-md:!flex max-md:!flex-col">
-                    <div className="relative w-full h-[250px] lg:h-[720px]">
-                        <Image
-                            src={post?.images[0]?.image_url}
-                            alt="feed image"
-                            fill
-                            className="object-cover"
-                        />
-                        <div className="md:hidden absolute top-0 left-0 !w-full flex justify-between items-center px-5 pb-2 pt-5 gap-3">
+                <div className="grid h-full lg:grid-cols-[1fr,0.7fr] lg:h-[720px] max-lg:!flex max-lg:!flex-col">
+                    <div className="relative w-full h-[300px] md:h-[400px] lg:h-[720px] !max-h-[45%] overflow-hidden">
+                        <Slider className="flex gap-20" {...sliderSettings}>
+                            {post?.images?.map((image) => (
+                                <div key={image?.image_id} className="relative w-full h-[300px] md:h-[400px] lg:h-[720px]">
+                                    <Image
+                                        src={image?.image_url}
+                                        alt="feed image"
+                                        fill
+                                        className="object-cover"
+                                    />
+                                </div>
+                            ))}
+                        </Slider>
+                        <div className="lg:hidden absolute top-0 left-0 !w-full flex justify-between items-center px-5 pb-2 pt-5 gap-3">
                             <FeedModalCloseIcon
                                 className="cursor-pointer"
                                 onClick={handleCloseModal}
@@ -250,8 +300,8 @@ const FeedViewModal = ({
                             )}
                         </div>
                     </div>
-                    <div className="flex flex-col lg:h-[720px] relative">
-                        <div className="max-md:hidden flex justify-end items-center px-5 pb-2 pt-5 gap-3">
+                    <div className="flex flex-col max-lg:!flex-1 lg:h-[720px] relative max-lg:!overflow-auto">
+                        <div className="max-lg:hidden flex justify-end items-center px-5 pb-2 pt-5 gap-3">
                             {isManagePost ? (
                                 <div className="flex items-center gap-2">
                                     <span
@@ -295,7 +345,7 @@ const FeedViewModal = ({
                             />
                         </div>
                         <Divider />
-                        <div className="px-7 flex flex-col flex-1 overflow-hidden mt-3">
+                        <div className="px-4 md:px-7 flex flex-col flex-1 overflow-hidden mt-3">
                             <div className="flex flex-col gap-3">
                                 <div className="flex gap-3">
                                     <div className="w-[40px] h-[40px] relative flex-shrink-0">
@@ -307,18 +357,18 @@ const FeedViewModal = ({
                                         />
                                     </div>
                                     <div className="ml-3 flex-1 flex flex-col ">
-                                        <div className="flex max-md:flex-wrap items-center gap-3 w-full min-h-[40px]">
+                                        <div className="flex max-md:flex-wrap items-center gap-2 md:gap-3 w-full min-h-[40px]">
                                             <p className="font-semibold text-black">
                                                 {post?.author?.name}
                                             </p>
                                             <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
                                             <TagComponent
                                                 text={post?.created_by}
-                                                className="w-fit capitalize"
+                                                className="w-fit capitalize !m-0"
                                             />
                                             <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
                                             <p className="font-semibold text-black">
-                                                {new Date(post?.created_at).toLocaleDateString()}
+                                                {toUserTimeZone({ date: post?.created_at, format: "DD/MM/YYYY" })}
                                             </p>
                                         </div>
 

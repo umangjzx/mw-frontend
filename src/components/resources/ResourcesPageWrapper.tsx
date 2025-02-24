@@ -14,7 +14,7 @@ import { useComponentStore } from "@/store/useComponenetStore";
 import { getHeaderIcon } from "@/layouts/helper";
 
 import AddResourceCard from "@/components/resources/AddResourceCard";
-import Card from "@/components/resources/Card";
+import Card, { CardSkeleton } from "@/components/resources/Card";
 import DetailModal from "@/components/resources/DetailModal";
 import { ResourceModal } from "@/components/resources/Modals";
 import ResourceReportModal from "@/components/resources/ReportsModal";
@@ -41,14 +41,14 @@ export default function ResourcesPageWrapper({ variant }: ResourcesPageWrapperPr
     const [category, setCategory] = useQueryState("category");
     const [_, setId] = useQueryState("id");
     const [mode, setMode] = useQueryState("mode");
-    const [searchQuery] = useQueryState("query");
+    const [searchQuery, setSearchQuery] = useQueryState("query");
 
     const [activeTab, setActiveTab] = useState("topics");
     const [resources, setResources] = useState([]);
     const [reportModalOpen, setReportModalOpen] = useState(false);
     const [reportModalResourceId, setReportModalResourceId] = useState("");
 
-    const { data: MyResources, refetch } = useQuery({
+    const { data: MyResources, isLoading: isMyResourcesLoading, refetch } = useQuery({
         queryKey: ["my-resources", searchQuery],
         queryFn: async () => {
             const myResources = await getMyResources({ query: searchQuery || "" });
@@ -95,9 +95,9 @@ export default function ResourcesPageWrapper({ variant }: ResourcesPageWrapperPr
             prevResources?.map((resource: any) =>
                 resource?.resource_id === resource_id
                     ? {
-                          ...resource,
-                          total_likes: resource?.total_likes + (likeStatus ? 1 : -1),
-                      }
+                        ...resource,
+                        total_likes: resource?.total_likes + (likeStatus ? 1 : -1),
+                    }
                     : resource
             )
         );
@@ -136,8 +136,8 @@ export default function ResourcesPageWrapper({ variant }: ResourcesPageWrapperPr
         });
     }, [category, pathname, setHeaderOptions, ResourceCategories, topicSingleTitle]);
 
-    const activeTabStyle = variant === 'learner' 
-        ? "bg-[#DFF5FF] text-black border border-[#09BAEE]" 
+    const activeTabStyle = variant === 'learner'
+        ? "bg-[#DFF5FF] text-black border border-[#09BAEE]"
         : "bg-[#FFE9D4] text-black border border-[#FE5B11]";
 
     return (
@@ -176,11 +176,10 @@ export default function ResourcesPageWrapper({ variant }: ResourcesPageWrapperPr
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`whitespace-nowrap px-4 py-2 rounded-full text-sm ${
-                                activeTab === tab.id
+                            className={`whitespace-nowrap px-4 py-2 rounded-full text-sm ${activeTab === tab.id
                                     ? activeTabStyle
                                     : "bg-[#F4F7FB] border border-[#E0E0E0] text-[14px] font-[500] text-black"
-                            }`}
+                                }`}
                         >
                             {tab.label}
                         </button>
@@ -195,7 +194,7 @@ export default function ResourcesPageWrapper({ variant }: ResourcesPageWrapperPr
                 <div className="h-full w-full flex-center">
                     <TopicCardSkeleton length={5} />
                 </div>
-            ) :  (
+            ) : (
                 ResourceCategories?.length > 0 &&
                 (!isMobile || (isMobile && activeTab === "topics")) &&
                 !category && (
@@ -236,23 +235,43 @@ export default function ResourcesPageWrapper({ variant }: ResourcesPageWrapperPr
                     )}
                 />
             )}
-            
+
             {category === "my-resources" && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 md:p-6">
                     <div className="w-full col-span-1">
                         <AddResourceCard handleClick={handleAddResourceClick} />
                     </div>
-                    {MyResources?.map((resource: any, index: number) => (
-                        <div key={resource?.resource_id || index} className="col-span-1">
-                            <Card
-                                resource={resource}
-                                className="!w-full !h-full"
-                                onClick={() =>
-                                    handleViewOrEditResource("view", resource?.resource_id)
-                                }
-                            />
+                    
+                    {isMyResourcesLoading ? (
+                        <>
+                            {Array.from({ length: 3 }).map((_, index) => (
+                                <CardSkeleton key={index} />
+                            ))}
+                        </>
+                    ) : (MyResources?.length === 0) ? (
+                        <div className="max-md:!min-h-[300px] h-full w-full flex-center flex-col gap-1">
+                            <p>No Resources Found</p>
+                            {
+                                searchQuery ? (
+                                    <button className="text-blue-500 underline" onClick={() => setSearchQuery(null)}>Clear Search</button>
+                                ) : (
+                                    <button className="text-blue-500 underline" onClick={handleAddResourceClick}>Add Resource</button>
+                                )
+                            }
                         </div>
-                    ))}
+                    ) : (
+                        MyResources?.map((resource: any, index: number) => (
+                            <div key={resource?.resource_id || index} className="col-span-1">
+                                <Card
+                                    resource={resource}
+                                    className="!w-full !h-full"
+                                    onClick={() =>
+                                        handleViewOrEditResource("view", resource?.resource_id)
+                                    }
+                                />
+                            </div>
+                        ))
+                    )}
                 </div>
             )}
         </div>
