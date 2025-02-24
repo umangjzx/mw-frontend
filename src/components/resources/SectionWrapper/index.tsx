@@ -5,6 +5,7 @@ import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { useRef } from "react";
 import { cn } from "@/utils/merge-class";
 import { CardSkeleton } from "../Card";
+import { useQueryState } from "nuqs";
 
 const SCROLL_AMOUNT = 300;
 
@@ -27,6 +28,8 @@ const SectionWrapper = ({
     placeHolderComponent,
     onPlaceHolderClick,
 }: SectionWrapperProps) => {
+    const [searchQuery, setSearchQuery] = useQueryState("query");
+
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     const scroll = (direction: "left" | "right") => {
@@ -88,8 +91,15 @@ const SectionWrapper = ({
                     ) : (
                         <>
                             {data?.length === 0 ? (
-                                <span className="min-w-[250px] min-h-[275px] h-full w-full flex-center">
-                                    No Resource Found
+                                <span className="min-w-[250px] min-h-[275px] h-full w-full flex-center flex-col gap-1">
+                                    <p>No Resources Found</p>
+                                    {
+                                        searchQuery && (
+                                            <button className="text-blue-500 underline" onClick={() => setSearchQuery(null)}>
+                                                Clear Search
+                                            </button>
+                                        )
+                                    }
                                 </span>
                             ) : (
                                 Array.isArray(data) &&

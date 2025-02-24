@@ -112,7 +112,7 @@ export default function CommunityPage() {
 
                     {/* Desktop Action Panel */}
                     <div className="hidden lg:block min-h-0">
-                        <div className="bg-white rounded-2xl p-4 min-w-[380px] min-h-[390px]">
+                        <div className="bg-white rounded-2xl p-4 min-w-[300px] xl:min-w-[380px] min-h-[390px]">
                             <div className="h-full overflow-auto no-scrollbar">
                                 <ActionPanel />
                             </div>

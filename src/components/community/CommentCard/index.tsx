@@ -73,7 +73,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ reply, comment, onReply }) =>
                             <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
                             <TagComponent
                                 text={comment.created_by}
-                                className="w-fit text-[12px] capitalize"
+                                className="w-fit text-[12px] capitalize !m-0"
                             />
                             <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
                             <p className="font-semibold text-black text-sm">

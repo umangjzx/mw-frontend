@@ -14,9 +14,14 @@ export const getResourcesByCategory = async (category_id: string, params?: any) 
 }
 
 export const getMyResources = async (params?: any) => {
-    const endpoint = endpoints.resources.getMyResources;
-    const { data } = await GET_API(`${endpoint}?${new URLSearchParams({ ...params })}`);
-    return data || {};
+    try{
+        const endpoint = endpoints.resources.getMyResources;
+        const { data } = await GET_API(`${endpoint}?${new URLSearchParams({ ...params })}`);
+        return data || {};
+    }catch(error){
+        console.log(error);
+        return {};
+    }
 }
 
 export const addResource = async (payload: any) => {
