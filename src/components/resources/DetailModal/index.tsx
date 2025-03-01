@@ -82,16 +82,6 @@ const DetailModal = ({
         setIsDeleting(false);
     };
 
-    const renderCuratedLinks = () =>
-        curatedLinks.map((item, index) => (
-            <p key={index}>
-                {index + 1}. {item.title} -{" "}
-                <Link href={item.link} target="_blank" className="text-primary underline">
-                    {item.link}
-                </Link>
-            </p>
-        ));
-
     const renderSkills = () =>
         resource?.resource_skills?.map((item: any, index: number) => (
             <TagComponent
@@ -101,10 +91,15 @@ const DetailModal = ({
             />
         ));
 
-    const curatedLinks = [
-        { title: "Guitar Tuning Guide", link: "https://example.com/guitar-tuning" },
-        { title: "Finger Placement Tips", link: "https://example.com/guitar-tuning" },
-    ];
+    const renderCuratedLinks = () =>
+        resource?.curated_links?.map((item: any, index: number) => (
+            <p key={index}>
+                {index + 1}. {item?.title} -{" "}
+                <Link href={item?.url} target="_blank" rel="noopener noreferrer" className="text-primary underline">
+                    {item?.url}
+                </Link>
+            </p>
+        ));
 
     if (!resourceId) return null;
 
@@ -123,9 +118,8 @@ const DetailModal = ({
             ) : (
                 <div className={`flex flex-col ${isMobile ? "h-screen" : ""}`}>
                     <div
-                        className={`relative ${isMobile ? "h-[200px] sm:h-[280px]" : "h-[260px]"} rounded-t-xl ${
-                            isMobile ? "!rounded-none" : ""
-                        }`}
+                        className={`relative ${isMobile ? "h-[200px] sm:h-[280px]" : "h-[260px]"} rounded-t-xl ${isMobile ? "!rounded-none" : ""
+                            }`}
                     >
                         <Image
                             src={resource?.resource_image?.image_url || "/placeholder.png"}
@@ -198,9 +192,8 @@ const DetailModal = ({
                         </div>
                     </div>
                     <div
-                        className={`flex flex-col gap-4 px-4 md:px-6 lg:px-8 py-4 overflow-y-auto ${
-                            isMobile ? "flex-1 pb-8" : ""
-                        }`}
+                        className={`flex flex-col gap-4 px-4 md:px-6 lg:px-8 py-4 overflow-y-auto ${isMobile ? "flex-1 pb-8" : ""
+                            }`}
                     >
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
@@ -229,7 +222,13 @@ const DetailModal = ({
                         <Divider />
                         <div className="flex flex-col gap-2 max-h-[150px] overflow-y-auto">
                             <p className="font-medium text-black">Curated Links</p>
-                            <div className="flex flex-col gap-2">{renderCuratedLinks()}</div>
+                            {resource?.curated_links?.length > 0 ? (
+                                <div className="flex flex-col gap-2">{renderCuratedLinks()}</div>
+                            ) : (
+                                <p className="text-sm text-gray-light">
+                                    No curated links provided.
+                                </p>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -334,13 +334,13 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                                 </div>
 
                                 {post.images.length > 0 && (
-                                    <div className="relative mt-2 md:mt-3 w-full h-full min-h-[240px] max-h-[350px] md:min-h-[360px] md:max-h-[420px] 2xl:min-h-[400px] 2xl:max-h-[450px]">
+                                    <div className="relative mt-2 md:mt-3 w-full h-full bg-gray-300 md:rounded-xl min-h-[240px] max-h-[350px] md:min-h-[360px] md:max-h-[420px] 2xl:min-h-[400px] 2xl:max-h-[450px]">
                                         <Image
                                             src={validImageUrl}
                                             alt="post image"
                                             fill
                                             onClick={() => onClick(post.post_id)}
-                                            className="object-cover cursor-pointer md:rounded-xl"
+                                            className="object-contain cursor-pointer md:rounded-xl"
                                         />
                                         {post?.images?.length > 1 && (
                                             <button onClick={() => onClick(post?.post_id)} className="absolute text-sm h-[30px] w-[30px] bottom-[10px] right-[10px] bg-white rounded-full flex-center">+{post?.images?.length - 1}</button>

@@ -1,6 +1,5 @@
 "use client";
 import { endpoints } from "@/api/constants";
-import { GET_API, POST_API } from "@/api/request";
 import LottieLoader from "@/components/common/Loader/Lottie";
 import Celebrate from "@/components/landingpage/Celebrate";
 import Community from "@/components/landingpage/Community";
@@ -11,20 +10,17 @@ import Hero from "@/components/landingpage/Hero";
 import Impact from "@/components/landingpage/Impact";
 import WhyWeBuild from "@/components/landingpage/WhyWeBuild";
 import Footer from "@/components/onboarding/Footer";
-import { useQuery } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
-import ScrollReveal from "scrollreveal";
 import { useGoogleLogin } from "@react-oauth/google";
 import { API_URL } from "@/definitions";
 
 export default function Page() {
     const router = useRouter();
     const [role, setRole] = useState<UserType>((Cookies.get("role") as UserType) || "volunteer");
-    const [code] = useQueryState("code");
     const [loginAs, setLoginAs] = useQueryState("loginAs");
     const [buttonLoading, setButtonLoading] = useState("");
     const [isPageLoading, setIsPageLoading] = useState(false);
@@ -62,11 +58,10 @@ export default function Page() {
         const decodedToken: any = jwtDecode(data?.access_token);
         const currentTime = Math.floor(Date.now() / 1000);
         const expireSeconds = decodedToken?.exp - currentTime;
-        const expireDays = Math.ceil(expireSeconds / (60 * 60 * 24)) || 30;
+        const expireDays = Math.ceil(expireSeconds / (60 * 60 * 24)) || 1;
 
         Cookies.set(idKey, data[idKey], { expires: expireDays });
         Cookies.set("token", data?.access_token, { expires: expireDays });
-        Cookies.set("refresh_token", data?.refresh_token, { expires: expireDays });
         Cookies.set("role", role, { expires: expireDays });
         Cookies.set("onboarded_status", data?.onboarded_status, { expires: expireDays });
 

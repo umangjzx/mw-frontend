@@ -243,7 +243,7 @@ const FeedViewModal = ({
                 <ErrorMsg />
             ) : (
                 <div className="grid h-full lg:grid-cols-[1fr,0.7fr] lg:h-[720px] max-lg:!flex max-lg:!flex-col">
-                    <div className="relative w-full h-[300px] md:h-[400px] lg:h-[720px] !max-h-[45%] overflow-hidden">
+                    <div className="relative bg-gray-300 w-full h-[300px] md:h-[400px] lg:h-[720px] max-md:!max-h-[45%] overflow-hidden">
                         <Slider className="flex gap-20" {...sliderSettings}>
                             {post?.images?.map((image) => (
                                 <div key={image?.image_id} className="relative w-full h-[300px] md:h-[400px] lg:h-[720px]">
@@ -251,7 +251,7 @@ const FeedViewModal = ({
                                         src={image?.image_url}
                                         alt="feed image"
                                         fill
-                                        className="object-cover"
+                                        className="object-contain"
                                     />
                                 </div>
                             ))}

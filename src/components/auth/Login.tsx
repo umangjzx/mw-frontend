@@ -40,11 +40,10 @@ const LoginPage = () => {
         const decodedToken: any = jwtDecode(data?.access_token);
         const currentTime = Math.floor(Date.now() / 1000);
         const expireSeconds = decodedToken?.exp - currentTime;
-        const expireDays = Math.ceil(expireSeconds / (60 * 60 * 24)) || 30;
+        const expireDays = Math.ceil(expireSeconds / (60 * 60 * 24)) || 1;
 
         Cookies.set(idKey, data[idKey], { expires: expireDays });
         Cookies.set("token", data?.access_token, { expires: expireDays });
-        Cookies.set("refresh_token", data?.refresh_token, { expires: expireDays });
         Cookies.set("role", role, { expires: expireDays });
         Cookies.set("onboarded_status", data?.onboarded_status, { expires: expireDays });
         handleNavigation(data);

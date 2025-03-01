@@ -3,7 +3,7 @@ import { Input } from "@/components/common/Input";
 import CenterModal from "@/components/common/Modals/CenterModal";
 import { ResourceFormConstants, ResourceFormDefaultValues, ResourceFormSchema } from "@/constants/resources";
 import { cn } from "@/utils/merge-class";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,6 +15,8 @@ import { useQueryState } from "nuqs";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import FeedHeader from "@/components/community/FeedHeader/index";
 import LottieLoader from "@/components/common/Loader/Lottie";
+import { FaTrashCan } from "react-icons/fa6";
+import { FiPlus } from "react-icons/fi";
 
 type ResourceModalProps = {
     isOpen: boolean;
@@ -32,6 +34,104 @@ type ResourceActionProps = {
     errorMessage: string;
 };
 
+type CuratedLink = {
+    title: string;
+    url: string
+}
+
+interface Props {
+    value: CuratedLink[];
+    onChange: (value: CuratedLink[]) => void;
+    error: any;
+}
+
+const MAX_LINKS = 5;
+const CuratedInputComponent: React.FC<Props> = ({ value, onChange, error }) => {
+    console.log("error", error);
+    const [links, setLinks] = useState<CuratedLink[]>(value.length ? value : []);
+
+    useEffect(() => {
+        setLinks(value.length ? value : []);
+    }, [value]);
+
+    const handleChange = useCallback((index: number, field: keyof CuratedLink, eventValue: string) => {
+        setLinks((prevLinks) => {
+            const newLinks = [...prevLinks];
+            newLinks[index] = { ...newLinks[index], [field]: eventValue };
+            onChange(newLinks);
+            return newLinks;
+        });
+    }, [onChange]);
+
+    const addRow = useCallback(() => {
+        if (links.length < MAX_LINKS) {
+            setLinks((prevLinks) => {
+                const newLinks = [...prevLinks, { title: "", url: "" }];
+                return newLinks;
+            });
+        }
+    }, [links.length]);
+
+    const removeRow = useCallback((index: number) => {
+        setLinks((prevLinks) => {
+            const newLinks = prevLinks.filter((_, i) => i !== index);
+            onChange(newLinks);
+            return newLinks;
+        });
+    }, [onChange]);
+
+    return (
+        <div>
+            <label className="inner-label text-sm font-medium">Curated Links</label>
+            <div className="space-y-2 mt-2">
+                {links.map((link, index) => (
+                    <div key={index} className="flex flex-col">
+                        <div className="flex items-center gap-2 w-full">
+                            <Input
+                                name={`title-${index}`}
+                                value={link.title}
+                                onChange={(value) => handleChange(index, "title", value as string)}
+                                inputType="text"
+                                placeholder="Title"
+                                rootClassName="!w-[45%] !mb-0"
+                                inputClassName={`!w-full ${link.title || 'border !border-red-400 !bg-red-50'}`}
+                            />
+                            <span>-</span>
+                            <Input
+                                name={`link-${index}`}
+                                value={link.url}
+                                onChange={(value) => handleChange(index, "url", value as string)}
+                                inputType="text"
+                                placeholder="Paste link here"
+                                rootClassName="!w-full !mb-0"
+                                inputClassName={`!w-full ${link.url || 'border !border-red-400 !bg-red-50'}`}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => removeRow(index)}
+                                className="text-red-500 flex-center bg-red-100 rounded-md p-2 border hover:border-red-500"
+                            >
+                                <FaTrashCan size={20} />
+                            </button>
+                        </div>
+                        {Array.isArray(error) && error[index] && <p className="text-red-500 text-xs mt-1">{error[index]?.title?.message || error[index]?.url?.message}</p>}
+                    </div>
+                ))}
+                {error?.message && <p className="text-red-500 text-sm">{error?.message}</p>}
+                {links.length < MAX_LINKS && (
+                    <button
+                        type="button"
+                        onClick={addRow}
+                        className="text-gray-800 text-sm border px-3 py-2 rounded-xl flex-center gap-1"
+                    >
+                        <FiPlus /> Add New Link
+                    </button>
+                )}
+            </div>
+        </div>
+    );
+};
+
 const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: ResourceModalProps) => {
     const { userName } = useAppStore();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,6 +140,13 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
     const [resourceId] = useQueryState("id") || "";
     const [currentMode] = useQueryState("mode");
     const isEditMode = currentMode === "edit";
+
+    const modalRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        if (modalRef.current) {
+            modalRef.current.scrollIntoView();
+        }
+    }, [isOpen]);
 
     const {
         control,
@@ -142,7 +249,7 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
             isOpen={isOpen}
             onClose={onClose}
             loading={isSubmitting}
-            width={600}
+            width={700}
             headerComponent={
                 isMobile && (
                     <FeedHeader
@@ -162,6 +269,7 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
             primaryActionProps={buttonProps.primary}
             hideFooter={isMobile}
         >
+            <div ref={modalRef} />
             {mode !== "view" ? (
                 <form
                     onSubmit={handleSubmit(onSubmit, onError)}
@@ -175,24 +283,44 @@ const ResourceModal = ({ triggerReload, isOpen, mode = "view", onClose }: Resour
                             <div className={`w-full flex-center ${isMobile ? "min-h-[90vh]" : "min-h-[45vh]"}`}>
                                 <LottieLoader isLoading={true} customClassName="md:w-[5rem] md:h-[5rem] lg:w-[6rem] lg:h-[6rem]" />
                             </div>
-                        ) : ResourceFormConstants.map((field: any) => (
-                            <Controller
-                                key={field.name}
-                                name={field.name}
-                                control={control}
-                                render={({ field: { value, onChange } }) => (
-                                    <Input
-                                        key={field.name}
-                                        {...field}
-                                        error={errors[field.name as keyof FormData]?.message}
-                                        value={value}
-                                        onChange={onChange}
-                                        rootClassName="max-md:bg-white max-md:p-4 max-md:rounded-xl"
-                                        inputClassName={field.inputClassName}
+                        )
+                            :
+                            (
+                                <>
+                                    {ResourceFormConstants.map((field: any) => (
+                                        <Controller
+                                            key={field.name}
+                                            name={field.name}
+                                            control={control}
+                                            render={({ field: { value, onChange } }) => (
+                                                <Input
+                                                    key={field.name}
+                                                    {...field}
+                                                    error={errors[field.name as keyof FormData]?.message}
+                                                    value={value}
+                                                    onChange={onChange}
+                                                    rootClassName="max-md:bg-white max-md:p-4 max-md:rounded-xl"
+                                                    inputClassName={field.inputClassName}
+                                                />
+                                            )}
+                                        />
+                                    ))}
+                                    <Controller
+                                        key="curated_links"
+                                        name="curated_links"
+                                        control={control}
+                                        render={({ field: { value, onChange } }) => (
+                                            <CuratedInputComponent
+                                                key="curated_links"
+                                                value={value || []}
+                                                error={errors.curated_links}
+                                                onChange={onChange}
+                                            />
+                                        )}
                                     />
-                                )}
-                            />
-                        ))}
+                                </>
+                            )
+                    }
                 </form>
             ) : (
                 <div>View</div>

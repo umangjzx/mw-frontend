@@ -121,8 +121,16 @@ export const ResourceFormSchema = z.object({
         }),
     resource_notes: z
         .string({ required_error: "Notes is required" })
-        .min(1, "Notes is required" )
-        .max(200, "Notes cannot exceed 200 characters")
+        .min(1, "Notes is required")
+        .max(200, "Notes cannot exceed 200 characters"),
+    curated_links: z.array(
+        z.object({
+            title: z.string().min(4, "Title is required (Min 4 characters)"),
+            url: z.string().url("Invalid URL"),
+        })
+    ).refine(links => links?.every(link => link.title && link.url), {
+        message: "Each link must have both a title and a URL.",
+    }),
 });
 
 export const ResourceFormDefaultValues = {
@@ -134,4 +142,5 @@ export const ResourceFormDefaultValues = {
     resource_skills: [],
     resource_category: {},
     resource_notes: "",
+    curated_links: [],
 };

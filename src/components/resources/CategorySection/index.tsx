@@ -41,10 +41,10 @@ const CategorySection = ({ topicSingleTitle, handleViewOrEditResource }: Categor
                 </div>
             ) : (
                 <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {categories &&
-                            categories?.length > 0 &&
-                            categories?.map((resource: any, index: number) => (
+                    {categories &&
+                        categories?.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {categories?.map((resource: any, index: number) => (
                                 <div key={resource?.resource_id || index} className="col-span-1">
                                     <Card
                                         resource={resource}
@@ -55,8 +55,7 @@ const CategorySection = ({ topicSingleTitle, handleViewOrEditResource }: Categor
                                     />
                                 </div>
                             ))}
-                    </div>
-                    {categories?.length === 0 && (
+                        </div> ) : (
                         <span className="min-w-[250px] min-h-[275px] h-full w-full flex-center">
                             No Resource Found
                         </span>
