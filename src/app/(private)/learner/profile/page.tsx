@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
-import Bio from "@/components/profile/Bio";
 import Overview from "@/components/profile/Overview";
 import { useComponentStore } from "@/store/useComponenetStore";
 import { useQuery } from "@tanstack/react-query";
@@ -16,6 +15,7 @@ import MobileProfileView from "@/components/profile/MobileProfileView";
 import InnerWidth from "@/utils/innerWidth";
 import EditProfileModal from "@/components/profile/EditProfile";
 import { useQueryState } from "nuqs";
+import LearnerProfileBio from "@/components/learners/profile";
 
 export default function ProfilePage() {
     const { setHeaderOptions } = useComponentStore();
@@ -124,7 +124,7 @@ export default function ProfilePage() {
                     />
                     :
                     <div className="h-full w-full grid grid-cols-[1fr,2fr] gap-10 p-5">
-                        <Bio data={learnerData?.bio} />
+                        <LearnerProfileBio data={data} />
                         <Overview data={learnerData?.overview} reviewEndpoint={endpoints.learnerFeedback.get(learnerId)} />
                     </div>
             }

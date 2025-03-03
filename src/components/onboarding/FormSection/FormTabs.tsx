@@ -100,8 +100,8 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
             if (!validateAgeUnder18(learnerAge)) return true;
 
             const learnerValidation = validateLearnerParentFields(control._formValues);
-            if (!handleValidationErrors(learnerValidation)) {
-                if ((activeTab === 0 && highestTab > 1) || (activeTab === 1)) {
+            if ((activeTab === 0 && highestTab > 1) || (activeTab === 1)) {
+                if (!handleValidationErrors(learnerValidation)) {
                     if (activeTab === 0) setActiveTab(1);
                     return false;
                 }
