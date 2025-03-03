@@ -17,6 +17,7 @@ import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import { useGoogleLogin } from "@react-oauth/google";
 import { API_URL } from "@/definitions";
+import CookieConsent from "@/components/landingpage/Cookie";
 
 export default function Page() {
     const router = useRouter();
@@ -138,7 +139,7 @@ export default function Page() {
         );
 
     return (
-        <div className="w-full overflow-x-hidden bg-background-input">
+        <div className="w-full overflow-x-hidden bg-background-input relative">
             <Hero handleSetRole={handleSetRole} buttonLoading={buttonLoading} />
             <div className="flex flex-col gap-20 lg:gap-[7rem] py-[7rem]">
                 <div className="reveal px-[9%]" id="about-us">
@@ -166,6 +167,7 @@ export default function Page() {
                 </div>
             </div>
             <Footer />
+            <CookieConsent />
         </div>
     );
 }
