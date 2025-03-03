@@ -111,7 +111,7 @@ const Donate = () => {
                     Support Our Mission
                 </h2>
                 <p className="text-xl text-gray-light text-center leading-normal">
-                    At Melody Wings, we strive to provide opportunities for differently-abled
+                    At MelodyWings, we strive to provide opportunities for differently-abled
                     children to learn, grow, and unlock their potential. Your support helps us
                     sustain this mission and expand our reach to more learners in need. Together, we
                     can make a lasting impact.
