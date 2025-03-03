@@ -281,21 +281,22 @@ export const volunteerFormSchema = z.object({
         .optional(),
 
     // Profile Document
-    profile_document: z
-        .object({
-            document_url: z.string({ required_error: "Document URL is required" }).min(1, {
-                message: "Document cannot be empty",
-            }),
-            document_id: z.string({ required_error: "Document ID is required" }).min(1, {
-                message: "Document cannot be empty",
-            }),
-        })
-        .required(),
+    // profile_document: z
+    //     .object({
+    //         document_url: z.string({ required_error: "Document URL is required" }).min(1, {
+    //             message: "Document cannot be empty",
+    //         }),
+    //         document_id: z.string({ required_error: "Document ID is required" }).min(1, {
+    //             message: "Document cannot be empty",
+    //         }),
+    //     })
+    //     .required(),
 
     // Volunteer Subjects
-    volunteer_subjects: z
-        .array(z.any(), { required_error: "Please add at least one subject" })
-        .nonempty("Please add at least one subject"),
+    // volunteer_subjects: z
+    //     .array(z.any(), { required_error: "Please add at least one subject" })
+    //     .nonempty("Please add at least one subject"),
+    
     terms_and_conditions_accepted: z.boolean({ required_error: "Acceptance of terms and conditions is required" }),
 }).superRefine((data) => {
     if (!data?.terms_and_conditions_accepted) {
@@ -485,7 +486,6 @@ export const learnerFormSchema = z.object({
         areas_of_support_needed: z.array(z.string(), {
             required_error: "Areas of Support Needed are required",
         }).nonempty("Areas of Support Needed are required"),
-        learning_styles: z.array(z.string(), { required_error: "Learning Styles are required" }).nonempty("Learning Styles are required"),
     }),
 
     // Education - Required
@@ -502,9 +502,6 @@ export const learnerFormSchema = z.object({
 
     // Social skills - Required
     social_skills: z.object({
-        communication_preferences: z.array(z.string(), {
-            required_error: "Communication Preferences are required",
-        }).nonempty("Communication Preferences are required"),
         social_interaction_styles: z.array(z.string(), {
             required_error: "Social Interaction Styles are required",
         }).nonempty("Social Interaction Styles are required"),
@@ -518,7 +515,6 @@ export const learnerFormSchema = z.object({
 
     // Current interests - Required
     current_interests: z.object({
-        interests: z.array(z.string(), { required_error: "Interests are required" }).nonempty("Interests are required"),
         extra_curricular_activities: z.string({
             required_error: "Extra-curricular Activities are required",
         }).min(1, { message: "Extra-curricular Activities  are required" }),
@@ -533,9 +529,8 @@ export const learnerFormSchema = z.object({
         subjects_to_focus_on: z.array(z.string(), {
             required_error: "Subjects to Focus On are required",
         }).nonempty("Subjects to Focus On are required"),
-        preferred_volunteer_qualities: z.array(z.string(), {
-            required_error: "Preferred Volunteer Qualities are required",
-        }).nonempty("Preferred Volunteer Qualities are required"),
+        preferred_volunteer_qualities: z.string({ required_error: "Preferred Volunteer Qualities are required" })
+            .min(1, { message: "Preferred Volunteer Qualities are required" }),
         skill_level: z.string({ required_error: "Skill Level is required" }),
     }),
 
