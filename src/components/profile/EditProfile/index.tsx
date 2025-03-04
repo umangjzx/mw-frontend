@@ -1,22 +1,20 @@
 import { z } from "zod";
-import { Input } from "@/components/common/Input";
 import CenterModal from "@/components/common/Modals/CenterModal";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { showToast } from "@/components/common/Toast";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import FeedHeader from "@/components/community/FeedHeader/index";
 import { cn } from "@/utils/merge-class";
-import {
-    LearnerProfileFormConstants,
-    LearnerProfileFormSchema,
-    VolunteerProfileFormConstants,
-    VolunteerProfileFormSchema,
-} from "@/constants/profile";
+
 import { updateLearnerProfile } from "@/api/learners";
 import { updateVolunteerProfile } from "@/api/volunteers";
+import FormTabsSection from "./FormSection";
+import { learnerFormSchema, volunteerFormSchema } from "@/components/onboarding/FormSection/config";
+import { LearnerProfileFormSections } from "@/constants/learner";
+import { VolunteerProfileFormConstants } from "@/constants/volunteer";
 
 type EditProfileModalProps = {
     data?: any;
@@ -28,7 +26,6 @@ type EditProfileModalProps = {
 
 const EditProfileModal = ({
     data = {},
-    initialFormData = {},
     triggerReload,
     isOpen,
     onClose,
@@ -38,37 +35,35 @@ const EditProfileModal = ({
 
     const role = Cookies.get("role");
     const isVolunteer = role === "volunteer";
+    const userId = isVolunteer ? Cookies.get("volunteer_id") : Cookies.get("learner_id");
 
-    const UserProfileFormConstants = useMemo(
-        () => (isVolunteer ? VolunteerProfileFormConstants : LearnerProfileFormConstants),
-        [isVolunteer]
-    );
-
-    const UserProfileFormSchema = useMemo(
-        () => (isVolunteer ? VolunteerProfileFormSchema : LearnerProfileFormSchema),
-        [isVolunteer]
-    );
-
-    type FormData = z.infer<typeof UserProfileFormSchema>;
+    const UserProfileFormConstants = isVolunteer ? VolunteerProfileFormConstants : LearnerProfileFormSections;
+    const UserProfileFormSchema = isVolunteer ? volunteerFormSchema : learnerFormSchema;
 
     const {
         control,
         handleSubmit,
-        formState: { errors },
+        formState: { errors, isValid },
         reset,
-    } = useForm<FormData>({
+        trigger,
+        setError,
+        setValue,
+    } = useForm<z.infer<typeof UserProfileFormSchema>>({
         resolver: zodResolver(UserProfileFormSchema),
     });
+    type FormData = z.infer<typeof UserProfileFormSchema>;
+
+    const validateForm = () => isValid || showToast({ type: "error", message: "Fill required fields!" });
 
     useEffect(() => {
-        if (isOpen) reset(initialFormData);
-    }, [isOpen, reset, initialFormData]);
+        if (isOpen) reset(data);
+    }, [isOpen, reset, data]);
 
     const onSubmit = async (formData: FormData) => {
         setIsSubmitting(true);
         try {
             const updateProfile = isVolunteer ? updateVolunteerProfile : updateLearnerProfile;
-            const status = await updateProfile(initialFormData?.userId || "", data, formData);
+            const status = await updateProfile(userId || "", formData);
 
             if (status === 201) {
                 showToast({ message: "Profile updated" });
@@ -103,26 +98,7 @@ const EditProfileModal = ({
             disabled: isSubmitting,
         },
     };
-
-    const formFields = UserProfileFormConstants.map((field: any) => (
-        <Controller
-            key={field?.name}
-            name={field?.name}
-            control={control}
-            render={({ field: { value, onChange } }) => (
-                <Input
-                    {...field}
-                    error={errors[field?.name as keyof FormData]?.message}
-                    value={value}
-                    onChange={onChange}
-                    rootClassName="max-md:bg-white max-md:p-4 max-md:rounded-xl"
-                    inputClassName={field?.inputClassName}
-                    labelClassName="[&_.inner-label]:!font-semibold [&_.inner-label]:!text-sm"
-                />
-            )}
-        />
-    ));
-
+    
     return (
         <CenterModal
             isOpen={isOpen}
@@ -132,7 +108,7 @@ const EditProfileModal = ({
             hideFooter={isMobile}
             hideCloseIcon={isMobile}
             height={isMobile ? "100vh" : "auto"}
-            width={isMobile ? "100vw" : 800}
+            width={isMobile ? "100vw" : 680}
             headerComponent={isMobile && (
                 <FeedHeader
                     title="Edit Profile"
@@ -145,15 +121,20 @@ const EditProfileModal = ({
             )}
             secondaryActionProps={buttonProps.secondary}
             primaryActionProps={buttonProps.primary}
-            rootClassName="md:max-h-[80vh]"
-            bodyClassName="max-md:!bg-background-input"
+            rootClassName="md:h-[90vh]"
+            bodyClassName="max-md:!bg-background-input !py-0"
         >
-            <form
+            <FormTabsSection 
+                formData={UserProfileFormConstants} 
+                control={control}
+                errors={errors}
+                trigger={trigger}
+                validateForm={validateForm}
+                setValue={setValue}
                 onSubmit={handleSubmit(onSubmit, onError)}
-                className={cn("flex flex-col gap-2 md:gap-4", isMobile && "px-2 py-3 overflow-auto")}
-            >
-                {formFields}
-            </form>
+                isLoading={isSubmitting}
+                setError={setError}
+            />
         </CenterModal>
     );
 };

@@ -554,6 +554,8 @@ export const VolunteerFormSections: FormSectionConfig[] = [
     },
 ];
 
+export const VolunteerProfileFormConstants: FormSectionConfig[] = VolunteerFormSections?.filter((section) => section.parent !== "consent_and_permissions");
+
 export const VolunteerOnboardingConstants = {
     title: "Join as a Volunteer",
     description:

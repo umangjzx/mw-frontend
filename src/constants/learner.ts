@@ -212,7 +212,7 @@ const DisabilityInfoFields: FormField[] = [
         ],
         gridCols: 1,
         sublabel: " ",
-        className: "w-full h-full mt-4",
+        className: "w-full h-full mt-2 md:mt-4",
         required: true,
     },
     {
@@ -586,8 +586,8 @@ const ExpectationsGoalsFields: FormField[] = [
             { label: "Expert", value: "expert" },
         ],
         gridCols: 1,
-        className: "w-full h-fit mt-4 gap-0 !mb-0",
-        inputClassName: "w-full h-full  mt-4",
+        className: "w-full h-fit mt-2 md:mt-4 gap-0 !mb-0",
+        inputClassName: "w-full h-full",
         required: true,
     },
 ];
@@ -715,6 +715,8 @@ export const LearnerFormSections: FormSectionConfig[] = [
         ],
     },
 ];
+
+export const LearnerProfileFormSections: FormSectionConfig[] = LearnerFormSections?.filter((section) => section.parent !== "consent_and_permissions");
 
 export const LearnerThankyouCardConstants = {
     title: "Thank You for Enrolling in MelodyWings!",

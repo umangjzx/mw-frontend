@@ -3,14 +3,18 @@
 import { GET_API } from "@/api/request";
 import TagComponent from "@/components/common/Tag";
 import OverViewCard from "@/components/leaner/LeanerOverViewCard";
+import { ParentGuardianInformation, ProfileDetails } from "@/components/learners/profile/tabs";
+import { LearnerInformation } from "@/components/learners/profile/tabs";
+import { AdditionalInformation } from "@/components/learners/profile/tabs";
 import DetailCard from "@/components/profile/Bio/DetailCard";
 import DetailChipCard from "@/components/profile/Bio/DetailChipCard";
 import RatingCard from "@/components/profile/Overview/RatingCard";
 import RatingHeader from "@/components/profile/Overview/RatingHeader";
+import { VolunteerContactDetails, ProfileDetails as VolunteerProfileDetails } from "@/components/volunteers/profile/tabs";
 import { useQuery } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 interface UserBioDataProps {
     full_name: string;
@@ -208,7 +212,78 @@ const ReviewsContent = ({ userFeedback }: { userFeedback: any }) => {
     );
 };
 
-const MobileProfileView = ({ userData, reviewEndpoint }: { userData: any, reviewEndpoint: string }) => {
+const learnerTabs = [
+    { id: "profile-details", title: "Profile Details" },
+    { id: "parent-guardian-information", title: "Parent/Guardian Information" },
+    { id: "learner-information", title: "Personal Info" },
+    { id: "additional-information", title: "Additional Information" },
+]
+
+const volunteerTabs = [
+    { id: "profile-details", title: "Profile Details" },
+    { id: "contact-details", title: "Contact Details" },
+]
+
+const FullProfileDetails = ({ data }: { data: any }) => {
+    const tabContentRef = useRef<HTMLDivElement>(null);
+    const role = Cookies.get("role");
+
+    const tabs = role === "learner" ? learnerTabs : volunteerTabs;
+    const [activeTab, setActiveTab] = useState(tabs[0].id);
+
+    useEffect(() => {
+        if (tabContentRef.current) {
+            tabContentRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [activeTab]);
+
+    const renderTabContent = () => {
+        if (role === "learner") {
+            switch (activeTab) {
+                case "profile-details":
+                    return <ProfileDetails data={data?.learner_personal_info} />
+                case "parent-guardian-information":
+                    return <ParentGuardianInformation data={data?.parent_info} />
+                case "learner-information":
+                    return <LearnerInformation data={data} />
+                case "additional-information":
+                    return <AdditionalInformation data={data?.additional_info} />
+            }
+        } else {
+            switch (activeTab) {
+                case "profile-details":
+                    return <VolunteerProfileDetails data={data} />
+                case "contact-details":
+                    return <VolunteerContactDetails data={data?.volunteer_contact_details} />
+            }
+        }
+    }
+
+    return (
+        <div className="flex flex-col gap-6 pb-5 h-full">
+            <div className="flex md:flex-wrap max-md:overflow-x-auto no-scrollbar py-3 gap-2 sticky top-0 bg-background-input md:bg-white z-10 border-b border-gray-500 md:border-stroke">
+                {tabs.map((tab: any, index) => (
+                    <button
+                        key={tab.title || index}
+                        type="button"
+                        onClick={() => setActiveTab(tab.id)}
+                    >
+                        <TagComponent
+                            text={tab.title}
+                            className={`!text-sm py-1 px-3 border ${activeTab === tab.id ? "bg-background border-primary" : "bg-white md:bg-background-input text-gray-dark border-gray-500 md:border-gray-dark"}`}
+                        />
+                    </button>
+                ))}
+            </div>
+            <div className="bg-white rounded-3xl w-full p-5 h-full">
+                {renderTabContent()}
+            </div>
+        </div>
+    );
+};
+
+
+const MobileProfileView = ({ data, userData, reviewEndpoint }: { data: any, userData: any, reviewEndpoint: string }) => {
     const [activeTab, setActiveTab] = useState("overview");
 
     const getUserFeedback = async () => {
@@ -238,15 +313,15 @@ const MobileProfileView = ({ userData, reviewEndpoint }: { userData: any, review
                 rating={rating}
                 totalReviews={totalReviews}
             />
-            <div className="relative h-full bg-background-input p-5 overflow-y-auto border-t">
+            <div className="relative h-full bg-background-input px-5 overflow-y-auto border-t">
                 <div
-                    className={`transform transition-all duration-300 bg-white py-3 rounded-xl ${activeTab === "overview"
+                    className={`transform transition-all duration-300 ${activeTab === "overview"
                         ? "opacity-100 translate-x-0"
                         : "opacity-0 -translate-x-8 absolute top-0 left-0 right-0"
                         }`}
                 >
                     {activeTab === "overview" && (
-                        <OverviewContent userData={userData} />
+                        <FullProfileDetails data={data} />
                     )}
                 </div>
                 <div

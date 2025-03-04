@@ -111,7 +111,6 @@ export default function ProfilePage() {
         <div className="h-full animate-fadeIn">
             <EditProfileModal
                 data={data}
-                initialFormData={editProfileData}
                 isOpen={mode === "edit"}
                 onClose={() => setMode(null)}
                 triggerReload={triggerReload}
@@ -119,6 +118,7 @@ export default function ProfilePage() {
             {
                 isMobileOrTabScreen ?
                     <MobileProfileView
+                        data={data}
                         userData={volunteerData?.bio}
                         reviewEndpoint={endpoints.learnerFeedback.get(volunteerId)}
                     />

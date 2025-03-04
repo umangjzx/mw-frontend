@@ -25,7 +25,6 @@ export default function ProfilePage() {
     const [mode, setMode] = useQueryState("mode");
 
     const learnerId = Cookies.get("learner_id") || "";
-    const [editProfileData, setEditProfileData] = useState({});
     const [learnerData, setLearnerData] = useState({ bio: {}, overview: {} });
 
     const { data, isLoading, refetch } = useQuery({
@@ -63,19 +62,6 @@ export default function ProfilePage() {
         const subjects = data?.learner_goals?.subjects_to_focus_on;
         const contactDetail = data?.learner_personal_info?.learner_contact_details;
 
-        setEditProfileData({
-            userId: learnerId,
-            learner_first_name: learner_first_name,
-            learner_last_name: learner_last_name,
-            learner_description: description,
-            profile_picture: data?.profile_picture,
-            learner_subjects: subjects,
-            learner_language: learner_primary_language,
-            contact_number: contactDetail?.contact_number,
-            email: contactDetail?.email,
-            country: contactDetail?.country,
-        })
-
         const bioData = {
             userId: learnerId,
             full_name: `${learner_first_name} ${learner_last_name}`,
@@ -111,7 +97,6 @@ export default function ProfilePage() {
         <div className="h-full animate-fadeIn">
             <EditProfileModal
                 data={data}
-                initialFormData={editProfileData}
                 isOpen={mode === "edit"}
                 onClose={() => setMode(null)}
                 triggerReload={triggerReload}
@@ -119,6 +104,7 @@ export default function ProfilePage() {
             {
                 isMobileOrTabScreen ?
                     <MobileProfileView
+                        data={data}
                         userData={learnerData?.bio}
                         reviewEndpoint={endpoints.learnerFeedback.get(learnerId)}
                     />

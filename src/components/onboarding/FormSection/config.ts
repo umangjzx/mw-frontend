@@ -34,9 +34,9 @@ export const volunteerFormSchema = z.object({
         .string({ required_error: "Last Name is required" })
         .min(1, { message: "Last Name cannot be empty" }),
     volunteer_birth_date: z.string({ required_error: "Please select your birthday" }),
-    consented_from_parent: z.boolean().optional(),
-    volunteer_parent_name: z.string().optional(),
-    volunteer_parent_email: z.string().optional(),
+    consented_from_parent: z.boolean().or(z.null()).optional(),
+    volunteer_parent_name: z.string().or(z.null()).optional(),
+    volunteer_parent_email: z.string().or(z.null()).optional(),
     volunteer_gender: z.string({ required_error: "Please select your gender" }),
     volunteer_education: z
         .string({ required_error: "Please provide your education details" })
@@ -93,7 +93,7 @@ export const volunteerFormSchema = z.object({
                 convicted_of_a_crime: z.boolean({
                     required_error: "Please specify if you were convicted of a crime",
                 }),
-                description: z.string().optional(),
+                description: z.string().or(z.null()).optional(),
             })
             .refine(
                 (fields) => {
@@ -123,7 +123,7 @@ export const volunteerFormSchema = z.object({
                 checked_for_sex_offender: z.boolean({
                     required_error: "Please specify if you are on any sex offender registry.",
                 }),
-                description: z.string().optional(),
+                description: z.string().or(z.null()).optional(),
             })
             .refine(
                 (fields) => {
@@ -148,7 +148,7 @@ export const volunteerFormSchema = z.object({
                 dismissed_from_institution: z.boolean({
                     required_error: "Please specify if you were dismissed from an institution",
                 }),
-                description: z.string().optional(),
+                description: z.string().or(z.null()).optional(),
             })
             .refine(
                 (fields) => {
@@ -178,7 +178,7 @@ export const volunteerFormSchema = z.object({
                 having_health_issues: z.boolean({
                     required_error: "Please specify if you have health issues",
                 }),
-                description: z.string().optional(),
+                description: z.string().or(z.null()).optional(),
             })
             .refine(
                 (fields) => {
@@ -201,7 +201,7 @@ export const volunteerFormSchema = z.object({
                 agree_to_understand_termination_of_volunteer_agreement: z.boolean({
                     required_error: "Please confirm that you understand the agreement",
                 }),
-                description: z.string().optional(),
+                description: z.string().or(z.null()).optional(),
             })
             .refine(
                 (fields) => {
@@ -230,7 +230,7 @@ export const volunteerFormSchema = z.object({
                 invloved_in_complaints: z.boolean({
                     required_error: "Please specify if you were involved in complaints",
                 }),
-                description: z.string().optional(),
+                description: z.string().or(z.null()).optional(),
             })
             .refine(
                 (fields) => {
@@ -278,6 +278,7 @@ export const volunteerFormSchema = z.object({
                 message: "Profile video cannot be empty",
             }),
         })
+        .or(z.null())
         .optional(),
 
     // Profile Document
