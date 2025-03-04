@@ -1,63 +1,32 @@
 "use client";
 
-import { FormField } from "./FormField";
-import CardWrapper from "../CardWrapper";
+import { FormField } from "@/components/onboarding/FormSection/FormField";
 import Button from "@/components/common/Button";
-import Link from "next/link";
 import { showToast } from "@/components/common/Toast";
 import { useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import moment from "moment";
-import { validateLearnerParentFields, validateVolunteerParentDetails } from "./config";
+import { validateLearnerParentFields, validateVolunteerParentDetails } from "@/components/onboarding/FormSection/config";
 import { UseFormSetError, useWatch } from "react-hook-form";
 import { calculateAge } from "@/utils/timeFunctions";
 import { ADULT_VOLUNTEER_AGE } from "@/constants/volunteer";
+import TagComponent from "@/components/common/Tag";
 
-const currentVersion = process.env.NEXT_PUBLIC_CURRENT_VERSION;
-
-type FormTabsProps = {
+type FormTabsSectionProps = {
     formData: FormSectionConfig[];
     control: any;
     errors: any;
     trigger: (fields: any) => Promise<boolean>;
     validateForm: () => void;
-    handleFillForm: () => void;
+    handleFillForm?: () => void;
     onSubmit: () => void;
     setError: UseFormSetError<any>;
-    setValue: (name: string, value: any, options?: any) => void;
+    setValue: (name: string | any, value: any, options?: any) => void;
     isLoading: boolean;
 };
 
-const TermsAndConditionElement = <div>
-    By clicking on the Submit Application above, you agree to our {" "}
-    <Link
-        href="/terms-and-conditions"
-        target="_blank"
-        className="text-black underline hover:underline font-medium"
-    >
-        Terms of Service
-    </Link>{" "}
-    and our {" "}
-    <Link
-        href="/privacy-policy"
-        target="_blank"
-        className="text-black underline hover:underline font-medium"
-    >
-        Privacy Policy
-    </Link>
-    .
-</div>
 
-const termsAndConditionsInput: FormField = {
-    id: "terms_and_conditions_accepted",
-    name: "terms_and_conditions_accepted",
-    inputType: "checkbox",
-    children: TermsAndConditionElement,
-    required: true,
-    inputClassName: "text-sm lg:text-base"
-}
-
-const FormTabs = ({ formData, control, errors, trigger, setError, setValue, validateForm, handleFillForm, onSubmit, isLoading }: FormTabsProps) => {
+const FormTabsSection = ({ formData, control, errors, trigger, setError, setValue, validateForm, handleFillForm, onSubmit, isLoading }: FormTabsSectionProps) => {
     const role = Cookies.get("role");
 
     const volunteer_birth_date = useWatch({ name: 'volunteer_birth_date', control: control })
@@ -117,10 +86,10 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
     };
 
     const handleNavigation = async (index: number) => {
-        if (index > activeTab) {
-            const isValidSection = await validateCurrentSection();
-            if (!isValidSection) return;
-        }
+        // if (index > activeTab) {
+        //     const isValidSection = await validateCurrentSection();
+        //     if (!isValidSection) return;
+        // }
         setActiveTab(index);
         setHighestTab(Math.max(highestTab, index));
     };
@@ -145,44 +114,31 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
     };
 
     return (
-        <form onSubmit={onSubmit} className="w-full pb-16">
-            <div className="max-w-7xl mx-auto lg:px-8">
-                {/* Auto Form Fill - Only for Dev */}
-                {currentVersion === "dev" && <div className="flex items-end justify-end mb-5">
-                    <Button
-                        onClick={handleFillForm}
-                        title="Fill Form"
-                        size="large"
-                        customClassName="w-fit hover:!bg-green-700 !text-sm !bg-green-700 !text-white !rounded-lg !shadow-2xl !font-bold"
-                    />
-                </div>}
+        <form onSubmit={onSubmit} className="w-full">
+            <div ref={tabButtonsRef} className="mx-auto pb-2">
 
-                {/* Tabs Header */}
-                <div className="lg:hidden w-full text-center mt-5 lg:mt-0">
-                    <p className="text-base font-medium">{`Step ${activeTab + 1}/${formData.length} - ${formData[activeTab]?.title}`}</p>
-                </div>
-                <div ref={tabButtonsRef} className="flex mb-8 gap-2 px-5">
+                <div className="flex md:flex-wrap max-md:overflow-x-auto no-scrollbar py-3 gap-2 sticky top-0 bg-background-input md:bg-white z-10 border-b border-gray-500 md:border-stroke">
                     {formData.map((section: any, index) => (
                         <button
                             key={section.title || index}
                             type="button"
                             onClick={() => handleNavigation(index)}
-                            className={`lg:px-4 py-2 w-full text-sm font-medium ${index > highestTab ? "cursor-not-allowed" : ""}`}
-                            disabled={index > highestTab}
                         >
-                            <p className="hidden lg:block text-base">{section.title || `Step ${index + 1}`}</p>
-                            <div className={`!h-[10px] !w-full mt-1 rounded-xl ${index <= activeTab ? "!bg-background-secondary" : "!bg-gray-300"}`}></div>
+                            <TagComponent
+                                text={section.title}
+                                className={`!text-sm md:!text-base py-1 px-3 border ${activeTab === index ? "bg-background border-primary" : "bg-white md:bg-background-input text-gray-dark border-gray-500 md:border-gray-dark"}`}
+                            />
                         </button>
                     ))}
                 </div>
 
                 {/* Active Tab Content */}
                 {formData.map((section: any, index) => (
-                    <div key={index} className={`!bg-white p-10 lg:rounded-3xl mx-auto px-6 lg:px-8 ${activeTab === index ? 'block' : 'hidden'}`}>
+                    <div key={index} className={`md:!bg-white lg:rounded-3xl px-2 md:px-3 mx-auto py-5 ${activeTab === index ? 'block' : 'hidden'}`}>
                         {section?.title && (
-                            <h2 className="text-2xl lg:text-3xl font-medium lg:font-semibold mb-4 lg:mb-6">{section?.title}</h2>
+                            <h2 className="text-2xl lg:text-2xl font-medium lg:font-semibold mb-4 lg:mb-5">{section?.title}</h2>
                         )}
-                        <div className={`grid grid-cols-2 w-full gap-3 ${section?.type === "card" ? "lg:gap-6" : "lg:gap-4"}`}>
+                        <div className={`grid grid-cols-1 w-full gap-3 ${section?.type === "card" ? "lg:gap-5" : "lg:gap-3"}`}>
                             {section?.fields?.filter((field: any) => !hideFields(field)).map((field: any, index: number) => {
                                 if (section?.type === "card") {
                                     const parent = section?.parent
@@ -190,29 +146,28 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                                         : field.parent;
 
                                     return (
-                                        <CardWrapper
-                                            key={field.title}
-                                            index={index}
-                                            title={field.title}
-                                        >
-                                            {field.fields.map((childField: any) => (
-                                                <FormField
-                                                    key={childField.id}
-                                                    field={childField}
-                                                    control={control}
-                                                    errors={errors}
-                                                    parent={parent}
-                                                    setValue={setValue}
-                                                />
-                                            ))}
-                                        </CardWrapper>
+                                        <div key={field.title} className="border-b border-stroke pb-4">
+                                            <h3 className="text-xl font-medium mb-2">{field.title}</h3>
+                                            <div className="flex flex-col gap-2 md:gap-1">
+                                                {field.fields.map((childField: any) => (
+                                                    <FormField
+                                                        key={childField.id}
+                                                        field={{...childField, gridCols: 2, rootClassName: `${childField.rootClassName} max-md:!bg-white max-md:!p-4 max-md:!rounded-lg` }}
+                                                        control={control}
+                                                        errors={errors}
+                                                        parent={parent}
+                                                        setValue={setValue}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
                                     );
                                 }
 
                                 return (
                                     <FormField
                                         key={field.id}
-                                        field={field}
+                                        field={{...field, gridCols: 2, rootClassName: `${field.rootClassName} max-md:!bg-white max-md:!p-4 max-md:!rounded-lg` }}
                                         control={control}
                                         errors={errors}
                                         setValue={setValue}
@@ -230,17 +185,6 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                             <div className="flex flex-col gap-3">
                                 {activeTab === formData.length - 1 ? (
                                     <>
-                                        <p className="text-gray-600 text-sm">
-                                            <FormField
-                                                key="terms_and_conditions_accepted"
-                                                field={termsAndConditionsInput}
-                                                control={control}
-                                                errors={errors}
-                                                parent={null}
-                                                setValue={setValue}
-                                            />
-
-                                        </p>
                                         <Button
                                             htmlType="submit"
                                             onClick={validateForm}
@@ -268,4 +212,4 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
     );
 };
 
-export default FormTabs;
+export default FormTabsSection;

@@ -8,6 +8,7 @@ type Volunteer = {
     volunteer_gender: string;
     volunteer_experience: string;
     consented_from_parent: boolean;
+    volunteer_parent_name?: string;
     volunteer_contact_details: Volunteercontactdetails;
     legal_and_safety_info: Legalandsafetyinfo;
     consent_and_permissions: Consentandpermissions;
@@ -19,6 +20,7 @@ type Volunteer = {
     volunteer_skills: Volunteerskill[];
     volunteer_education: string;
     education_details?: string;
+    volunteer_work_experience?: string;
 };
 
 type Consentandpermissions = {

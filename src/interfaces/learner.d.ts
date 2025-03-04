@@ -25,7 +25,7 @@ interface Additionalinfo {
 interface Learnergoals {
     expected_goals: string[];
     subjects_to_focus_on: string[];
-    preferred_volunteer_qualities: string[];
+    preferred_volunteer_qualities: string;
     skill_level: string;
 }
 

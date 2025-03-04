@@ -123,25 +123,25 @@ const ProfileDetailsFields: FormField[] = [
     },
     {
         id: "volunteer_education",
-        label: "Education Summary",
+        label: "Education Summary and Specialization",
         inputType: "text",
         placeholder: "Type here",
         gridCols: 2,
         required: true,
     },
-    {
-        id: "volunteer_subjects",
-        label: "Subjects",
-        inputType: "async-select",
-        placeholder: "Select Subjects",
-        creatable: true,
-        variant: "multi",
-        required: true,
-        gridCols: 2,
-        endpoint: "subjects",
-        responseAsLabel: "subject_name",
-        responseAsValue: ["subject_id", "subject_name"],
-    },
+    // {
+    //     id: "volunteer_subjects",
+    //     label: "Subjects",
+    //     inputType: "async-select",
+    //     placeholder: "Select Subjects",
+    //     creatable: true,
+    //     variant: "multi",
+    //     required: true,
+    //     gridCols: 2,
+    //     endpoint: "subjects",
+    //     responseAsLabel: "subject_name",
+    //     responseAsValue: ["subject_id", "subject_name"],
+    // },
     {
         id: "work_experience",
         label: "Work Experience",
@@ -510,17 +510,17 @@ export const VolunteerFormSections: FormSectionConfig[] = [
                 variant: "file",
                 fileType: "video/*",
             },
-            {
-                id: "profile_document",
-                label: "ID Verification",
-                sublabel:
-                    "Please share an overview of your profile, your areas of expertise and the reasons behind your choice, such as your passion for the subject or past teaching experience.",
-                inputType: "upload",
-                required: true,
-                gridCols: 2,
-                variant: "file",
-                fileType: "application/*,image/*",
-            },
+            // {
+            //     id: "profile_document",
+            //     label: "ID Verification",
+            //     sublabel:
+            //         "Please share an overview of your profile, your areas of expertise and the reasons behind your choice, such as your passion for the subject or past teaching experience.",
+            //     inputType: "upload",
+            //     required: true,
+            //     gridCols: 2,
+            //     variant: "file",
+            //     fileType: "application/*,image/*",
+            // },
         ],
     },
     {
@@ -553,6 +553,8 @@ export const VolunteerFormSections: FormSectionConfig[] = [
         ],
     },
 ];
+
+export const VolunteerProfileFormConstants: FormSectionConfig[] = VolunteerFormSections?.filter((section) => section.parent !== "consent_and_permissions");
 
 export const VolunteerOnboardingConstants = {
     title: "Join as a Volunteer",

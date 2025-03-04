@@ -21,7 +21,7 @@ const Community = () => {
         <ContainerWrapper>
             <ContainerHeader
                 title="Our Community Hub"
-                description="At Melody Wings, we believe in empowering both our volunteers and learners beyond just the sessions."
+                description="At MelodyWings, we believe in empowering both our volunteers and learners beyond just the sessions."
             />
             <div className="mt-10 lg:mt-0 bg-white lg:bg-[#f4f7fb] shadow-inner rounded-3xl p-6 lg:py-20 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-6 place-items-center w-full">
                 {communityData.map((item, index) => (

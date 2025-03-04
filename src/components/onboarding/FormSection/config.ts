@@ -34,9 +34,9 @@ export const volunteerFormSchema = z.object({
         .string({ required_error: "Last Name is required" })
         .min(1, { message: "Last Name cannot be empty" }),
     volunteer_birth_date: z.string({ required_error: "Please select your birthday" }),
-    consented_from_parent: z.boolean().optional(),
-    volunteer_parent_name: z.string().optional(),
-    volunteer_parent_email: z.string().optional(),
+    consented_from_parent: z.boolean().or(z.null()).optional(),
+    volunteer_parent_name: z.string().or(z.null()).optional(),
+    volunteer_parent_email: z.string().or(z.null()).optional(),
     volunteer_gender: z.string({ required_error: "Please select your gender" }),
     volunteer_education: z
         .string({ required_error: "Please provide your education details" })
@@ -93,7 +93,7 @@ export const volunteerFormSchema = z.object({
                 convicted_of_a_crime: z.boolean({
                     required_error: "Please specify if you were convicted of a crime",
                 }),
-                description: z.string().optional(),
+                description: z.string().or(z.null()).optional(),
             })
             .refine(
                 (fields) => {
@@ -123,7 +123,7 @@ export const volunteerFormSchema = z.object({
                 checked_for_sex_offender: z.boolean({
                     required_error: "Please specify if you are on any sex offender registry.",
                 }),
-                description: z.string().optional(),
+                description: z.string().or(z.null()).optional(),
             })
             .refine(
                 (fields) => {
@@ -148,7 +148,7 @@ export const volunteerFormSchema = z.object({
                 dismissed_from_institution: z.boolean({
                     required_error: "Please specify if you were dismissed from an institution",
                 }),
-                description: z.string().optional(),
+                description: z.string().or(z.null()).optional(),
             })
             .refine(
                 (fields) => {
@@ -178,7 +178,7 @@ export const volunteerFormSchema = z.object({
                 having_health_issues: z.boolean({
                     required_error: "Please specify if you have health issues",
                 }),
-                description: z.string().optional(),
+                description: z.string().or(z.null()).optional(),
             })
             .refine(
                 (fields) => {
@@ -201,7 +201,7 @@ export const volunteerFormSchema = z.object({
                 agree_to_understand_termination_of_volunteer_agreement: z.boolean({
                     required_error: "Please confirm that you understand the agreement",
                 }),
-                description: z.string().optional(),
+                description: z.string().or(z.null()).optional(),
             })
             .refine(
                 (fields) => {
@@ -230,7 +230,7 @@ export const volunteerFormSchema = z.object({
                 invloved_in_complaints: z.boolean({
                     required_error: "Please specify if you were involved in complaints",
                 }),
-                description: z.string().optional(),
+                description: z.string().or(z.null()).optional(),
             })
             .refine(
                 (fields) => {
@@ -278,24 +278,26 @@ export const volunteerFormSchema = z.object({
                 message: "Profile video cannot be empty",
             }),
         })
+        .or(z.null())
         .optional(),
 
     // Profile Document
-    profile_document: z
-        .object({
-            document_url: z.string({ required_error: "Document URL is required" }).min(1, {
-                message: "Document cannot be empty",
-            }),
-            document_id: z.string({ required_error: "Document ID is required" }).min(1, {
-                message: "Document cannot be empty",
-            }),
-        })
-        .required(),
+    // profile_document: z
+    //     .object({
+    //         document_url: z.string({ required_error: "Document URL is required" }).min(1, {
+    //             message: "Document cannot be empty",
+    //         }),
+    //         document_id: z.string({ required_error: "Document ID is required" }).min(1, {
+    //             message: "Document cannot be empty",
+    //         }),
+    //     })
+    //     .required(),
 
     // Volunteer Subjects
-    volunteer_subjects: z
-        .array(z.any(), { required_error: "Please add at least one subject" })
-        .nonempty("Please add at least one subject"),
+    // volunteer_subjects: z
+    //     .array(z.any(), { required_error: "Please add at least one subject" })
+    //     .nonempty("Please add at least one subject"),
+    
     terms_and_conditions_accepted: z.boolean({ required_error: "Acceptance of terms and conditions is required" }),
 }).superRefine((data) => {
     if (!data?.terms_and_conditions_accepted) {
@@ -485,7 +487,6 @@ export const learnerFormSchema = z.object({
         areas_of_support_needed: z.array(z.string(), {
             required_error: "Areas of Support Needed are required",
         }).nonempty("Areas of Support Needed are required"),
-        learning_styles: z.array(z.string(), { required_error: "Learning Styles are required" }).nonempty("Learning Styles are required"),
     }),
 
     // Education - Required
@@ -502,9 +503,6 @@ export const learnerFormSchema = z.object({
 
     // Social skills - Required
     social_skills: z.object({
-        communication_preferences: z.array(z.string(), {
-            required_error: "Communication Preferences are required",
-        }).nonempty("Communication Preferences are required"),
         social_interaction_styles: z.array(z.string(), {
             required_error: "Social Interaction Styles are required",
         }).nonempty("Social Interaction Styles are required"),
@@ -518,7 +516,6 @@ export const learnerFormSchema = z.object({
 
     // Current interests - Required
     current_interests: z.object({
-        interests: z.array(z.string(), { required_error: "Interests are required" }).nonempty("Interests are required"),
         extra_curricular_activities: z.string({
             required_error: "Extra-curricular Activities are required",
         }).min(1, { message: "Extra-curricular Activities  are required" }),
@@ -533,9 +530,8 @@ export const learnerFormSchema = z.object({
         subjects_to_focus_on: z.array(z.string(), {
             required_error: "Subjects to Focus On are required",
         }).nonempty("Subjects to Focus On are required"),
-        preferred_volunteer_qualities: z.array(z.string(), {
-            required_error: "Preferred Volunteer Qualities are required",
-        }).nonempty("Preferred Volunteer Qualities are required"),
+        preferred_volunteer_qualities: z.string({ required_error: "Preferred Volunteer Qualities are required" })
+            .min(1, { message: "Preferred Volunteer Qualities are required" }),
         skill_level: z.string({ required_error: "Skill Level is required" }),
     }),
 
@@ -678,7 +674,7 @@ export const defaultLearnerData: Learner = {
     learner_goals: {
         expected_goals: ["Encourage Independence"],
         subjects_to_focus_on: ["science"],
-        preferred_volunteer_qualities: ["patience"],
+        preferred_volunteer_qualities: "patience",
         skill_level: "beginner",
     },
 
