@@ -71,11 +71,11 @@ export default function Page() {
 
     const handleNavigation = (data: any) => {
         if (data.onboarded_status === "verification_pending") {
-            router.push("/onboarding/verification");
+            router.replace("/onboarding/verification");
         } else if (data.onboarded_status === "details_pending") {
-            router.push("/onboarding");
+            router.replace("/onboarding");
         } else if (data.onboarded_status === "verification_completed") {
-            router.push(`/${role}/schedule`);
+            router.replace(`/${role}/schedule`);
         }
     };
 
