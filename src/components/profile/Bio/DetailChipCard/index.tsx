@@ -2,7 +2,7 @@ import React from "react";
 import TagComponent from "@/components/common/Tag";
 
 const DetailChipCard: React.FC<DetailChipCardProps> = ({ tags, title, className }) => {
-    if(!title) return null;
+    if(!title || !tags) return null;
     return (
         <div className={`px-5 flex flex-col gap-3 ${className}`}>
             <p className="font-medium ">{title}</p>
