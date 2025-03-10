@@ -16,8 +16,10 @@ import Cookies from "js-cookie";
 import Link from "next/link";
 import InnerWidth from "@/utils/innerWidth";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const Sidebar = ({ onClose }: { onClose?: () => void }) => {
+    const router = useRouter();
     const role = Cookies.get("role");
     const isMobileOrTabScreen = InnerWidth() < 1024;
 
@@ -71,9 +73,7 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
         if (typeof window !== "undefined") {
             localStorage.clear();
         }
-        if (typeof window !== "undefined") {
-            window.location.href = "/";
-        }
+        router.replace("/");
     };
 
     return (

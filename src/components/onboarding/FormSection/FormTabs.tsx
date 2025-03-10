@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import moment from "moment";
 import { validateLearnerParentFields, validateVolunteerParentDetails } from "./config";
-import { UseFormSetError, useWatch } from "react-hook-form";
+import { UseFormSetError, UseFormClearErrors, useWatch } from "react-hook-form";
 import { calculateAge } from "@/utils/timeFunctions";
 import { ADULT_VOLUNTEER_AGE } from "@/constants/volunteer";
 
@@ -24,6 +24,7 @@ type FormTabsProps = {
     handleFillForm: () => void;
     onSubmit: () => void;
     setError: UseFormSetError<any>;
+    clearErrors: UseFormClearErrors<any>;
     setValue: (name: string, value: any, options?: any) => void;
     isLoading: boolean;
 };
@@ -57,7 +58,7 @@ const termsAndConditionsInput: FormField = {
     inputClassName: "text-sm lg:text-base"
 }
 
-const FormTabs = ({ formData, control, errors, trigger, setError, setValue, validateForm, handleFillForm, onSubmit, isLoading }: FormTabsProps) => {
+const FormTabs = ({ formData, control, errors, trigger, setError, clearErrors, setValue, validateForm, handleFillForm, onSubmit, isLoading }: FormTabsProps) => {
     const role = Cookies.get("role");
 
     const volunteer_birth_date = useWatch({ name: 'volunteer_birth_date', control: control })
@@ -100,11 +101,11 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
             if (!validateAgeUnder18(learnerAge)) return true;
 
             const learnerValidation = validateLearnerParentFields(control._formValues);
-            if ((activeTab === 0 && highestTab > 1) || (activeTab === 1)) {
-                if (!handleValidationErrors(learnerValidation)) {
-                    if (activeTab === 0) setActiveTab(1);
-                    return false;
-                }
+            if((activeTab === 0 && highestTab > 1) && !learnerValidation?.success){
+                if (activeTab === 0) setActiveTab(1);
+                return false;
+            } else if (activeTab === 1 && !handleValidationErrors(learnerValidation)) {
+                return false;
             }
         }
 
@@ -116,7 +117,11 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
         return true;
     };
 
+    const learnerParentValidateKeys = ["parent_info.parent_first_name", "parent_info.parent_last_name", "parent_info.parent_email", "parent_info.parent_contact_number", "parent_info.parent_address", "parent_info.relationship_to_learner"];
+
     const handleNavigation = async (index: number) => {
+        if (role === "learner") learnerParentValidateKeys.forEach((key) => clearErrors(key));
+        
         if (index > activeTab) {
             const isValidSection = await validateCurrentSection();
             if (!isValidSection) return;

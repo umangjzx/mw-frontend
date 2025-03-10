@@ -17,7 +17,7 @@ type FormSectionProps = {
 
 const FormSection = ({ schema, formData }: FormSectionProps) => {
     const { form, onSubmit, isLoading } = useOnboardingForm(schema);
-    const { control, formState: { errors, isValid, dirtyFields }, trigger, setError, setValue } = form;
+    const { control, formState: { errors, isValid, dirtyFields }, trigger, setError, setValue, clearErrors } = form;
 
     const role = Cookies.get("role");
     const isVolunteer = role === "volunteer";
@@ -65,6 +65,7 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
             <FormTabs 
                 setValue={setValue}
                 setError={setError}
+                clearErrors={clearErrors}
                 formData={formData}
                 control={control}
                 errors={errors}

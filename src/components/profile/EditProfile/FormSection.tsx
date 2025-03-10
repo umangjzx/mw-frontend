@@ -86,10 +86,10 @@ const FormTabsSection = ({ formData, control, errors, trigger, setError, setValu
     };
 
     const handleNavigation = async (index: number) => {
-        // if (index > activeTab) {
-        //     const isValidSection = await validateCurrentSection();
-        //     if (!isValidSection) return;
-        // }
+        if (index > activeTab) {
+            const isValidSection = await validateCurrentSection();
+            if (!isValidSection) return;
+        }
         setActiveTab(index);
         setHighestTab(Math.max(highestTab, index));
     };
