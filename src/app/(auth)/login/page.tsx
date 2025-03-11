@@ -77,6 +77,7 @@ export default function Page() {
         } else if (data.onboarded_status === "verification_completed") {
             router.replace(`/${role}/schedule`);
         }
+        router.refresh();
     };
 
     useEffect(() => {

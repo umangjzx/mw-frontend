@@ -48,6 +48,7 @@ const EditProfileModal = ({
         trigger,
         setError,
         setValue,
+        clearErrors,
     } = useForm<z.infer<typeof UserProfileFormSchema>>({
         resolver: zodResolver(UserProfileFormSchema),
     });
@@ -105,7 +106,7 @@ const EditProfileModal = ({
             onClose={onClose}
             title="Edit Profile"
             loading={isSubmitting}
-            hideFooter={isMobile}
+            hideFooter={true}
             hideCloseIcon={isMobile}
             height={isMobile ? "100vh" : "auto"}
             width={isMobile ? "100vw" : 680}
@@ -121,7 +122,7 @@ const EditProfileModal = ({
             )}
             secondaryActionProps={buttonProps.secondary}
             primaryActionProps={buttonProps.primary}
-            rootClassName="md:h-[90vh]"
+            rootClassName="md:h-[90vh] md:rounded-2xl md:overflow-hidden"
             bodyClassName="max-md:!bg-background-input !py-0"
         >
             <FormTabsSection 
@@ -134,6 +135,7 @@ const EditProfileModal = ({
                 onSubmit={handleSubmit(onSubmit, onError)}
                 isLoading={isSubmitting}
                 setError={setError}
+                clearErrors={clearErrors}
             />
         </CenterModal>
     );

@@ -17,6 +17,10 @@ const useAutoLogout = (router: any) => {
     Cookies.remove("volunteer_id");
     Cookies.remove("lastActivity");
 
+    if (typeof window !== "undefined") {
+      localStorage.clear();
+      sessionStorage.clear();
+    }
     router.replace("/login");
   }, [router]);
 

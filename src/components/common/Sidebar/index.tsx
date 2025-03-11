@@ -62,19 +62,23 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
     const linksData = [...baseLinksData, roleBasedLink, ...remainingLinks];
 
     const handleSignOut = () => {
-        const cookieSetting = { path: "/", secure: true };
+        const cookieSetting = { path: "/" };
+    
         Cookies.remove("role", cookieSetting);
         Cookies.remove("token", cookieSetting);
         Cookies.remove("refresh_token", cookieSetting);
         Cookies.remove("learner_id", cookieSetting);
         Cookies.remove("volunteer_id", cookieSetting);
         Cookies.remove("onboarded_status", cookieSetting);
-
+    
         if (typeof window !== "undefined") {
             localStorage.clear();
+            sessionStorage.clear();
         }
-        router.replace("/");
-    };
+
+        router.replace("/login");
+        router.refresh();
+    };    
 
     return (
         <div className="bg-white w-full h-full lg:h-screen flex flex-col items-center justify-between p-6">

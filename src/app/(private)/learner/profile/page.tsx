@@ -34,11 +34,19 @@ export default function ProfilePage() {
     });
     const triggerReload = async () => await refetch();
 
+    const handleBackButton = () => {
+        if (typeof window !== "undefined" && window.history.length > 2) {
+            router.back();
+        } else {
+            router.replace("/learner/schedule");
+        }
+    };
+
     useEffect(() => {
         setHeaderOptions({
             title: "Profile",
             titleIcon: <IoIosArrowBack className="text-lg" />,
-            titleIconClick: () => router.push("/learner/schedule"),
+            titleIconClick: handleBackButton,
             actionButtonTitle: "Edit Profile",
             actionButtonClassName:
                 "lg:hidden !bg-black !text-white !rounded-xl hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4",
