@@ -433,14 +433,14 @@ type learnerParentSchemaType = {
 }
 
 const learnerParentSchema = z.object({
-    parent_first_name: z.string({ required_error: "Parent's First Name is required" }),
-    parent_last_name: z.string({ required_error: "Parent's Last Name is required" }),
-    parent_email: z.string({ required_error: "Parent's Email is required" }),
-    parent_contact_number: z.any().optional(),
-    parent_address: z.string({ required_error: "Parent's Address is required" }),
+    parent_first_name: z.string({ required_error: "Parent's First Name is required" }).or(z.null()),
+    parent_last_name: z.string({ required_error: "Parent's Last Name is required" }).or(z.null()),
+    parent_email: z.string({ required_error: "Parent's Email is required" }).or(z.null()),
+    parent_contact_number: z.any().optional().or(z.null()),
+    parent_address: z.string({ required_error: "Parent's Address is required" }).or(z.null()),
     relationship_to_learner: z.string({
         required_error: "Relationship to Learner is required",
-    }),
+    }).or(z.null()),
 })
 
 export const learnerFormSchema = z.object({
