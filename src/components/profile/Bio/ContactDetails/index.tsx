@@ -3,8 +3,10 @@ import { IoMdCopy } from "react-icons/io";
 import { TiTickOutline } from "react-icons/ti";
 
 const ContactDetails = ({ tags = [] }: any) => {
+    if(!tags?.length) return null;
 
     const renderElement = (tag: any) => {
+        if(!tag?.value) return null;
         const [isTextCopied, setIsTextCopied] = useState(false);
 
         const copyContact = async (text: string) => {
@@ -12,7 +14,7 @@ const ContactDetails = ({ tags = [] }: any) => {
             setIsTextCopied(true)
             setTimeout(() => setIsTextCopied(false), 2000)
         }
-        return <div className="flex flex-col gap-1">
+        return <div className="flex flex-col gap-1" key={tag?.title}>
             <p className="text-sm flex gap-1 items-center">{tag?.icon} {tag?.title}</p>
             <p className="font-medium flex items-center gap-1">
                 {tag?.value}

@@ -50,6 +50,9 @@ export const volunteerFormSchema = z.object({
     volunteer_experience: z
         .string({ required_error: "Experience details are required" })
         .min(1, { message: "Experience details cannot be empty" }),
+    volunteer_work_experience: z
+        .string({ required_error: "Work experience details are required" })
+        .min(1, { message: "Work experience details cannot be empty" }),
     volunteer_skills: z
         .array(
             z.object({

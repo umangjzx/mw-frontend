@@ -17,6 +17,7 @@ import RatingCard from "@/components/profile/Overview/RatingCard";
 import RatingHeader from "@/components/profile/Overview/RatingHeader";
 import InnerWidth from "@/utils/innerWidth";
 import { getLocalStorage } from "@/utils/localStorage";
+import { formatString } from "@/utils/stringFormats";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -59,6 +60,7 @@ interface VolunteerData {
     volunteer_description: string;
     volunteer_education: string;
     volunteer_experience: string;
+    volunteer_work_experience: string;
     volunteer_contact_details?: {
         country?: string;
     }
@@ -174,22 +176,30 @@ const OverviewContent = ({ volunteerData }: { volunteerData: VolunteerData }) =>
     const details = [
         {
             title: "Subjects I Teach",
-            tags: volunteerData?.volunteer_subjects.map((subject) => subject.subject_name),
+            tags: volunteerData?.volunteer_subjects?.map((subject) => subject?.subject_name),
         },
         {
             title: "Languages I Speak",
-            tags: volunteerData?.volunteer_languages.map((lang) => lang.language_name),
+            tags: volunteerData?.volunteer_languages?.map((lang) => lang?.language_name),
         },
         {
             title: "Skills",
-            tags: volunteerData?.volunteer_skills.map((skill) => skill.skill_name),
+            tags: volunteerData?.volunteer_skills?.map((skill) => skill?.skill_name),
         },
     ];
 
     const bio = [
         {
-            title: "Experience",
+            title: "Gender",
+            description: formatString(volunteerData?.volunteer_gender || ""),
+        },
+        {
+            title: "Volunteer Experience",
             description: volunteerData?.volunteer_experience,
+        },
+        {
+            title: "Work Experience",
+            description: volunteerData?.volunteer_work_experience,
         },
         {
             title: "Education",
@@ -205,7 +215,7 @@ const OverviewContent = ({ volunteerData }: { volunteerData: VolunteerData }) =>
                     {volunteerData?.volunteer_contact_details?.country
                         &&
                         <TagComponent
-                            text={volunteerData?.volunteer_contact_details?.country}
+                            text={formatString(volunteerData?.volunteer_contact_details?.country)}
                             className="max-md:hidden text-xs py-1 font-medium px-2"
                             icon={<FaLocationDot />}
                         />
@@ -221,28 +231,21 @@ const OverviewContent = ({ volunteerData }: { volunteerData: VolunteerData }) =>
                         className="text-xs py-1 font-medium px-2"
                     />
                 </div>
-                <div className={`md:hidden flex items-center justify-between ${volunteerData?.volunteer_gender ? '' : 'hidden'}`}>
-                    <p className="font-medium">Gender</p>
-                    <TagComponent
-                        text={volunteerData?.volunteer_gender || ""}
-                        className="text-xs py-1 font-medium px-2"
-                    />
-                </div>
             </div>
-            {details.map((detail, index) => (
-                <DetailChipCard
-                    key={index}
-                    className="!gap-2"
-                    tags={detail?.tags}
-                    title={detail?.title}
-                />
-            ))}
             {bio.map((item, index) => (
                 <DetailCard
                     key={index}
                     className="!gap-2"
                     title={item?.title}
                     description={item?.description}
+                />
+            ))}
+            {details.map((detail, index) => (
+                <DetailChipCard
+                    key={index}
+                    className="!gap-2"
+                    tags={detail?.tags}
+                    title={detail?.title}
                 />
             ))}
         </div>
@@ -339,7 +342,7 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
         router.push(`/learner/volunteer?volunteerId=${volunteerId}&modal=add_new_meeting`);
     };
     const rating = volunteerFeedback?.overall_rating;
-    const totalReviews = volunteerFeedback?.feedbacks.length;
+    const totalReviews = volunteerFeedback?.feedbacks?.length;
 
     return (
         <ViewModal
@@ -356,7 +359,7 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
                         <LottieLoader isLoading={true} />
                     </div>
                     :
-                    <div className="flex flex-col gap-0 md:gap-4 pt-4 md:py-4 h-full">
+                    <div className="flex flex-col gap-0 md:gap-4 pt-4 md:py-4 h-full md:max-h-[90dvh]">
                         <ProfileHeader
                             text={text}
                             onClose={onClose}
@@ -372,7 +375,7 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
                             totalReviews={totalReviews}
                             isMobileScreen={isMobileScreen}
                         />
-                        <div className="relative max-md:h-full max-md:bg-background-input max-md:p-5 overflow-y-auto max-md:border-t max-md:border-t-2">
+                        <div className="relative max-md:h-full max-md:bg-background-input max-md:p-5 overflow-y-auto max-md:border-t">
                             <div
                                 className={`transform transition-all duration-300 max-md:bg-white max-md:py-3 max-md:rounded-xl ${activeTab === "overview"
                                     ? "opacity-100 translate-x-0"

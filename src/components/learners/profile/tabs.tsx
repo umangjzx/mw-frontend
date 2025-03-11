@@ -73,10 +73,13 @@ export const ParentGuardianInformation = ({ data }: { data: Parentinfo }) => {
         { label: "Address", value: data?.parent_address },
     ]
 
+    const number = data?.parent_contact_number?.number;
+    const email = data?.parent_email;
+
     const contactDetails = [
-        { title: "Phone Number", value: data?.parent_contact_number?.number, icon: <FaPhoneAlt size={13} /> },
-        { title: "Email", value: data?.parent_email, icon: <MdEmail size={15} /> },
-    ]
+        { title: "Phone Number", value: number, icon: <FaPhoneAlt size={13} /> },
+        { title: "Email", value: email, icon: <MdEmail size={15} /> },
+    ].filter(item => item.value);
 
     return (
         <div>

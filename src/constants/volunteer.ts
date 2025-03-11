@@ -143,7 +143,7 @@ const ProfileDetailsFields: FormField[] = [
     //     responseAsValue: ["subject_id", "subject_name"],
     // },
     {
-        id: "work_experience",
+        id: "volunteer_work_experience",
         label: "Work Experience",
         inputType: "text",
         placeholder: "Type here",

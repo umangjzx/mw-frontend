@@ -5,6 +5,7 @@ import CardChips from "./CardChips";
 import Divider from "@/components/common/Divider";
 import { FaStar } from "react-icons/fa";
 import { SeeMoreIcon } from "@/assets/icons";
+import { formatString } from "@/utils/stringFormats";
 
 const VolunteerCard: React.FC<VolunteerCardProps> = ({
     onSeeMoreClick,
@@ -22,8 +23,8 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
     const details = [
         { label: "Volunteer Hrs", value: volunteerHrs },
         { label: "Student connected", value: studentConnected },
-        { label: "Subject", value: subjects.join(", ") },
-        { label: "Language", value: languages.join(", ") },
+        { label: "Subject", value: subjects?.join(", ") },
+        { label: "Language", value: languages?.join(", ") },
     ];
 
     return (
@@ -50,7 +51,7 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
                 <div className="flex flex-col">
                     <p className="text-base font-semibold lg:text-normal lg:font-medium">{name}</p>
                     <p className="text-sm font-medium">
-                        <span className="text-gray-light capitalize">{location && `From ${location}`}</span>
+                        <span className="text-gray-light">{location && `From ${formatString(location || "")}`}</span>
                     </p>
                 </div>
             </div>
@@ -60,7 +61,7 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
                 </div>
                 <div className="flex max-lg:flex-col gap-2.5">
                     <CardChips label="Student connected" value={studentConnected} />
-                    <CardChips label="Subject" value={subjects.join(", ")} />
+                    <CardChips label="Subject" value={subjects?.join(", ")} />
                 </div>
                 <div>
                     <CardChips label="Language" value={languages.join(", ")} />

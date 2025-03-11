@@ -96,18 +96,18 @@ export default function LearnersPage() {
     useEffect(() => {
         if (data?.items) {
             const formattedData: VolunteerCardData[] = data.items.map((volunteer: any) => ({
-                volunteerId: volunteer.volunteer_id,
-                profileImage: volunteer.profile_picture.image_url,
-                name: `${volunteer.volunteer_first_name} ${volunteer.volunteer_last_name}`,
+                volunteerId: volunteer?.volunteer_id,
+                profileImage: volunteer?.profile_picture?.image_url,
+                name: `${volunteer?.volunteer_first_name} ${volunteer?.volunteer_last_name}`,
                 location: volunteer?.country,
                 volunteerHrs: volunteer?.total_volunteered_hours?.toString(),
-                studentConnected: volunteer.students_connected?.toString(),
-                subjects: volunteer.volunteer_subjects.map((subject: any) => subject.subject_name),
-                languages: volunteer.volunteer_languages.map(
-                    (language: any) => language.language_name
+                studentConnected: volunteer?.students_connected?.toString(),
+                subjects: volunteer?.volunteer_subjects?.map((subject: any) => subject?.subject_name),
+                languages: volunteer?.volunteer_languages?.map(
+                    (language: any) => language?.language_name
                 ),
-                totalReviews: volunteer.total_reviews,
-                overallRating: volunteer.overall_rating,
+                totalReviews: volunteer?.total_reviews,
+                overallRating: volunteer?.overall_rating,
             }));
             setVolunteerCardData(formattedData);
         }
