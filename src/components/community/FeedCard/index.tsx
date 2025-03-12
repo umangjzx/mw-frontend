@@ -334,7 +334,7 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                                 </div>
 
                                 {post.images.length > 0 && (
-                                    <div className="relative mt-2 md:mt-3 w-full h-full bg-gray-300 md:rounded-xl min-h-[240px] max-h-[350px] md:min-h-[360px] md:max-h-[420px] 2xl:min-h-[400px] 2xl:max-h-[450px]">
+                                    <div className="relative mt-2 md:mt-3 w-full h-full bg-gray-300 sm:rounded-xl min-h-[260px] max-h-[350px] sm:min-h-[300px] md:min-h-[360px] md:max-h-[420px] 2xl:min-h-[400px] 2xl:max-h-[450px]">
                                         <Image
                                             src={validImageUrl}
                                             alt="post image"

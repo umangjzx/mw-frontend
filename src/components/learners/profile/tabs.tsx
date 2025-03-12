@@ -71,7 +71,8 @@ export const ParentGuardianInformation = ({ data }: { data: Parentinfo }) => {
         { label: "First Name", value: data?.parent_first_name },
         { label: "Last Name", value: data?.parent_last_name },
         { label: "Address", value: data?.parent_address },
-    ]
+        { label: "Relationship", value: data?.relationship_to_learner },
+    ].filter(item => item.value);
 
     const number = data?.parent_contact_number?.number;
     const email = data?.parent_email;
@@ -80,6 +81,8 @@ export const ParentGuardianInformation = ({ data }: { data: Parentinfo }) => {
         { title: "Phone Number", value: number, icon: <FaPhoneAlt size={13} /> },
         { title: "Email", value: email, icon: <MdEmail size={15} /> },
     ].filter(item => item.value);
+
+    if(details.length === 0 && contactDetails.length === 0) return <div className="text-center text-base font-medium h-full flex-center">No information found</div>;
 
     return (
         <div>

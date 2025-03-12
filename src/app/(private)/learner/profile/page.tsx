@@ -35,11 +35,7 @@ export default function ProfilePage() {
     const triggerReload = async () => await refetch();
 
     const handleBackButton = () => {
-        if (typeof window !== "undefined" && window.history.length > 2) {
-            router.back();
-        } else {
-            router.replace("/learner/schedule");
-        }
+        router.replace("/learner/schedule");
     };
 
     useEffect(() => {

@@ -6,7 +6,7 @@ const WhyWeBuild = () => {
     return (
         <ContainerWrapper>
             <h1 className="text-2xl mb-6 lg:mb-0 lg:text-[2rem] text-center font-medium">Why are we building this?</h1>
-            <div className="w-full flex flex-col md:flex-row items-center justify-center gap-7">
+            <div className="w-full h-full flex flex-col md:flex-row items-center justify-center gap-7">
                 {cardData.map((item, index) => (
                     <Card key={index} title={item.title} description={item.description} index={index} />
                 ))}

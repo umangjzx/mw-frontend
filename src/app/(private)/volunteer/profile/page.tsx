@@ -36,11 +36,7 @@ export default function ProfilePage() {
     const triggerReload = async () => await refetch();
 
     const handleBackButton = () => {
-        if (typeof window !== "undefined" && window.history.length > 2) {
-            router.back();
-        } else {
-            router.push("/volunteer/schedule");
-        }
+        router.push("/volunteer/schedule");
     }
 
     useEffect(() => {
