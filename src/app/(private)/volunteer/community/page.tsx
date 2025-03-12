@@ -85,17 +85,17 @@ export default function CommunityPage() {
             />
 
             <div className="col-span-12 flex flex-col min-h-0 h-full flex-grow">
-                <div className="lg:hidden w-full border-b sticky top-0 z-10 px-2 md:px-3 py-4 lg:px-4 md:py-5 bg-[#F4F7FB]">
+                <div className="xl:hidden w-full border-b sticky top-0 z-10 px-2 md:px-3 py-4 lg:px-4 md:py-5 bg-[#F4F7FB]">
                     <div className="w-full overflow-x-auto no-scrollbar">
                         <ActionPanel />
                     </div>
                 </div>
 
-                <div className="flex max-md:h-full md:flex-row justify-between gap-4 md:p-6 md:pb-0 flex-1 min-h-0 overflow-auto">
+                <div className="flex max-md:h-full sm:flex-row justify-between gap-4 sm:p-6 sm:pb-0 flex-1 min-h-0 overflow-auto">
                     {/* Main Content Area */}
-                    <div className="flex-1 md:w-8/12 p-0 md:p-0 overflow-auto no-scrollbar md:rounded-3xl flex flex-col">
+                    <div className="flex-1 md:w-8/12 p-0 sm:p-0 overflow-auto no-scrollbar sm:rounded-3xl flex flex-col">
                         <div ref={messagesEndRef} />
-                        <div className="flex-1 bg-white md:rounded-3xl md:p-6 pb-2 md:mb-6">
+                        <div className="flex-1 bg-white sm:rounded-3xl sm:p-6 pb-2 sm:mb-6">
                             {activeTab === "your_notifications" ? (
                                 <NotificationSection />
                             ) : (
@@ -111,7 +111,7 @@ export default function CommunityPage() {
                     </div>
 
                     {/* Desktop Action Panel */}
-                    <div className="hidden lg:block min-h-0">
+                    <div className="hidden xl:block min-h-0">
                         <div className="bg-white rounded-2xl p-4 w-[380px] min-h-[390px]">
                             <div className="h-full w-[353px] overflow-auto no-scrollbar">
                                 <ActionPanel />

@@ -19,7 +19,7 @@ const ForLearner = ({ onLearnerLogin }: ForLearnerProps) => {
                 titleColor="!text-[#009BCC]"
             />
             <div className="flex flex-col justify-center items-center gap-1 mt-10 lg:mt-0">
-                <div className="flex flex-col lg:flex-row">
+                <div className="flex flex-col lg:flex-row gap-1">
                     {learnerData.map((item, index) => (
                         <StepsChart
                             key={index}

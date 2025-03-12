@@ -20,7 +20,7 @@ const ActionPanel = () => {
                         ${
                             activeTab === tab.route
                                 ? "bg-background border-primary text-primary border"
-                                : "bg-[#f4f7fb] text-gray-700 border border-stroke"
+                                : "bg-[#f4f7fb] lg:!bg-white text-gray-700 border border-stroke"
                         }`}
                 >
                     {tab.name}
@@ -53,10 +53,10 @@ const ActionPanel = () => {
 
     return (
         <>
-            <div className="block lg:hidden">
+            <div className="block xl:hidden lg:px-3">
                 <MobileTabletView />
             </div>
-            <div className="hidden lg:block">
+            <div className="hidden xl:block">
                 <DesktopView />
             </div>
         </>
