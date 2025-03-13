@@ -20,12 +20,6 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
     totalReviews,
     overallRating,
 }) => {
-    const details = [
-        { label: "Volunteer Hrs", value: volunteerHrs },
-        { label: "Student connected", value: studentConnected },
-        { label: "Subject", value: subjects?.join(", ") },
-        { label: "Language", value: languages?.join(", ") },
-    ];
 
     return (
         <div className="bg-white rounded-xl w-full shadow-sm h-fit p-4 flex flex-col gap-4">
@@ -63,19 +57,23 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
                     <CardChips label="Student connected" value={studentConnected} />
                     <CardChips label="Subject" value={subjects?.join(", ")} />
                 </div>
-                <div>
-                    <CardChips label="Language" value={languages.join(", ")} />
-                </div>
+                {Array.isArray(languages) && languages?.length > 0 && (
+                    <div>
+                        <CardChips label="Language" value={languages.join(", ")} />
+                    </div>
+                )}
             </div>
             <Divider />
             <div className="flex items-center justify-between">
-                <div className=" border-stroke border w-fit px-3 py-1.5 rounded-full">
+                <div className="border-stroke border w-fit px-3 py-1.5 rounded-full">
                     <div className="flex items-center gap-2">
                         {overallRating ? (
                             <>
-                                <FaStar className="text-[#FFC107]" />
-                                <p className="text-sm font-medium ">
-                                    {overallRating} - {totalReviews} Reviews
+                                <span className="text-[#FFC107] pb-0.5">
+                                    <FaStar />
+                                </span>
+                                <p className="text-sm font-medium flex items-center">
+                                    <span>{overallRating} - {totalReviews} Reviews</span>
                                 </p>
                             </>
                         ) : (

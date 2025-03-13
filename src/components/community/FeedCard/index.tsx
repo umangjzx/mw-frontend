@@ -56,7 +56,7 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
     const queryClient = useQueryClient();
     const role = Cookies.get("role");
     const [activeTab] = useQueryState("tab");
-    const [searchQuery] = useQueryState("query");
+    const [searchQuery, setSearchQuery] = useQueryState("query");
 
     const [comment, setComment] = useState<string>("");
     const [isCommentLoading, setIsCommentLoading] = useState<boolean>(false);
@@ -90,7 +90,7 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
 
     const { data, fetchNextPage, hasNextPage, isLoading, isFetching, isFetchingNextPage, isError } =
         useInfiniteQuery({
-            queryKey: ["get-posts", activeTab],
+            queryKey: ["get-posts", activeTab, searchQuery],
             queryFn: getPosts,
             getNextPageParam: (lastPage) => {
                 if (lastPage.items.length < 10) return undefined;
@@ -474,14 +474,19 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                     )}
 
                     {posts.length === 0 && (
-                        <div className="flex-center w-full h-full min-h-[50vh]">No Posts Found</div>
+                        <div className="flex-center w-full h-full min-h-[50vh] flex-col gap-1">
+                            <p>No Posts Found</p>
+                            {searchQuery && (
+                                <button className="text-blue-500 underline" onClick={() => setSearchQuery(null)}>Clear Search</button>
+                            ) }
+                        </div>
                     )}
 
                     <AnimatePresence>
                         {activeCommentPostId && (
                             <MobileCommentPanel
                                 postId={activeCommentPostId}
-                                totalComments={20}
+                                totalComments={0}
                                 comment={comment}
                                 setComment={setComment}
                                 onClose={() => setActiveCommentPostId(null)}

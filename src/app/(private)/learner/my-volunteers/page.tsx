@@ -201,7 +201,7 @@ export default function VolunteerPage() {
                         onChange={handleTableChange}
                     />
             }
-            {volunteerData?.length === 0 && <div className="flex-center h-full">No Volunteer Found</div>}
+            {isMobileScreen && volunteerData?.length === 0 && <div className="flex-center h-full">No Volunteer Found</div>}
         </div>
     );
 }

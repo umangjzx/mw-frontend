@@ -35,7 +35,7 @@ const CustomNextArrow = (props: any) => {
     return (
         <div
             onClick={onClick}
-            className="!z-50 absolute right-3 top-1/2 transform -translate-y-1/2 text-primary border border-primary p-2 rounded-full shadow-md cursor-pointer"
+            className="!z-50 absolute right-3 top-1/2 transform -translate-y-1/2 text-primary border border-primary bg-gray-200 p-2 rounded-full shadow-md cursor-pointer"
         >
             <FaChevronRight className="text-xs md:text-lg" />
         </div>
@@ -47,7 +47,7 @@ const CustomPrevArrow = (props: any) => {
     return (
         <div
             onClick={onClick}
-            className="!z-50 absolute left-3 top-1/2 transform -translate-y-1/2 text-primary border border-primary p-2 rounded-full shadow-md cursor-pointer"
+            className="!z-50 absolute left-3 top-1/2 transform -translate-y-1/2 text-primary border border-primary bg-gray-200 p-2 rounded-full shadow-md cursor-pointer"
         >
             <FaChevronLeft className="text-xs md:text-lg" />
         </div>

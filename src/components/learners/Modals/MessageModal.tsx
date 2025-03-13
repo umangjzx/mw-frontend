@@ -69,10 +69,10 @@ const MessageModal = ({ receiverId, isOpen, onClose }: MessageModalProps) => {
 
     const getUserMessages = async () => {
         const { data } = await GET_API(endpoint.getMessages);
-        setMessages(data?.items)
+        setMessages(data?.items || [])
         return data;
     }
-    const { isFetching } = useQuery({ queryKey: [userRole, "messages"], queryFn: getUserMessages })
+    const { isFetching } = useQuery({ queryKey: [userRole, senderId, "messages"], queryFn: getUserMessages })
 
     const handleSubmit = async (message: string) => {
         if (!message) return;
@@ -130,7 +130,7 @@ const MessageModal = ({ receiverId, isOpen, onClose }: MessageModalProps) => {
             />
         </div>
     </>
-
+    
     return (
         <CenterModal
             title={"Send a Message"}

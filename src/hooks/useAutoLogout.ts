@@ -37,7 +37,7 @@ const useAutoLogout = (router: any) => {
 
   useEffect(() => {
     const lastActivity = Cookies.get("lastActivity");
-    if (lastActivity && Date.now() - parseInt(lastActivity) > INACTIVITY_TIMEOUT) {
+    if (!lastActivity || (lastActivity && Date.now() - parseInt(lastActivity) > INACTIVITY_TIMEOUT)) {
       clearSession();
     } else {
       resetTimer();
