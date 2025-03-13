@@ -129,7 +129,7 @@ export default function ProfilePage() {
                     :
                     <div className="h-full w-full grid grid-cols-[1fr,2fr] gap-10 p-5">
                         <VolunteerProfileBio data={data} />
-                        <Overview data={volunteerData.overview} reviewEndpoint={endpoints.learnerFeedback.get(volunteerId)} />
+                        <Overview data={volunteerData.overview} reviewEndpoint={endpoints.volunterFeedback.get(volunteerId)} />
                     </div>
             }
         </div>

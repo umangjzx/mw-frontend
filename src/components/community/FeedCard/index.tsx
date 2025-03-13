@@ -109,10 +109,10 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
 
     // Handle Like & DisLike
     const handleLikeAction = (postId: string, currentLikeStatus: boolean) => {
-        queryClient.setQueryData(["get-posts", activeTab], (oldData: any) => {
+        queryClient.setQueryData(["get-posts", activeTab, searchQuery], (oldData: any) => {
             return {
                 ...oldData,
-                pages: oldData.pages.map((page: any) => ({
+                pages: oldData?.pages.map((page: any) => ({
                     ...page,
                     items: page.items.map((post: PostData) =>
                         post.post_id === postId
@@ -138,7 +138,7 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
 
     // Handle Save
     const handleSave = (postId: string, currentSaveStatus: boolean) => {
-        queryClient.setQueryData(["get-posts", activeTab], (oldData: any) => {
+        queryClient.setQueryData(["get-posts", activeTab, searchQuery], (oldData: any) => {
             return {
                 ...oldData,
                 pages: oldData.pages.map((page: any) => ({
@@ -179,7 +179,7 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
             successMsg: "Comment Posted Successfully",
             errorMsg: "Failed to Post Comment",
         }).then(() => {
-            queryClient.invalidateQueries({ queryKey: ["get-posts", activeTab] });
+            queryClient.invalidateQueries({ queryKey: ["get-posts", activeTab, searchQuery] });
             setComment("");
             setIsCommentLoading(false);
         });
