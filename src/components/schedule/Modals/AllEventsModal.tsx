@@ -8,10 +8,11 @@ const AllEventsModal = ({ isOpen, onClose, data, onEventClick }: AllEventsModalP
             isOpen={isOpen}
             onClose={onClose}
             width="40%"
-            customClassName="!rounded-3xl !h-[70vh]"
+            customClassName="!rounded-3xl"
+            rootClassName="!rounded-3xl overflow-hidden"
             hideFooter={true}
         >
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 py-5">
                 {data.events.map((event, index) => {
                     return (
                         <EventCard
