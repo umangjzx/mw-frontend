@@ -15,13 +15,17 @@ export const timesAgo = (date: string) => {
 
     if (diffInMinutes < 1) return "Just now";
 
-    return createdAt.fromNow(true)
+    let timeString = createdAt.fromNow(true)
+        .replace(/^an /, "1 ")
+        .replace(/^a /, "1 ")
         .replace("minutes", "mins")
         .replace("minute", "min")
         .replace("hours", "hrs")
         .replace("hour", "hr")
         .replace("seconds", "secs")
         .replace("second", "sec");
+
+    return `${timeString} ago`;
 };
 
 export const toUserTimeZone = ({
