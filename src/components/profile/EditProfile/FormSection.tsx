@@ -191,8 +191,7 @@ const FormTabsSection = ({ formData, control, errors, trigger, setError, setValu
                                 {activeTab === formData.length - 1 ? (
                                     <>
                                         <Button
-                                            htmlType="submit"
-                                            onClick={validateForm}
+                                            onClick={onSubmit}
                                             loading={isLoading}
                                             disabled={isLoading}
                                             title="Submit Application"
@@ -202,6 +201,7 @@ const FormTabsSection = ({ formData, control, errors, trigger, setError, setValu
                                     </>
                                 ) : (
                                     <Button
+                                        htmlType="button"
                                         onClick={() => handleNavigation(activeTab + 1)}
                                         title="Next"
                                         size="large"

@@ -21,6 +21,7 @@ import ResourceReportModal from "@/components/resources/ReportsModal";
 import SectionWrapper from "@/components/resources/SectionWrapper";
 import TopicCard, { TopicCardSkeleton } from "@/components/resources/TopicCard";
 import CategorySection from "@/components/resources/CategorySection";
+import { useDebounce } from "use-debounce";
 
 interface ResourcesPageWrapperProps {
     variant: 'learner' | 'volunteer';
@@ -48,20 +49,21 @@ export default function ResourcesPageWrapper({ variant }: ResourcesPageWrapperPr
     const [reportModalOpen, setReportModalOpen] = useState(false);
     const [reportModalResourceId, setReportModalResourceId] = useState("");
 
+    const [debouncedSearchQuery] = useDebounce(searchQuery, 500);
     const { data: MyResources, isLoading: isMyResourcesLoading, refetch } = useQuery({
-        queryKey: ["my-resources", searchQuery],
+        queryKey: ["my-resources", debouncedSearchQuery],
         queryFn: async () => {
-            const myResources = await getMyResources({ query: searchQuery || "" });
+            const myResources = await getMyResources({ query: debouncedSearchQuery || "" });
             return myResources?.items || [];
         },
         enabled: category === "my-resources",
     });
 
     const { isFetching } = useQuery({
-        queryKey: ["resources", searchQuery],
+        queryKey: ["resources", debouncedSearchQuery],
         queryFn: async () => {
             setResources([]);
-            const allResources = await getResources({ query: searchQuery || "" });
+            const allResources = await getResources({ query: debouncedSearchQuery || "" });
             setResources(allResources?.items || []);
             return allResources;
         },

@@ -4,9 +4,11 @@ import { useQueryState } from "nuqs";
 
 const ActionPanel = () => {
     const [activeTab, setActiveTab] = useQueryState("tab");
+    const [searchQuery, setSearchQuery] = useQueryState("query");
 
     const handleTabClick = (tab: string | null) => {
         setActiveTab(tab);
+        setSearchQuery(null);
     };
 
     // Mobile and Tablet view - Tags

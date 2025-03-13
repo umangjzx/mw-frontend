@@ -58,7 +58,7 @@ const NotificationCard: React.FC<{ notification: Notification }> = ({ notificati
                 notification.read ? "opacity-50" : ""
             }`}
         >
-            <div className="flex items-start sm:items-center gap-2 sm:gap-3 flex-1">
+            <div className="flex items-center gap-2 sm:gap-3 flex-1">
                 <div className="w-[40px] h-[40px] sm:w-[48px] sm:h-[48px] relative flex-shrink-0">
                     <Image
                         src={notification?.author?.profile_picture?.image_url || NotificationProfileImg}

@@ -144,7 +144,7 @@ const MobileMessageModal = ({ receiverId, isOpen, onClose }: MobileMessageModalP
                         ))}
                     <div ref={messagesEndRef} />
                 </div>
-                <div className="flex gap-2 w-full border-t border-stroke items-end mt-0 border-t p-3 h-[10vh]">
+                <div className="flex gap-2 w-full border-t border-stroke items-end mt-0 p-3 h-[10vh]">
                     <Input name="message" className="!mb-0 h-full" inputClassName="!text-md !w-full" inputType="textarea" rows={0} placeholder="Type message here"
                         onChange={(e) => setMessage(e.toString())}
                         value={message || ""}

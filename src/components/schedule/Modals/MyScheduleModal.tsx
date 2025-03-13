@@ -147,7 +147,11 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
 
         setSchedule((prev) => ({
             ...prev,
-            [day]: prev[day].map((slot, index) => (index === slotIndex ? updatedSlot : slot)),
+            [day]: prev[day]
+                .map((slot, index) => (index === slotIndex ? updatedSlot : slot))
+                .sort((a, b) =>
+                    dayjs(a.start_time, "HH:mm").isBefore(dayjs(b.start_time, "HH:mm")) ? -1 : 1
+                )
         }));
     };
 
@@ -211,13 +215,56 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
     });
 
     // Add this CSS class to style the TimePicker input
-    const timePickerClass = cn(
-        "!text-sm",
-    );
+    const timePickerClass = cn("!text-sm");
 
     // Add this function to check if there are any errors
     const hasErrors = () => {
         return Object.values(errors).some((dayErrors) => dayErrors.length > 0);
+    };
+
+    const TimePickerComponent = ({ day, slot, slotIndex, type }: { day: string, slot: TimeSlot, slotIndex: number, type: "start_time" | "end_time" }) => {
+        const [selectedTime, setSelectedTime] = useState<dayjs.Dayjs | null>(
+            type === "start_time"
+                ? slot.start_time
+                    ? dayjs(slot.start_time, "HH:mm")
+                    : null
+                : slot.end_time
+                    ? dayjs(slot.end_time, "HH:mm")
+                    : null
+        );
+
+        const [tempTime, setTempTime] = useState<dayjs.Dayjs | null>(selectedTime);
+
+        return (
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <TimePicker
+                    timeSteps={{ minutes: 1 }}
+                    format="h:mm A"
+                    value={tempTime}
+                    onChange={(time) => setTempTime(time)}
+                    onAccept={() => {
+                        if (tempTime) {
+                            setSelectedTime(tempTime);
+                            handleTimeChange(day, slotIndex, type, tempTime.format("HH:mm"));
+                        }
+                    }}
+                    closeOnSelect={false}
+                    sx={{
+                        '& .MuiOutlinedInput-root': {
+                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                                border: "2px solid var(--background-secondary-color) !important",
+                            },
+                        },
+                    }}
+                    className={cn(
+                        timePickerClass,
+                        errors[day]?.some((error) =>
+                            error.includes(`Time slot ${slotIndex + 1}`)
+                        ) && "border-red-500"
+                    )}
+                />
+            </LocalizationProvider>
+        );
     };
 
     return (
@@ -257,93 +304,25 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                                                         key={slotIndex}
                                                         className="flex gap-2 items-center"
                                                     >
-                                                        <div className="">
-                                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                                <TimePicker
-                                                                    timeSteps={{ minutes: 1 }}
-                                                                    format="h:mm A"
-                                                                    value={
-                                                                        slot.start_time
-                                                                            ? dayjs(
-                                                                                slot.start_time,
-                                                                                "HH:mm"
-                                                                            )
-                                                                            : null
-                                                                    }
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': {
-                                                                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                                                                border: "2px solid var(--background-secondary-color) !important",
-                                                                            },
-                                                                        },
-                                                                    }}
-                                                                    onChange={(time) =>
-                                                                        handleTimeChange(
-                                                                            day,
-                                                                            slotIndex,
-                                                                            "start_time",
-                                                                            time
-                                                                                ? time.format("HH:mm")
-                                                                                : null
-                                                                        )
-                                                                    }
-                                                                    className={cn(
-                                                                        timePickerClass,
-                                                                        errors[day]?.some((error) =>
-                                                                            error.includes(
-                                                                                `Time slot ${slotIndex + 1}`
-                                                                            )
-                                                                        ) && "border-red-500"
-                                                                    )}
-                                                                />
-                                                            </LocalizationProvider>
+                                                        <div>
+                                                            <TimePickerComponent
+                                                                day={day}
+                                                                slot={slot}
+                                                                slotIndex={slotIndex}
+                                                                type="start_time"
+                                                            />
                                                         </div>
                                                         <p className="text-sm font-medium">to</p>
-                                                        <div className="">
-                                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                                <TimePicker
-                                                                    timeSteps={{ minutes: 1 }}
-                                                                    format="h:mm A"
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': {
-                                                                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                                                                border: "2px solid var(--background-secondary-color) !important",
-                                                                            },
-                                                                        },
-                                                                    }}
-                                                                    value={
-                                                                        slot.end_time
-                                                                            ? dayjs(
-                                                                                slot.end_time,
-                                                                                "HH:mm"
-                                                                            )
-                                                                            : null
-                                                                    }
-                                                                    onChange={(time) =>
-                                                                        handleTimeChange(
-                                                                            day,
-                                                                            slotIndex,
-                                                                            "end_time",
-                                                                            time
-                                                                                ? time.format("HH:mm")
-                                                                                : null
-                                                                        )
-                                                                    }
-                                                                    className={cn(
-                                                                        timePickerClass,
-                                                                        errors[day]?.some((error) =>
-                                                                            error.includes(
-                                                                                `Time slot ${slotIndex + 1}`
-                                                                            )
-                                                                        ) && "border-red-500"
-                                                                    )}
-                                                                />
-                                                            </LocalizationProvider>
+                                                        <div>
+                                                            <TimePickerComponent
+                                                                day={day}
+                                                                slot={slot}
+                                                                slotIndex={slotIndex}
+                                                                type="end_time"
+                                                            />
                                                         </div>
                                                         <span
-                                                            onClick={() =>
-                                                                removeTimeSlot(day, slotIndex)
-                                                            }
+                                                            onClick={() => removeTimeSlot(day, slotIndex)}
                                                             className="text-red-500 hover:text-red-700 cursor-pointer"
                                                         >
                                                             <TrashIcon />

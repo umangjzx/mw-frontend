@@ -71,8 +71,6 @@ export default function VolunteerFilterModal({ isOpen, isFilterApplying, onClose
     };
 
     const handleSave = () => {
-        console.log("Data: ", filterData);
-
         setStartDate(convertToDate(filterData?.available_days?.[0]));
         setEndDate(convertToDate(filterData?.available_days?.[1]));
 
@@ -130,7 +128,7 @@ export default function VolunteerFilterModal({ isOpen, isFilterApplying, onClose
                 </div>
                 {
                     isDateModalOpen && (
-                        <div className="fixed p-4 bg-white rounded-lg shadow-lg border p-4 max-w-[350px]">
+                        <div className="fixed p-4 bg-white rounded-lg shadow-lg border max-w-[350px]">
                             <DayPicker
                                 mode="range"
                                 selected={{
