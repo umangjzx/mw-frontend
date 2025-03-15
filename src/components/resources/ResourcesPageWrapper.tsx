@@ -78,15 +78,12 @@ export default function ResourcesPageWrapper({ variant }: ResourcesPageWrapperPr
         },
     });
 
-    const handleTopicClick = (title: string) => setCategory(title);
-    const handleMyResourcesClick = () => setCategory("my-resources");
-    const handleBackClick = () => setCategory(null);
+    const handleTopicClick = (title: string) => { setCategory(title); setSearchQuery(null); };
+    const handleMyResourcesClick = () => { setCategory("my-resources"); setSearchQuery(null); };
+    const handleBackClick = () => { setCategory(null); setSearchQuery(null); };
     const handleAddResourceClick = () => setMode("create");
-    const handleCloseModal = () => {
-        setMode(null);
-        setId(null);
-    };
-
+    const handleCloseModal = () => { setMode(null); setId(null); };
+    
     const handleViewOrEditResource = (mode: ShowModalType, id: string) => {
         setMode(mode);
         setId(id);
@@ -226,7 +223,7 @@ export default function ResourcesPageWrapper({ variant }: ResourcesPageWrapperPr
                     renderItem={(item, index) => (
                         <div className="w-full md:w-[250px]">
                             <Card
-                                className="!w-full"
+                                className="max-md:!w-full"
                                 imgClassName=""
                                 key={item?.resource_id || index}
                                 resource={item}
