@@ -25,6 +25,7 @@ import ErrorMsg from "@/components/common/Messages/ErrorMsg";
 import { useInView } from "react-intersection-observer";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { BsFillBookmarkFill, BsBookmark } from "react-icons/bs";
+import { useDebounce } from "use-debounce";
 
 interface FeedCardProps {
     onClick: (postId: string) => void;
@@ -67,6 +68,8 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
     const { ref, inView } = useInView();
     const [selectedSort, setSelectedSort] = useState<string>("recent");
 
+    const [debouncedSearchQuery] = useDebounce(searchQuery, 500);
+
     const getPosts = async ({ pageParam = 1 }) => {
         let endpoint = endpoints.post.getPosts;
 
@@ -84,13 +87,13 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                 endpoint = endpoints.post.getPosts;
         }
 
-        const response = await GET_API(`${endpoint}?page=${pageParam}&size=10&query=${searchQuery || ""}`);
+        const response = await GET_API(`${endpoint}?page=${pageParam}&size=10&query=${debouncedSearchQuery || ""}`);
         return response.data;
     };
 
     const { data, fetchNextPage, hasNextPage, isLoading, isFetching, isFetchingNextPage, isError } =
         useInfiniteQuery({
-            queryKey: ["get-posts", activeTab, searchQuery],
+            queryKey: ["get-posts", activeTab, debouncedSearchQuery],
             queryFn: getPosts,
             getNextPageParam: (lastPage) => {
                 if (lastPage.items.length < 10) return undefined;

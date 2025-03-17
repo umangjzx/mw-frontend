@@ -1,8 +1,9 @@
-import { getResourcesByCategory } from "@/api/resources";
+import { getResources } from "@/api/resources";
 import { useQuery } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
 import React from "react";
 import Card, { CardSkeleton } from "../Card";
+import { useDebounce } from "use-debounce";
 
 type CategorySectionProps = {
     topicSingleTitle: string;
@@ -12,20 +13,20 @@ type CategorySectionProps = {
 
 const CategorySection = ({ topicSingleTitle, handleViewOrEditResource }: CategorySectionProps) => {
     const [category, setCategory] = useQueryState("category");
-    const [searchQuery] = useQueryState("query");
+    const [searchQuery, setSearchQuery] = useQueryState("query");
 
+    const [debouncedSearchQuery] = useDebounce(searchQuery, 500);
     const { data: categories, isFetching } = useQuery({
-        queryKey: ["resources-by-category", category, searchQuery],
+        queryKey: ["resources-by-category", category, debouncedSearchQuery],
         queryFn: async () => {
-            const resources = await getResourcesByCategory(category || "", {
-                query: searchQuery || "",
-            });
-            return resources?.items || [];
+            const allResources = await getResources({ query: debouncedSearchQuery || "", category_id: category || "" });
+            return allResources?.items || [];
         },
     });
 
     const handleBackClick = () => {
         setCategory(null);
+        setSearchQuery(null);
     };
 
     return (

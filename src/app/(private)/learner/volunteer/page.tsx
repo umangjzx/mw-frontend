@@ -15,6 +15,7 @@ import VolunteerFilterModal from "@/components/learners/Modals/VolunteerFilter";
 import { RiFilter3Line } from "react-icons/ri";
 import LottieLoader from "@/components/common/Loader/Lottie";
 import InnerWidth from "@/utils/innerWidth";
+import { useDebounce } from "use-debounce";
 
 interface VolunteerCardData {
     volunteerId: string;
@@ -42,7 +43,7 @@ export default function LearnersPage() {
 
     const [size] = useQueryState("size", { defaultValue: "10" });
     const [page] = useQueryState("page", { defaultValue: "1" });
-    const [query, setQuery] = useQueryState("query");
+    const [searchQuery, setSearchQuery] = useQueryState("query");
     const [language_ids] = useQueryState("language_ids");
     const [subject_ids] = useQueryState("subject_ids");
     const [country] = useQueryState("country");
@@ -55,6 +56,7 @@ export default function LearnersPage() {
 
     const isMobileScreen = InnerWidth() < 768;
 
+    const [query] = useDebounce(searchQuery, 500);
     const { data, isLoading, isError } = useQuery({
         queryKey: [
             "volunteer",
@@ -182,7 +184,7 @@ export default function LearnersPage() {
                         <div className="flex-center h-full w-full flex-col gap-1">
                             <p>No Volunteer Found</p>
                             {query && (
-                                <button className="text-blue-500 underline" onClick={() => setQuery(null)}>Clear Search</button>
+                                <button className="text-blue-500 underline" onClick={() => setSearchQuery(null)}>Clear Search</button>
                             )}
                             {appliedFiltersCount > 0 && (
                                 <button className="text-blue-500 underline" onClick={() => router.push("/learner/volunteer")}>Clear Filters</button>
