@@ -150,9 +150,12 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             [day]: prev[day]
                 .map((slot, index) => (index === slotIndex ? updatedSlot : slot))
                 .sort((a, b) =>
-                    dayjs(a.start_time, "HH:mm").isBefore(dayjs(b.start_time, "HH:mm")) ? -1 : 1
-                )
+                    type === "start_time"
+                        ? 0
+                        : dayjs(a.start_time, "HH:mm").isBefore(dayjs(b.start_time, "HH:mm")) ? -1 : 1
+                ),
         }));
+
     };
 
     const addTimeSlot = (day: string) => {
