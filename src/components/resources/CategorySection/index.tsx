@@ -35,7 +35,7 @@ const CategorySection = ({ topicSingleTitle, handleViewOrEditResource }: Categor
                 <button onClick={handleBackClick} className="hover:underline">Resources</button> {">"} {topicSingleTitle}
             </h2>
             {isFetching ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     {Array.from({ length: 10 }).map((_, index) => (
                         <CardSkeleton key={index} />
                     ))}
@@ -44,12 +44,12 @@ const CategorySection = ({ topicSingleTitle, handleViewOrEditResource }: Categor
                 <>
                     {categories &&
                         categories?.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                             {categories?.map((resource: any, index: number) => (
                                 <div key={resource?.resource_id || index} className="col-span-1">
                                     <Card
                                         resource={resource}
-                                        className="w-full h-full"
+                                        className="!w-full !h-full"
                                         onClick={() =>
                                             handleViewOrEditResource("view", resource?.resource_id)
                                         }

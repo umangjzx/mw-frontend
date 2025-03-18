@@ -1,76 +1,93 @@
-import React from 'react';
-import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import IconButton from '@mui/material/IconButton';
-import ClearIcon from '@mui/icons-material/Clear';
-import dayjs from 'dayjs';
+import React, { useEffect, useState } from "react";
+import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import IconButton from "@mui/material/IconButton";
+import ClearIcon from "@mui/icons-material/Clear";
+import dayjs from "dayjs";
+
+interface TimeRange {
+  from: string | null;
+  to: string | null;
+}
 
 interface TimeRangePickerProps {
-  value: { from: any; to: any };
-  onChange: (newValue: { from: any; to: any }) => void;
+  value: TimeRange;
+  onChange: (newValue: TimeRange) => void;
   clearable?: boolean;
   name?: string;
 }
 
-const TimeRangePicker: React.FC<TimeRangePickerProps> = (props) => {
-  const name = props?.name || 'time-picker';
+interface TimePickerComponentProps {
+  name: string;
+  time: string | null;
+  type: "from" | "to";
+  onTimeChange: (formattedTime: string | null, type: "from" | "to") => void;
+}
 
-  const handleTimeChange = (time: string, type: string) => {
-    if (!time) return;
-    let from = props.value?.from ? dayjs(props.value.from, 'h:mm A') : null;
-    let to = props.value?.to ? dayjs(props.value.to, 'h:mm A') : null;
+const TimePickerComponent = ({ name, time, type, onTimeChange, }: TimePickerComponentProps) => {
+  const [tempTime, setTempTime] = useState<dayjs.Dayjs | null>(time ? dayjs(time, "h:mm A") : null);
 
-    if (type === 'from') {
-      from = dayjs(time, 'h:mm A');
-    } else {
-      to = dayjs(time, 'h:mm A');
+  useEffect(() => {
+    setTempTime(time ? dayjs(time, "h:mm A") : null);
+  }, [time]);
+
+  return (
+    <TimePicker
+      name={`${name}-${type}`}
+      timeSteps={{ minutes: 1 }}
+      format="h:mm A"
+      value={tempTime}
+      onChange={(newTime) => setTempTime(newTime)}
+      onAccept={() => {
+        if (tempTime) {
+          onTimeChange(tempTime.format("h:mm A"), type);
+        }
+      }}
+      closeOnSelect={false}
+      sx={{
+        "& .MuiOutlinedInput-root": {
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            border: "2px solid var(--background-secondary-color) !important",
+          },
+        },
+      }}
+    />
+  );
+};
+
+const TimeRangePicker: React.FC<TimeRangePickerProps> = ({ value, onChange, clearable, name = "time-picker", }) => {
+
+  const handleTimeChange = (formattedTime: string | null, type: "from" | "to") => {
+    const newValue = {
+      from: type === "from" ? formattedTime : value.from,
+      to: type === "to" ? formattedTime : value.to,
+    };
+
+    if (newValue.from && newValue.to && dayjs(newValue.from, "h:mm A").isAfter(dayjs(newValue.to, "h:mm A"))) {
+      [newValue.from, newValue.to] = [newValue.to, newValue.from];
     }
 
-    if (from && to && dayjs(from).isAfter(dayjs(to))) {
-      [from, to] = [to, from];
-    }
-
-    props.onChange({ from, to });
-  };
-
-  const handleClear = () => {
-    props.onChange({ from: null, to: null });
+    onChange(newValue);
   };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div className="flex items-center gap-2">
-        <TimePicker
-          name={`${name}-from`}
-          timeSteps={{ minutes: 1 }}
-          value={props.value?.from ? dayjs(props.value.from, 'h:mm A') : null}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                border: '2px solid var(--background-secondary-color) !important',
-              },
-            },
-          }}
-          onChange={(time) => handleTimeChange(time?.format('h:mm A') || '', 'from')}
-          format="h:mm A"
+        <TimePickerComponent
+          name={name}
+          time={value.from}
+          type="from"
+          onTimeChange={handleTimeChange}
         />
         <span className="text-gray-500">to</span>
-        <TimePicker
-          name={`${name}-to`}
-          timeSteps={{ minutes: 1 }}
-          value={props.value?.to ? dayjs(props.value.to, 'h:mm A') : null}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                border: '2px solid var(--background-secondary-color) !important',
-              },
-            },
-          }}
-          onChange={(time) => handleTimeChange(time?.format('h:mm A') || '', 'to')}
-          format="h:mm A"
+        <TimePickerComponent
+          name={name}
+          time={value.to}
+          type="to"
+          onTimeChange={handleTimeChange}
         />
-        {props.clearable && (
-          <IconButton onClick={handleClear} aria-label="clear time range">
+        {clearable && (
+          <IconButton onClick={() => onChange({ from: null, to: null })} aria-label="clear time range">
             <ClearIcon className="text-red-500" />
           </IconButton>
         )}

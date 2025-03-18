@@ -80,7 +80,7 @@ const CommentCard: React.FC<CommentCardProps> = ({ reply, comment, onReply }) =>
                                 {timesAgo(comment.created_at)}
                             </p>
                         </div>
-                        <p className="text-[12px] font-normal">{comment.comment_text}</p>
+                        <p className="text-[12px] font-normal !break-all">{comment.comment_text}</p>
                     </div>
                 </div>
                 <div className="flex flex-col items-center">

@@ -242,8 +242,8 @@ const FeedViewModal = ({
             ) : isError ? (
                 <ErrorMsg />
             ) : (
-                <div className="grid h-full lg:grid-cols-[1fr,0.7fr] lg:h-[720px] max-lg:!flex max-lg:!flex-col">
-                    <div className="relative bg-gray-300 w-full h-[300px] md:h-[400px] lg:h-[720px] max-md:!max-h-[45%] overflow-hidden">
+                <div className="h-full lg:h-[720px] flex max-lg:!flex-col">
+                    <div className="lg:w-[55%] relative bg-gray-300 w-full h-[300px] md:h-[400px] lg:h-[720px] max-md:!max-h-[45%] overflow-hidden">
                         <Slider className="flex gap-20" {...sliderSettings}>
                             {post?.images?.map((image) => (
                                 <div key={image?.image_id} className="relative w-full h-[300px] md:h-[400px] lg:h-[720px]">
@@ -300,7 +300,7 @@ const FeedViewModal = ({
                             )}
                         </div>
                     </div>
-                    <div className="flex flex-col max-lg:!flex-1 lg:h-[720px] relative max-lg:!overflow-auto">
+                    <div className="lg:w-[45%] flex flex-col max-lg:!flex-1 lg:h-[720px] relative max-lg:!overflow-auto">
                         <div className="max-lg:hidden flex justify-end items-center px-5 pb-2 pt-5 gap-3">
                             {isManagePost ? (
                                 <div className="flex items-center gap-2">
@@ -379,7 +379,7 @@ const FeedViewModal = ({
                             </div>
                             <div className="flex flex-col flex-1 overflow-hidden mt-3">
                                 <h3 className="text-xl font-semibold text-black mb-3">Comments</h3>
-                                <div className="flex flex-col gap-3 overflow-y-auto flex-1 pb-[75px] pr-3 hide-scrollbar">
+                                <div className="flex flex-col gap-3 overflow-y-auto flex-1 pb-[75px] pr-3 hide-scrollbar overflow-x-hidden">
                                     {commentsLoading ? (
                                         <div className="flex flex-col gap-3">
                                             <CommentSkeleton size={8} />
