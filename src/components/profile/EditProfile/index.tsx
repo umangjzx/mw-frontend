@@ -108,8 +108,8 @@ const EditProfileModal = ({
             loading={isSubmitting}
             hideFooter={true}
             hideCloseIcon={isMobile}
-            height={isMobile ? "100vh" : "auto"}
-            width={isMobile ? "100vw" : 680}
+            height={isMobile ? "100dvh" : "auto"}
+            width={isMobile ? "100dvw" : 680}
             headerComponent={isMobile && (
                 <FeedHeader
                     title="Edit Profile"
@@ -117,7 +117,8 @@ const EditProfileModal = ({
                     onClose={onClose}
                     onSave={handleSubmit(onSubmit, onError)}
                     isSubmitting={isSubmitting}
-                    rootClassName="w-full !mb-0 sticky top-0 bg-white z-10 !p-0"
+                    rootClassName="w-full !mb-0 sticky top-0 bg-white z-10 !p-0 !flex-row-reverse"
+                    saveBtnClassName="!hidden"
                 />
             )}
             secondaryActionProps={buttonProps.secondary}

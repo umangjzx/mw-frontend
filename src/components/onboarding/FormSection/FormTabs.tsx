@@ -91,6 +91,10 @@ const FormTabs = ({ formData, control, errors, trigger, setError, clearErrors, s
         };
 
         const isValidSection = await trigger(currentFields);
+        if (role === "volunteer" && activeTab === 0) {
+            const volunteerValidation = validateVolunteerParentDetails(control._formValues);
+            if (!handleValidationErrors(volunteerValidation)) return false;
+        }
         if (!isValidSection) {
             showToast({ type: "error", message: "Please fill in all required fields before proceeding." });
             return false;
@@ -107,11 +111,6 @@ const FormTabs = ({ formData, control, errors, trigger, setError, clearErrors, s
             } else if (activeTab === 1 && !handleValidationErrors(learnerValidation)) {
                 return false;
             }
-        }
-
-        if (role === "volunteer" && activeTab === 0) {
-            const volunteerValidation = validateVolunteerParentDetails(control._formValues);
-            if (!handleValidationErrors(volunteerValidation)) return false;
         }
 
         return true;

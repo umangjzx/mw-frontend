@@ -12,6 +12,7 @@ import { generateTimeSlotId } from "@/utils/timeFunctions";
 
 import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { showToast } from "@/components/common/Toast";
 
 interface TimeSlot {
     start_time: string;
@@ -202,7 +203,13 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             slots: formattedData,
         };
         console.log("formattedData schedule", formattedData);
-        return await PUT_API(endpoints.volunteer_slot.update, payload);
+        const res = await PUT_API(endpoints.volunteer_slot.update, payload);
+        if (res?.status === 201) {
+            showToast({ message: "Schedule updated successfully", type: "success" });
+        } else {
+            showToast({ message: "Failed to update schedule", type: "error" });
+        }
+        return res;
     };
 
     const { mutate: onSave, isPending } = useSendData({

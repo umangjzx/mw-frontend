@@ -261,7 +261,7 @@ const FullProfileDetails = ({ data }: { data: any }) => {
 
     return (
         <div className="flex flex-col gap-6 pb-5 h-full">
-            <div className="flex md:flex-wrap max-md:overflow-x-auto no-scrollbar py-3 gap-2 sticky top-0 bg-background-input md:bg-white z-10 border-b border-gray-500 md:border-stroke">
+            <div className="flex md:flex-wrap max-md:overflow-x-auto no-scrollbar py-3 gap-2 sticky top-0 bg-background-input lg:bg-white z-10 border-b border-gray-500 md:border-stroke">
                 {tabs.map((tab: any, index) => (
                     <button
                         key={tab.title || index}

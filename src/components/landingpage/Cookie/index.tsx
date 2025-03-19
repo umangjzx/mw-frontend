@@ -26,7 +26,7 @@ export default function CookieConsent() {
     if (!showBanner) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 bg-white shadow-lg rounded-3xl p-6 border border-gray-300 max-w-md mx-auto flex flex-col gap-5">
+    <div className="max-md:mx-3 fixed bottom-4 right-0 md:right-4 z-50 bg-white shadow-lg rounded-3xl p-6 border border-gray-300 max-w-md mx-auto flex flex-col gap-5">
       <h3 className="font-semibold text-lg flex items-center gap-2">
         <TbCookieFilled className="text-2xl" /> We use Cookies on our Website to
       </h3>

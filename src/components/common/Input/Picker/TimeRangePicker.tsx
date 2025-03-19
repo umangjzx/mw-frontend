@@ -6,8 +6,8 @@ import ClearIcon from "@mui/icons-material/Clear";
 import dayjs from "dayjs";
 
 interface TimeRange {
-  from: string | null;
-  to: string | null;
+  from: dayjs.Dayjs | string | null;
+  to: dayjs.Dayjs | string | null;
 }
 
 interface TimeRangePickerProps {
@@ -19,7 +19,7 @@ interface TimeRangePickerProps {
 
 interface TimePickerComponentProps {
   name: string;
-  time: string | null;
+  time: dayjs.Dayjs | string | null;
   type: "from" | "to";
   onTimeChange: (formattedTime: string | null, type: "from" | "to") => void;
 }
@@ -40,7 +40,7 @@ const TimePickerComponent = ({ name, time, type, onTimeChange, }: TimePickerComp
       onChange={(newTime) => setTempTime(newTime)}
       onAccept={() => {
         if (tempTime) {
-          onTimeChange(tempTime.format("h:mm A"), type);
+          onTimeChange(tempTime?.format("h:mm A"), type);
         }
       }}
       closeOnSelect={false}
@@ -57,13 +57,13 @@ const TimePickerComponent = ({ name, time, type, onTimeChange, }: TimePickerComp
 
 const TimeRangePicker: React.FC<TimeRangePickerProps> = ({ value, onChange, clearable, name = "time-picker", }) => {
 
-  const handleTimeChange = (formattedTime: string | null, type: "from" | "to") => {
+  const handleTimeChange = (newTime: string | null, type: "from" | "to") => {
     const newValue = {
-      from: type === "from" ? formattedTime : value.from,
-      to: type === "to" ? formattedTime : value.to,
+      from: type === "from" ? dayjs(newTime, 'h:mm A') : value?.from,
+      to: type === "to" ? dayjs(newTime, 'h:mm A') : value?.to,
     };
 
-    if (newValue.from && newValue.to && dayjs(newValue.from, "h:mm A").isAfter(dayjs(newValue.to, "h:mm A"))) {
+    if (newValue?.from && newValue?.to && dayjs(newValue?.from, "h:mm A").isAfter(dayjs(newValue?.to, "h:mm A"))) {
       [newValue.from, newValue.to] = [newValue.to, newValue.from];
     }
 
@@ -75,14 +75,14 @@ const TimeRangePicker: React.FC<TimeRangePickerProps> = ({ value, onChange, clea
       <div className="flex items-center gap-2">
         <TimePickerComponent
           name={name}
-          time={value.from}
+          time={value?.from}
           type="from"
           onTimeChange={handleTimeChange}
         />
         <span className="text-gray-500">to</span>
         <TimePickerComponent
           name={name}
-          time={value.to}
+          time={value?.to}
           type="to"
           onTimeChange={handleTimeChange}
         />

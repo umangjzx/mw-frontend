@@ -41,7 +41,7 @@ export default function VolunteerFilterModal({ isOpen, isFilterApplying, onClose
     const [isDateModalOpen, setIsDateModalOpen] = useState(false);
 
     const convertToDate = (date: any) => date ? dayjs(date)?.format("YYYY-MM-DD") : null;
-    const convertToTime = (time: any) => time && dayjs.isDayjs(time) ? time.format("HH:mm") : null;
+    const convertToTime = (time: any) => time ? time?.format("HH:mm") : null;
 
     // Update form data when query state changes
     useEffect(() => {
@@ -62,8 +62,6 @@ export default function VolunteerFilterModal({ isOpen, isFilterApplying, onClose
     }, [language_ids, subject_ids, start_date, end_date, start_time, end_time]);
 
     const handleChange = (name: keyof FilterData, value: any) => {
-        console.log("Value: ", value);
-
         setFilterData((prev) => ({
             ...prev,
             [name]: value,
@@ -119,9 +117,9 @@ export default function VolunteerFilterModal({ isOpen, isFilterApplying, onClose
                         className="bg-white border border-gray-300 text-black py-2 px-4 rounded-lg"
                         onClick={() => setIsDateModalOpen(prev => !prev)}
                     >
-                        {filterData.available_days?.[0] && filterData.available_days?.[1]
-                            ? `${dayjs(filterData.available_days[0]).format("DD MMM YYYY")} - ${dayjs(
-                                filterData.available_days[1]
+                        {filterData?.available_days?.[0] && filterData?.available_days?.[1]
+                            ? `${dayjs(filterData?.available_days[0]).format("DD MMM YYYY")} - ${dayjs(
+                                filterData?.available_days[1]
                             ).format("DD MMM YYYY")}`
                             : "Select Available Date Range"}
                     </button>
@@ -131,12 +129,13 @@ export default function VolunteerFilterModal({ isOpen, isFilterApplying, onClose
                         <div className="fixed p-4 bg-white rounded-lg shadow-lg border max-w-[350px]">
                             <DayPicker
                                 mode="range"
+                                disabled={{ before: new Date() }}
                                 selected={{
-                                    from: filterData.available_days[0]
-                                        ? dayjs(filterData.available_days[0]).toDate()
+                                    from: filterData?.available_days?.[0]
+                                        ? dayjs(filterData?.available_days?.[0]).toDate()
                                         : undefined,
-                                    to: filterData.available_days[1]
-                                        ? dayjs(filterData.available_days[1]).toDate()
+                                    to: filterData?.available_days?.[1]
+                                        ? dayjs(filterData?.available_days?.[1]).toDate()
                                         : undefined,
                                 }}
                                 onSelect={(range) => {
@@ -153,11 +152,11 @@ export default function VolunteerFilterModal({ isOpen, isFilterApplying, onClose
                                     }
                                 }}
                                 modifiers={{
-                                    start: filterData.available_days[0]
-                                        ? dayjs(filterData.available_days[0]).toDate()
+                                    start: filterData?.available_days?.[0]
+                                        ? dayjs(filterData?.available_days?.[0]).toDate()
                                         : undefined,
-                                    end: filterData.available_days[1]
-                                        ? dayjs(filterData.available_days[1]).toDate()
+                                    end: filterData?.available_days?.[1]
+                                        ? dayjs(filterData?.available_days?.[1]).toDate()
                                         : undefined,
                                 }}
                             />
