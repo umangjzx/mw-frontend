@@ -95,6 +95,11 @@ html {
     justify-content: center;
 }
 
+.break-word {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
 /* Date Rabge Picker */
 :where(.css-dev-only-do-not-override-wz1edx).ant-picker-dropdown
     .ant-picker-cell-in-view.ant-picker-cell-in-range:not(.ant-picker-cell-disabled):before,
