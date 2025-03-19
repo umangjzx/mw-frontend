@@ -357,7 +357,7 @@ const FeedViewModal = ({
                                         />
                                     </div>
                                     <div className="ml-3 flex-1 flex flex-col ">
-                                        <div className="flex max-md:flex-wrap items-center gap-2 md:gap-3 w-full min-h-[40px]">
+                                        <div className="flex flex-wrap items-center gap-2 md:gap-3 w-full min-h-[40px]">
                                             <p className="font-semibold text-black">
                                                 {post?.author?.name}
                                             </p>
