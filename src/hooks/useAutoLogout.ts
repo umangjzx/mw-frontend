@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback } from "react";
 import Cookies from "js-cookie";
+import { clearCookies } from "@/utils/auth";
 
 const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes
 const COOKIE_EXPIRY_DAYS = INACTIVITY_TIMEOUT / (1000 * 60 * 60 * 24);
@@ -10,17 +11,7 @@ const useAutoLogout = (router: any) => {
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const clearSession = useCallback(() => {
-    Cookies.remove("token");
-    Cookies.remove("role");
-    Cookies.remove("onboarded_status");
-    Cookies.remove("learner_id");
-    Cookies.remove("volunteer_id");
-    Cookies.remove("lastActivity");
-
-    if (typeof window !== "undefined") {
-      localStorage.clear();
-      sessionStorage.clear();
-    }
+    clearCookies();
     router.replace("/login");
   }, [router]);
 
