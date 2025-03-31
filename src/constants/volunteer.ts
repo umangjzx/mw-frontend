@@ -51,9 +51,10 @@ const ProfileDetailsFields: FormField[] = [
         inputType: "birthdatepicker",
         placeholder: "DD/MM/YYYY",
         format: "DD-MM-YYYY",
-        sublabel: "Minors must be at least 14 years of age to begin volunteering",
+        sublabel: "Minors must be at least 13 years of age to begin volunteering",
         gridCols: 1,
         required: true,
+        disabled: true,
         birthDatePicker: { minAge: 14, maxAge: 100 },
     },
     {

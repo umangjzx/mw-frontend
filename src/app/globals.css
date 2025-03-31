@@ -183,6 +183,22 @@ html {
     display: none;
 }
 
+
+/* Antd Checkbox Styles */
+.consent-checkbox .ant-checkbox {
+    align-self: normal !important;
+    @apply !h-6 !mt-1;
+}
+
+.consent-checkbox .ant-checkbox-inner {
+    @apply !w-6 !h-6;
+}
+  
+.consent-checkbox .ant-checkbox-inner::after {
+    @apply !h-[15px] !w-[7px] !top-[45%];
+}
+
+  
 /* Search Select Styles */
 .ant-select-selection-item {
     background: transparent !important;

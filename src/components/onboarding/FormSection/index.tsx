@@ -5,10 +5,10 @@ import { z } from "zod";
 import { useQuery } from "@tanstack/react-query";
 import { GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
-import Cookies from "js-cookie";
 import { showToast } from "@/components/common/Toast";
 import { defaultLearnerData, defaultVolunteerData } from "./config";
 import FormTabs from "./FormTabs";
+import { getCookie } from "@/utils/auth";
 
 type FormSectionProps = {
     schema: z.ZodSchema;
@@ -19,10 +19,10 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
     const { form, onSubmit, isLoading } = useOnboardingForm(schema);
     const { control, formState: { errors, isValid, dirtyFields }, trigger, setError, setValue, clearErrors } = form;
 
-    const role = Cookies.get("role");
+    const role = getCookie("role");
     const isVolunteer = role === "volunteer";
+    const userId = getCookie(isVolunteer ? "volunteer_id" : "learner_id") || "";
 
-    const userId = Cookies.get(isVolunteer ? "volunteer_id" : "learner_id") || "";
     const endpoint = isVolunteer
         ? endpoints.volunteer.getIndividualVolunteer(userId)
         : endpoints.learner.getIndividualLearner(userId);
@@ -35,28 +35,26 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
         },
     });
 
-    form.setValue(
-        isVolunteer
-            ? "volunteer_contact_details.email"
-            : "learner_personal_info.learner_contact_details.email",
-        userData?.email || ""
-    );
+    if (isVolunteer){
+        form.setValue("volunteer_birth_date", userData?.date_of_birth || "");
+        form.setValue("volunteer_contact_details.email", userData?.email || "");
+    } else if (userData?.enrolled_by === "parent") {
+        form.setValue("enrolled_by", "parent");
+        form.setValue("parent_info.parent_email", userData?.email || "");
+    } else {
+        form.setValue("enrolled_by", "self");
+        form.setValue("learner_personal_info.learner_date_of_birth", userData?.date_of_birth || "");
+        form.setValue("learner_personal_info.learner_contact_details.email", userData?.email || "");
+    }
+    form.setValue("cookie_consent_accepted", getCookie("cookieConsent") === "accepted");
 
     const validateForm = () => isValid || showToast({ type: "error", message: "Fill required fields!" });
-
-    console.log(dirtyFields, errors, "dirtyFields", control._formValues);
 
     const handleFillForm = () => {
         Object.entries(isVolunteer ? defaultVolunteerData : defaultLearnerData).forEach(
             ([key, value]) => {
                 form.setValue(key, value);
             }
-        );
-        form.setValue(
-            isVolunteer
-                ? "volunteer_contact_details.email"
-                : "learner_personal_info.learner_contact_details.email",
-            userData?.email || ""
         );
     };
 

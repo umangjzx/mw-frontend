@@ -6,10 +6,10 @@ import StepsChart from "../components/StepsChart";
 import LandingPageButton from "../components/Button";
 
 interface ForLearnerProps {
-    onLearnerLogin: (role: UserType) => void;
+    handleSignUp: () => void;
 }
 
-const ForLearner = ({ onLearnerLogin }: ForLearnerProps) => {
+const ForLearner = ({ handleSignUp }: ForLearnerProps) => {
     return (
         <ContainerWrapper className="bg-white py-10 px-5">
             <ContainerHeader
@@ -34,7 +34,7 @@ const ForLearner = ({ onLearnerLogin }: ForLearnerProps) => {
                     <LandingPageButton
                         title="Enroll as Learner"
                         type="learner"
-                        onClick={() => onLearnerLogin("learner")}
+                        onClick={handleSignUp}
                     />
                 </div>
             </div>

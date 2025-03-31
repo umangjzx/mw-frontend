@@ -300,9 +300,14 @@ export const volunteerFormSchema = z.object({
     // volunteer_subjects: z
     //     .array(z.any(), { required_error: "Please add at least one subject" })
     //     .nonempty("Please add at least one subject"),
-    
+
     terms_and_conditions_accepted: z.boolean({ required_error: "Acceptance of terms and conditions is required" }),
+    privacy_policy_accepted: z.boolean({ required_error: "Acceptance of privacy policy is required" }),
+    cookie_consent_accepted: z.boolean({ required_error: "Acceptance of cookie consent is required" }),
 }).superRefine((data) => {
+    if (!data?.privacy_policy_accepted) {
+        throw new ZodError([{ message: "Acceptance of privacy policy is required", path: ["privacy_policy_accepted"], code: "invalid_type", expected: "boolean", received: "undefined" }])
+    }
     if (!data?.terms_and_conditions_accepted) {
         throw new ZodError([{ message: "Acceptance of terms and conditions is required", path: ["terms_and_conditions_accepted"], code: "invalid_type", expected: "boolean", received: "undefined" }])
     }
@@ -457,10 +462,8 @@ export const learnerFormSchema = z.object({
             required_error: "Learner's Primary Language is required",
         }),
         learner_contact_details: z.object({
-            email: z
-                .string({ required_error: "Learner's Email is required" })
-                .email("Invalid email address"),
-            contact_number: contactNumberValidation,
+            email: z.string().optional().or(z.null()),
+            contact_number: z.any().optional().or(z.null()),
             zip_code: z
                 .string({ required_error: "Zip code is required" })
                 .min(1, { message: "Zip code cannot be empty" }),
@@ -566,47 +569,50 @@ export const learnerFormSchema = z.object({
             }),
         })
         .required(),
+    privacy_policy_accepted: z.boolean({ required_error: "Acceptance of privacy policy is required" }),
     terms_and_conditions_accepted: z.boolean({ required_error: "Acceptance of terms and conditions is required" }),
+    cookie_consent_accepted: z.boolean({ required_error: "Acceptance of cookie consent is required" }),
 }).superRefine((data) => {
+    if (!data?.privacy_policy_accepted) {
+        throw new ZodError([{ message: "Acceptance of privacy policy is required", path: ["privacy_policy_accepted"], code: "invalid_type", expected: "boolean", received: "undefined" }])
+    }
     if (!data?.terms_and_conditions_accepted) {
         throw new ZodError([{ message: "Acceptance of terms and conditions is required", path: ["terms_and_conditions_accepted"], code: "invalid_type", expected: "boolean", received: "undefined" }])
     }
     return true;
 });
 
-const emailSchema = z.string().email("Invalid email address").optional(); 
+const emailSchema = z.string().email("Invalid email address").optional();
 export function validateLearnerParentFields(data: any) {
     const errors: { [key: string]: string } = {};
     let isSuccess = true;
 
-    const learnerDob = data?.learner_personal_info?.learner_date_of_birth;
-    const age = learnerDob ? moment().diff(moment(learnerDob, "DD-MM-YYYY"), 'years') : null;
+    const enrolled_by = data?.enrolled_by;
+    if (enrolled_by !== "parent") return { success: true, errors: {} };
 
-    if (age !== null && age < 18) {
-        (Object.keys(data?.parent_info || {}) as (keyof learnerParentSchemaType)[]).forEach((key) => {
-            const field = data?.parent_info?.[key];
-            if (!field || (typeof field === "string" && field.trim().length === 0)) {
-                errors[`parent_info.${key}`] = `${key.split("_").join(" ")} is required for learners under 18`;
+    (Object.keys(data?.parent_info || {}) as (keyof learnerParentSchemaType)[]).forEach((key) => {
+        const field = data?.parent_info?.[key];
+        if (!field || (typeof field === "string" && field.trim().length === 0)) {
+            errors[`parent_info.${key}`] = `${key.split("_").join(" ")} is required for learners under 13`;
+            isSuccess = false;
+        }
+        if (key === "parent_email") {
+            try {
+                emailSchema.parse(field);
+            } catch (e) {
+                errors[`parent_info.${key}`] = "Invalid email address";
                 isSuccess = false;
             }
-            if (key === "parent_email") {
-                try {
-                    emailSchema.parse(field);
-                } catch (e) {
-                    errors[`parent_info.${key}`] = "Invalid email address";
-                    isSuccess = false;
-                }
+        }
+        if (key === "parent_contact_number") {
+            try {
+                contactNumberValidation.parse(field);
+            } catch (e) {
+                errors[`parent_info.${key}`] = "Parent Contact Number is required for learners under 13";
+                isSuccess = false;
             }
-            if (key === "parent_contact_number") {
-                try {
-                    contactNumberValidation.parse(field);
-                } catch (e) {
-                    errors[`parent_info.${key}`] = "Parent Contact Number is required for learners under 18";
-                    isSuccess = false;
-                }
-            }
-        });
-    }
+        }
+    });
 
     return { success: isSuccess, errors: isSuccess ? {} : errors };
 }
