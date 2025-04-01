@@ -1,35 +1,25 @@
 "use client";
-import { GoogleIcon, SideMenuIcon } from "@/assets/icons";
-import ModalCloseIcon from "@/assets/icons/FeedModalCloseIcon";
+import { SideMenuIcon } from "@/assets/icons";
 import Button from "@/components/common/Button";
 import Logo from "@/components/common/Logo";
-import { Radio } from "antd";
 import Link from "next/link";
 import React, { useState } from "react";
 import SideNavBar from "@/components/landingpage/SideNavBar";
 import { IoMdClose } from "react-icons/io";
 import { useRouter } from "next/navigation";
+import { LoginModal } from "../../Modals/LoginModal";
+import SignUpAsModal from "../../Modals/SignUpAsModal";
+import { useQueryState } from "nuqs";
 
-interface HeaderProps {
-    handleModalLogin?: (value: string) => void;
-}
+const Header = () => {
+    const [paramMode, setParamMode] = useQueryState("signup_as");
 
-const Header = ({ handleModalLogin }: HeaderProps) => {
-    const [loginAs, setLoginAs] = useState<UserType>("volunteer");
-
-    const [isSignBtnLoading, setIsSignBtnLoading] = useState(false);
     const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
     const [isSideNavBarOpen, setIsSideNavBarOpen] = useState<boolean>(false);
     const router = useRouter();
 
     const handleSideNavBar = () => {
         setIsSideNavBarOpen(!isSideNavBarOpen);
-    };
-
-    const handleLoginClick = () => {
-        setIsSignBtnLoading(true)
-        router.push(`/login?loginAs=${loginAs}`);
-        handleModalLogin && handleModalLogin(loginAs);
     };
 
     const handleLoginModal = () => {
@@ -48,23 +38,6 @@ const Header = ({ handleModalLogin }: HeaderProps) => {
         // { title: "Team Up", link: "/" },
     ];
 
-    const loginAsRadio = {
-        id: "loginAs",
-        name: "loginAs",
-        label: "",
-        inputType: "radio",
-        options: [
-            { label: "Learner", value: "learner" },
-            { label: "Volunteer", value: "volunteer" },
-        ],
-        gridCols: 5,
-        required: true,
-    };
-
-    const handleLoginAs = (value: UserType) => {
-        setLoginAs(value);
-    };
-
     const handleLinkClick = (link: string) => {
         handleSideNavBar();
         router.push(link);
@@ -72,12 +45,6 @@ const Header = ({ handleModalLogin }: HeaderProps) => {
 
     return (
         <div className="w-full mx-auto bg-white shadow-md ">
-            <div
-                className={`${
-                    isLoginModalOpen ? "opacity-50 visible" : "opacity-0 invisible"
-                } transition-all duration-300 ease-in-out fixed top-0 left-0 w-full h-full bg-black z-30 max-md:!hidden`}
-            ></div>
-
             <div className="w-full mx-auto flex justify-between items-center 2xl:px-[4%] px-[5%] py-5 ">
                 <Link href="/" className="cursor-pointer">
                     <Logo />
@@ -100,39 +67,6 @@ const Header = ({ handleModalLogin }: HeaderProps) => {
                             className="!bg-black !px-3 !py-1 text-white hover:!bg-black hover:!text-white text-sm !rounded-lg"
                             onClick={handleLoginModal}
                         />
-                        <div
-                            className={`absolute right-0 bottom-[-13rem] w-[450px] py-4 px-6 h-fit flex flex-col gap-5 bg-white rounded-3xl z-40 
-                                transform transition-all duration-300 ease-in-out
-                                ${
-                                    isLoginModalOpen
-                                        ? "opacity-100 scale-100 translate-y-0 visible"
-                                        : "opacity-0 scale-95 translate-y-2 invisible"
-                                }`}
-                        >
-                            <div className="flex justify-between items-center">
-                                <p className="text-xl font-medium">Login As</p>
-                                <div onClick={handleLoginModal} className="cursor-pointer">
-                                    <ModalCloseIcon />
-                                </div>
-                            </div>
-                            <div>
-                                <LoginRadio
-                                    name="loginAs"
-                                    value={loginAs}
-                                    // @ts-ignore
-                                    onChange={handleLoginAs}
-                                    options={loginAsRadio.options}
-                                    inputClassName="w-full"
-                                />
-                            </div>
-                            <Button
-                                loading={isSignBtnLoading}
-                                onClick={handleLoginClick}
-                                title="Sign In With Google"
-                                className="!bg-black w-full !px-3 !py-1 text-white hover:!bg-black hover:!text-white text-sm !rounded-xl"
-                                icon={<GoogleIcon />}
-                            />
-                        </div>
                     </div>
                 </div>
                 <div className="md:hidden cursor-pointer" onClick={handleSideNavBar}>
@@ -164,92 +98,14 @@ const Header = ({ handleModalLogin }: HeaderProps) => {
                             className="!bg-black !px-3 !py-1 text-white hover:!bg-black hover:!text-white text-sm !rounded-lg min-w-[150px]"
                             onClick={handleLoginModal}
                         />
-                        <div
-                            className={`absolute right-0 bottom-[-13rem] max-md:w-full w-[500px] py-4 px-6 h-fit flex flex-col gap-5 bg-gray-200 rounded-3xl z-40 
-                                transform transition-all duration-300 ease-in-out
-                                ${
-                                    isLoginModalOpen
-                                        ? "opacity-100 scale-100 translate-y-0 visible"
-                                        : "opacity-0 scale-95 translate-y-2 invisible"
-                                }`}
-                        >
-                            <div className="flex justify-between items-center">
-                                <p className="text-xl font-medium">Login As</p>
-                                <div onClick={handleLoginModal} className="cursor-pointer">
-                                    <ModalCloseIcon />
-                                </div>
-                            </div>
-                            <div>
-                                <LoginRadio
-                                    name="loginAs"
-                                    value={loginAs}
-                                    // @ts-ignore
-                                    onChange={handleLoginAs}
-                                    options={loginAsRadio.options}
-                                    inputClassName="w-full"
-                                />
-                            </div>
-                            <Button
-                                loading={isSignBtnLoading}
-                                onClick={handleLoginClick}
-                                title="Sign In With Google"
-                                className="!bg-black w-full !px-3 !py-1 text-white hover:!bg-black hover:!text-white text-sm !rounded-xl"
-                                icon={<GoogleIcon />}
-                            />
-                        </div>
                     </div>
                 </div>
             </SideNavBar>
+            <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+            <SignUpAsModal isOpen={paramMode === "learner" || paramMode === "volunteer"} onClose={() => setParamMode(null)} />
         </div>
     );
 };
 
 export default Header;
 
-const LoginRadio: React.FC<RadioInputProps> = ({
-    name,
-    value,
-    onChange,
-    disabled,
-    options = [],
-    inputClassName = "",
-    variant = "default",
-    radioButtonClassName = "",
-    inputType = "radio",
-}) => {
-    return (
-        <Radio.Group
-            name={name}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            disabled={disabled}
-            className={inputClassName}
-        >
-            <div className="flex items-center gap-2 w-full h-full">
-                {options.map((option) => (
-                    <div
-                        key={option.value}
-                        className={`flex  w-full rounded-xl items-center  hover:bg-background-input ${
-                            option.value === "learner"
-                                ? value === option.value
-                                    ? "bg-[#DFF5FF] border-blue-500 border hover:!bg-[#DFF5FF]"
-                                    : "bg-[#DFF5FF] border-[#DFF5FF] border hover:!bg-[#DFF5FF]"
-                                : value === option.value
-                                ? "bg-[#FFE9D4] border-[#EF4107] border hover:!bg-[#FFE9D4]"
-                                : "bg-[#FFE9D4] border-[#FFE9D4] border hover:!bg-[#FFE9D4]"
-                        }  rounded-lg ${radioButtonClassName}`}
-                    >
-                        <Radio value={option.value} className="w-full px-2 py-1.5">
-                            <div>
-                                <span>{option.label}</span>
-                                {option.sublabel && (
-                                    <p className="text-sm text-gray-500 ml-0">{option.sublabel}</p>
-                                )}
-                            </div>
-                        </Radio>
-                    </div>
-                ))}
-            </div>
-        </Radio.Group>
-    );
-};

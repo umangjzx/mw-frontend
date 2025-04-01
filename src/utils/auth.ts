@@ -36,3 +36,34 @@ export const isTokenValid = (cookies: any) => {
         return false;
     }
 };
+
+export const getCookie = (key: string) => {
+    return key && Cookies.get(key);
+}
+
+export const setCookie = (cookieData: Object) => {
+    Object.entries(cookieData).forEach(([key, value]) => {
+        if (value) Cookies.set(key, value, { expires: 1 })
+    });
+}
+
+export const removeCookie = (key: string) => {
+    Cookies.remove(key, { path: "/" });
+}
+
+export const clearCookies = () => {
+    const cookieSetting = { path: "/" };
+
+    Cookies.remove("token", cookieSetting);
+    Cookies.remove("role", cookieSetting);
+    Cookies.remove("onboarded_status", cookieSetting);
+    Cookies.remove("learner_id", cookieSetting);
+    Cookies.remove("volunteer_id", cookieSetting);
+    Cookies.remove("cookieConsent", cookieSetting);
+    Cookies.remove("lastActivity", cookieSetting);
+
+    if (typeof window !== "undefined") {
+        localStorage.clear();
+        sessionStorage.clear();
+    }
+}

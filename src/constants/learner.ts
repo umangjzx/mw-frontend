@@ -92,7 +92,7 @@ const LearnerPersonalFields: FormField[] = [
         format: "DD-MM-YYYY",
         gridCols: 1,
         required: true,
-        birthDatePicker: { minAge: 0, maxAge: 100 },
+        birthDatePicker: { minAge: 0, maxAge: 13 },
     },
     {
         id: "learner_gender",
@@ -138,7 +138,6 @@ const LearnerPersonalFields: FormField[] = [
         inputType: "text",
         placeholder: "Enter email",
         gridCols: 1,
-        disabled: true,
         required: true,
     },
     {

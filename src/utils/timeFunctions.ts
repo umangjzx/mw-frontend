@@ -39,7 +39,13 @@ export const toUserTimeZone = ({
 
 export const calculateAge = (dob: string) => {
     if (!dob) return "";
-    return moment().diff(moment(dob, "DD-MM-YYYY"), "years").toString();
+    return moment()?.diff(moment(dob, "DD-MM-YYYY"), "years")?.toString();
+};
+
+export const isAgeUnder18 = (dob: string) => {
+    const age = Number(calculateAge(dob)) || 0;
+    console.log("Age: ", age);
+    return age < 18;
 };
 
 export const generateTimeSlotId = (startTime: string, endTime: string) => {

@@ -8,6 +8,7 @@ import TitleSection from "@/components/onboarding/TitleSection";
 import { LearnerFormSections, LearnerOnboardingConstants } from "@/constants/learner";
 import { VolunteerFormSections } from "@/constants/volunteer";
 import Cookies from "js-cookie";
+import CookieConsent from "@/components/landingpage/Cookie";
 
 export default function OnboardingPage () {
     const role = Cookies.get("role");
@@ -25,6 +26,7 @@ export default function OnboardingPage () {
             />
             {isVolunteer && <InfoSection />}
             <FormSection schema={schema} formData={formData} />
+            <CookieConsent />
         </div>
     );
 }

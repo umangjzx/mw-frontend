@@ -7,7 +7,6 @@ import {
     CommunityIcon,
     FeedModalCloseIcon,
     LearnerIcon,
-    LogoIcon,
     ResourceIcon,
     SignOutIcon,
     VolunteerIcon,
@@ -17,6 +16,7 @@ import Link from "next/link";
 import InnerWidth from "@/utils/innerWidth";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { clearCookies } from "@/utils/auth";
 
 const Sidebar = ({ onClose }: { onClose?: () => void }) => {
     const router = useRouter();
@@ -62,23 +62,16 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
     const linksData = [...baseLinksData, roleBasedLink, ...remainingLinks];
 
     const handleSignOut = () => {
-        const cookieSetting = { path: "/" };
-    
-        Cookies.remove("role", cookieSetting);
-        Cookies.remove("token", cookieSetting);
-        Cookies.remove("refresh_token", cookieSetting);
-        Cookies.remove("learner_id", cookieSetting);
-        Cookies.remove("volunteer_id", cookieSetting);
-        Cookies.remove("onboarded_status", cookieSetting);
-    
+        clearCookies();
+
         if (typeof window !== "undefined") {
-            localStorage.clear();
-            sessionStorage.clear();
+            window.location.href = "/login"
+        } else {
+            router.replace("/login");
+            router.refresh();
         }
 
-        router.replace("/login");
-        router.refresh();
-    };    
+    };
 
     return (
         <div className="bg-white w-full h-full lg:h-screen flex flex-col items-center justify-between p-6">

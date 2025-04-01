@@ -160,7 +160,7 @@ export const Input: React.FC<InputProps> = (props) => {
                         onChange={(e) => props.onChange(e.target.value)}
                         value={props.value}
                         rootClassName={cn(
-                            "hover:!border-stroke border focus:!bg-background-input !border-stroke w-full h-fit focus:!border-stroke focus:!bg-background-input border-stroke",
+                            "hover:!border-stroke border focus:!bg-background-input !border-stroke w-full h-fit focus:!border-stroke focus:!bg-background-input",
                             props.inputClassName
                         )}
                         className={cn(
@@ -239,9 +239,11 @@ export const Input: React.FC<InputProps> = (props) => {
                             onChange={handleDateChange}
                             format={format}
                             allowClear={false}
+                            defaultPickerValue={parseDate(value) || endDate}
+                            disabled={props?.disabled}
                             placeholder="Click to select date"
                             className={cn(
-                                "w-full text-sm p-2 rounded-lg border border-stroke focus:!border-stroke focus:!bg-background-input placeholder:text-sm hover:bg-background-input bg-background-input",
+                                "w-full text-sm p-2 rounded-lg border border-stroke hover:!border-gray-400 focus:!border-stroke focus:!bg-background-input placeholder:text-sm hover:bg-background-input bg-background-input",
                                 props.inputClassName
                             )}
                         />
@@ -251,7 +253,7 @@ export const Input: React.FC<InputProps> = (props) => {
             case "checkbox":
                 return (
                     <Checkbox
-                        className={`${props.inputClassName} max-md:!text-sm`}
+                        className={`max-md:!text-sm ${props.inputClassName}`}
                         name={name}
                         checked={props.value}
                         onChange={(e) => props.onChange(e.target.checked)}

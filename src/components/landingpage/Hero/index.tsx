@@ -1,4 +1,3 @@
-import { LogoIcon } from "@/assets/icons";
 import HeroBannerImg from "@/assets/images/HeroBannerImg.png";
 import HeroBannerMobileImg from "@/assets/images/HeroBannerMobileImg.png";
 import Image from "next/image";
@@ -6,26 +5,20 @@ import { useEffect, useState } from "react";
 import LandingPageButton from "../components/Button";
 import Header from "../components/Header";
 import HeroBannerLogo from "@/assets/images/landingpage/hero-banner.png";
+import { useQueryState } from "nuqs";
 
-interface HeroProps {
-    handleSetRole: (newRole: UserType) => void;
-    buttonLoading: string;
-}
-
-const Hero = ({ handleSetRole, buttonLoading }: HeroProps) => {
+const Hero = () => {
     const [isVisible, setIsVisible] = useState(false);
+    const [_, setParamMode] = useQueryState("signup_as");
+    const [btnLoading] = useQueryState("btnLoading");
 
     useEffect(() => {
         setIsVisible(true);
     }, []);
 
     return (
-        <div
-            className={`w-full h-full transition-opacity duration-1000 ease-in-out ${
-                isVisible ? "opacity-100" : "opacity-0"
-            }`}
-        >
-            <Header handleModalLogin={(value) => handleSetRole(value as UserType)} />
+        <div className={`w-full h-full transition-opacity duration-1000 ease-in-out ${isVisible ? "opacity-100" : "opacity-0"}`}>
+            <Header />
             <div className={`w-full md:h-[80vh] md:bg-white relative`}>
                 <div className="w-full !h-[300px] md:!h-full md:!relative">
                     <Image src={HeroBannerImg} alt="Hero Banner" fill className="h-full object-cover object-top hidden md:block" />
@@ -41,14 +34,14 @@ const Hero = ({ handleSetRole, buttonLoading }: HeroProps) => {
                     </h1>
                     <div className="flex flex-col md:flex-row gap-3">
                         <LandingPageButton
-                            loading={buttonLoading === "learner"}
-                            onClick={() => handleSetRole("learner")}
+                            loading={btnLoading === "learner"}
+                            onClick={() => setParamMode("learner")}
                             title="Enroll as Learner"
                             type="learner"
                         />
                         <LandingPageButton
-                            loading={buttonLoading === "volunteer"}
-                            onClick={() => handleSetRole("volunteer")}
+                            loading={btnLoading === "volunteer"}
+                            onClick={() => setParamMode("volunteer")}
                             title="Become a Volunteer"
                             type="volunteer"
                         />
