@@ -60,7 +60,7 @@ export default function Page() {
                         <ForLearner handleSignUp={() => setParamMode("learner")} />
                     </div>
                     <div className="reveal lg:px-[9%]">
-                        <ForVolunteer handleSignUp={() => setParamMode("learner")} />
+                        <ForVolunteer handleSignUp={() => setParamMode("volunteer")} />
                     </div>
                 </div>
                 <div className="reveal px-[7%]">

@@ -5,7 +5,7 @@ import { FC, PropsWithChildren } from "react";
 const OnboardingLayout: FC<PropsWithChildren> = ({ children }) => {
     return (
         <div className='h-screen w-screen flex flex-col'>
-            <Header />
+            <Header className="!static" />
             <div className='flex-1'>{children}</div>
             <Footer />
         </div>

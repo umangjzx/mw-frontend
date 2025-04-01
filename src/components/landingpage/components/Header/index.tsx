@@ -1,4 +1,5 @@
 "use client";
+
 import { SideMenuIcon } from "@/assets/icons";
 import Button from "@/components/common/Button";
 import Logo from "@/components/common/Logo";
@@ -6,17 +7,18 @@ import Link from "next/link";
 import React, { useState } from "react";
 import SideNavBar from "@/components/landingpage/SideNavBar";
 import { IoMdClose } from "react-icons/io";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { LoginModal } from "../../Modals/LoginModal";
 import SignUpAsModal from "../../Modals/SignUpAsModal";
 import { useQueryState } from "nuqs";
 
 const Header = () => {
+    const router = useRouter();
+    const pathname = usePathname();
     const [paramMode, setParamMode] = useQueryState("signup_as");
 
     const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
     const [isSideNavBarOpen, setIsSideNavBarOpen] = useState<boolean>(false);
-    const router = useRouter();
 
     const handleSideNavBar = () => {
         setIsSideNavBarOpen(!isSideNavBarOpen);
@@ -43,35 +45,41 @@ const Header = () => {
         router.push(link);
     };
 
+    const hideNavigation = ["/privacy-policy", "/terms-and-conditions"].includes(pathname);
+
     return (
         <div className="w-full mx-auto bg-white shadow-md ">
             <div className="w-full mx-auto flex justify-between items-center 2xl:px-[4%] px-[5%] py-5 ">
                 <Link href="/" className="cursor-pointer">
                     <Logo />
                 </Link>
-                <div className="hidden md:flex 2xl:gap-6 gap-4 items-center">
-                    <nav className="flex 2xl:gap-6 gap-4">
-                        {links.map((link, index) => (
-                            <Link
-                                href={link.link}
-                                key={index}
-                                className="underline font-medium hover:text-gray-600 transition-all duration-300"
-                            >
-                                {link.title}
-                            </Link>
-                        ))}
-                    </nav>
-                    <div className="relative">
-                        <Button
-                            title="Log In"
-                            className="!bg-black !px-3 !py-1 text-white hover:!bg-black hover:!text-white text-sm !rounded-lg"
-                            onClick={handleLoginModal}
-                        />
-                    </div>
-                </div>
-                <div className="md:hidden cursor-pointer" onClick={handleSideNavBar}>
-                    <SideMenuIcon />
-                </div>
+                {!hideNavigation && (
+                    <>
+                        <div className="hidden md:flex 2xl:gap-6 gap-4 items-center">
+                            <nav className="flex 2xl:gap-6 gap-4">
+                                {links.map((link, index) => (
+                                    <Link
+                                        href={link.link}
+                                        key={index}
+                                        className="underline font-medium hover:text-gray-600 transition-all duration-300"
+                                    >
+                                        {link.title}
+                                    </Link>
+                                ))}
+                            </nav>
+                            <div className="relative">
+                                <Button
+                                    title="Log In"
+                                    className="!bg-black !px-3 !py-1 text-white hover:!bg-black hover:!text-white text-sm !rounded-lg"
+                                    onClick={handleLoginModal}
+                                />
+                            </div>
+                        </div>
+                        <div className="md:hidden cursor-pointer" onClick={handleSideNavBar}>
+                            <SideMenuIcon />
+                        </div>
+                    </>
+                )}
             </div>
             <SideNavBar isOpen={isSideNavBarOpen} onClose={handleCloseSideNavBar}>
                 <div className="flex justify-between items-center px-4">

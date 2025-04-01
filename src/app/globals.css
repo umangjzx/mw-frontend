@@ -187,15 +187,15 @@ html {
 /* Antd Checkbox Styles */
 .consent-checkbox .ant-checkbox {
     align-self: normal !important;
-    @apply !h-6 !mt-1;
+    @apply !h-5 !mt-1;
 }
 
 .consent-checkbox .ant-checkbox-inner {
-    @apply !w-6 !h-6;
+    @apply !w-5 !h-5;
 }
   
 .consent-checkbox .ant-checkbox-inner::after {
-    @apply !h-[15px] !w-[7px] !top-[45%];
+    @apply !h-[12px] !w-[5px] !top-[45%];
 }
 
   

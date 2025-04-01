@@ -11,12 +11,11 @@ import RadioInput from "./RadioButton";
 import Uploader from "./Upload";
 import "react-datepicker/dist/react-datepicker.css";
 import { AsyncSelect, MultiSelect } from "./Select";
-import { Select } from "./Select";
+import { Select, GroupedSelect } from "./Select";
 import ContactInput from "../ContactInput";
 import dayjs from "dayjs";
 import moment from "moment";
 import SelectInputCreatable from "./Select/SelectInputCreatable";
-
 import TimeRangePicker from "./Picker/TimeRangePicker";
 
 const { TextArea } = AntInput;
@@ -173,6 +172,9 @@ export const Input: React.FC<InputProps> = (props) => {
 
             case "select":
                 return <Select {...props} />;
+
+            case "grouped-select":
+                return <GroupedSelect {...props} />;
 
             case "multiselect":
                 return <MultiSelect {...props} />;

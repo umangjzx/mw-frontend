@@ -112,22 +112,18 @@ const SignUpAsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
   const [role] = useQueryState('signup_as');
   const [isSignUpLoading, setIsSignUpLoading] = useState(false);
   const [signupPayload, setSignupPayload] = useState<any>(null);
-  const [_, setBtnLoading] = useQueryState("btnLoading");
 
   const SIGN_UP = async (access_token: any, payloads: any) => {
     setIsSignUpLoading(true);
-    setBtnLoading(role);
     await apiGoogleSignUp(access_token, payloads)
       .then((response: any) => {
-        if (typeof window !== 'undefined') window.location.href = '/onboarding';
-        else router.replace('/onboarding');
+        router.replace('/onboarding');
+        router.refresh();
       })
       .catch(err => {
-        console.log("Signup Error", err);
         setIsSignUpLoading(false);
         if (err?.status === 400) return showToast({ type: "error", message: "User already exists, please login." });
       })
-      .finally(() => setBtnLoading(null));
   };
 
   const googleLogin = useGoogleLogin({

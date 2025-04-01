@@ -36,7 +36,7 @@ export const ProfileDetails = ({ data }: { data: Learnerpersonalinfo }) => {
     const contactDetails = [
         { title: "Phone Number", value: contact_data?.contact_number?.number, icon: <FaPhoneAlt size={13} /> },
         { title: "Email", value: contact_data?.email, icon: <MdEmail size={15} /> },
-    ]
+    ].filter(item => item.value);
 
     const details = [
         { label: "First Name", value: data?.learner_first_name },
@@ -48,7 +48,7 @@ export const ProfileDetails = ({ data }: { data: Learnerpersonalinfo }) => {
         { label: "Zip Code", value: contact_data?.zip_code },
         { label: "Country", value: formatString(contact_data?.country) },
         { label: "Timezone", value: formatString(contact_data?.timezone) },
-    ]
+    ].filter(item => item.value);
 
     return (
         <div>

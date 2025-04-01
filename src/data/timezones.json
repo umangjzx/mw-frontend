@@ -1,30 +1,49 @@
 [
     {
-        "label": "America/New_York (GMT-05:00)",
-        "value": "america/new_york"
+      "label": "North America",
+      "options": [
+        {
+          "label": "Eastern Standard Time (GMT-05:00)",
+          "value": "america/new_york"
+        },
+        {
+          "label": "Central Standard Time (GMT-06:00)",
+          "value": "america/chicago"
+        },
+        {
+          "label": "Mountain Standard Time (GMT-07:00)",
+          "value": "america/denver"
+        },
+        {
+          "label": "Pacific Standard Time (GMT-08:00)",
+          "value": "america/los_angeles"
+        },
+        {
+          "label": "Atlantic Standard Time (GMT-04:00)",
+          "value": "america/halifax"
+        },
+        {
+          "label": "Newfoundland Standard Time (GMT-03:30)",
+          "value": "america/st_johns"
+        },
+        {
+          "label": "Alaska Standard Time (GMT-09:00)",
+          "value": "america/anchorage"
+        },
+        {
+          "label": "Hawaii-Aleutian Standard Time (GMT-10:00)",
+          "value": "pacific/honolulu"
+        }
+      ]
     },
     {
-        "label": "America/Chicago (GMT-06:00)",
-        "value": "america/chicago"
-    },
-    {
-        "label": "America/Denver (GMT-07:00)",
-        "value": "america/denver"
-    },
-    {
-        "label": "America/Los_Angeles (GMT-08:00)",
-        "value": "america/los_angeles"
-    },
-    {
-        "label": "America/Anchorage (GMT-09:00)",
-        "value": "america/anchorage"
-    },
-    {
-        "label": "Pacific/Honolulu (GMT-10:00)",
-        "value": "pacific/honolulu"
-    },
-    {
-        "label": "Asia/Kolkata (GMT+05:30)",
-        "value": "asia/kolkata"
+      "label": "Asia",
+      "options": [
+        {
+          "label": "Indian Standard Time (GMT+05:30)",
+          "value": "asia/kolkata"
+        }
+      ]
     }
-]
+  ]
+  

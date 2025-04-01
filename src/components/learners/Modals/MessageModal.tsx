@@ -151,7 +151,7 @@ const MessageModal = ({ receiverId, isOpen, onClose }: MessageModalProps) => {
                 {!isFetchingUser && !isFetching && Array.isArray(messages) &&
                     messages.map((message: MessageProps, index: number) => (
                         <div key={message?.message_id || index} className={`!max-w-[80%] rounded-xl text-base !bg-background-input p-3 ${message?.created_by === userRole ? 'ml-auto' : 'mr-auto'}`}>
-                            <p className="!text-black mb-3  whitespace-pre-wrap">{message?.message}</p>
+                            <p className="!text-black mb-3 break-word">{message?.message}</p>
                             <div className={`${message?.created_by === userRole && 'flex flex-end'}`}>
                                 <p className="flex items-center gap-1 text-sm text-gray-light ml-auto">
                                     {toUserTimeZone({ date: message?.created_at, timeZone: userTimezone, format: "h:mm A" })}

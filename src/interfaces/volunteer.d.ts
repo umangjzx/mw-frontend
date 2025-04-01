@@ -25,7 +25,7 @@ type Volunteer = {
 
 type Consentandpermissions = {
     photo_or_video_consent: boolean;
-    acknowledgement_of_program_policies: boolean;
+    // acknowledgement_of_program_policies: boolean;
 };
 
 type Profiledocument = {

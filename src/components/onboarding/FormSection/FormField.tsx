@@ -1,6 +1,6 @@
 import { Controller } from "react-hook-form";
 import { Input } from "@/components/common/Input";
-import type { Control } from "react-hook-form";
+import type { Control, UseFormClearErrors } from "react-hook-form";
 import type { LearnerFormData, VolunteerFormData } from "./config";
 
 interface FormFieldProps {
@@ -8,10 +8,11 @@ interface FormFieldProps {
     control: Control<VolunteerFormData | LearnerFormData>;
     errors: any;
     setValue: (name: string, value: any, options?: any) => void;
+    clearErrors: UseFormClearErrors<VolunteerFormData | LearnerFormData>;
     parent?: string | null;
 }
 
-export const FormField = ({ field, control, setValue, errors, parent }: FormFieldProps) => {
+export const FormField = ({ field, control, setValue, errors, parent, clearErrors }: FormFieldProps) => {
     const getFieldValue = (field: any) => {
         if (parent) {
             const parentKey = parent.split(".");
@@ -42,7 +43,7 @@ export const FormField = ({ field, control, setValue, errors, parent }: FormFiel
 
     const handleCreate = (newValue: any) => {
         const fieldName = getFieldProperty(field, "name");
-        if(field.variant === "single") {
+        if (field.variant === "single") {
             return setValue(fieldName, newValue)
         }
         const currentValues = getFieldValue(field) || [];
@@ -64,7 +65,10 @@ export const FormField = ({ field, control, setValue, errors, parent }: FormFiel
                         onCreate={handleCreate}
                         error={getFieldProperty(field, "error")}
                         value={getFieldValue(field)}
-                        onChange={onChange}
+                        onChange={(e: any) => {
+                            onChange(e); 
+                            clearErrors(getFieldProperty(field, "name"));
+                        }}
                         name={getFieldProperty(field, "name") as keyof FormData}
                         inputClassName={field.inputClassName}
                         options={field.options}

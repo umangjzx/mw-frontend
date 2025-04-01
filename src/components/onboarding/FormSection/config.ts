@@ -254,9 +254,6 @@ export const volunteerFormSchema = z.object({
     // Consent and Permissions
     consent_and_permissions: z.object({
         photo_or_video_consent: z.boolean({ required_error: "Photo or video consent is required" }),
-        acknowledgement_of_program_policies: z.boolean({
-            required_error: "Acknowledgement of policies is required",
-        }),
     }),
 
     // Profile Picture
@@ -284,32 +281,23 @@ export const volunteerFormSchema = z.object({
         .or(z.null())
         .optional(),
 
-    // Profile Document
-    // profile_document: z
-    //     .object({
-    //         document_url: z.string({ required_error: "Document URL is required" }).min(1, {
-    //             message: "Document cannot be empty",
-    //         }),
-    //         document_id: z.string({ required_error: "Document ID is required" }).min(1, {
-    //             message: "Document cannot be empty",
-    //         }),
-    //     })
-    //     .required(),
-
-    // Volunteer Subjects
-    // volunteer_subjects: z
-    //     .array(z.any(), { required_error: "Please add at least one subject" })
-    //     .nonempty("Please add at least one subject"),
-
     terms_and_conditions_accepted: z.boolean({ required_error: "Acceptance of terms and conditions is required" }),
     privacy_policy_accepted: z.boolean({ required_error: "Acceptance of privacy policy is required" }),
     cookie_consent_accepted: z.boolean({ required_error: "Acceptance of cookie consent is required" }),
-}).superRefine((data) => {
+}).superRefine((data, ctx) => {
     if (!data?.privacy_policy_accepted) {
-        throw new ZodError([{ message: "Acceptance of privacy policy is required", path: ["privacy_policy_accepted"], code: "invalid_type", expected: "boolean", received: "undefined" }])
+        ctx.addIssue({
+            code: "custom",
+            message: "Acceptance of privacy policy is required",
+            path: ["privacy_policy_accepted"]
+        });
     }
     if (!data?.terms_and_conditions_accepted) {
-        throw new ZodError([{ message: "Acceptance of terms and conditions is required", path: ["terms_and_conditions_accepted"], code: "invalid_type", expected: "boolean", received: "undefined" }])
+        ctx.addIssue({
+            code: "custom",
+            message: "Acceptance of terms and conditions is required",
+            path: ["terms_and_conditions_accepted"]
+        });
     }
     return true;
 });
@@ -422,7 +410,6 @@ export const defaultVolunteerData: Volunteer = {
     ],
     consent_and_permissions: {
         photo_or_video_consent: true,
-        acknowledgement_of_program_policies: true,
     },
 };
 
@@ -533,7 +520,7 @@ export const learnerFormSchema = z.object({
     // Learner goals - Required
     learner_goals: z.object({
         expected_goals: z.array(z.string(), { required_error: "Expected Goals are required" }).nonempty("Expected Goals are required"),
-        subjects_to_focus_on: z.array(z.string(), {
+        skills_and_expertise: z.array(z.string(), {
             required_error: "Subjects to Focus On are required",
         }).nonempty("Subjects to Focus On are required"),
         preferred_volunteer_qualities: z.string({ required_error: "Preferred Volunteer Qualities are required" })
@@ -555,9 +542,6 @@ export const learnerFormSchema = z.object({
     // Consent and permissions - Required
     consent_and_permissions: z.object({
         photo_or_video_consent: z.boolean({ required_error: "Photo or Video Consent is required" }),
-        acknowledgement_of_program_policies: z.boolean({
-            required_error: "Acknowledgement of Program Policies is required",
-        }),
     }),
     profile_picture: z
         .object({
@@ -572,12 +556,20 @@ export const learnerFormSchema = z.object({
     privacy_policy_accepted: z.boolean({ required_error: "Acceptance of privacy policy is required" }),
     terms_and_conditions_accepted: z.boolean({ required_error: "Acceptance of terms and conditions is required" }),
     cookie_consent_accepted: z.boolean({ required_error: "Acceptance of cookie consent is required" }),
-}).superRefine((data) => {
+}).superRefine((data, ctx) => {
     if (!data?.privacy_policy_accepted) {
-        throw new ZodError([{ message: "Acceptance of privacy policy is required", path: ["privacy_policy_accepted"], code: "invalid_type", expected: "boolean", received: "undefined" }])
+        ctx.addIssue({
+            code: "custom",
+            message: "Acceptance of privacy policy is required",
+            path: ["privacy_policy_accepted"]
+        });
     }
     if (!data?.terms_and_conditions_accepted) {
-        throw new ZodError([{ message: "Acceptance of terms and conditions is required", path: ["terms_and_conditions_accepted"], code: "invalid_type", expected: "boolean", received: "undefined" }])
+        ctx.addIssue({
+            code: "custom",
+            message: "Acceptance of terms and conditions is required",
+            path: ["terms_and_conditions_accepted"]
+        });
     }
     return true;
 });
@@ -682,7 +674,7 @@ export const defaultLearnerData: Learner = {
 
     learner_goals: {
         expected_goals: ["Encourage Independence"],
-        subjects_to_focus_on: ["science"],
+        skills_and_expertise: ["science"],
         preferred_volunteer_qualities: "patience",
         skill_level: "beginner",
     },
@@ -694,7 +686,6 @@ export const defaultLearnerData: Learner = {
     },
     consent_and_permissions: {
         photo_or_video_consent: true,
-        acknowledgement_of_program_policies: true,
     },
     // profile_picture: null,
 };

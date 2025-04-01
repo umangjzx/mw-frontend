@@ -15,12 +15,11 @@ export const LoginModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =
     const router = useRouter();
     const [_, setParamMode] = useQueryState("signup_as");
     const [isLoginLoading, setIsLoginLoading] = useState(false);
-
+    
     const handleTriggerSignUp = (role: UserType) => {
         setParamMode(role);
         onClose();
     }
-
     const SIGN_IN = async (access_token: any) => {
         setIsLoginLoading(true);
         await apiGoogleLogin(access_token)
