@@ -57,7 +57,7 @@ const LearnerModalBody = ({ handleSignUp, isLoading }: { handleSignUp: (payloads
         className='w-full space-y-2 pb-5 border-b border-b-gray-300'
       >
         {learnerOptions.map((option) => (
-          <Radio key={option.value} value={option.value} className='flex items-center p-2 border rounded-lg cursor-pointer bg-background-input hover:border-gray-400'>
+          <Radio key={option.value} value={option.value} className='flex items-center p-2 text-base border rounded-lg cursor-pointer bg-background-input hover:border-gray-400'>
             {option.label}
           </Radio>
         ))}

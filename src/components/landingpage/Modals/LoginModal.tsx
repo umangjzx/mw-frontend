@@ -51,12 +51,12 @@ export const LoginModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =
         <Modal
             open={isOpen}
             onCancel={onClose}
-            className='!w-auto max-w-[90%] absolute right-10 top-20'
+            className='w-full max-md:!max-w-[100%] px-4 absolute right-0 md:right-10 top-[25%] md:top-20'
             classNames={{ content: '!rounded-3xl !p-5' }}
             closable={false}
             footer={false}
         >
-            <div className='w-full md:w-[430px]'>
+            <div className='w-full'>
                 <div className='flex justify-between items-center'>
                     <span className='text-xl font-medium'>Existing User?</span>
                     <ModalCloseIcon onClick={onClose} width={35} height={35} className='cursor-pointer rounded-full hover:shadow-lg' />

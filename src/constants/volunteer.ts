@@ -97,7 +97,7 @@ const ProfileDetailsFields: FormField[] = [
         label: "Languages Spoken",
         inputType: "async-select",
         variant: "multi",
-        placeholder: "English, Tamil, Hindi",
+        placeholder: "Select Languages",
         endpoint: "languages",
         responseAsLabel: "language_name",
         responseAsValue: ["language_id", "language_name"],
