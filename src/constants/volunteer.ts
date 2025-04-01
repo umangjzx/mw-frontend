@@ -161,7 +161,7 @@ const ProfileDetailsFields: FormField[] = [
     },
     {
         id: "volunteer_skills",
-        label: "Skills and Expertise to Share",
+        label: "Skills and Expertise to teach Learners",
         inputType: "async-select",
         placeholder: "Search and select skills",
         creatable: true,
@@ -540,17 +540,17 @@ export const VolunteerFormSections: FormSectionConfig[] = [
                 required: false,
                 gridCols: 1,
             },
-            {
-                id: "acknowledgement_of_program_policies",
-                label: "Acknowledgment of Program Policies ",
-                sublabel: "(Rules, Expectations, and Procedures)",
-                options: [
-                    { label: "Yes", value: true },
-                    { label: "No", value: false },
-                ],
-                inputType: "radio",
-                gridCols: 1,
-            },
+            // {
+            //     id: "acknowledgement_of_program_policies",
+            //     label: "Acknowledgment of Program Policies ",
+            //     sublabel: "(Rules, Expectations, and Procedures)",
+            //     options: [
+            //         { label: "Yes", value: true },
+            //         { label: "No", value: false },
+            //     ],
+            //     inputType: "radio",
+            //     gridCols: 1,
+            // },
         ],
     },
 ];

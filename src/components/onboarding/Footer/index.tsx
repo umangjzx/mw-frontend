@@ -30,7 +30,7 @@ const socialLinks: SocialLink[] = [
     { href: "https://linkedin.com", icon: FaLinkedin, label: "LinkedIn" },
     { href: "https://x.com", icon: FaSquareXTwitter, label: "X" },
     { href: "https://instagram.com", icon: FaInstagram, label: "Instagram" },
-    { href: "https://whatsapp.com", icon: FaWhatsapp, label: "WhatsApp" },
+    // { href: "https://whatsapp.com", icon: FaWhatsapp, label: "WhatsApp" },
 ];
 
 const Footer = (props: Props) => {

@@ -1,3 +1,6 @@
+type OptionType = { label: string; value: any };
+type OptionGroupType = { label: string; options: OptionType[] };
+
 type FormField = {
     id?: string;
     label?: string;
@@ -5,6 +8,7 @@ type FormField = {
         | "text"
         | "number"
         | "select"
+        | "grouped-select"
         | "radio"
         | "checkbox"
         | "datepicker"
@@ -23,7 +27,7 @@ type FormField = {
     sublabel?: string;
     showSearch?: boolean;
     creatable?: boolean;
-    options?: { label: string; value: any }[];
+    options?: OptionType[] | OptionGroupType[];
     min?: number;
     gridCols?: number;
     inputClassName?: string;

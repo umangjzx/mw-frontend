@@ -49,10 +49,11 @@ type TextAreaInputProps = BaseInputProps & {
 };
 
 type SelectInputProps = BaseInputProps & {
-    inputType: "select";
+    inputType: "select" | "grouped-select";
     value: string | number;
     onChange: (value: string | number) => void;
     options: InputOption[];
+    groupOptions?: InputOption[];
     placeholder?: string;
     isLoading?: boolean;
     showSearch?: boolean;

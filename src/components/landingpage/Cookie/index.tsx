@@ -31,6 +31,7 @@ export default function CookieConsent() {
       open={showBanner}
       className='!w-auto max-w-[90%] absolute right-10 top-20'
       classNames={{ content: '!p-0' }}
+      closable={false}
       footer={false}
     >
       <div className="max-md:mx-3 fixed bottom-4 right-0 md:right-4 z-50 bg-white shadow-lg rounded-3xl p-6 border border-gray-300 max-w-md mx-auto flex flex-col gap-5">

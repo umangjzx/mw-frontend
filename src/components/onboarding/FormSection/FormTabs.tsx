@@ -39,26 +39,24 @@ const FormTabs = ({ formData, control, errors, trigger, setError, clearErrors, s
     const [highestTab, setHighestTab] = useState(0);
     const tabButtonsRef = useRef<HTMLDivElement>(null);
 
+    const handleValidationErrors = ({ success, errors }: { success: boolean; errors: any }) => {
+        if (!success) {
+            Object.entries(errors)?.forEach(([key, value]: any) => {
+                if (key && value) setError(key, { message: value });
+            });
+            showToast({ type: "error", message: "Please fill in all required fields before proceeding." });
+            return false;
+        }
+        return true;
+    };
+
     const validateCurrentSection = async () => {
         const { fields, parent } = formData[activeTab];
-        const currentFields = fields.map((field) =>
+        const currentFields = fields.map((field: any) =>
             parent ? `${parent}.${field.parent || field.id}` : field.parent || field.id
         );
 
-        const handleValidationErrors = ({ success, errors }: { success: boolean; errors: any }) => {
-            if (!success) {
-                Object.entries(errors)?.forEach(([key, value]: any) => {
-                    if (key && value) setError(key, { message: value });
-                });
-                showToast({ type: "error", message: "Please fill in all required fields before proceeding." });
-                return false;
-            }
-            return true;
-        };
-
-        console.log("Current Fields: ", currentFields);
         const isValidSection = await trigger(currentFields);
-        console.log("Is Valid Section: ", isValidSection);
 
         if (role === "volunteer" && activeTab === 0) {
             const volunteerValidation = validateVolunteerParentDetails(control._formValues);
@@ -129,20 +127,16 @@ const FormTabs = ({ formData, control, errors, trigger, setError, clearErrors, s
         return age >= ADULT_VOLUNTEER_AGE;
     }
 
-    const hideFields = (field: any) => {
-        if (role === "learner") {
-            if (field.parent === "learner_contact_details" && ["email", "contact_number"].includes(field.id) && enrolled_by === "parent") return true;
-        }
-        return fields.includes(field.id) && volunteerAge();
-    };
+    const hideFields = (field: any) => 
+        role === "learner" ? (
+            (enrolled_by === "parent" && field.parent === "learner_contact_details" && ["email", "contact_number"].includes(field.id))
+        ) : fields.includes(field.id) && volunteerAge();
 
-    const diableField = (field: any) => {
-        if (role === "learner") {
-            if (enrolled_by === "parent" && field.id === "parent_email") return true;
-            else if (["email", "learner_date_of_birth"].includes(field.id)) return true;
-        }
-        return false;
-    };
+    const diableField = (field: any) => 
+        role === "learner" && (
+            (enrolled_by === "parent" && field.id === "parent_email") ||
+            (enrolled_by === "self" && ["email", "learner_date_of_birth"].includes(field.id))
+        );
 
     return (
         <form onSubmit={onSubmit} className="w-full pb-16">
@@ -204,6 +198,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, clearErrors, s
                                                     errors={errors}
                                                     parent={parent}
                                                     setValue={setValue}
+                                                    clearErrors={clearErrors}
                                                 />
                                             ))}
                                         </CardWrapper>
@@ -218,6 +213,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, clearErrors, s
                                         control={control}
                                         errors={errors}
                                         setValue={setValue}
+                                        clearErrors={clearErrors}
                                         parent={
                                             field.parent
                                                 ? `${section?.parent}.${field.parent}`
@@ -232,7 +228,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, clearErrors, s
                             <div className="flex flex-col gap-3">
                                 {activeTab === formData.length - 1 ? (
                                     <>
-                                        <div className="text-gray-600 text-sm">
+                                        <div className="text-gray-600 text-sm flex flex-col gap-3">
                                             {consentInputs.map(consent => (
                                                 <FormField
                                                     key={consent?.id}
@@ -241,6 +237,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, clearErrors, s
                                                     errors={errors}
                                                     parent={null}
                                                     setValue={setValue}
+                                                    clearErrors={clearErrors}
                                                 />
                                             ))}
                                         </div>

@@ -1,5 +1,6 @@
 import nationalities from "@/data/nationalities.json"
 import timezones from "@/data/timezones.json"
+import skills_and_expertise from "@/data/skills_expertise.json"
 
 export const LearnerOnboardingConstants = {
     title: "Enroll a learner",
@@ -92,7 +93,7 @@ const LearnerPersonalFields: FormField[] = [
         format: "DD-MM-YYYY",
         gridCols: 1,
         required: true,
-        birthDatePicker: { minAge: 0, maxAge: 13 },
+        birthDatePicker: { minAge: 0, maxAge: 100 },
     },
     {
         id: "learner_gender",
@@ -174,7 +175,7 @@ const LearnerPersonalFields: FormField[] = [
         parent: "learner_contact_details",
         id: "timezone",
         label: "Time Zone",
-        inputType: "select",
+        inputType: "grouped-select",
         placeholder: "Select time zone",
         showSearch: true,
         options: timezones,        
@@ -549,19 +550,12 @@ const ExpectationsGoalsFields: FormField[] = [
         required: true,
     },
     {
-        id: "subjects_to_focus_on",
-        label: "Specific Subject/Skill Preferences",
+        id: "skills_and_expertise",
+        label: "Skills and Expertise to learn from Volunteers",
         sublabel: "(areas focus for tutoring or support)",
         inputType: "select-creatable",
         variant: "multi",
-        options: [
-            { label: "Math", value: "math" },
-            { label: "Science", value: "science" },
-            { label: "History", value: "history" },
-            { label: "English", value: "english" },
-            { label: "Others", value: "others" },
-            { label: "N/A", value: "N/A" },
-        ],
+        options: skills_and_expertise,
         placeholder: "Enter here",
         gridCols: 1,
         required: true,
@@ -700,17 +694,17 @@ export const LearnerFormSections: FormSectionConfig[] = [
                 required: false,
                 gridCols: 1,
             },
-            {
-                id: "acknowledgement_of_program_policies",
-                label: "Acknowledgment of Program Policies ",
-                sublabel: "(Rules, Expectations, and Procedures)",
-                options: [
-                    { label: "Yes", value: true },
-                    { label: "No", value: false },
-                ],
-                inputType: "radio",
-                gridCols: 1,
-            },
+            // {
+            //     id: "acknowledgement_of_program_policies",
+            //     label: "Acknowledgment of Program Policies ",
+            //     sublabel: "(Rules, Expectations, and Procedures)",
+            //     options: [
+            //         { label: "Yes", value: true },
+            //         { label: "No", value: false },
+            //     ],
+            //     inputType: "radio",
+            //     gridCols: 1,
+            // },
         ],
     },
 ];
