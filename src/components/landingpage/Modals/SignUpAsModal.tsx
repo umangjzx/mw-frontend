@@ -10,6 +10,7 @@ import { apiGoogleSignUp } from '@/api/auth';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useRouter } from 'next/navigation';
 import { showToast } from '@/components/common/Toast';
+import ModalLoader from '@/components/common/Loader/Modal';
 
 const learnerOptions = [
   { label: 'I am a parent filling this profile', value: 'parent' },
@@ -110,18 +111,23 @@ const VolunteerModalBody = ({ handleSignUp, isLoading }: { handleSignUp: (payloa
 const SignUpAsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   const router = useRouter();
   const [role] = useQueryState('signup_as');
+  const [modalLoader, setModalLoader] = useState(false);
+
   const [isSignUpLoading, setIsSignUpLoading] = useState(false);
   const [signupPayload, setSignupPayload] = useState<any>(null);
 
   const SIGN_UP = async (access_token: any, payloads: any) => {
     setIsSignUpLoading(true);
+
     await apiGoogleSignUp(access_token, payloads)
       .then((response: any) => {
+        setModalLoader(true);
         router.replace('/onboarding');
         router.refresh();
       })
       .catch(err => {
         setIsSignUpLoading(false);
+        setModalLoader(false);
         if (err?.status === 400) return showToast({ type: "error", message: "User already exists, please login." });
       })
   };
@@ -141,28 +147,36 @@ const SignUpAsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
   };
 
   return (
-    <Modal
-      open={isOpen}
-      onCancel={onClose}
-      className='max-w-[90%] h-full top-0 flex-center'
-      classNames={{ content: '!rounded-3xl !p-6' }}
-      closable={false}
-      footer={false}
-    >
-      <div className='w-full md:w-[450px]'>
-        <div className='flex justify-between items-center'>
-          <span className='text-xl font-medium'>Enroll as {role}</span>
-          <ModalCloseIcon onClick={onClose} width={35} height={35} className='cursor-pointer rounded-full hover:shadow-lg' />
-        </div>
-        <div className='mt-5'>
-          {
-            role === 'learner' ?
-              <LearnerModalBody handleSignUp={handleSignUp} isLoading={isSignUpLoading} /> :
-              <VolunteerModalBody handleSignUp={handleSignUp} isLoading={isSignUpLoading} />
-          }
-        </div>
-      </div>
-    </Modal>
+    <>
+      {
+        modalLoader ? (
+          <ModalLoader isLoading={modalLoader} title="Redirecting..." />
+        ) : (
+          <Modal
+            open={isOpen}
+            onCancel={onClose}
+            className='max-w-[90%] h-full top-0 flex-center'
+            classNames={{ content: '!rounded-3xl !p-6' }}
+            closable={false}
+            footer={false}
+          >
+            <div className='w-full md:w-[450px]'>
+              <div className='flex justify-between items-center'>
+                <span className='text-xl font-medium'>Enroll as {role}</span>
+                <ModalCloseIcon onClick={onClose} width={35} height={35} className='cursor-pointer rounded-full hover:shadow-lg' />
+              </div>
+              <div className='mt-5'>
+                {
+                  role === 'learner' ?
+                    <LearnerModalBody handleSignUp={handleSignUp} isLoading={isSignUpLoading} /> :
+                    <VolunteerModalBody handleSignUp={handleSignUp} isLoading={isSignUpLoading} />
+                }
+              </div>
+            </div>
+          </Modal>
+        )
+      }
+    </>
   );
 };
 

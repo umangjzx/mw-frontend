@@ -489,7 +489,6 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                         {activeCommentPostId && (
                             <MobileCommentPanel
                                 postId={activeCommentPostId}
-                                totalComments={0}
                                 comment={comment}
                                 setComment={setComment}
                                 onClose={() => setActiveCommentPostId(null)}

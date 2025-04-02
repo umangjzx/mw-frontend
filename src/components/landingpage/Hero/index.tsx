@@ -10,7 +10,6 @@ import { useQueryState } from "nuqs";
 const Hero = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [_, setParamMode] = useQueryState("signup_as");
-    const [btnLoading] = useQueryState("btnLoading");
 
     useEffect(() => {
         setIsVisible(true);
@@ -34,13 +33,11 @@ const Hero = () => {
                     </h1>
                     <div className="flex flex-col md:flex-row gap-3">
                         <LandingPageButton
-                            loading={btnLoading === "learner"}
                             onClick={() => setParamMode("learner")}
                             title="Enroll as Learner"
                             type="learner"
                         />
                         <LandingPageButton
-                            loading={btnLoading === "volunteer"}
                             onClick={() => setParamMode("volunteer")}
                             title="Become a Volunteer"
                             type="volunteer"

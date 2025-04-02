@@ -10,7 +10,7 @@ import { IoIosClose } from "react-icons/io";
 
 interface MobileCommentPanelProps {
     postId: string;
-    totalComments: number;
+    totalComments?: number;
     comment: string;
     setComment: (value: string) => void;
     onClose: () => void;
@@ -66,13 +66,13 @@ const MobileCommentPanel = ({
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-            className="fixed bottom-0 left-0 right-0 bg-white z-50 h-[90vh] md:hidden overflow-hidden rounded-t-[20px] shadow-lg flex flex-col"
+            className="fixed bottom-0 left-0 right-0 bg-white z-50 h-[98dvh] md:hidden overflow-hidden rounded-t-[20px] shadow-lg flex flex-col"
         >
             {/* Header */}
             <div className="sticky top-0 bg-white p-4 border-b">
                 <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4" />
                 <div className="flex justify-between items-center">
-                    <h3 className="text-lg font-semibold">Comments ({commentsData?.items?.length || 0})</h3>
+                <h3 className="text-lg font-semibold">Comments {totalComments && `(${totalComments})` } </h3>
                     <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
                         Close
                     </button>

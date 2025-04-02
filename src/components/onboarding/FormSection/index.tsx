@@ -9,6 +9,7 @@ import { showToast } from "@/components/common/Toast";
 import { defaultLearnerData, defaultVolunteerData } from "./config";
 import FormTabs from "./FormTabs";
 import { getCookie } from "@/utils/auth";
+import ModalLoader from "@/components/common/Loader/Modal";
 
 type FormSectionProps = {
     schema: z.ZodSchema;
@@ -16,7 +17,7 @@ type FormSectionProps = {
 };
 
 const FormSection = ({ schema, formData }: FormSectionProps) => {
-    const { form, onSubmit, isLoading } = useOnboardingForm(schema);
+    const { form, onSubmit, isLoading, isRedirecting } = useOnboardingForm(schema);
     const { control, formState: { errors, isValid, dirtyFields }, trigger, setError, setValue, clearErrors } = form;
 
     const role = getCookie("role");
@@ -73,6 +74,7 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
                 onSubmit={onSubmit}
                 isLoading={isLoading}
             />
+            {isRedirecting && <ModalLoader isLoading={isRedirecting} title="Redirecting..." />}
         </div>
     );
 };

@@ -14,7 +14,6 @@ import { useEffect, useState } from "react";
 
 export default function Page() {
     const [_, setParamMode] = useQueryState("signup_as");
-    const [btnLoading, setBtnLoading] = useQueryState("btnLoading");
 
     useEffect(() => {
         setParamMode(null);
