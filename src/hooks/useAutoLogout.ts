@@ -4,7 +4,7 @@ import { clearCookies } from "@/utils/auth";
 
 const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes
 const COOKIE_EXPIRY_DAYS = INACTIVITY_TIMEOUT / (1000 * 60 * 60 * 24);
-const DEBOUNCE_DELAY = 10 * 1000; // 30 seconds debounce
+const DEBOUNCE_DELAY = 10 * 1000; // 10 seconds debounce
 
 const useAutoLogout = (router: any) => {
   const timerRef = useRef<NodeJS.Timeout | null>(null);

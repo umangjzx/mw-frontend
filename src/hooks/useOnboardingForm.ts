@@ -8,6 +8,7 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/components/common/Toast";
 import { useAppStore } from "@/store/useAppStore";
+import { useState } from "react";
 
 export const useOnboardingForm = (schema: any) => {
     const role = Cookies.get("role");
@@ -15,6 +16,7 @@ export const useOnboardingForm = (schema: any) => {
         resolver: zodResolver(schema),
     });
     const router = useRouter();
+    const [isRedirecting, setIsRedirecting] = useState(false);
     const { setImageId, setVideoId, setDocumentId } = useAppStore();
 
     const { mutate: updateOnboarding, isPending } = useSendData({
@@ -22,6 +24,7 @@ export const useOnboardingForm = (schema: any) => {
             PUT_API(endpoints.onboarding.update(role as "volunteer" | "learner"), data),
         success: () => {
             showToast({ type: "success", message: "Form Submitted!" });
+            setIsRedirecting(true);
             Cookies.set("onboarded_status", (role === 'learner') ? "verification_completed" : "verification_pending");
             router.push("/onboarding/verification");
             setImageId(null);
@@ -48,5 +51,6 @@ export const useOnboardingForm = (schema: any) => {
         form,
         onSubmit: form.handleSubmit(onSubmit),
         isLoading: isPending,
+        isRedirecting: isRedirecting,
     };
 };

@@ -15,6 +15,7 @@ import { useQueryState } from "nuqs";
 const Header = () => {
     const router = useRouter();
     const pathname = usePathname();
+
     const [paramMode, setParamMode] = useQueryState("signup_as");
 
     const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);

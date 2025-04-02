@@ -4,13 +4,12 @@ import { FormField } from "@/components/onboarding/FormSection/FormField";
 import Button from "@/components/common/Button";
 import { showToast } from "@/components/common/Toast";
 import { useEffect, useRef, useState } from "react";
-import Cookies from "js-cookie";
-import moment from "moment";
 import { validateLearnerParentFields, validateVolunteerParentDetails } from "@/components/onboarding/FormSection/config";
 import { UseFormSetError, useWatch, UseFormClearErrors } from "react-hook-form";
 import { calculateAge } from "@/utils/timeFunctions";
 import { ADULT_VOLUNTEER_AGE } from "@/constants/volunteer";
 import TagComponent from "@/components/common/Tag";
+import { getCookie } from "@/utils/auth";
 
 type FormTabsSectionProps = {
     formData: FormSectionConfig[];
@@ -28,49 +27,42 @@ type FormTabsSectionProps = {
 
 
 const FormTabsSection = ({ formData, control, errors, trigger, setError, setValue, validateForm, handleFillForm, onSubmit, isLoading, clearErrors }: FormTabsSectionProps) => {
-    const role = Cookies.get("role");
-
-    const volunteer_birth_date = useWatch({ name: 'volunteer_birth_date', control: control })
+    const role = getCookie("role");
+    const volunteer_birth_date = useWatch({ name: 'volunteer_birth_date', control: control });
+    const enrolled_by = useWatch({ name: 'enrolled_by', control: control });
 
     // Form Tabs
     const [activeTab, setActiveTab] = useState(0);
     const [highestTab, setHighestTab] = useState(0);
     const tabButtonsRef = useRef<HTMLDivElement>(null);
 
+    const handleValidationErrors = ({ success, errors }: { success: boolean; errors: any }) => {
+        if (!success) {
+            Object.entries(errors)?.forEach(([key, value]: any) => {
+                if (key && value) setError(key, { message: value });
+            });
+            showToast({ type: "error", message: "Please fill in all required fields before proceeding." });
+            return false;
+        }
+        return true;
+    };
+    
     const validateCurrentSection = async () => {
         const { fields, parent } = formData[activeTab];
         const currentFields = fields.map((field) =>
             parent ? `${parent}.${field.parent || field.id}` : field.parent || field.id
         );
 
-        const handleValidationErrors = ({ success, errors }: { success: boolean; errors: any }) => {
-            if (!success) {
-                Object.entries(errors)?.forEach(([key, value]: any) => {
-                    if (key && value) setError(key, { message: value });
-                });
-                showToast({ type: "error", message: "Please fill in all required fields before proceeding." });
-                return false;
-            }
-            return true;
-        };
-
-        const validateAgeUnder18 = (dob: string | undefined) => {
-            const age = dob && moment().diff(moment(dob, "DD-MM-YYYY"), "years") || 0;
-            return age < 18;
-        };
-
         const isValidSection = await trigger(currentFields);
-        if (!isValidSection) {
-            showToast({ type: "error", message: "Please fill in all required fields before proceeding." });
-            return false;
+        
+        if (role === "volunteer" && activeTab === 0) {
+            const volunteerValidation = validateVolunteerParentDetails(control._formValues);
+            if (!handleValidationErrors(volunteerValidation)) return false;
         }
 
         if (role === "learner") {
-            const learnerAge = control._formValues?.learner_personal_info?.learner_date_of_birth;
-            if (!validateAgeUnder18(learnerAge)) return true;
-
             const learnerValidation = validateLearnerParentFields(control._formValues);
-            if((activeTab === 0 && highestTab > 1) && !learnerValidation?.success){
+            if ((activeTab === 0 && highestTab > 1) && !learnerValidation?.success) {
                 if (activeTab === 0) setActiveTab(1);
                 return false;
             } else if (activeTab === 1 && !handleValidationErrors(learnerValidation)) {
@@ -78,9 +70,9 @@ const FormTabsSection = ({ formData, control, errors, trigger, setError, setValu
             }
         }
 
-        if (role === "volunteer" && activeTab === 0) {
-            const volunteerValidation = validateVolunteerParentDetails(control._formValues);
-            if (!handleValidationErrors(volunteerValidation)) return false;
+        if (!isValidSection) {
+            showToast({ type: "error", message: "Please fill in all required fields before proceeding." });
+            return false;
         }
 
         return true;
@@ -113,10 +105,16 @@ const FormTabsSection = ({ formData, control, errors, trigger, setError, setValu
         return age >= ADULT_VOLUNTEER_AGE;
     }
 
-    const hideFields = (field: any) => {
-        if (role === "learner") return false;
-        return fields.includes(field.id) && volunteerAge();
-    };
+    const hideFields = (field: any) => 
+        role === "learner" ? (
+            (enrolled_by === "parent" && field.parent === "learner_contact_details" && ["email", "contact_number"].includes(field.id))
+        ) : fields.includes(field.id) && volunteerAge();
+
+    const diableField = (field: any) => 
+        role === "learner" && (
+            (enrolled_by === "parent" && field.id === "parent_email") ||
+            (enrolled_by === "self" && ["email", "learner_date_of_birth"].includes(field.id))
+        );
 
     return (
         <form onSubmit={onSubmit} className="w-full">
@@ -150,6 +148,7 @@ const FormTabsSection = ({ formData, control, errors, trigger, setError, setValu
                                         ? `${section?.parent}.${field.parent}`
                                         : field.parent;
 
+                                    const isFieldDisabled = diableField(field) || field?.disabled;
                                     return (
                                         <div key={field.title} className="border-b border-stroke pb-4">
                                             <h3 className="text-xl font-medium mb-2">{field.title}</h3>
@@ -157,11 +156,12 @@ const FormTabsSection = ({ formData, control, errors, trigger, setError, setValu
                                                 {field.fields.map((childField: any) => (
                                                     <FormField
                                                         key={childField.id}
-                                                        field={{...childField, gridCols: 2, rootClassName: `${childField.rootClassName} max-md:!bg-white max-md:!p-4 max-md:!rounded-lg` }}
+                                                        field={{...childField, gridCols: 2, rootClassName: `${childField.rootClassName} max-md:!bg-white max-md:!p-4 max-md:!rounded-lg`, disabled: isFieldDisabled }}
                                                         control={control}
                                                         errors={errors}
                                                         parent={parent}
                                                         setValue={setValue}
+                                                        clearErrors={clearErrors}
                                                     />
                                                 ))}
                                             </div>
@@ -169,13 +169,15 @@ const FormTabsSection = ({ formData, control, errors, trigger, setError, setValu
                                     );
                                 }
 
+                                const isFieldDisabled = diableField(field) || field?.disabled;
                                 return (
                                     <FormField
                                         key={field.id}
-                                        field={{...field, gridCols: 2, rootClassName: `${field.rootClassName} max-md:!bg-white max-md:!p-4 max-md:!rounded-lg` }}
+                                        field={{...field, gridCols: 2, rootClassName: `${field.rootClassName} max-md:!bg-white max-md:!p-4 max-md:!rounded-lg`, disabled: isFieldDisabled }}
                                         control={control}
                                         errors={errors}
                                         setValue={setValue}
+                                        clearErrors={clearErrors}
                                         parent={
                                             field.parent
                                                 ? `${section?.parent}.${field.parent}`
