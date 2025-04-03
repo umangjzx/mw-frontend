@@ -147,36 +147,31 @@ const SignUpAsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
   };
 
   return (
-    <>
-      {
-        modalLoader ? (
-          <ModalLoader isLoading={modalLoader} title="Redirecting..." />
-        ) : (
-          <Modal
-            open={isOpen}
-            onCancel={onClose}
-            className='max-w-[90%] h-full top-0 flex-center'
-            classNames={{ content: '!rounded-3xl !p-6' }}
-            closable={false}
-            footer={false}
-          >
-            <div className='w-full md:w-[450px]'>
-              <div className='flex justify-between items-center'>
-                <span className='text-xl font-medium'>Enroll as {role}</span>
-                <ModalCloseIcon onClick={onClose} width={35} height={35} className='cursor-pointer rounded-full hover:shadow-lg' />
-              </div>
-              <div className='mt-5'>
-                {
-                  role === 'learner' ?
-                    <LearnerModalBody handleSignUp={handleSignUp} isLoading={isSignUpLoading} /> :
-                    <VolunteerModalBody handleSignUp={handleSignUp} isLoading={isSignUpLoading} />
-                }
-              </div>
-            </div>
-          </Modal>
-        )
-      }
-    </>
+    <div>
+      <ModalLoader isLoading={isSignUpLoading || modalLoader} title={modalLoader ? "Signing up..." : "Validating User..."} />
+      <Modal
+        open={isOpen}
+        onCancel={onClose}
+        className='max-w-[90%] h-full top-0 flex-center'
+        classNames={{ content: '!rounded-3xl !p-6' }}
+        closable={false}
+        footer={false}
+      >
+        <div className='w-full md:w-[450px]'>
+          <div className='flex justify-between items-center'>
+            <span className='text-xl font-medium'>Enroll as {role}</span>
+            <ModalCloseIcon onClick={onClose} width={35} height={35} className='cursor-pointer rounded-full hover:shadow-lg' />
+          </div>
+          <div className='mt-5'>
+            {
+              role === 'learner' ?
+                <LearnerModalBody handleSignUp={handleSignUp} isLoading={isSignUpLoading} /> :
+                <VolunteerModalBody handleSignUp={handleSignUp} isLoading={isSignUpLoading} />
+            }
+          </div>
+        </div>
+      </Modal>
+    </div>
   );
 };
 
