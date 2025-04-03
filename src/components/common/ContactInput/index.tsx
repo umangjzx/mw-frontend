@@ -39,7 +39,7 @@ const ContactInput = (props: ContactInputProps) => {
                 <Input
                     name='number'
                     inputType='number'
-                    placeholder='Phone Number'
+                    placeholder='Enter Number Here'
                     className='!w-full !mb-0'
                     maxLength={maxNumberLength}
                     value={parseInt(formData?.number)}

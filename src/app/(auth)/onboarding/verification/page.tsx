@@ -24,6 +24,7 @@ export default function VerificationPage() {
     const currentId = role === "volunteer" ? "volunteer_id" : "learner_id";
     const id = Cookies.get(currentId);
 
+    useEffect(() => { if (typeof window !== "undefined") window.scrollTo({ top: 0 }) }, []);
     useEffect(() => { if (!id) router.push("/login"); }, [id, router]);
 
     const getOnboardingStatus = async () => {
