@@ -9,6 +9,7 @@ function ModalLoader({ isLoading, title }: { isLoading: boolean, title?: string 
         footer={null}
         closable={false}
         centered
+        zIndex={2000}
         classNames={{ content: "!bg-transparent !shadow-none" }}
     >
         <div className="w-full h-full flex-center flex-col gap-4">

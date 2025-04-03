@@ -301,7 +301,7 @@ export const meetOurTeamCardData: MeetOurTeamProps[] = [
     {
         image: NithilaShanmugam,
         name: "Nithila Shanmugam",
-        role: "Co-founder/Student Outreach Ambassador"
+        role: "Co-founder/Vice President"
     },
     // {
     //     image: DummyProfile,

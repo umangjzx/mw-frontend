@@ -74,7 +74,7 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
                 onSubmit={onSubmit}
                 isLoading={isLoading}
             />
-            {isRedirecting && <ModalLoader isLoading={isRedirecting} title="Redirecting..." />}
+            {isRedirecting && <ModalLoader isLoading={isRedirecting} title="Loading..." />}
         </div>
     );
 };

@@ -568,3 +568,8 @@ export const VolunteerThankyouCardConstants = {
     description:
         "We appreciate you considering this rewarding opportunity to change lives. MelodyWings team will verify the information provided in your application and thank you for your enthusiasm and willingness to make a difference in the lives of others.",
 };
+
+export const VolunteerRejectedMessage = {
+    title: "Thank you for your interest!",
+    description: "At this time, we are unable to proceed with your application. We truly appreciate your willingness to contribute and encourage you to check back for future opportunities!"
+}

@@ -55,7 +55,7 @@ const Footer = (props: Props) => {
             <div className="max-w-[1400px] w-full mx-auto py-6">
                 <div className="flex w-full flex-col lg:flex-row justify-between items-center lg:items-start gap-4 py-8 lg:py-0">
                     {/* Left side - Policy and Terms links */}
-                    <div className="flex flex-col lg:flex-row items-center mb-5 lg:mb-0 gap-6">
+                    <div className="flex flex-col max-lg:items-center mb-5 lg:mb-0 gap-6">
                         {policyLinks.map((link) => (
                             <Link
                                 key={link?.href}

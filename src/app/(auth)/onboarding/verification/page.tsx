@@ -4,7 +4,8 @@ import { endpoints } from "@/api/constants";
 import { GET_API } from "@/api/request";
 import ThankyouCard from "@/components/landingpage/ThankyouCard";
 import { LearnerThankyouCardConstants } from "@/constants/learner";
-import { VolunteerThankyouCardConstants } from "@/constants/volunteer";
+import { VolunteerRejectedMessage, VolunteerThankyouCardConstants } from "@/constants/volunteer";
+import { getCookie } from "@/utils/auth";
 import { useQuery } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
@@ -19,6 +20,7 @@ export default function VerificationPage() {
     const router = useRouter();
 
     const role = Cookies.get("role") as UserRole;
+    const onboarded_status = getCookie("onboarded_status");
     const currentId = role === "volunteer" ? "volunteer_id" : "learner_id";
     const id = Cookies.get(currentId);
 
@@ -26,9 +28,12 @@ export default function VerificationPage() {
 
     const getOnboardingStatus = async () => {
         const { data } = await GET_API(endpoints.onboarding.getOnboardingStatus(id as string, role));
-        if (data?.onboarded_status === "verification_completed") {
+        const currentStatus = data?.onboarded_status;
+        if (currentStatus === "verification_completed") {
             Cookies.set("onboarded_status", "verification_completed", { expires: 1 });
             router.push(`/${role}/schedule`);
+        }else if(currentStatus === "verification_rejected"){
+            Cookies.set("onboarded_status", "verification_rejected", { expires: 1 });
         }
         return data;
     }
@@ -48,13 +53,13 @@ export default function VerificationPage() {
         );
     }
 
-    const thankyouCardConstants = role === "learner" ? LearnerThankyouCardConstants : VolunteerThankyouCardConstants;
+    const verificationContent = role === "learner" ? LearnerThankyouCardConstants : (onboarded_status === "verification_pending") ? VolunteerThankyouCardConstants : VolunteerRejectedMessage;
 
     return (
         <div className="flex min-h-[60dvh] bg-background-input items-center justify-center flex-col gap-5 md:px-10">
             <ThankyouCard
-                title={thankyouCardConstants.title}
-                description={thankyouCardConstants.description}
+                title={verificationContent.title}
+                description={verificationContent.description}
             />
         </div>
     );

@@ -7,14 +7,12 @@ import Button from "@/components/common/Button";
 import { Modal } from "antd";
 
 export default function CookieConsent() {
-  const [showBanner, setShowBanner] = useState(false);
+  const [showBanner, setShowBanner] = useState(true);
 
-  useEffect(() => {
-    const cookies = parseCookies();
-    if (!cookies.cookieConsent) {
-      setShowBanner(true);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const cookies = parseCookies();
+  //   setShowBanner(!cookies.cookieConsent);
+  // }, []);
 
   const handleConsent = (accepted: boolean) => {
     setCookie(null, "cookieConsent", accepted ? "accepted" : "declined", {
@@ -31,9 +29,10 @@ export default function CookieConsent() {
       open={showBanner}
       className='!w-auto max-w-[90%] absolute right-10 top-20'
       classNames={{ content: '!p-0' }}
+      transitionName=""
       closable={false}
       footer={false}
-    >
+    > 
       <div className="max-md:mx-3 fixed bottom-4 right-0 md:right-4 z-50 bg-white shadow-lg rounded-3xl p-6 border border-gray-300 max-w-md mx-auto flex flex-col gap-5">
         <h3 className="font-semibold text-lg flex items-center gap-2">
           <TbCookieFilled className="text-2xl" /> We use Cookies on our Website to

@@ -30,8 +30,9 @@ export const LoginModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =
                 const { onboarded_status } = response;
                 const role = getCookie("role");
                 const routes: Record<string, string> = {
-                    verification_pending: "/onboarding/verification",
                     details_pending: "/onboarding",
+                    verification_pending: "/onboarding/verification",
+                    verification_rejected: "/onboarding/verification",
                     verification_completed: `/${role}/schedule`,
                 };
 
@@ -50,59 +51,54 @@ export const LoginModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =
     });
 
     return (
-        <>
-            {
-                modalLoader ? (
-                    <ModalLoader isLoading={modalLoader} title="Redirecting..." />
-                ) : (
-                    <Modal
-                        open={isOpen}
-                        onCancel={onClose}
-                        className='w-full max-md:!max-w-[100%] px-4 absolute right-0 md:right-10 top-[25%] md:top-20'
-                        classNames={{ content: '!rounded-3xl !p-5' }}
-                        closable={false}
-                        footer={false}
-                    >
-                        <div className='w-full'>
-                            <div className='flex justify-between items-center'>
-                                <span className='text-xl font-medium'>Existing User?</span>
-                                <ModalCloseIcon onClick={onClose} width={35} height={35} className='cursor-pointer rounded-full hover:shadow-lg' />
-                            </div>
-                            <div className='mt-3 flex flex-col gap-5 divide-y'>
-                                <Button
-                                    title='Sign In With Google'
-                                    className='!bg-black w-full !px-3 !py-2 text-white hover:!bg-black hover:!text-white text-sm !rounded-xl'
-                                    icon={<FcGoogle className='text-xl' />}
-                                    loading={isLoginLoading}
-                                    onClick={handleGoogleLogin}
+        <div>
+            <ModalLoader isLoading={isLoginLoading || modalLoader} title={modalLoader ? "Logging in..." : "Validating User..."} />
+            <Modal
+                open={isOpen}
+                onCancel={onClose}
+                className='w-full max-md:!max-w-[100%] px-4 absolute right-0 md:right-10 top-[25%] md:top-20'
+                classNames={{ content: '!rounded-3xl !p-5' }}
+                closable={false}
+                footer={false}
+            >
+                <div className='w-full'>
+                    <div className='flex justify-between items-center'>
+                        <span className='text-xl font-medium'>Existing User?</span>
+                        <ModalCloseIcon onClick={onClose} width={35} height={35} className='cursor-pointer rounded-full hover:shadow-lg' />
+                    </div>
+                    <div className='mt-3 flex flex-col gap-5 divide-y'>
+                        <Button
+                            title='Sign In With Google'
+                            className='!bg-black w-full !px-3 !py-2 text-white hover:!bg-black hover:!text-white text-sm !rounded-xl'
+                            icon={<FcGoogle className='text-xl' />}
+                            loading={isLoginLoading}
+                            onClick={handleGoogleLogin}
+                        />
+                        <div className="pt-4">
+                            <span className='text-xl font-medium'>New User?</span>
+                            <div className="flex flex-col md:flex-row gap-3 mt-3">
+                                <LandingPageButton
+                                    // loading={buttonLoading === "learner"}
+                                    onClick={() => handleTriggerSignUp("learner")}
+                                    title="Enroll as Learner"
+                                    type="learner"
+                                    buttonClassName="!w-full"
+                                    rootClassName="!w-full !text-start"
                                 />
-                                <div className="pt-4">
-                                    <span className='text-xl font-medium'>New User?</span>
-                                    <div className="flex flex-col md:flex-row gap-3 mt-3">
-                                        <LandingPageButton
-                                            // loading={buttonLoading === "learner"}
-                                            onClick={() => handleTriggerSignUp("learner")}
-                                            title="Enroll as Learner"
-                                            type="learner"
-                                            buttonClassName="!w-full"
-                                            rootClassName="!w-full !text-start"
-                                        />
-                                        <LandingPageButton
-                                            // loading={buttonLoading === "volunteer"}
-                                            onClick={() => handleTriggerSignUp("volunteer")}
-                                            title="Become a Volunteer"
-                                            type="volunteer"
-                                            buttonClassName="!w-full"
-                                            rootClassName="!w-full !text-start"
-                                        />
-                                    </div>
-                                </div>
+                                <LandingPageButton
+                                    // loading={buttonLoading === "volunteer"}
+                                    onClick={() => handleTriggerSignUp("volunteer")}
+                                    title="Become a Volunteer"
+                                    type="volunteer"
+                                    buttonClassName="!w-full"
+                                    rootClassName="!w-full !text-start"
+                                />
                             </div>
                         </div>
-                    </Modal>
-                )
-            }
-        </>
+                    </div>
+                </div>
+            </Modal>
+        </div>
     )
 
 }
