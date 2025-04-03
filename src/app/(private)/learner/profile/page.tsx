@@ -63,7 +63,7 @@ export default function ProfilePage() {
         const learner_last_name = data?.learner_personal_info?.learner_last_name;
         const learner_primary_language = data?.learner_personal_info?.learner_primary_language;
         const description = data?.learner_special_needs?.description;
-        const subjects = data?.learner_goals?.skills_and_expertise;
+        const subjects = data?.learner_goals?.skills_to_learn;
         const contactDetail = data?.learner_personal_info?.learner_contact_details;
 
         const bioData = {

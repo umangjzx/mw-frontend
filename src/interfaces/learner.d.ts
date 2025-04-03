@@ -24,7 +24,7 @@ interface Additionalinfo {
 
 interface Learnergoals {
     expected_goals: string[];
-    skills_and_expertise: string[];
+    skills_to_learn: { skill_name: string; skill_id: string }[];
     preferred_volunteer_qualities: string;
     skill_level: string;
 }
