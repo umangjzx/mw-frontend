@@ -12,7 +12,7 @@ const useAutoLogout = (router: any) => {
 
   const clearSession = useCallback(() => {
     clearCookies();
-    router.replace("/login");
+    router.refresh();
   }, [router]);
 
   const resetTimer = useCallback(() => {

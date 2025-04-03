@@ -15,9 +15,11 @@ const Select = ({ disabled, inputType, inputClassName, isLoading, ...props }: Se
             rootClassName='text-sm border hover:bg-background-input !bg-background-input border-stroke rounded-md'
             className={`w-full text-sm h-fit rounded-md hover:bg-background-input bg-background-input ${inputClassName}`}
             options={props.options}
+            popupClassName="overflow-auto no-scrollbar"
+            dropdownStyle={{ maxHeight: "262px", overflowY: "auto" }}
             suffixIcon={<BiCaretDown className='text-black' />}
-            filterOption={(input, option) => 
-                option?.label?.toLowerCase().includes(input.toLowerCase()) || 
+            filterOption={(input, option) =>
+                option?.label?.toLowerCase().includes(input.toLowerCase()) ||
                 option?.value?.toLowerCase().includes(input.toLowerCase())
             }
         />
