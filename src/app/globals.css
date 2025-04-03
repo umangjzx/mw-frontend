@@ -95,6 +95,11 @@ html {
     justify-content: center;
 }
 
+.break-word {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
 /* Date Rabge Picker */
 :where(.css-dev-only-do-not-override-wz1edx).ant-picker-dropdown
     .ant-picker-cell-in-view.ant-picker-cell-in-range:not(.ant-picker-cell-disabled):before,
@@ -178,6 +183,22 @@ html {
     display: none;
 }
 
+
+/* Antd Checkbox Styles */
+.consent-checkbox .ant-checkbox {
+    align-self: normal !important;
+    @apply !h-5 !mt-1;
+}
+
+.consent-checkbox .ant-checkbox-inner {
+    @apply !w-5 !h-5;
+}
+  
+.consent-checkbox .ant-checkbox-inner::after {
+    @apply !h-[12px] !w-[5px] !top-[45%];
+}
+
+  
 /* Search Select Styles */
 .ant-select-selection-item {
     background: transparent !important;

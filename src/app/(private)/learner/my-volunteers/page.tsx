@@ -20,6 +20,7 @@ import Button from "@/components/common/Button";
 import InnerWidth from "@/utils/innerWidth";
 import DummyProfile from "@/assets/images/DummyProfile.png";
 import LottieLoader from "@/components/common/Loader/Lottie";
+import { useDebounce } from "use-debounce";
 
 interface PaginationParams {
     page: number;
@@ -89,16 +90,17 @@ export default function VolunteerPage() {
     const [page] = useQueryState("page", { defaultValue: "1" });
     const [query] = useQueryState("query");
 
+    const [debouncedQuery] = useDebounce(query, 500);
     const getAllVolunteers = async ({ page, size }: PaginationParams) => {
         const endpoint = `${endpoints.learner.getConnectedVolunteers(
             learner as string
-        )}?query=${query || ""}&page=${page}&size=${size}`;
+        )}?query=${debouncedQuery || ""}&page=${page}&size=${size}`;
         const response: any = await GET_API(endpoint);
         return response.data;
     };
 
     const { data: volunteers, isLoading } = useQuery({
-        queryKey: ["volunteers", pagination.page, pagination.size, query],
+        queryKey: ["volunteers", pagination.page, pagination.size, debouncedQuery],
         queryFn: () => getAllVolunteers(pagination),
     });
 
@@ -201,7 +203,7 @@ export default function VolunteerPage() {
                         onChange={handleTableChange}
                     />
             }
-            {volunteerData?.length === 0 && <div className="flex-center h-full">No Volunteer Found</div>}
+            {isMobileScreen && volunteerData?.length === 0 && <div className="flex-center h-full">No Volunteer Found</div>}
         </div>
     );
 }

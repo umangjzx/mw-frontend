@@ -7,6 +7,7 @@ import PostImg from "@/assets/images/PostImg.png";
 import { Spin } from "antd";
 import ErrorMsg from "@/components/common/Messages/ErrorMsg";
 import { timesAgo } from "@/utils/timeFunctions";
+import { useQueryState } from "nuqs";
 
 interface Author {
     name: string;
@@ -37,6 +38,9 @@ interface NotificationPage {
 }
 
 const NotificationCard: React.FC<{ notification: Notification }> = ({ notification }) => {
+    const [_, setPostId] = useQueryState("id");
+    const [mode, setMode] = useQueryState("mode");
+
     const getNotificationMessage = (type: string, createdBy: string) => {
         switch (type) {
             case "like":
@@ -52,13 +56,16 @@ const NotificationCard: React.FC<{ notification: Notification }> = ({ notificati
         }
     };
 
+    const handleViewPost = (postId: string) => {
+        setPostId(postId);
+        setMode("view");
+    }
+
     return (
         <div
-            className={`flex gap-2 sm:gap-3 items-start sm:items-center justify-between pb-3 ${
-                notification.read ? "opacity-50" : ""
-            }`}
+            className={`flex gap-2 sm:gap-3 items-start sm:items-center justify-between pb-3 ${notification.read ? "opacity-50" : ""}`}
         >
-            <div className="flex items-start sm:items-center gap-2 sm:gap-3 flex-1">
+            <div className="flex items-center gap-2 sm:gap-3 flex-1">
                 <div className="w-[40px] h-[40px] sm:w-[48px] sm:h-[48px] relative flex-shrink-0">
                     <Image
                         src={notification?.author?.profile_picture?.image_url || NotificationProfileImg}
@@ -67,21 +74,21 @@ const NotificationCard: React.FC<{ notification: Notification }> = ({ notificati
                         className="rounded-full object-cover"
                     />
                 </div>
-                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                <div className="flex flex-wrap items-center gap-1 sm:gap-2 md:gap-3">
                     <p className="text-gray-light font-medium text-sm sm:text-base">
                         {getNotificationMessage(
                             notification.notification_type,
                             notification?.author?.name
                         )}
                     </p>
+                    <div className="w-2 h-2 bg-gray-300 rounded-full" />
+                    <p className="text-gray-light font-medium text-sm sm:text-base">
+                        {timesAgo(notification?.created_at)}
+                    </p>
                 </div>
-                <div className="w-2 h-2 bg-gray-300 rounded-full" />
-                <p className="text-gray-light font-medium text-sm sm:text-base">
-                    {timesAgo(notification?.created_at)}                    
-                </p>
             </div>
             {/* Optional: Add post preview image if available */}
-            <div className="w-[40px] h-[40px] md:w-[50px] md:h-[50px] relative flex-shrink-0">
+            <div onClick={() => handleViewPost(notification?.post_id)} className="w-[40px] h-[40px] md:w-[50px] md:h-[50px] cursor-pointer border border-gray-100 relative flex-shrink-0">
                 <Image src={notification?.post_image || PostImg} alt="Post preview" fill className="rounded-md object-cover" />
             </div>
         </div>

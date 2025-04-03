@@ -31,7 +31,7 @@ const Avatar = () => {
                 : endpoints.learner.getIndividualLearner(learnerId as string);
         const { status, data } = await GET_API(endpoint);
 
-        if(status !== 200 || !data) return;
+        if(status !== 200 || !data) return null;
         if (role === "learner") {
             setLearnerDetails(data);
             const learnerName = data?.learner_personal_info?.learner_first_name + " " + data?.learner_personal_info?.learner_last_name;
@@ -45,10 +45,13 @@ const Avatar = () => {
             setVolunteerName(volunteerName)
             setUserImage(data?.profile_picture?.image_url);
         }
+
+        return data;
     };
 
+    const queryKey = isVolunteer ? ["volunteerDetails", volunteerId] : ["learnerDetails", learnerId];
     const { data } = useQuery({
-        queryKey: ["userDetails"],
+        queryKey: queryKey,
         queryFn: async() => await getUserDetails(),
     });
 

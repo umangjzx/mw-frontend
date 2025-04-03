@@ -4,9 +4,11 @@ import { useQueryState } from "nuqs";
 
 const ActionPanel = () => {
     const [activeTab, setActiveTab] = useQueryState("tab");
+    const [searchQuery, setSearchQuery] = useQueryState("query");
 
     const handleTabClick = (tab: string | null) => {
         setActiveTab(tab);
+        setSearchQuery(null);
     };
 
     // Mobile and Tablet view - Tags
@@ -20,7 +22,7 @@ const ActionPanel = () => {
                         ${
                             activeTab === tab.route
                                 ? "bg-background border-primary text-primary border"
-                                : "bg-[#f4f7fb] text-gray-700 border border-stroke"
+                                : "bg-[#f4f7fb] lg:!bg-white text-gray-700 border border-stroke"
                         }`}
                 >
                     {tab.name}
@@ -53,10 +55,10 @@ const ActionPanel = () => {
 
     return (
         <>
-            <div className="block lg:hidden">
+            <div className="block xl:hidden lg:px-3">
                 <MobileTabletView />
             </div>
-            <div className="hidden lg:block">
+            <div className="hidden xl:block">
                 <DesktopView />
             </div>
         </>

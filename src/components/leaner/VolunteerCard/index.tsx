@@ -5,6 +5,7 @@ import CardChips from "./CardChips";
 import Divider from "@/components/common/Divider";
 import { FaStar } from "react-icons/fa";
 import { SeeMoreIcon } from "@/assets/icons";
+import { formatString } from "@/utils/stringFormats";
 
 const VolunteerCard: React.FC<VolunteerCardProps> = ({
     onSeeMoreClick,
@@ -19,12 +20,6 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
     totalReviews,
     overallRating,
 }) => {
-    const details = [
-        { label: "Volunteer Hrs", value: volunteerHrs },
-        { label: "Student connected", value: studentConnected },
-        { label: "Subject", value: subjects.join(", ") },
-        { label: "Language", value: languages.join(", ") },
-    ];
 
     return (
         <div className="bg-white rounded-xl w-full shadow-sm h-fit p-4 flex flex-col gap-4">
@@ -50,7 +45,7 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
                 <div className="flex flex-col">
                     <p className="text-base font-semibold lg:text-normal lg:font-medium">{name}</p>
                     <p className="text-sm font-medium">
-                        <span className="text-gray-light capitalize">{location && `From ${location}`}</span>
+                        <span className="text-gray-light">{location && `From ${formatString(location || "")}`}</span>
                     </p>
                 </div>
             </div>
@@ -60,21 +55,25 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
                 </div>
                 <div className="flex max-lg:flex-col gap-2.5">
                     <CardChips label="Student connected" value={studentConnected} />
-                    <CardChips label="Subject" value={subjects.join(", ")} />
+                    <CardChips label="Subject" value={subjects?.join(", ")} />
                 </div>
-                <div>
-                    <CardChips label="Language" value={languages.join(", ")} />
-                </div>
+                {Array.isArray(languages) && languages?.length > 0 && (
+                    <div>
+                        <CardChips label="Language" value={languages.join(", ")} />
+                    </div>
+                )}
             </div>
             <Divider />
             <div className="flex items-center justify-between">
-                <div className=" border-stroke border w-fit px-3 py-1.5 rounded-full">
+                <div className="border-stroke border w-fit px-3 py-1.5 rounded-full">
                     <div className="flex items-center gap-2">
                         {overallRating ? (
                             <>
-                                <FaStar className="text-[#FFC107]" />
-                                <p className="text-sm font-medium ">
-                                    {overallRating} - {totalReviews} Reviews
+                                <span className="text-[#FFC107] pb-0.5">
+                                    <FaStar />
+                                </span>
+                                <p className="text-sm font-medium flex items-center">
+                                    <span>{overallRating} - {totalReviews} Reviews</span>
                                 </p>
                             </>
                         ) : (

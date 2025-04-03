@@ -11,6 +11,7 @@ type EndpointProps = {
     };
     user: {
         signIn: string;
+        login: string;
     };
     learner: {
         update: (id: string) => string;

@@ -3,15 +3,15 @@
 import { FormField } from "./FormField";
 import CardWrapper from "../CardWrapper";
 import Button from "@/components/common/Button";
-import Link from "next/link";
 import { showToast } from "@/components/common/Toast";
 import { useEffect, useRef, useState } from "react";
-import Cookies from "js-cookie";
-import moment from "moment";
+
 import { validateLearnerParentFields, validateVolunteerParentDetails } from "./config";
-import { UseFormSetError, useWatch } from "react-hook-form";
-import { calculateAge } from "@/utils/timeFunctions";
+import { UseFormSetError, UseFormClearErrors, useWatch } from "react-hook-form";
+import { calculateAge, isAgeUnder18 } from "@/utils/timeFunctions";
 import { ADULT_VOLUNTEER_AGE } from "@/constants/volunteer";
+import { PrivacyPolicyElement, TermsAndConditionElement } from "./Consents";
+import { getCookie } from "@/utils/auth";
 
 const currentVersion = process.env.NEXT_PUBLIC_CURRENT_VERSION;
 
@@ -24,99 +24,68 @@ type FormTabsProps = {
     handleFillForm: () => void;
     onSubmit: () => void;
     setError: UseFormSetError<any>;
+    clearErrors: UseFormClearErrors<any>;
     setValue: (name: string, value: any, options?: any) => void;
     isLoading: boolean;
 };
 
-const TermsAndConditionElement = <div>
-    By clicking on the Submit Application above, you agree to our {" "}
-    <Link
-        href="/terms-and-conditions"
-        target="_blank"
-        className="text-black underline hover:underline font-medium"
-    >
-        Terms of Service
-    </Link>{" "}
-    and our {" "}
-    <Link
-        href="/privacy-policy"
-        target="_blank"
-        className="text-black underline hover:underline font-medium"
-    >
-        Privacy Policy
-    </Link>
-    .
-</div>
-
-const termsAndConditionsInput: FormField = {
-    id: "terms_and_conditions_accepted",
-    name: "terms_and_conditions_accepted",
-    inputType: "checkbox",
-    children: TermsAndConditionElement,
-    required: true,
-    inputClassName: "text-sm lg:text-base"
-}
-
-const FormTabs = ({ formData, control, errors, trigger, setError, setValue, validateForm, handleFillForm, onSubmit, isLoading }: FormTabsProps) => {
-    const role = Cookies.get("role");
-
-    const volunteer_birth_date = useWatch({ name: 'volunteer_birth_date', control: control })
+const FormTabs = ({ formData, control, errors, trigger, setError, clearErrors, setValue, validateForm, handleFillForm, onSubmit, isLoading }: FormTabsProps) => {
+    const role = getCookie("role");
+    const volunteer_birth_date = useWatch({ name: 'volunteer_birth_date', control: control });
+    const enrolled_by = useWatch({ name: 'enrolled_by', control: control });
 
     // Form Tabs
     const [activeTab, setActiveTab] = useState(0);
     const [highestTab, setHighestTab] = useState(0);
     const tabButtonsRef = useRef<HTMLDivElement>(null);
 
-    const validateCurrentSection = async () => {
-        const { fields, parent } = formData[activeTab];
-        const currentFields = fields.map((field) =>
-            parent ? `${parent}.${field.parent || field.id}` : field.parent || field.id
-        );
-
-        const handleValidationErrors = ({ success, errors }: { success: boolean; errors: any }) => {
-            if (!success) {
-                Object.entries(errors)?.forEach(([key, value]: any) => {
-                    if (key && value) setError(key, { message: value });
-                });
-                showToast({ type: "error", message: "Please fill in all required fields before proceeding." });
-                return false;
-            }
-            return true;
-        };
-
-        const validateAgeUnder18 = (dob: string | undefined) => {
-            const age = dob && moment().diff(moment(dob, "DD-MM-YYYY"), "years") || 0;
-            return age < 18;
-        };
-
-        const isValidSection = await trigger(currentFields);
-        if (!isValidSection) {
+    const handleValidationErrors = ({ success, errors }: { success: boolean; errors: any }) => {
+        if (!success) {
+            Object.entries(errors)?.forEach(([key, value]: any) => {
+                if (key && value) setError(key, { message: value });
+            });
             showToast({ type: "error", message: "Please fill in all required fields before proceeding." });
             return false;
         }
+        return true;
+    };
 
-        if (role === "learner") {
-            const learnerAge = control._formValues?.learner_personal_info?.learner_date_of_birth;
-            if (!validateAgeUnder18(learnerAge)) return true;
+    const validateCurrentSection = async () => {
+        const { fields, parent } = formData[activeTab];
+        const currentFields = fields.map((field: any) =>
+            parent ? `${parent}.${field.parent || field.id}` : field.parent || field.id
+        );
 
-            const learnerValidation = validateLearnerParentFields(control._formValues);
-            if (!handleValidationErrors(learnerValidation)) {
-                if ((activeTab === 0 && highestTab > 1) || (activeTab === 1)) {
-                    if (activeTab === 0) setActiveTab(1);
-                    return false;
-                }
-            }
-        }
+        const isValidSection = await trigger(currentFields);
 
         if (role === "volunteer" && activeTab === 0) {
             const volunteerValidation = validateVolunteerParentDetails(control._formValues);
             if (!handleValidationErrors(volunteerValidation)) return false;
         }
 
+        if (role === "learner") {
+            const learnerValidation = validateLearnerParentFields(control._formValues);
+            if ((activeTab === 0 && highestTab > 1) && !learnerValidation?.success) {
+                if (activeTab === 0) setActiveTab(1);
+                return false;
+            } else if (activeTab === 1 && !handleValidationErrors(learnerValidation)) {
+                return false;
+            }
+        }
+
+        if (!isValidSection) {
+            showToast({ type: "error", message: "Please fill in all required fields before proceeding." });
+            return false;
+        }
+
         return true;
     };
 
+    const learnerParentValidateKeys = ["parent_info.parent_first_name", "parent_info.parent_last_name", "parent_info.parent_email", "parent_info.parent_contact_number", "parent_info.parent_address", "parent_info.relationship_to_learner"];
+
     const handleNavigation = async (index: number) => {
+        if (role === "learner") learnerParentValidateKeys.forEach((key) => clearErrors(key));
+
         if (index > activeTab) {
             const isValidSection = await validateCurrentSection();
             if (!isValidSection) return;
@@ -133,20 +102,45 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
         tabButtonsRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [activeTab]);
 
+    const consentInputs: FormField[] = [
+        {
+            id: "privacy_policy_accepted",
+            name: "privacy_policy_accepted",
+            inputType: "checkbox",
+            children: <PrivacyPolicyElement enrolled_by={enrolled_by} />,
+            required: true,
+            inputClassName: "text-sm lg:!text-base consent-checkbox"
+        },
+        {
+            id: "terms_and_conditions_accepted",
+            name: "terms_and_conditions_accepted",
+            inputType: "checkbox",
+            children: <TermsAndConditionElement />,
+            required: true,
+            inputClassName: "text-sm lg:!text-base consent-checkbox"
+        }
+    ]
+
     const fields = ["consented_from_parent", "volunteer_parent_name", "volunteer_parent_email"]
     const volunteerAge = () => {
         const age = Number(calculateAge(volunteer_birth_date));
         return age >= ADULT_VOLUNTEER_AGE;
     }
 
-    const hideFields = (field: any) => {
-        if (role === "learner") return false;
-        return fields.includes(field.id) && volunteerAge();
-    };
+    const hideFields = (field: any) => 
+        role === "learner" ? (
+            (enrolled_by === "parent" && field.parent === "learner_contact_details" && ["email", "contact_number"].includes(field.id))
+        ) : fields.includes(field.id) && volunteerAge();
+
+    const diableField = (field: any) => 
+        role === "learner" && (
+            (enrolled_by === "parent" && field.id === "parent_email") ||
+            (enrolled_by === "self" && ["email", "learner_date_of_birth"].includes(field.id))
+        );
 
     return (
         <form onSubmit={onSubmit} className="w-full pb-16">
-            <div className="max-w-7xl mx-auto lg:px-8">
+            <div ref={tabButtonsRef} className="max-w-7xl mx-auto lg:px-8">
                 {/* Auto Form Fill - Only for Dev */}
                 {currentVersion === "dev" && <div className="flex items-end justify-end mb-5">
                     <Button
@@ -161,7 +155,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                 <div className="lg:hidden w-full text-center mt-5 lg:mt-0">
                     <p className="text-base font-medium">{`Step ${activeTab + 1}/${formData.length} - ${formData[activeTab]?.title}`}</p>
                 </div>
-                <div ref={tabButtonsRef} className="flex mb-8 gap-2 px-5">
+                <div className="flex mb-8 gap-2 px-5">
                     {formData.map((section: any, index) => (
                         <button
                             key={section.title || index}
@@ -189,6 +183,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                                         ? `${section?.parent}.${field.parent}`
                                         : field.parent;
 
+                                    const isFieldDisabled = diableField(field) || field?.disabled;
                                     return (
                                         <CardWrapper
                                             key={field.title}
@@ -198,24 +193,27 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                                             {field.fields.map((childField: any) => (
                                                 <FormField
                                                     key={childField.id}
-                                                    field={childField}
+                                                    field={{ ...childField, disabled: isFieldDisabled }}
                                                     control={control}
                                                     errors={errors}
                                                     parent={parent}
                                                     setValue={setValue}
+                                                    clearErrors={clearErrors}
                                                 />
                                             ))}
                                         </CardWrapper>
                                     );
                                 }
 
+                                const isFieldDisabled = diableField(field) || field?.disabled;
                                 return (
                                     <FormField
                                         key={field.id}
-                                        field={field}
+                                        field={{ ...field, disabled: isFieldDisabled }}
                                         control={control}
                                         errors={errors}
                                         setValue={setValue}
+                                        clearErrors={clearErrors}
                                         parent={
                                             field.parent
                                                 ? `${section?.parent}.${field.parent}`
@@ -230,17 +228,19 @@ const FormTabs = ({ formData, control, errors, trigger, setError, setValue, vali
                             <div className="flex flex-col gap-3">
                                 {activeTab === formData.length - 1 ? (
                                     <>
-                                        <p className="text-gray-600 text-sm">
-                                            <FormField
-                                                key="terms_and_conditions_accepted"
-                                                field={termsAndConditionsInput}
-                                                control={control}
-                                                errors={errors}
-                                                parent={null}
-                                                setValue={setValue}
-                                            />
-
-                                        </p>
+                                        <div className="text-gray-600 text-sm flex flex-col gap-3">
+                                            {consentInputs.map(consent => (
+                                                <FormField
+                                                    key={consent?.id}
+                                                    field={consent}
+                                                    control={control}
+                                                    errors={errors}
+                                                    parent={null}
+                                                    setValue={setValue}
+                                                    clearErrors={clearErrors}
+                                                />
+                                            ))}
+                                        </div>
                                         <Button
                                             htmlType="submit"
                                             onClick={validateForm}

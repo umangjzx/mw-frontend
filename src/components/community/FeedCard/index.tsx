@@ -25,6 +25,7 @@ import ErrorMsg from "@/components/common/Messages/ErrorMsg";
 import { useInView } from "react-intersection-observer";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { BsFillBookmarkFill, BsBookmark } from "react-icons/bs";
+import { useDebounce } from "use-debounce";
 
 interface FeedCardProps {
     onClick: (postId: string) => void;
@@ -56,7 +57,7 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
     const queryClient = useQueryClient();
     const role = Cookies.get("role");
     const [activeTab] = useQueryState("tab");
-    const [searchQuery] = useQueryState("query");
+    const [searchQuery, setSearchQuery] = useQueryState("query");
 
     const [comment, setComment] = useState<string>("");
     const [isCommentLoading, setIsCommentLoading] = useState<boolean>(false);
@@ -66,6 +67,8 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
     const [_, setId] = useQueryState("id");
     const { ref, inView } = useInView();
     const [selectedSort, setSelectedSort] = useState<string>("recent");
+
+    const [debouncedSearchQuery] = useDebounce(searchQuery, 500);
 
     const getPosts = async ({ pageParam = 1 }) => {
         let endpoint = endpoints.post.getPosts;
@@ -84,13 +87,13 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                 endpoint = endpoints.post.getPosts;
         }
 
-        const response = await GET_API(`${endpoint}?page=${pageParam}&size=10&query=${searchQuery || ""}`);
+        const response = await GET_API(`${endpoint}?page=${pageParam}&size=10&query=${debouncedSearchQuery || ""}`);
         return response.data;
     };
 
     const { data, fetchNextPage, hasNextPage, isLoading, isFetching, isFetchingNextPage, isError } =
         useInfiniteQuery({
-            queryKey: ["get-posts", activeTab],
+            queryKey: ["get-posts", activeTab, debouncedSearchQuery],
             queryFn: getPosts,
             getNextPageParam: (lastPage) => {
                 if (lastPage.items.length < 10) return undefined;
@@ -109,10 +112,10 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
 
     // Handle Like & DisLike
     const handleLikeAction = (postId: string, currentLikeStatus: boolean) => {
-        queryClient.setQueryData(["get-posts", activeTab], (oldData: any) => {
+        queryClient.setQueryData(["get-posts", activeTab, searchQuery], (oldData: any) => {
             return {
                 ...oldData,
-                pages: oldData.pages.map((page: any) => ({
+                pages: oldData?.pages.map((page: any) => ({
                     ...page,
                     items: page.items.map((post: PostData) =>
                         post.post_id === postId
@@ -138,7 +141,7 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
 
     // Handle Save
     const handleSave = (postId: string, currentSaveStatus: boolean) => {
-        queryClient.setQueryData(["get-posts", activeTab], (oldData: any) => {
+        queryClient.setQueryData(["get-posts", activeTab, searchQuery], (oldData: any) => {
             return {
                 ...oldData,
                 pages: oldData.pages.map((page: any) => ({
@@ -179,7 +182,7 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
             successMsg: "Comment Posted Successfully",
             errorMsg: "Failed to Post Comment",
         }).then(() => {
-            queryClient.invalidateQueries({ queryKey: ["get-posts", activeTab] });
+            queryClient.invalidateQueries({ queryKey: ["get-posts", activeTab, searchQuery] });
             setComment("");
             setIsCommentLoading(false);
         });
@@ -334,7 +337,7 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                                 </div>
 
                                 {post.images.length > 0 && (
-                                    <div className="relative mt-2 md:mt-3 w-full h-full bg-gray-300 md:rounded-xl min-h-[240px] max-h-[350px] md:min-h-[360px] md:max-h-[420px] 2xl:min-h-[400px] 2xl:max-h-[450px]">
+                                    <div className="relative mt-2 md:mt-3 w-full h-full bg-gray-300 sm:rounded-xl min-h-[260px] max-h-[350px] sm:min-h-[300px] md:min-h-[360px] md:max-h-[420px] 2xl:min-h-[400px] 2xl:max-h-[450px]">
                                         <Image
                                             src={validImageUrl}
                                             alt="post image"
@@ -474,14 +477,18 @@ const FeedCard = ({ onClick, isManagePost = false, handleReportClick }: FeedCard
                     )}
 
                     {posts.length === 0 && (
-                        <div className="flex-center w-full h-full min-h-[50vh]">No Posts Found</div>
+                        <div className="flex-center w-full h-full min-h-[50vh] flex-col gap-1">
+                            <p>No Posts Found</p>
+                            {searchQuery && (
+                                <button className="text-blue-500 underline" onClick={() => setSearchQuery(null)}>Clear Search</button>
+                            ) }
+                        </div>
                     )}
 
                     <AnimatePresence>
                         {activeCommentPostId && (
                             <MobileCommentPanel
                                 postId={activeCommentPostId}
-                                totalComments={20}
                                 comment={comment}
                                 setComment={setComment}
                                 onClose={() => setActiveCommentPostId(null)}

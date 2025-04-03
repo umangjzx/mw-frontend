@@ -51,9 +51,10 @@ const ProfileDetailsFields: FormField[] = [
         inputType: "birthdatepicker",
         placeholder: "DD/MM/YYYY",
         format: "DD-MM-YYYY",
-        sublabel: "Minors must be at least 14 years of age to begin volunteering",
+        sublabel: "Minors must be at least 13 years of age to begin volunteering",
         gridCols: 1,
         required: true,
+        disabled: true,
         birthDatePicker: { minAge: 14, maxAge: 100 },
     },
     {
@@ -96,7 +97,7 @@ const ProfileDetailsFields: FormField[] = [
         label: "Languages Spoken",
         inputType: "async-select",
         variant: "multi",
-        placeholder: "English, Tamil, Hindi",
+        placeholder: "Select Languages",
         endpoint: "languages",
         responseAsLabel: "language_name",
         responseAsValue: ["language_id", "language_name"],
@@ -123,27 +124,27 @@ const ProfileDetailsFields: FormField[] = [
     },
     {
         id: "volunteer_education",
-        label: "Education Summary",
+        label: "Education Summary and Specialization",
         inputType: "text",
         placeholder: "Type here",
         gridCols: 2,
         required: true,
     },
+    // {
+    //     id: "volunteer_subjects",
+    //     label: "Subjects",
+    //     inputType: "async-select",
+    //     placeholder: "Select Subjects",
+    //     creatable: true,
+    //     variant: "multi",
+    //     required: true,
+    //     gridCols: 2,
+    //     endpoint: "subjects",
+    //     responseAsLabel: "subject_name",
+    //     responseAsValue: ["subject_id", "subject_name"],
+    // },
     {
-        id: "volunteer_subjects",
-        label: "Subjects",
-        inputType: "async-select",
-        placeholder: "Select Subjects",
-        creatable: true,
-        variant: "multi",
-        required: true,
-        gridCols: 2,
-        endpoint: "subjects",
-        responseAsLabel: "subject_name",
-        responseAsValue: ["subject_id", "subject_name"],
-    },
-    {
-        id: "work_experience",
+        id: "volunteer_work_experience",
         label: "Work Experience",
         inputType: "text",
         placeholder: "Type here",
@@ -160,7 +161,7 @@ const ProfileDetailsFields: FormField[] = [
     },
     {
         id: "volunteer_skills",
-        label: "Skills and Expertise to Share",
+        label: "Skills and Expertise to teach Learners",
         inputType: "async-select",
         placeholder: "Search and select skills",
         creatable: true,
@@ -510,17 +511,17 @@ export const VolunteerFormSections: FormSectionConfig[] = [
                 variant: "file",
                 fileType: "video/*",
             },
-            {
-                id: "profile_document",
-                label: "ID Verification",
-                sublabel:
-                    "Please share an overview of your profile, your areas of expertise and the reasons behind your choice, such as your passion for the subject or past teaching experience.",
-                inputType: "upload",
-                required: true,
-                gridCols: 2,
-                variant: "file",
-                fileType: "application/*,image/*",
-            },
+            // {
+            //     id: "profile_document",
+            //     label: "ID Verification",
+            //     sublabel:
+            //         "Please share an overview of your profile, your areas of expertise and the reasons behind your choice, such as your passion for the subject or past teaching experience.",
+            //     inputType: "upload",
+            //     required: true,
+            //     gridCols: 2,
+            //     variant: "file",
+            //     fileType: "application/*,image/*",
+            // },
         ],
     },
     {
@@ -539,20 +540,22 @@ export const VolunteerFormSections: FormSectionConfig[] = [
                 required: false,
                 gridCols: 1,
             },
-            {
-                id: "acknowledgement_of_program_policies",
-                label: "Acknowledgment of Program Policies ",
-                sublabel: "(Rules, Expectations, and Procedures)",
-                options: [
-                    { label: "Yes", value: true },
-                    { label: "No", value: false },
-                ],
-                inputType: "radio",
-                gridCols: 1,
-            },
+            // {
+            //     id: "acknowledgement_of_program_policies",
+            //     label: "Acknowledgment of Program Policies ",
+            //     sublabel: "(Rules, Expectations, and Procedures)",
+            //     options: [
+            //         { label: "Yes", value: true },
+            //         { label: "No", value: false },
+            //     ],
+            //     inputType: "radio",
+            //     gridCols: 1,
+            // },
         ],
     },
 ];
+
+export const VolunteerProfileFormConstants: FormSectionConfig[] = VolunteerFormSections?.filter((section) => section.parent !== "consent_and_permissions");
 
 export const VolunteerOnboardingConstants = {
     title: "Join as a Volunteer",
@@ -565,3 +568,8 @@ export const VolunteerThankyouCardConstants = {
     description:
         "We appreciate you considering this rewarding opportunity to change lives. MelodyWings team will verify the information provided in your application and thank you for your enthusiasm and willingness to make a difference in the lives of others.",
 };
+
+export const VolunteerRejectedMessage = {
+    title: "Thank you for your interest!",
+    description: "At this time, we are unable to proceed with your application. We truly appreciate your willingness to contribute and encourage you to check back for future opportunities!"
+}

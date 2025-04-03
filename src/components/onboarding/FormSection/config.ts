@@ -34,9 +34,9 @@ export const volunteerFormSchema = z.object({
         .string({ required_error: "Last Name is required" })
         .min(1, { message: "Last Name cannot be empty" }),
     volunteer_birth_date: z.string({ required_error: "Please select your birthday" }),
-    consented_from_parent: z.boolean().optional(),
-    volunteer_parent_name: z.string().optional(),
-    volunteer_parent_email: z.string().optional(),
+    consented_from_parent: z.boolean().or(z.null()).optional(),
+    volunteer_parent_name: z.string().or(z.null()).optional(),
+    volunteer_parent_email: z.string().or(z.null()).optional(),
     volunteer_gender: z.string({ required_error: "Please select your gender" }),
     volunteer_education: z
         .string({ required_error: "Please provide your education details" })
@@ -50,6 +50,9 @@ export const volunteerFormSchema = z.object({
     volunteer_experience: z
         .string({ required_error: "Experience details are required" })
         .min(1, { message: "Experience details cannot be empty" }),
+    volunteer_work_experience: z
+        .string({ required_error: "Work experience details are required" })
+        .min(1, { message: "Work experience details cannot be empty" }),
     volunteer_skills: z
         .array(
             z.object({
@@ -93,7 +96,7 @@ export const volunteerFormSchema = z.object({
                 convicted_of_a_crime: z.boolean({
                     required_error: "Please specify if you were convicted of a crime",
                 }),
-                description: z.string().optional(),
+                description: z.string().or(z.null()).optional(),
             })
             .refine(
                 (fields) => {
@@ -123,7 +126,7 @@ export const volunteerFormSchema = z.object({
                 checked_for_sex_offender: z.boolean({
                     required_error: "Please specify if you are on any sex offender registry.",
                 }),
-                description: z.string().optional(),
+                description: z.string().or(z.null()).optional(),
             })
             .refine(
                 (fields) => {
@@ -148,7 +151,7 @@ export const volunteerFormSchema = z.object({
                 dismissed_from_institution: z.boolean({
                     required_error: "Please specify if you were dismissed from an institution",
                 }),
-                description: z.string().optional(),
+                description: z.string().or(z.null()).optional(),
             })
             .refine(
                 (fields) => {
@@ -178,7 +181,7 @@ export const volunteerFormSchema = z.object({
                 having_health_issues: z.boolean({
                     required_error: "Please specify if you have health issues",
                 }),
-                description: z.string().optional(),
+                description: z.string().or(z.null()).optional(),
             })
             .refine(
                 (fields) => {
@@ -201,7 +204,7 @@ export const volunteerFormSchema = z.object({
                 agree_to_understand_termination_of_volunteer_agreement: z.boolean({
                     required_error: "Please confirm that you understand the agreement",
                 }),
-                description: z.string().optional(),
+                description: z.string().or(z.null()).optional(),
             })
             .refine(
                 (fields) => {
@@ -230,7 +233,7 @@ export const volunteerFormSchema = z.object({
                 invloved_in_complaints: z.boolean({
                     required_error: "Please specify if you were involved in complaints",
                 }),
-                description: z.string().optional(),
+                description: z.string().or(z.null()).optional(),
             })
             .refine(
                 (fields) => {
@@ -251,9 +254,6 @@ export const volunteerFormSchema = z.object({
     // Consent and Permissions
     consent_and_permissions: z.object({
         photo_or_video_consent: z.boolean({ required_error: "Photo or video consent is required" }),
-        acknowledgement_of_program_policies: z.boolean({
-            required_error: "Acknowledgement of policies is required",
-        }),
     }),
 
     // Profile Picture
@@ -278,28 +278,26 @@ export const volunteerFormSchema = z.object({
                 message: "Profile video cannot be empty",
             }),
         })
+        .or(z.null())
         .optional(),
 
-    // Profile Document
-    profile_document: z
-        .object({
-            document_url: z.string({ required_error: "Document URL is required" }).min(1, {
-                message: "Document cannot be empty",
-            }),
-            document_id: z.string({ required_error: "Document ID is required" }).min(1, {
-                message: "Document cannot be empty",
-            }),
-        })
-        .required(),
-
-    // Volunteer Subjects
-    volunteer_subjects: z
-        .array(z.any(), { required_error: "Please add at least one subject" })
-        .nonempty("Please add at least one subject"),
     terms_and_conditions_accepted: z.boolean({ required_error: "Acceptance of terms and conditions is required" }),
-}).superRefine((data) => {
+    privacy_policy_accepted: z.boolean({ required_error: "Acceptance of privacy policy is required" }),
+    cookie_consent_accepted: z.boolean({ required_error: "Acceptance of cookie consent is required" }),
+}).superRefine((data, ctx) => {
+    if (!data?.privacy_policy_accepted) {
+        ctx.addIssue({
+            code: "custom",
+            message: "Acceptance of privacy policy is required",
+            path: ["privacy_policy_accepted"]
+        });
+    }
     if (!data?.terms_and_conditions_accepted) {
-        throw new ZodError([{ message: "Acceptance of terms and conditions is required", path: ["terms_and_conditions_accepted"], code: "invalid_type", expected: "boolean", received: "undefined" }])
+        ctx.addIssue({
+            code: "custom",
+            message: "Acceptance of terms and conditions is required",
+            path: ["terms_and_conditions_accepted"]
+        });
     }
     return true;
 });
@@ -412,7 +410,6 @@ export const defaultVolunteerData: Volunteer = {
     ],
     consent_and_permissions: {
         photo_or_video_consent: true,
-        acknowledgement_of_program_policies: true,
     },
 };
 
@@ -428,14 +425,14 @@ type learnerParentSchemaType = {
 }
 
 const learnerParentSchema = z.object({
-    parent_first_name: z.string({ required_error: "Parent's First Name is required" }),
-    parent_last_name: z.string({ required_error: "Parent's Last Name is required" }),
-    parent_email: z.string({ required_error: "Parent's Email is required" }),
-    parent_contact_number: z.any().optional(),
-    parent_address: z.string({ required_error: "Parent's Address is required" }),
+    parent_first_name: z.string({ required_error: "Parent's First Name is required" }).or(z.null()),
+    parent_last_name: z.string({ required_error: "Parent's Last Name is required" }).or(z.null()),
+    parent_email: z.string({ required_error: "Parent's Email is required" }).or(z.null()),
+    parent_contact_number: z.any().optional().or(z.null()),
+    parent_address: z.string({ required_error: "Parent's Address is required" }).or(z.null()),
     relationship_to_learner: z.string({
         required_error: "Relationship to Learner is required",
-    }),
+    }).or(z.null()),
 })
 
 export const learnerFormSchema = z.object({
@@ -452,10 +449,8 @@ export const learnerFormSchema = z.object({
             required_error: "Learner's Primary Language is required",
         }),
         learner_contact_details: z.object({
-            email: z
-                .string({ required_error: "Learner's Email is required" })
-                .email("Invalid email address"),
-            contact_number: contactNumberValidation,
+            email: z.string().optional().or(z.null()),
+            contact_number: z.any().optional().or(z.null()),
             zip_code: z
                 .string({ required_error: "Zip code is required" })
                 .min(1, { message: "Zip code cannot be empty" }),
@@ -485,7 +480,6 @@ export const learnerFormSchema = z.object({
         areas_of_support_needed: z.array(z.string(), {
             required_error: "Areas of Support Needed are required",
         }).nonempty("Areas of Support Needed are required"),
-        learning_styles: z.array(z.string(), { required_error: "Learning Styles are required" }).nonempty("Learning Styles are required"),
     }),
 
     // Education - Required
@@ -502,9 +496,6 @@ export const learnerFormSchema = z.object({
 
     // Social skills - Required
     social_skills: z.object({
-        communication_preferences: z.array(z.string(), {
-            required_error: "Communication Preferences are required",
-        }).nonempty("Communication Preferences are required"),
         social_interaction_styles: z.array(z.string(), {
             required_error: "Social Interaction Styles are required",
         }).nonempty("Social Interaction Styles are required"),
@@ -518,7 +509,6 @@ export const learnerFormSchema = z.object({
 
     // Current interests - Required
     current_interests: z.object({
-        interests: z.array(z.string(), { required_error: "Interests are required" }).nonempty("Interests are required"),
         extra_curricular_activities: z.string({
             required_error: "Extra-curricular Activities are required",
         }).min(1, { message: "Extra-curricular Activities  are required" }),
@@ -530,12 +520,11 @@ export const learnerFormSchema = z.object({
     // Learner goals - Required
     learner_goals: z.object({
         expected_goals: z.array(z.string(), { required_error: "Expected Goals are required" }).nonempty("Expected Goals are required"),
-        subjects_to_focus_on: z.array(z.string(), {
+        skills_and_expertise: z.array(z.string(), {
             required_error: "Subjects to Focus On are required",
         }).nonempty("Subjects to Focus On are required"),
-        preferred_volunteer_qualities: z.array(z.string(), {
-            required_error: "Preferred Volunteer Qualities are required",
-        }).nonempty("Preferred Volunteer Qualities are required"),
+        preferred_volunteer_qualities: z.string({ required_error: "Preferred Volunteer Qualities are required" })
+            .min(1, { message: "Preferred Volunteer Qualities are required" }),
         skill_level: z.string({ required_error: "Skill Level is required" }),
     }),
 
@@ -553,9 +542,6 @@ export const learnerFormSchema = z.object({
     // Consent and permissions - Required
     consent_and_permissions: z.object({
         photo_or_video_consent: z.boolean({ required_error: "Photo or Video Consent is required" }),
-        acknowledgement_of_program_policies: z.boolean({
-            required_error: "Acknowledgement of Program Policies is required",
-        }),
     }),
     profile_picture: z
         .object({
@@ -567,47 +553,58 @@ export const learnerFormSchema = z.object({
             }),
         })
         .required(),
+    privacy_policy_accepted: z.boolean({ required_error: "Acceptance of privacy policy is required" }),
     terms_and_conditions_accepted: z.boolean({ required_error: "Acceptance of terms and conditions is required" }),
-}).superRefine((data) => {
+    cookie_consent_accepted: z.boolean({ required_error: "Acceptance of cookie consent is required" }),
+}).superRefine((data, ctx) => {
+    if (!data?.privacy_policy_accepted) {
+        ctx.addIssue({
+            code: "custom",
+            message: "Acceptance of privacy policy is required",
+            path: ["privacy_policy_accepted"]
+        });
+    }
     if (!data?.terms_and_conditions_accepted) {
-        throw new ZodError([{ message: "Acceptance of terms and conditions is required", path: ["terms_and_conditions_accepted"], code: "invalid_type", expected: "boolean", received: "undefined" }])
+        ctx.addIssue({
+            code: "custom",
+            message: "Acceptance of terms and conditions is required",
+            path: ["terms_and_conditions_accepted"]
+        });
     }
     return true;
 });
 
-const emailSchema = z.string().email("Invalid email address").optional(); 
+const emailSchema = z.string().email("Invalid email address").optional();
 export function validateLearnerParentFields(data: any) {
     const errors: { [key: string]: string } = {};
     let isSuccess = true;
 
-    const learnerDob = data?.learner_personal_info?.learner_date_of_birth;
-    const age = learnerDob ? moment().diff(moment(learnerDob, "DD-MM-YYYY"), 'years') : null;
+    const enrolled_by = data?.enrolled_by;
+    if (enrolled_by !== "parent") return { success: true, errors: {} };
 
-    if (age !== null && age < 18) {
-        (Object.keys(data?.parent_info || {}) as (keyof learnerParentSchemaType)[]).forEach((key) => {
-            const field = data?.parent_info?.[key];
-            if (!field || (typeof field === "string" && field.trim().length === 0)) {
-                errors[`parent_info.${key}`] = `${key.split("_").join(" ")} is required for learners under 18`;
+    (Object.keys(data?.parent_info || {}) as (keyof learnerParentSchemaType)[]).forEach((key) => {
+        const field = data?.parent_info?.[key];
+        if (!field || (typeof field === "string" && field.trim().length === 0)) {
+            errors[`parent_info.${key}`] = `${key.split("_").join(" ")} is required for learners under 13`;
+            isSuccess = false;
+        }
+        if (key === "parent_email") {
+            try {
+                emailSchema.parse(field);
+            } catch (e) {
+                errors[`parent_info.${key}`] = "Invalid email address";
                 isSuccess = false;
             }
-            if (key === "parent_email") {
-                try {
-                    emailSchema.parse(field);
-                } catch (e) {
-                    errors[`parent_info.${key}`] = "Invalid email address";
-                    isSuccess = false;
-                }
+        }
+        if (key === "parent_contact_number") {
+            try {
+                contactNumberValidation.parse(field);
+            } catch (e) {
+                errors[`parent_info.${key}`] = "Parent Contact Number is required for learners under 13";
+                isSuccess = false;
             }
-            if (key === "parent_contact_number") {
-                try {
-                    contactNumberValidation.parse(field);
-                } catch (e) {
-                    errors[`parent_info.${key}`] = "Parent Contact Number is required for learners under 18";
-                    isSuccess = false;
-                }
-            }
-        });
-    }
+        }
+    });
 
     return { success: isSuccess, errors: isSuccess ? {} : errors };
 }
@@ -677,8 +674,8 @@ export const defaultLearnerData: Learner = {
 
     learner_goals: {
         expected_goals: ["Encourage Independence"],
-        subjects_to_focus_on: ["science"],
-        preferred_volunteer_qualities: ["patience"],
+        skills_and_expertise: ["science"],
+        preferred_volunteer_qualities: "patience",
         skill_level: "beginner",
     },
 
@@ -689,7 +686,6 @@ export const defaultLearnerData: Learner = {
     },
     consent_and_permissions: {
         photo_or_video_consent: true,
-        acknowledgement_of_program_policies: true,
     },
     // profile_picture: null,
 };

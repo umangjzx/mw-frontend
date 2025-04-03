@@ -1,8 +1,9 @@
-import { getResourcesByCategory } from "@/api/resources";
+import { getResources } from "@/api/resources";
 import { useQuery } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
 import React from "react";
 import Card, { CardSkeleton } from "../Card";
+import { useDebounce } from "use-debounce";
 
 type CategorySectionProps = {
     topicSingleTitle: string;
@@ -12,20 +13,20 @@ type CategorySectionProps = {
 
 const CategorySection = ({ topicSingleTitle, handleViewOrEditResource }: CategorySectionProps) => {
     const [category, setCategory] = useQueryState("category");
-    const [searchQuery] = useQueryState("query");
+    const [searchQuery, setSearchQuery] = useQueryState("query");
 
+    const [debouncedSearchQuery] = useDebounce(searchQuery, 500);
     const { data: categories, isFetching } = useQuery({
-        queryKey: ["resources-by-category", category, searchQuery],
+        queryKey: ["resources-by-category", category, debouncedSearchQuery],
         queryFn: async () => {
-            const resources = await getResourcesByCategory(category || "", {
-                query: searchQuery || "",
-            });
-            return resources?.items || [];
+            const allResources = await getResources({ query: debouncedSearchQuery || "", category_id: category || "" });
+            return allResources?.items || [];
         },
     });
 
     const handleBackClick = () => {
         setCategory(null);
+        setSearchQuery(null);
     };
 
     return (
@@ -34,7 +35,7 @@ const CategorySection = ({ topicSingleTitle, handleViewOrEditResource }: Categor
                 <button onClick={handleBackClick} className="hover:underline">Resources</button> {">"} {topicSingleTitle}
             </h2>
             {isFetching ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     {Array.from({ length: 10 }).map((_, index) => (
                         <CardSkeleton key={index} />
                     ))}
@@ -43,12 +44,12 @@ const CategorySection = ({ topicSingleTitle, handleViewOrEditResource }: Categor
                 <>
                     {categories &&
                         categories?.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                             {categories?.map((resource: any, index: number) => (
                                 <div key={resource?.resource_id || index} className="col-span-1">
                                     <Card
                                         resource={resource}
-                                        className="w-full h-full"
+                                        className="!w-full !h-full"
                                         onClick={() =>
                                             handleViewOrEditResource("view", resource?.resource_id)
                                         }

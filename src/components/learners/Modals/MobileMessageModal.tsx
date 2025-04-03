@@ -95,7 +95,7 @@ const MobileMessageModal = ({ receiverId, isOpen, onClose }: MobileMessageModalP
     }, [messages, isFetchingUser]);
 
     const headerComponent = isFetchingUser ?
-        <div className="flex gap-2 w-full border-b border-stroke items-center animate-pulse">
+        <div className="flex gap-2 w-full items-center animate-pulse">
             <div className="h-[40px] w-[40px] bg-gray-200 rounded-full dark:bg-gray-700"></div>
             <div>
                 <div className="h-[12px] w-[160px] bg-gray-200 rounded-full dark:bg-gray-500 mb-2"></div>
@@ -132,7 +132,7 @@ const MobileMessageModal = ({ receiverId, isOpen, onClose }: MobileMessageModalP
                     {!isFetchingUser && !isFetching && Array.isArray(messages) &&
                         messages.map((message: MessageProps, index: number) => (
                             <div key={message?.message_id || index} className={`!max-w-[80%] rounded-xl text-base !bg-background-input p-3 ${message?.created_by === userRole ? 'ml-auto' : 'mr-auto'}`}>
-                                <p className="!text-black mb-3  whitespace-pre-wrap">{message?.message}</p>
+                                <p className="!text-black mb-3 break-word">{message?.message}</p>
                                 <div className={`${message?.created_by === userRole && 'flex flex-end'}`}>
                                     <p className="flex items-center gap-1 text-sm text-gray-light ml-auto">
                                         {toUserTimeZone({ date: message?.created_at, timeZone: userTimezone, format: "h:mm A" })}
@@ -144,7 +144,7 @@ const MobileMessageModal = ({ receiverId, isOpen, onClose }: MobileMessageModalP
                         ))}
                     <div ref={messagesEndRef} />
                 </div>
-                <div className="flex gap-2 w-full border-t border-stroke items-end mt-0 border-t p-3 h-[10vh]">
+                <div className="flex gap-2 w-full border-t border-stroke items-end mt-0 p-3 h-[10vh]">
                     <Input name="message" className="!mb-0 h-full" inputClassName="!text-md !w-full" inputType="textarea" rows={0} placeholder="Type message here"
                         onChange={(e) => setMessage(e.toString())}
                         value={message || ""}

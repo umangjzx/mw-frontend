@@ -84,7 +84,12 @@ const CuratedInputComponent: React.FC<Props> = ({ value, onChange, error }) => {
         <div>
             <label className="inner-label text-sm font-medium">Curated Links</label>
             <div className="space-y-2 mt-2">
-                {links.map((link, index) => (
+                {links.map((link, index) => {
+                    const errors = Array.isArray(error) && error[index];
+                    const titleError = errors?.title?.message;
+                    const urlError = errors?.url?.message;
+
+                    return (
                     <div key={index} className="flex flex-col">
                         <div className="flex items-center gap-2 w-full">
                             <Input
@@ -94,7 +99,7 @@ const CuratedInputComponent: React.FC<Props> = ({ value, onChange, error }) => {
                                 inputType="text"
                                 placeholder="Title"
                                 rootClassName="!w-[45%] !mb-0"
-                                inputClassName={`!w-full ${link.title || 'border !border-red-400 !bg-red-50'}`}
+                                inputClassName={`!w-full ${titleError ? 'border !border-red-400 !bg-red-50' : ''}`}
                             />
                             <span>-</span>
                             <Input
@@ -104,7 +109,7 @@ const CuratedInputComponent: React.FC<Props> = ({ value, onChange, error }) => {
                                 inputType="text"
                                 placeholder="Paste link here"
                                 rootClassName="!w-full !mb-0"
-                                inputClassName={`!w-full ${link.url || 'border !border-red-400 !bg-red-50'}`}
+                                inputClassName={`!w-full ${urlError ? 'border !border-red-400 !bg-red-50' : ''}`}
                             />
                             <button
                                 type="button"
@@ -114,9 +119,9 @@ const CuratedInputComponent: React.FC<Props> = ({ value, onChange, error }) => {
                                 <FaTrashCan size={20} />
                             </button>
                         </div>
-                        {Array.isArray(error) && error[index] && <p className="text-red-500 text-xs mt-1">{error[index]?.title?.message || error[index]?.url?.message}</p>}
+                        {(titleError || urlError) ? <p className="text-red-500 text-xs mt-1">{titleError || urlError}</p> : null}
                     </div>
-                ))}
+                )})}
                 {error?.message && <p className="text-red-500 text-sm">{error?.message}</p>}
                 {links.length < MAX_LINKS && (
                     <button

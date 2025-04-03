@@ -15,13 +15,17 @@ export const timesAgo = (date: string) => {
 
     if (diffInMinutes < 1) return "Just now";
 
-    return createdAt.fromNow(true)
+    let timeString = createdAt.fromNow(true)
+        .replace(/^an /, "1 ")
+        .replace(/^a /, "1 ")
         .replace("minutes", "mins")
         .replace("minute", "min")
         .replace("hours", "hrs")
         .replace("hour", "hr")
         .replace("seconds", "secs")
         .replace("second", "sec");
+
+    return `${timeString} ago`;
 };
 
 export const toUserTimeZone = ({
@@ -35,7 +39,13 @@ export const toUserTimeZone = ({
 
 export const calculateAge = (dob: string) => {
     if (!dob) return "";
-    return moment().diff(moment(dob, "DD-MM-YYYY"), "years").toString();
+    return moment()?.diff(moment(dob, "DD-MM-YYYY"), "years")?.toString();
+};
+
+export const isAgeUnder18 = (dob: string) => {
+    const age = Number(calculateAge(dob)) || 0;
+    console.log("Age: ", age);
+    return age < 18;
 };
 
 export const generateTimeSlotId = (startTime: string, endTime: string) => {

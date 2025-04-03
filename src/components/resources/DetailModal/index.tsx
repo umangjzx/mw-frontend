@@ -118,18 +118,18 @@ const DetailModal = ({
             ) : (
                 <div className={`flex flex-col ${isMobile ? "h-screen" : ""}`}>
                     <div
-                        className={`relative ${isMobile ? "h-[200px] sm:h-[280px]" : "h-[260px]"} rounded-t-xl ${isMobile ? "!rounded-none" : ""
+                        className={`relative bg-[#F4F7FB] ${isMobile ? "h-[250px] sm:h-[280px]" : "h-[300px]"} rounded-t-xl ${isMobile ? "!rounded-none" : ""
                             }`}
                     >
                         <Image
                             src={resource?.resource_image?.image_url || "/placeholder.png"}
                             fill
-                            className="object-cover"
+                            className="object-contain min-w-[60%]"
                             alt="Resource"
                         />
                         <span
                             onClick={onClose}
-                            className="cursor-pointer absolute top-4 left-4 md:static md:top-auto md:left-auto"
+                            className="cursor-pointer absolute top-4 left-4 md:static md:top-auto md:left-auto md:hidden"
                         >
                             <ModalCloseIcon />
                         </span>
@@ -195,8 +195,8 @@ const DetailModal = ({
                         className={`flex flex-col gap-4 px-4 md:px-6 lg:px-8 py-4 overflow-y-auto ${isMobile ? "flex-1 pb-8" : ""
                             }`}
                     >
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center justify-between">
+                            <div className="flex flex-wrap items-center gap-2">
                                 <p className="text-2xl font-medium text-black">
                                     {resource?.resource_title}
                                 </p>
@@ -229,6 +229,13 @@ const DetailModal = ({
                                     No curated links provided.
                                 </p>
                             )}
+                        </div>
+                        <Divider />
+                        <div className="flex flex-col gap-2">
+                            <p className="font-medium text-black">Notes</p>
+                            <p className="text-sm text-gray-light">
+                                {resource?.resource_notes || "No notes provided."}
+                            </p>
                         </div>
                     </div>
                 </div>

@@ -6,10 +6,10 @@ import StepsChart from "../components/StepsChart";
 import LandingPageButton from "../components/Button";
 
 interface ForVolunteerProps {
-    onVolunteerLogin: (role: UserType) => void;
+    handleSignUp: () => void;
 }
 
-const ForVolunteer = ({ onVolunteerLogin }: ForVolunteerProps) => {
+const ForVolunteer = ({ handleSignUp }: ForVolunteerProps) => {
     return (
         <ContainerWrapper className="bg-white py-10 px-5">
             <ContainerHeader
@@ -20,7 +20,7 @@ const ForVolunteer = ({ onVolunteerLogin }: ForVolunteerProps) => {
             />
 
             <div className="flex flex-col justify-center items-center gap-1 mt-10 lg:mt-0">
-                <div className="flex flex-col lg:flex-row">
+                <div className="flex flex-col lg:flex-row gap-1">
                     {volunteerData.map((item, index) => (
                         <StepsChart
                             key={index}
@@ -35,7 +35,7 @@ const ForVolunteer = ({ onVolunteerLogin }: ForVolunteerProps) => {
                     <LandingPageButton
                         title="Become a Volunteer"
                         type="volunteer"
-                        onClick={() => onVolunteerLogin("volunteer")}
+                        onClick={handleSignUp}
                     />
                 </div>
             </div>

@@ -13,7 +13,7 @@ interface Learner {
 
 interface Consentandpermissions {
     photo_or_video_consent: boolean;
-    acknowledgement_of_program_policies: boolean;
+    // acknowledgement_of_program_policies: boolean;
 }
 
 interface Additionalinfo {
@@ -24,8 +24,8 @@ interface Additionalinfo {
 
 interface Learnergoals {
     expected_goals: string[];
-    subjects_to_focus_on: string[];
-    preferred_volunteer_qualities: string[];
+    skills_and_expertise: string[];
+    preferred_volunteer_qualities: string;
     skill_level: string;
 }
 

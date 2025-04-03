@@ -1,10 +1,11 @@
 import nationalities from "@/data/nationalities.json"
 import timezones from "@/data/timezones.json"
+import skills_and_expertise from "@/data/skills_expertise.json"
 
 export const LearnerOnboardingConstants = {
     title: "Enroll a learner",
     description:
-        "Thank you for your interest in joining Melody Wings. Fill out the form below and we'll get you a good fit.",
+        "Thank you for your interest in joining MelodyWings. Fill out the form below and we'll get you a good fit.",
 };
 
 // Parent/Guardian Information Fields
@@ -138,7 +139,6 @@ const LearnerPersonalFields: FormField[] = [
         inputType: "text",
         placeholder: "Enter email",
         gridCols: 1,
-        disabled: true,
         required: true,
     },
     {
@@ -175,7 +175,7 @@ const LearnerPersonalFields: FormField[] = [
         parent: "learner_contact_details",
         id: "timezone",
         label: "Time Zone",
-        inputType: "select",
+        inputType: "grouped-select",
         placeholder: "Select time zone",
         showSearch: true,
         options: timezones,        
@@ -212,7 +212,7 @@ const DisabilityInfoFields: FormField[] = [
         ],
         gridCols: 1,
         sublabel: " ",
-        className: "w-full h-full mt-4",
+        className: "w-full h-full mt-2 md:mt-4",
         required: true,
     },
     {
@@ -262,20 +262,6 @@ const DisabilityInfoFields: FormField[] = [
         responseAsLabel: "area_of_support_name",
         responseAsValue: "area_of_support_name",
         placeholder: "Select areas of support",
-        gridCols: 1,
-        required: true,
-    },
-    {
-        id: "learning_styles",
-        label: "Learning Style",
-        sublabel: "(visual, auditory, hands-on, etc.)",
-        inputType: "async-select",
-        creatable: true,
-        endpoint: "learning_styles",
-        variant: "multi",
-        responseAsLabel: "learning_style_name",
-        responseAsValue: "learning_style_name",
-        placeholder: "Select learning styles",
         gridCols: 1,
         required: true,
     },
@@ -380,23 +366,6 @@ const EducationBackgroundFields: FormField[] = [
 
 // Behavior and Social Skills Fields
 const BehaviorSocialFields: FormField[] = [
-    {
-        id: "communication_preferences",
-        label: "Communication Preferences",
-        sublabel: "(visual, nonverbal, assistive devices)",
-        inputType: "select-creatable",
-        variant: "multi",
-        placeholder: "Enter here",
-        gridCols: 1,
-        options: [
-            { label: "Visual", value: "visual" },
-            { label: "Nonverbal", value: "nonverbal" },
-            { label: "Assistive Devices", value: "assistive_devices" },
-            { label: "Others", value: "others" },
-            { label: "N/A", value: "N/A" },
-        ],
-        required: true,
-    },
     {
         id: "social_interaction_styles",
         label: "Social Interaction Style",
@@ -525,15 +494,10 @@ const BehaviorSocialFields: FormField[] = [
 // Interests and Hobbies Fields
 const InterestsHobbiesFields: FormField[] = [
     {
-        id: "interests",
-        label: "Main Interests",
-        sublabel: "(e.g., music, art, sports, technology)",
-        inputType: "async-select",
-        endpoint: "skills",
-        creatable: true,
-        variant: "multi",
-        responseAsLabel: "skill_name",
-        responseAsValue: "skill_name",
+        id: "favorite_activities",
+        label: "Favorite Activities/Main Interests",
+        sublabel: "(Eg., music, sports, rhymes - any activity that motivates the child)",
+        inputType: "text",
         placeholder: "Enter here",
         gridCols: 1,
         required: true,
@@ -545,49 +509,6 @@ const InterestsHobbiesFields: FormField[] = [
         inputType: "text",
         placeholder: "Enter here",
         gridCols: 1,
-        // options: [
-        //     { label: "Sports (e.g., Football, Basketball)", value: "sports" },
-        //     { label: "Music (e.g., Playing Instruments, Singing)", value: "music" },
-        //     { label: "Art and Craft (e.g., Drawing, Painting)", value: "art_and_craft" },
-        //     { label: "Drama and Theater", value: "drama_and_theater" },
-        //     { label: "Debate and Public Speaking", value: "debate_and_public_speaking" },
-        //     { label: "Dance (e.g., Ballet, Hip-Hop)", value: "dance" },
-        //     { label: "Coding and Programming", value: "coding_and_programming" },
-        //     { label: "Volunteering and Community Service", value: "volunteering_and_community_service" },
-        //     { label: "Photography and Filmmaking", value: "photography_and_filmmaking" },
-        //     { label: "Science Club or Robotics", value: "science_club_or_robotics" },
-        // ],
-        required: true,
-    },
-    {
-        id: "favorite_activities",
-        label: "Favorite Activities",
-        sublabel: "(activities that motivate the child)",
-        inputType: "text",
-        placeholder: "Enter here",
-        gridCols: 1,
-        // options: [
-        //     { label: "Drawing and coloring", value: "drawing_and_coloring" },
-        //     { label: "Listening to music", value: "listening_to_music" },
-        //     { label: "Playing with sensory toys", value: "playing_with_sensory_toys" },
-        //     { label: "Watching cartoons or movies", value: "watching_cartoons_or_movies" },
-        //     { label: "Building with blocks or Legos", value: "building_with_blocks_or_legos" },
-        //     { label: "Dancing or movement activities", value: "dancing_or_movement_activities" },
-        //     { label: "Playing in water or sand", value: "playing_in_water_or_sand" },
-        //     { label: "Doing puzzles", value: "doing_puzzles" },
-        //     { label: "Reading books or looking at pictures", value: "reading_books_or_looking_at_pictures" },
-        //     { label: "Gardening or planting seeds", value: "gardening_or_planting_seeds" },
-        //     { label: "Playing on swings or slides", value: "playing_on_swings_or_slides" },
-        //     { label: "Cooking or baking simple recipes", value: "cooking_or_baking_simple_recipes" },
-        //     { label: "Crafting with paper and glue", value: "crafting_with_paper_and_glue" },
-        //     { label: "Role-playing or pretend play", value: "role_playing_or_pretend_play" },
-        //     { label: "Playing video games", value: "playing_video_games" },
-        //     { label: "Doing simple science experiments", value: "doing_simple_science_experiments" },
-        //     { label: "Exploring nature or going for walks", value: "exploring_nature_or_going_for_walks" },
-        //     { label: "Blowing bubbles", value: "blowing_bubbles" },
-        //     { label: "Singing songs or karaoke", value: "singing_songs_or_karaoke" },
-        //     { label: "Playing board or card games", value: "playing_board_or_card_games" },
-        // ],
         required: true,
     },
 ];
@@ -629,19 +550,12 @@ const ExpectationsGoalsFields: FormField[] = [
         required: true,
     },
     {
-        id: "subjects_to_focus_on",
-        label: "Specific Subject/Skill Preferences",
+        id: "skills_and_expertise",
+        label: "Skills and Expertise to learn from Volunteers",
         sublabel: "(areas focus for tutoring or support)",
         inputType: "select-creatable",
         variant: "multi",
-        options: [
-            { label: "Math", value: "math" },
-            { label: "Science", value: "science" },
-            { label: "History", value: "history" },
-            { label: "English", value: "english" },
-            { label: "Others", value: "others" },
-            { label: "N/A", value: "N/A" },
-        ],
+        options: skills_and_expertise,
         placeholder: "Enter here",
         gridCols: 1,
         required: true,
@@ -650,34 +564,9 @@ const ExpectationsGoalsFields: FormField[] = [
         id: "preferred_volunteer_qualities",
         label: "Preferred Volunteer Qualities",
         sublabel: "(any specific traits the parent/guardian values in a tutor or mentor)",
-        inputType: "select-creatable",
-        variant: "multi",
+        inputType: "text",
         placeholder: "Enter here",
         gridCols: 1,
-        options: [
-            { label: "Patience", value: "patience" },
-            { label: "Empathy", value: "empathy" },
-            { label: "Compassion", value: "compassion" },
-            { label: "Good Communication", value: "good_communication" },
-            { label: "Adaptability", value: "adaptability" },
-            { label: "Positivity", value: "positivity" },
-            { label: "Attentiveness", value: "attentiveness" },
-            { label: "Responsibility", value: "responsibility" },
-            { label: "Flexibility", value: "flexibility" },
-            { label: "Calm Under Pressure", value: "calm_under_pressure" },
-            { label: "Kindness", value: "kindness" },
-            { label: "Creativity", value: "creativity" },
-            { label: "Good Listening Skills", value: "good_listening_skills" },
-            { label: "Enthusiasm", value: "enthusiasm" },
-            { label: "Teamwork Skills", value: "teamwork_skills" },
-            { label: "Reliability", value: "reliability" },
-            { label: "Emotional Stability", value: "emotional_stability" },
-            { label: "Cultural Sensitivity", value: "cultural_sensitivity" },
-            { label: "Sense of Humor", value: "sense_of_humor" },
-            { label: "Willingness to Learn", value: "willingness_to_learn" },
-            { label: "Others", value: "others" },
-            { label: "N/A", value: "N/A" },
-        ],
         required: true,
     },
     {
@@ -690,8 +579,8 @@ const ExpectationsGoalsFields: FormField[] = [
             { label: "Expert", value: "expert" },
         ],
         gridCols: 1,
-        className: "w-full h-fit mt-4 gap-0 !mb-0",
-        inputClassName: "w-full h-full  mt-4",
+        className: "w-full h-fit mt-2 md:mt-4 gap-0 !mb-0",
+        inputClassName: "w-full h-full",
         required: true,
     },
 ];
@@ -805,23 +694,25 @@ export const LearnerFormSections: FormSectionConfig[] = [
                 required: false,
                 gridCols: 1,
             },
-            {
-                id: "acknowledgement_of_program_policies",
-                label: "Acknowledgment of Program Policies ",
-                sublabel: "(Rules, Expectations, and Procedures)",
-                options: [
-                    { label: "Yes", value: true },
-                    { label: "No", value: false },
-                ],
-                inputType: "radio",
-                gridCols: 1,
-            },
+            // {
+            //     id: "acknowledgement_of_program_policies",
+            //     label: "Acknowledgment of Program Policies ",
+            //     sublabel: "(Rules, Expectations, and Procedures)",
+            //     options: [
+            //         { label: "Yes", value: true },
+            //         { label: "No", value: false },
+            //     ],
+            //     inputType: "radio",
+            //     gridCols: 1,
+            // },
         ],
     },
 ];
 
+export const LearnerProfileFormSections: FormSectionConfig[] = LearnerFormSections?.filter((section) => section.parent !== "consent_and_permissions");
+
 export const LearnerThankyouCardConstants = {
-    title: "Thank You for Enrolling in Melody Wings!",
+    title: "Thank You for Enrolling in MelodyWings!",
     description:
         "We’re excited to have you join our community. Our team will review your details and get back to you shortly with the next steps. We appreciate your trust in us, and we look forward to helping you on this learning journey.",
 };

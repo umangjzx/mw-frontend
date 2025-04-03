@@ -21,6 +21,7 @@ import ResourceReportModal from "@/components/resources/ReportsModal";
 import SectionWrapper from "@/components/resources/SectionWrapper";
 import TopicCard, { TopicCardSkeleton } from "@/components/resources/TopicCard";
 import CategorySection from "@/components/resources/CategorySection";
+import { useDebounce } from "use-debounce";
 
 interface ResourcesPageWrapperProps {
     variant: 'learner' | 'volunteer';
@@ -48,20 +49,21 @@ export default function ResourcesPageWrapper({ variant }: ResourcesPageWrapperPr
     const [reportModalOpen, setReportModalOpen] = useState(false);
     const [reportModalResourceId, setReportModalResourceId] = useState("");
 
+    const [debouncedSearchQuery] = useDebounce(searchQuery, 500);
     const { data: MyResources, isLoading: isMyResourcesLoading, refetch } = useQuery({
-        queryKey: ["my-resources", searchQuery],
+        queryKey: ["my-resources", debouncedSearchQuery],
         queryFn: async () => {
-            const myResources = await getMyResources({ query: searchQuery || "" });
+            const myResources = await getMyResources({ query: debouncedSearchQuery || "" });
             return myResources?.items || [];
         },
         enabled: category === "my-resources",
     });
 
     const { isFetching } = useQuery({
-        queryKey: ["resources", searchQuery],
+        queryKey: ["resources", debouncedSearchQuery],
         queryFn: async () => {
             setResources([]);
-            const allResources = await getResources({ query: searchQuery || "" });
+            const allResources = await getResources({ query: debouncedSearchQuery || "" });
             setResources(allResources?.items || []);
             return allResources;
         },
@@ -76,15 +78,12 @@ export default function ResourcesPageWrapper({ variant }: ResourcesPageWrapperPr
         },
     });
 
-    const handleTopicClick = (title: string) => setCategory(title);
-    const handleMyResourcesClick = () => setCategory("my-resources");
-    const handleBackClick = () => setCategory(null);
+    const handleTopicClick = (title: string) => { setCategory(title); setSearchQuery(null); };
+    const handleMyResourcesClick = () => { setCategory("my-resources"); setSearchQuery(null); };
+    const handleBackClick = () => { setCategory(null); setSearchQuery(null); };
     const handleAddResourceClick = () => setMode("create");
-    const handleCloseModal = () => {
-        setMode(null);
-        setId(null);
-    };
-
+    const handleCloseModal = () => { setMode(null); setId(null); };
+    
     const handleViewOrEditResource = (mode: ShowModalType, id: string) => {
         setMode(mode);
         setId(id);
@@ -224,7 +223,7 @@ export default function ResourcesPageWrapper({ variant }: ResourcesPageWrapperPr
                     renderItem={(item, index) => (
                         <div className="w-full md:w-[250px]">
                             <Card
-                                className="!w-full"
+                                className="max-md:!w-full"
                                 imgClassName=""
                                 key={item?.resource_id || index}
                                 resource={item}
@@ -237,7 +236,7 @@ export default function ResourcesPageWrapper({ variant }: ResourcesPageWrapperPr
             )}
 
             {category === "my-resources" && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 md:p-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 p-4 md:p-6">
                     <div className="w-full col-span-1">
                         <AddResourceCard handleClick={handleAddResourceClick} />
                     </div>

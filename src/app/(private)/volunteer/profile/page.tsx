@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
-import Bio from "@/components/profile/Bio";
 import Overview from "@/components/profile/Overview";
 import { useComponentStore } from "@/store/useComponenetStore";
 import { useQuery } from "@tanstack/react-query";
@@ -16,6 +15,7 @@ import MobileProfileView from "@/components/profile/MobileProfileView";
 import InnerWidth from "@/utils/innerWidth";
 import { useQueryState } from "nuqs";
 import EditProfileModal from "@/components/profile/EditProfile";
+import VolunteerProfileBio from "@/components/volunteers/profile";
 
 export default function ProfilePage() {
     const { setHeaderOptions } = useComponentStore();
@@ -35,11 +35,15 @@ export default function ProfilePage() {
     });
     const triggerReload = async () => await refetch();
 
+    const handleBackButton = () => {
+        router.push("/volunteer/schedule");
+    }
+
     useEffect(() => {
         setHeaderOptions({
             title: "Profile",
             titleIcon: <IoIosArrowBack className="text-lg" />,
-            titleIconClick: () => router.back(),
+            titleIconClick: handleBackButton,
             actionButtonTitle: "Edit Profile",
             actionButtonClassName:
                 "lg:hidden !bg-black !text-white !rounded-xl hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4",
@@ -111,7 +115,6 @@ export default function ProfilePage() {
         <div className="h-full animate-fadeIn">
             <EditProfileModal
                 data={data}
-                initialFormData={editProfileData}
                 isOpen={mode === "edit"}
                 onClose={() => setMode(null)}
                 triggerReload={triggerReload}
@@ -119,13 +122,14 @@ export default function ProfilePage() {
             {
                 isMobileOrTabScreen ?
                     <MobileProfileView
+                        data={data}
                         userData={volunteerData?.bio}
                         reviewEndpoint={endpoints.learnerFeedback.get(volunteerId)}
                     />
                     :
                     <div className="h-full w-full grid grid-cols-[1fr,2fr] gap-10 p-5">
-                        <Bio data={volunteerData.bio} />
-                        <Overview data={volunteerData.overview} reviewEndpoint={endpoints.learnerFeedback.get(volunteerId)} />
+                        <VolunteerProfileBio data={data} />
+                        <Overview data={volunteerData.overview} reviewEndpoint={endpoints.volunterFeedback.get(volunteerId)} />
                     </div>
             }
         </div>

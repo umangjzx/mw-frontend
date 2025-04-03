@@ -7,7 +7,6 @@ import {
     CommunityIcon,
     FeedModalCloseIcon,
     LearnerIcon,
-    LogoIcon,
     ResourceIcon,
     SignOutIcon,
     VolunteerIcon,
@@ -16,8 +15,11 @@ import Cookies from "js-cookie";
 import Link from "next/link";
 import InnerWidth from "@/utils/innerWidth";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { clearCookies } from "@/utils/auth";
 
 const Sidebar = ({ onClose }: { onClose?: () => void }) => {
+    const router = useRouter();
     const role = Cookies.get("role");
     const isMobileOrTabScreen = InnerWidth() < 1024;
 
@@ -60,20 +62,15 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
     const linksData = [...baseLinksData, roleBasedLink, ...remainingLinks];
 
     const handleSignOut = () => {
-        const cookieSetting = { path: "/", secure: true };
-        Cookies.remove("role", cookieSetting);
-        Cookies.remove("token", cookieSetting);
-        Cookies.remove("refresh_token", cookieSetting);
-        Cookies.remove("learner_id", cookieSetting);
-        Cookies.remove("volunteer_id", cookieSetting);
-        Cookies.remove("onboarded_status", cookieSetting);
+        clearCookies();
 
         if (typeof window !== "undefined") {
-            localStorage.clear();
+            window.location.href = "/login"
+        } else {
+            router.replace("/login");
+            router.refresh();
         }
-        if (typeof window !== "undefined") {
-            window.location.href = "/";
-        }
+
     };
 
     return (

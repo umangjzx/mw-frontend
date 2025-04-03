@@ -16,6 +16,10 @@ const Select = ({ disabled, inputType, inputClassName, isLoading, ...props }: Se
             className={`w-full text-sm h-fit rounded-md hover:bg-background-input bg-background-input ${inputClassName}`}
             options={props.options}
             suffixIcon={<BiCaretDown className='text-black' />}
+            filterOption={(input, option) => 
+                option?.label?.toLowerCase().includes(input.toLowerCase()) || 
+                option?.value?.toLowerCase().includes(input.toLowerCase())
+            }
         />
     );
 };

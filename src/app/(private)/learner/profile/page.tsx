@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
-import Bio from "@/components/profile/Bio";
 import Overview from "@/components/profile/Overview";
 import { useComponentStore } from "@/store/useComponenetStore";
 import { useQuery } from "@tanstack/react-query";
@@ -16,6 +15,7 @@ import MobileProfileView from "@/components/profile/MobileProfileView";
 import InnerWidth from "@/utils/innerWidth";
 import EditProfileModal from "@/components/profile/EditProfile";
 import { useQueryState } from "nuqs";
+import LearnerProfileBio from "@/components/learners/profile";
 
 export default function ProfilePage() {
     const { setHeaderOptions } = useComponentStore();
@@ -25,7 +25,6 @@ export default function ProfilePage() {
     const [mode, setMode] = useQueryState("mode");
 
     const learnerId = Cookies.get("learner_id") || "";
-    const [editProfileData, setEditProfileData] = useState({});
     const [learnerData, setLearnerData] = useState({ bio: {}, overview: {} });
 
     const { data, isLoading, refetch } = useQuery({
@@ -35,11 +34,15 @@ export default function ProfilePage() {
     });
     const triggerReload = async () => await refetch();
 
+    const handleBackButton = () => {
+        router.replace("/learner/schedule");
+    };
+
     useEffect(() => {
         setHeaderOptions({
             title: "Profile",
             titleIcon: <IoIosArrowBack className="text-lg" />,
-            titleIconClick: () => router.push("/learner/schedule"),
+            titleIconClick: handleBackButton,
             actionButtonTitle: "Edit Profile",
             actionButtonClassName:
                 "lg:hidden !bg-black !text-white !rounded-xl hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4",
@@ -60,21 +63,8 @@ export default function ProfilePage() {
         const learner_last_name = data?.learner_personal_info?.learner_last_name;
         const learner_primary_language = data?.learner_personal_info?.learner_primary_language;
         const description = data?.learner_special_needs?.description;
-        const subjects = data?.learner_goals?.subjects_to_focus_on;
+        const subjects = data?.learner_goals?.skills_and_expertise;
         const contactDetail = data?.learner_personal_info?.learner_contact_details;
-
-        setEditProfileData({
-            userId: learnerId,
-            learner_first_name: learner_first_name,
-            learner_last_name: learner_last_name,
-            learner_description: description,
-            profile_picture: data?.profile_picture,
-            learner_subjects: subjects,
-            learner_language: learner_primary_language,
-            contact_number: contactDetail?.contact_number,
-            email: contactDetail?.email,
-            country: contactDetail?.country,
-        })
 
         const bioData = {
             userId: learnerId,
@@ -111,7 +101,6 @@ export default function ProfilePage() {
         <div className="h-full animate-fadeIn">
             <EditProfileModal
                 data={data}
-                initialFormData={editProfileData}
                 isOpen={mode === "edit"}
                 onClose={() => setMode(null)}
                 triggerReload={triggerReload}
@@ -119,12 +108,13 @@ export default function ProfilePage() {
             {
                 isMobileOrTabScreen ?
                     <MobileProfileView
+                        data={data}
                         userData={learnerData?.bio}
                         reviewEndpoint={endpoints.learnerFeedback.get(learnerId)}
                     />
                     :
                     <div className="h-full w-full grid grid-cols-[1fr,2fr] gap-10 p-5">
-                        <Bio data={learnerData?.bio} />
+                        <LearnerProfileBio data={data} />
                         <Overview data={learnerData?.overview} reviewEndpoint={endpoints.learnerFeedback.get(learnerId)} />
                     </div>
             }

@@ -15,6 +15,7 @@ import VolunteerFilterModal from "@/components/learners/Modals/VolunteerFilter";
 import { RiFilter3Line } from "react-icons/ri";
 import LottieLoader from "@/components/common/Loader/Lottie";
 import InnerWidth from "@/utils/innerWidth";
+import { useDebounce } from "use-debounce";
 
 interface VolunteerCardData {
     volunteerId: string;
@@ -42,7 +43,7 @@ export default function LearnersPage() {
 
     const [size] = useQueryState("size", { defaultValue: "10" });
     const [page] = useQueryState("page", { defaultValue: "1" });
-    const [query] = useQueryState("query");
+    const [searchQuery, setSearchQuery] = useQueryState("query");
     const [language_ids] = useQueryState("language_ids");
     const [subject_ids] = useQueryState("subject_ids");
     const [country] = useQueryState("country");
@@ -55,6 +56,7 @@ export default function LearnersPage() {
 
     const isMobileScreen = InnerWidth() < 768;
 
+    const [query] = useDebounce(searchQuery, 500);
     const { data, isLoading, isError } = useQuery({
         queryKey: [
             "volunteer",
@@ -96,18 +98,18 @@ export default function LearnersPage() {
     useEffect(() => {
         if (data?.items) {
             const formattedData: VolunteerCardData[] = data.items.map((volunteer: any) => ({
-                volunteerId: volunteer.volunteer_id,
-                profileImage: volunteer.profile_picture.image_url,
-                name: `${volunteer.volunteer_first_name} ${volunteer.volunteer_last_name}`,
+                volunteerId: volunteer?.volunteer_id,
+                profileImage: volunteer?.profile_picture?.image_url,
+                name: `${volunteer?.volunteer_first_name} ${volunteer?.volunteer_last_name}`,
                 location: volunteer?.country,
                 volunteerHrs: volunteer?.total_volunteered_hours?.toString(),
-                studentConnected: volunteer.students_connected?.toString(),
-                subjects: volunteer.volunteer_subjects.map((subject: any) => subject.subject_name),
-                languages: volunteer.volunteer_languages.map(
-                    (language: any) => language.language_name
+                studentConnected: volunteer?.students_connected?.toString(),
+                subjects: volunteer?.volunteer_subjects?.map((subject: any) => subject?.subject_name),
+                languages: volunteer?.volunteer_languages?.map(
+                    (language: any) => language?.language_name
                 ),
-                totalReviews: volunteer.total_reviews,
-                overallRating: volunteer.overall_rating,
+                totalReviews: volunteer?.total_reviews,
+                overallRating: volunteer?.overall_rating,
             }));
             setVolunteerCardData(formattedData);
         }
@@ -175,18 +177,32 @@ export default function LearnersPage() {
             {isLoading ? (
                 <LottieLoader isLoading={true} />
             ) : isError ? (
-                <div className="flex-center h-full w-full">Error loading volunteers</div>
+                <div className="flex-center h-full w-full">Something went wrong</div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full h-auto p-5 py-7 lg:p-10">
-                    {volunteerCardData.map((volunteer) => (
-                        <VolunteerCard
-                            key={volunteer.volunteerId}
-                            onSeeMoreClick={handleSeeMoreClick}
-                            {...volunteer}
-                        />
-                    ))}
-                    {volunteerCardData.length === 0 && <div className="flex-center h-full">No Volunteer Found</div>}
-                </div>
+                <>
+                    {volunteerCardData.length === 0 ?
+                        <div className="flex-center h-full w-full flex-col gap-1">
+                            <p>No Volunteer Found</p>
+                            {query && (
+                                <button className="text-blue-500 underline" onClick={() => setSearchQuery(null)}>Clear Search</button>
+                            )}
+                            {appliedFiltersCount > 0 && (
+                                <button className="text-blue-500 underline" onClick={() => router.push("/learner/volunteer")}>Clear Filters</button>
+                            )}
+                        </div>
+                        :
+                        (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full h-auto p-5 py-7 lg:p-10">
+                                {volunteerCardData.map((volunteer) => (
+                                    <VolunteerCard
+                                        key={volunteer.volunteerId}
+                                        onSeeMoreClick={handleSeeMoreClick}
+                                        {...volunteer}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                </>
             )}
         </div>
     );

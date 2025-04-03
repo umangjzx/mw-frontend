@@ -35,7 +35,7 @@ const CustomNextArrow = (props: any) => {
     return (
         <div
             onClick={onClick}
-            className="!z-50 absolute right-3 top-1/2 transform -translate-y-1/2 text-primary border border-primary p-2 rounded-full shadow-md cursor-pointer"
+            className="!z-50 absolute right-3 top-1/2 transform -translate-y-1/2 text-primary border border-primary bg-gray-200 p-2 rounded-full shadow-md cursor-pointer"
         >
             <FaChevronRight className="text-xs md:text-lg" />
         </div>
@@ -47,7 +47,7 @@ const CustomPrevArrow = (props: any) => {
     return (
         <div
             onClick={onClick}
-            className="!z-50 absolute left-3 top-1/2 transform -translate-y-1/2 text-primary border border-primary p-2 rounded-full shadow-md cursor-pointer"
+            className="!z-50 absolute left-3 top-1/2 transform -translate-y-1/2 text-primary border border-primary bg-gray-200 p-2 rounded-full shadow-md cursor-pointer"
         >
             <FaChevronLeft className="text-xs md:text-lg" />
         </div>
@@ -113,10 +113,8 @@ const FeedViewModal = ({
     const [comment, setComment] = useState("");
     const [isCommentLoading, setIsCommentLoading] = useState(false);
 
-    const [replyTo, setReplyTo] = useState({
-        name: "",
-        id: "",
-    });
+    const [isCommentFocused, setIsCommentFocused] = useState(false);
+    const [replyTo, setReplyTo] = useState({ name: "", id: "" });
 
     const getIndividualPost = async () => {
         const response = await GET_API(endpoints.post.getSinglePost(id as string));
@@ -169,13 +167,19 @@ const FeedViewModal = ({
     };
 
     const handleSavePost = (postId: string, currentSaveStatus: boolean) => {
+        if (currentSaveStatus) {
+            DELETE_API(endpoints.post.unsave(postId));
+        } else {
+            POST_API(endpoints.post.save(postId));
+        }
+
         queryClient.setQueryData(["get-posts", activeTab], (oldData: any) => {
             return {
                 ...oldData,
-                pages: oldData.pages.map((page: any) => ({
+                pages: oldData?.pages?.map((page: any) => ({
                     ...page,
-                    items: page.items.map((post: PostData) =>
-                        post.post_id === postId
+                    items: page?.items?.map((post: PostData) =>
+                        post?.post_id === postId
                             ? {
                                 ...post,
                                 is_saved: !currentSaveStatus,
@@ -190,12 +194,6 @@ const FeedViewModal = ({
             ...oldData,
             is_saved: !currentSaveStatus,
         }));
-
-        if (currentSaveStatus) {
-            DELETE_API(endpoints.post.unsave(postId));
-        } else {
-            POST_API(endpoints.post.save(postId));
-        }
     };
 
     const handleComment = async (postId: string) => {
@@ -242,8 +240,8 @@ const FeedViewModal = ({
             ) : isError ? (
                 <ErrorMsg />
             ) : (
-                <div className="grid h-full lg:grid-cols-[1fr,0.7fr] lg:h-[720px] max-lg:!flex max-lg:!flex-col">
-                    <div className="relative bg-gray-300 w-full h-[300px] md:h-[400px] lg:h-[720px] max-md:!max-h-[45%] overflow-hidden">
+                <div className="h-full lg:h-[720px] flex max-lg:!flex-col">
+                    <div className="lg:w-[55%] relative bg-gray-300 w-full h-[300px] md:h-[400px] lg:h-[720px] max-md:!max-h-[40%] overflow-hidden">
                         <Slider className="flex gap-20" {...sliderSettings}>
                             {post?.images?.map((image) => (
                                 <div key={image?.image_id} className="relative w-full h-[300px] md:h-[400px] lg:h-[720px]">
@@ -279,7 +277,7 @@ const FeedViewModal = ({
                             ) : (
                                 <div className="flex items-center gap-3">
                                     <span
-                                        className="cursor-pointer bg-white rounded-full p-2.5"
+                                        className="cursor-pointer bg-white rounded-full p-2.5 border border-gray-100"
                                         onClick={() =>
                                             handleSavePost(post?.post_id, post?.is_saved)
                                         }
@@ -300,7 +298,7 @@ const FeedViewModal = ({
                             )}
                         </div>
                     </div>
-                    <div className="flex flex-col max-lg:!flex-1 lg:h-[720px] relative max-lg:!overflow-auto">
+                    <div className="lg:w-[45%] flex flex-col max-lg:!flex-1 lg:h-[720px] relative max-lg:!overflow-y-auto">
                         <div className="max-lg:hidden flex justify-end items-center px-5 pb-2 pt-5 gap-3">
                             {isManagePost ? (
                                 <div className="flex items-center gap-2">
@@ -345,7 +343,7 @@ const FeedViewModal = ({
                             />
                         </div>
                         <Divider />
-                        <div className="px-4 md:px-7 flex flex-col flex-1 overflow-hidden mt-3">
+                        <div className="px-4 md:px-7 flex flex-col mt-3 overflow-y-auto relative">
                             <div className="flex flex-col gap-3">
                                 <div className="flex gap-3">
                                     <div className="w-[40px] h-[40px] relative flex-shrink-0">
@@ -356,9 +354,9 @@ const FeedViewModal = ({
                                             className="rounded-full object-cover"
                                         />
                                     </div>
-                                    <div className="ml-3 flex-1 flex flex-col ">
-                                        <div className="flex max-md:flex-wrap items-center gap-2 md:gap-3 w-full min-h-[40px]">
-                                            <p className="font-semibold text-black">
+                                    <div className="ml-2md:ml-3 flex-1 flex flex-col">
+                                        <div className="flex flex-wrap items-center gap-2 md:gap-3 w-full min-h-[40px]">
+                                            <p className="font-medium md:font-semibold text-black">
                                                 {post?.author?.name}
                                             </p>
                                             <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
@@ -367,19 +365,19 @@ const FeedViewModal = ({
                                                 className="w-fit capitalize !m-0"
                                             />
                                             <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
-                                            <p className="font-semibold text-black">
+                                            <p className="font-medium md:font-semibold text-black">
                                                 {toUserTimeZone({ date: post?.created_at, format: "DD/MM/YYYY" })}
                                             </p>
                                         </div>
 
-                                        <p className="text-sm font-normal">{post?.description}</p>
+                                        <p className="text-sm font-normal mt-2">{post?.description}</p>
                                     </div>
                                 </div>
                                 <Divider />
                             </div>
-                            <div className="flex flex-col flex-1 overflow-hidden mt-3">
+                            <div className="flex flex-col mt-3 sticky top-0">
                                 <h3 className="text-xl font-semibold text-black mb-3">Comments</h3>
-                                <div className="flex flex-col gap-3 overflow-y-auto flex-1 pb-[75px] pr-3 hide-scrollbar">
+                                <div className="flex flex-col gap-3 overflow-y-auto flex-1 pb-[75px] pr-3 hide-scrollbar overflow-x-hidden">
                                     {commentsLoading ? (
                                         <div className="flex flex-col gap-3">
                                             <CommentSkeleton size={8} />
@@ -412,7 +410,7 @@ const FeedViewModal = ({
                                 </div>
                             </div>
                         </div>
-                        <div className="absolute bottom-0 left-0 right-0 border-stroke bg-white px-7 py-4 border-t border-gray-100 z-50">
+                        <div className="max-md:fixed absolute bottom-0 left-0 right-0 border-stroke bg-white px-7 py-4 border-t border-gray-100 z-50">
                             {replyTo.name && (
                                 <div className="flex items-center justify-between mb-3">
                                     <p className="text-sm font-medium text-gray-light">
@@ -433,6 +431,8 @@ const FeedViewModal = ({
                                 onChange={(e) => setComment(e.target.value)}
                                 disabled={isCommentLoading}
                                 loading={isCommentLoading}
+                                onFocus={() => setIsCommentFocused(true)}
+                                onBlur={() => setIsCommentFocused(false)}
                                 inputClassName=""
                             />
                         </div>

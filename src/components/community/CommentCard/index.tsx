@@ -71,16 +71,19 @@ const CommentCard: React.FC<CommentCardProps> = ({ reply, comment, onReply }) =>
                                 {comment.author.name}
                             </p>
                             <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
-                            <TagComponent
-                                text={comment.created_by}
-                                className="w-fit text-[12px] capitalize !m-0"
-                            />
-                            <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
-                            <p className="font-semibold text-black text-sm">
-                                {timesAgo(comment.created_at)}
-                            </p>
+                            <div className="flex items-center gap-2">
+                                <TagComponent
+                                    text={comment.created_by}
+                                    className="w-fit text-[12px] capitalize !m-0"
+                                    tagClassName={`!border-none ${comment?.created_by === "volunteer" ? "!bg-[#FFE9D4]" : "!bg-[#DFF5FF]"}`}
+                                />
+                                <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
+                                <p className="font-semibold text-black text-sm">
+                                    {timesAgo(comment.created_at)}
+                                </p>
+                            </div>
                         </div>
-                        <p className="text-[12px] font-normal">{comment.comment_text}</p>
+                        <p className="text-[12px] font-normal break-word">{comment.comment_text}</p>
                     </div>
                 </div>
                 <div className="flex flex-col items-center">

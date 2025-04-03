@@ -15,6 +15,7 @@ export const endpoints: EndpointProps = {
     },
     user: {
         signIn: "auth/signup",
+        login: "auth/login",
     },
     learner: {
         update: (id: string) => `learner/${id}`,

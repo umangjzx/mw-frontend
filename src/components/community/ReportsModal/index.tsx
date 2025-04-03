@@ -96,8 +96,7 @@ const CommunityReportModal = ({ postId, isOpen, onClose }: CommunityReportModalP
             primaryActionProps={buttonProps.primary}
         >
             <p className="text-base mb-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
-                incididunt ut labore et dolore magna aliqua.
+                Help us maintain a safe and respectful community. Please select a reason for reporting this resource.
             </p>
             <div>
                 <Radio.Group

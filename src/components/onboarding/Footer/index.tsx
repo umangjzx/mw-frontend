@@ -23,13 +23,14 @@ type SocialLink = {
 const policyLinks: PolicyLink[] = [
     { href: "/privacy-policy", target: "_blank", label: "Privacy Policy" },
     { href: "/terms-and-conditions", target: "_blank", label: "Terms & Conditions" },
+    { href: "mailto:support@melodywings.org", target: "_blank", label: "Contact Us" }
 ];
 
 const socialLinks: SocialLink[] = [
     { href: "https://linkedin.com", icon: FaLinkedin, label: "LinkedIn" },
     { href: "https://x.com", icon: FaSquareXTwitter, label: "X" },
     { href: "https://instagram.com", icon: FaInstagram, label: "Instagram" },
-    { href: "https://whatsapp.com", icon: FaWhatsapp, label: "WhatsApp" },
+    // { href: "https://whatsapp.com", icon: FaWhatsapp, label: "WhatsApp" },
 ];
 
 const Footer = (props: Props) => {
@@ -54,13 +55,13 @@ const Footer = (props: Props) => {
             <div className="max-w-[1400px] w-full mx-auto py-6">
                 <div className="flex w-full flex-col lg:flex-row justify-between items-center lg:items-start gap-4 py-8 lg:py-0">
                     {/* Left side - Policy and Terms links */}
-                    <div className="flex flex-col lg:flex-row items-center mb-5 lg:mb-0 gap-6">
+                    <div className="flex flex-col max-lg:items-center mb-5 lg:mb-0 gap-6">
                         {policyLinks.map((link) => (
                             <Link
-                                key={link.href}
-                                href={link.href}
-                                target={link.target}
-                                className="text-gray-600 underline hover:text-gray-900 transition-colors"
+                                key={link?.href}
+                                href={link?.href}
+                                target={link?.target}
+                                className="text-sm text-gray-600 underline hover:text-gray-900 transition-colors"
                             >
                                 {link.label}
                             </Link>
@@ -68,7 +69,7 @@ const Footer = (props: Props) => {
                     </div>
 
                     <div className="flex-center flex-col gap-6">
-                        <Logo isFooterIcon={true} className="flex !flex-col" />
+                        <Logo className="flex !flex-col" />
                         <div className="lg:hidden">{renderSocialLinks()}</div>
                         {/* Center - Terms of Use and Privacy Policy text */}
                         <p className="text-gray-500 text-center text-sm">
