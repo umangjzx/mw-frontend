@@ -28,7 +28,7 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
         ? endpoints.volunteer.getIndividualVolunteer(userId)
         : endpoints.learner.getIndividualLearner(userId);
 
-    const { data: userData } = useQuery({
+    const { data: userData, isFetching: isUserLoading } = useQuery({
         queryKey: [role],
         queryFn: async () => {
             const res = await GET_API(endpoint);
@@ -61,6 +61,8 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
 
     return (
         <div>
+            {isUserLoading && <ModalLoader isLoading={isUserLoading} title="Fetching user details..." />}
+            {isRedirecting && <ModalLoader isLoading={isRedirecting} title="Loading..." />}
             <FormTabs 
                 setValue={setValue}
                 setError={setError}
@@ -74,7 +76,6 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
                 onSubmit={onSubmit}
                 isLoading={isLoading}
             />
-            {isRedirecting && <ModalLoader isLoading={isRedirecting} title="Loading..." />}
         </div>
     );
 };
