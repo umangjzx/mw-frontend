@@ -574,6 +574,7 @@ const ExpectationsGoalsFields: FormField[] = [
     {
         id: "skill_level",
         label: "Skill Level",
+        sublabel: " ",
         inputType: "radio",
         options: [
             { label: "Beginner", value: "beginner" },
