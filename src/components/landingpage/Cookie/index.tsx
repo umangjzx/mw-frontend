@@ -9,10 +9,10 @@ import { Modal } from "antd";
 export default function CookieConsent() {
   const [showBanner, setShowBanner] = useState(true);
 
-  // useEffect(() => {
-  //   const cookies = parseCookies();
-  //   setShowBanner(!cookies.cookieConsent);
-  // }, []);
+  useEffect(() => {
+    const cookies = parseCookies();
+    setShowBanner(!cookies.cookieConsent);
+  }, []);
 
   const handleConsent = (accepted: boolean) => {
     setCookie(null, "cookieConsent", accepted ? "accepted" : "declined", {
