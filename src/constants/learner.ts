@@ -1,6 +1,5 @@
 import nationalities from "@/data/nationalities.json"
 import timezones from "@/data/timezones.json"
-import skills_and_expertise from "@/data/skills_expertise.json"
 
 export const LearnerOnboardingConstants = {
     title: "Enroll a learner",
@@ -550,12 +549,15 @@ const ExpectationsGoalsFields: FormField[] = [
         required: true,
     },
     {
-        id: "skills_and_expertise",
+        id: "skills_to_learn",
         label: "Skills and Expertise to learn from Volunteers",
         sublabel: "(areas focus for tutoring or support)",
-        inputType: "select-creatable",
         variant: "multi",
-        options: skills_and_expertise,
+        inputType: "async-select",
+        creatable: true,
+        endpoint: "skills",
+        responseAsLabel: "skill_name",
+        responseAsValue: ["skill_id", "skill_name"],
         placeholder: "Search, select or add skills",
         gridCols: 1,
         required: true,

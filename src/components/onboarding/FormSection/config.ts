@@ -520,9 +520,15 @@ export const learnerFormSchema = z.object({
     // Learner goals - Required
     learner_goals: z.object({
         expected_goals: z.array(z.string(), { required_error: "Expected Goals are required" }).nonempty("Expected Goals are required"),
-        skills_and_expertise: z.array(z.string(), {
-            required_error: "Subjects to Focus On are required",
-        }).nonempty("Subjects to Focus On are required"),
+        skills_to_learn: z
+            .array(
+                z.object({
+                    skill_name: z.string({ required_error: "Skill name is required" }),
+                    skill_id: z.string({ required_error: "Skill ID is required" }),
+                }),
+                { required_error: "Please add at least one skill" }
+            )
+            .nonempty("Please add at least one skill"),
         preferred_volunteer_qualities: z.string({ required_error: "Preferred Volunteer Qualities are required" })
             .min(1, { message: "Preferred Volunteer Qualities are required" }),
         skill_level: z.string({ required_error: "Skill Level is required" }),
@@ -674,7 +680,7 @@ export const defaultLearnerData: Learner = {
 
     learner_goals: {
         expected_goals: ["Encourage Independence"],
-        skills_and_expertise: ["science"],
+        skills_to_learn: [{ skill_name: "science", skill_id: "science" }],
         preferred_volunteer_qualities: "patience",
         skill_level: "beginner",
     },
