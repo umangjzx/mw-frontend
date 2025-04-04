@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { convertToOptions, customStyles } from "./helper";
 import { GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
@@ -8,6 +8,7 @@ import { BiCaretDown } from "react-icons/bi";
 import TagComponent from "../../Tag";
 import { cn } from "@/utils/merge-class";
 import { StylesConfig } from "react-select";
+import { usePathname } from "next/navigation";
 
 const AsyncSelect = ({
     variant,
@@ -18,12 +19,10 @@ const AsyncSelect = ({
     onError,
     ...props
 }: AsyncSelectProps) => {
+    const pathname = usePathname();
     const [data, setData] = useState<any[]>([]);
-    const {
-        data: selectData,
-        isLoading,
-        error,
-    } = useQuery({
+
+    const { isLoading, refetch } = useQuery({
         queryKey: ["async-select", props.name, endpoint],
         queryFn: async () => {
             try {
@@ -36,8 +35,12 @@ const AsyncSelect = ({
             }
         },
         enabled: !!endpoint && !!responseAsLabel && !!responseAsValue,
-        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+        staleTime: 5 * 60 * 1000,
     });
+
+    useEffect(() => {
+        refetch();
+    }, [pathname]);
 
     const handleChange = (value: any) => {
         if (!data) return;
