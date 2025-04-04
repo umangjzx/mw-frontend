@@ -88,6 +88,11 @@ html {
     display: none;
 }
 
+.dangerous-html a{
+    color: blue !important;
+    text-decoration: underline !important;
+}
+
 /* Custom Tailwind CSS */
 .flex-center {
     display: flex;

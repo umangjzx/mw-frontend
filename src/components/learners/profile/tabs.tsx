@@ -101,12 +101,13 @@ export const ParentGuardianInformation = ({ data }: { data: Parentinfo }) => {
 
 
 export const LearnerInformation = ({ data }: { data: Learner }) => {
+    const skills_to_learn = data?.learner_goals?.skills_to_learn?.map(skill => skill?.skill_name);
     const sections = [
         { title: "Disability-Specific Information", sectionData: data.learner_special_needs },
         { title: "Education and Background", sectionData: data.education },
         { title: "Behavior and Social Skills", sectionData: data.social_skills },
         { title: "Current Interests and Hobbies", sectionData: data.current_interests },
-        { title: "Expectations and Goals", sectionData: data.learner_goals },
+        { title: "Expectations and Goals", sectionData: { ...data?.learner_goals, skills_to_learn } },
     ].filter(section => section.sectionData && Object.keys(section.sectionData).length);
 
     const renderValue = (value: string | string[] | { value: string }) => {
