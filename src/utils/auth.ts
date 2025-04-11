@@ -52,15 +52,8 @@ export const removeCookie = (key: string) => {
 }
 
 export const clearCookies = () => {
-    const cookieSetting = { path: "/" };
-
-    Cookies.remove("token", cookieSetting);
-    Cookies.remove("role", cookieSetting);
-    Cookies.remove("onboarded_status", cookieSetting);
-    Cookies.remove("learner_id", cookieSetting);
-    Cookies.remove("volunteer_id", cookieSetting);
-    Cookies.remove("cookieConsent", cookieSetting);
-    Cookies.remove("lastActivity", cookieSetting);
+    const cookies = ["token", "role", "onboarded_status", "learner_id", "volunteer_id", "cookieConsent", "lastActivity"];
+    cookies.map(cookie => removeCookie(cookie));
 
     if (typeof window !== "undefined") {
         localStorage.clear();
