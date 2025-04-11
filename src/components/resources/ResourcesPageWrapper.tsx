@@ -187,7 +187,7 @@ export default function ResourcesPageWrapper({ variant }: ResourcesPageWrapperPr
             )}
 
             {/* Topics Section */}
-            {isMobile && activeTab === "topics" && (ResourceCategories?.length === 0 && !isFetchingCategories) ? (
+            {isMobile && activeTab === "topics" && (category !== "my-resources") && (ResourceCategories?.length === 0 && !isFetchingCategories) ? (
                 <div className="h-full w-full flex-center min-h-[60vh]">No Topics Found</div>
             ) : (isMobile && activeTab === "topics" && isFetchingCategories && !category) ? (
                 <div className="h-full w-full flex-center">

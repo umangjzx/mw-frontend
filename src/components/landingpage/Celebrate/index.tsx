@@ -5,15 +5,15 @@ import ContainerWrapper from "../components/ContainerWrapper";
 
 // Import all frames at once using an object
 const frames = {
-    FrameOne: require("@/assets/images/gridlayoutimages/Frame1.png"),
-    FrameTwo: require("@/assets/images/gridlayoutimages/Frame2.png"),
-    FrameThree: require("@/assets/images/gridlayoutimages/Frame3.png"),
-    FrameFour: require("@/assets/images/gridlayoutimages/Frame4.png"),
-    FrameFive: require("@/assets/images/gridlayoutimages/Frame5.png"),
-    FrameSix: require("@/assets/images/gridlayoutimages/Frame6.png"),
-    FrameSeven: require("@/assets/images/gridlayoutimages/Frame7.png"),
-    FrameEight: require("@/assets/images/gridlayoutimages/Frame8.png"),
-    FrameNine: require("@/assets/images/gridlayoutimages/Frame9.png"),
+    FrameOne: require("@/assets/images/landingpage/moments/frame1.png"),
+    FrameTwo: require("@/assets/images/landingpage/moments/frame2.png"),
+    FrameThree: require("@/assets/images/landingpage/moments/frame3.png"),
+    FrameFour: require("@/assets/images/landingpage/moments/frame4.png"),
+    FrameFive: require("@/assets/images/landingpage/moments/frame5.png"),
+    FrameSix: require("@/assets/images/landingpage/moments/frame6.png"),
+    FrameSeven: require("@/assets/images/landingpage/moments/frame7.png"),
+    FrameEight: require("@/assets/images/landingpage/moments/frame8.png"),
+    FrameNine: require("@/assets/images/landingpage/moments/frame9.png"),
 };
 
 // Grid layout configurations
@@ -23,7 +23,7 @@ const gridLayouts = [
         images: ["FrameOne", "FrameTwo", "FrameThree"],
     },
     {
-        className: "grid-cols-[1fr,4fr,1fr] h-[110px] md:h-[360px]",
+        className: "grid-cols-[2fr,5fr,1.5fr] h-[110px] md:h-[360px]",
         images: ["FrameFour", "FrameFive", "FrameSix"],
     },
     {
