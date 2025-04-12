@@ -20,7 +20,7 @@ import ChitraGanesan from "@/assets/images/our-team/ChitraGanesan.jpg"
 import NithilaShanmugam from "@/assets/images/our-team/NithilaShanmugam.jpg"
 
 import { TestimonialData } from "@/components/landingpage/testimonials";
-import TestimonialDummyImg from "@/assets/images/TestimonialDummyImg.png";
+import TestimonialDummyImg from "@/assets/images/dummy-profile.webp";
 import { MeetOurTeamProps } from "@/components/landingpage/AboutUs/MeetOurTeam/TeamCard";
 
 const handleInnerWidth = () => {
@@ -257,35 +257,19 @@ export const donateCardData = [
 export const testimonialsLearners: TestimonialData[] = [
     {
         category: "Learners",
-        quote: "Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it. Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it.",
-        author: "John Doe",
-        role: "Volunteer Teacher",
+        quote: "My daughter usually finds change hard, so yoga felt like a big step. But the online setup gave her the comfort of home and clear, gentle guidance. The breathing exercises are now part of our evenings, and I’ve seen real progress in how she self-regulates. It’s been a wonderful shift for us.",
+        author: "",
+        role: "Parent of a 10-year-old autistic learner",
         image: TestimonialDummyImg,
-    },
-    {
-        category: "Learners",
-        quote: "Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it. Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it.",
-
-        author: "Jane Smith",
-        role: "Math Teacher",
-        image: TestimonialDummyImg,
-    },
-    // Add more testimonials as needed
+    }
 ];
 
 export const testimonialsVolunteers: TestimonialData[] = [
     {
         category: "Volunteers",
-        quote: "Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it. Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it.",
-        author: "John Doe",
-        role: "Volunteer Teacher",
-        image: TestimonialDummyImg,
-    },
-    {
-        category: "Volunteers",
-        quote: "Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it. Teaching here has been life-changing. Seeing my learner’s progress and confidence grow makes every moment worth it.",
-        author: "John Doe",
-        role: "Volunteer Teacher",
+        quote: "Sharing songs and playful moments with the kids has been such a joy. Watching their faces light up, even the shy ones joining in, is heartwarming. Music really helps their personalities shine, and those small milestones-a new word, a giggle, a high five-mean everything.",
+        author: "Aanya K",
+        role: "Volunteer",
         image: TestimonialDummyImg,
     },
 ];
