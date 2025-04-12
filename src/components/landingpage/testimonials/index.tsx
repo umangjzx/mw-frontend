@@ -3,6 +3,7 @@ import ContainerWrapper from "../components/ContainerWrapper";
 import ContainerHeader from "../components/ContainerHeader";
 import Testimonial from "../components/Testimonial";
 import { testimonialsLearners, testimonialsVolunteers } from "@/constants/landingPage";
+import TestimonialCard from "../components/Testimonial/Card";
 
 export interface TestimonialData {
     category: string;
@@ -22,10 +23,20 @@ const Testimonials = () => {
             />
             <div className="lg:bg-[#f4f7fb] lg:shadow-inner rounded-3xl md:p-6 md:py-20 grid lg:grid-cols-2 grid-cols-1 gap-4 place-items-center w-full mt-10 lg:mt-0">
                 <div className="w-[90%] md:w-[80%]">
-                    <Testimonial testimonials={testimonialsLearners} />
+                    {
+                        testimonialsLearners.length > 1 ?
+                            <Testimonial testimonials={testimonialsLearners} />
+                            :
+                            <TestimonialCard testimonial={testimonialsLearners[0]} />
+                    }
                 </div>
                 <div className="w-[90%] md:w-[80%]">
-                    <Testimonial testimonials={testimonialsVolunteers} />
+                    {
+                        testimonialsVolunteers.length > 1 ?
+                            <Testimonial testimonials={testimonialsVolunteers} />
+                            :
+                            <TestimonialCard testimonial={testimonialsVolunteers[0]} />
+                    }
                 </div>
             </div>
         </ContainerWrapper>
