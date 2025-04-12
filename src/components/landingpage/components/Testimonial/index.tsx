@@ -2,9 +2,8 @@ import React from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import Image from "next/image";
 import { TestimonialData } from "@/components/landingpage/testimonials";
-import TagComponent from "@/components/common/Tag";
+import TestimonialCard from "./Card";
 
 interface TestimonialProps {
     testimonials: TestimonialData[];
@@ -25,42 +24,8 @@ export default function Testimonial({ testimonials }: TestimonialProps) {
         <div className="w-full max-w-6xl mx-auto ">
             <Slider {...settings} className="testimonial-slider">
                 {testimonials.map((testimonial, index) => (
-                    <div key={index} className="">
-                        <div className="bg-white rounded-3xl p-6 pb-14">
-                            <div className="flex flex-col md:gap-8 gap-6">
-                                <div className="flex justify-center">
-                                    <TagComponent
-                                        className={`${
-                                            testimonial.category === "Learners"
-                                                ? "!bg-[#F0FAFF] !text-[#009BCC]"
-                                                : "!text-[#FF9053] !bg-[#FFF5ED]"
-                                        } py-1 !text-sm px-4 border-none`}
-                                        text={testimonial.category}
-                                    />
-                                </div>
-                                <p className="xl:text-xl text-lg font-normal">
-                                    {testimonial.quote}
-                                </p>
-                                <div className="flex items-center gap-4">
-                                    <div className="w-16 h-16 relative rounded-full overflow-hidden flex-shrink-0">
-                                        <Image
-                                            src={testimonial.image.src}
-                                            alt={testimonial.author}
-                                            fill
-                                            className="object-cover"
-                                        />
-                                    </div>
-                                    <div>
-                                        <p className="font-medium xl:text-xl text-lg mb-1">
-                                            {testimonial.author}
-                                        </p>
-                                        <p className="font-medium xl:text-xl text-lg">
-                                            {testimonial.role}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div key={index}>
+                        <TestimonialCard testimonial={testimonial}/>
                     </div>
                 ))}
             </Slider>
