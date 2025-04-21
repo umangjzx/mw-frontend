@@ -98,7 +98,7 @@ const LoginPage = () => {
 
     return (
         <div className="flex flex-col items-center justify-center h-screen gap-4">
-            <h1 className="text-2xl font-bold">Login Page</h1>
+            <h3 className="text-2xl font-bold">Login Page</h3>
 
             <div className="flex items-center gap-4 bg-gray-100 p-2 rounded-lg">
                 <button

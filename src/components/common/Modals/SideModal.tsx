@@ -31,7 +31,7 @@ const SideModal: React.FC<SideModalProps> = ({
             >
                 <div className="flex flex-col h-full">
                     <div className="flex items-center justify-between gap-4 mb-3 px-5">
-                        <h1 className="text-xl font-medium">{title}</h1>
+                        <h3 className="text-xl font-medium">{title}</h3>
                         <span onClick={onClose} className="cursor-pointer">
                             <ModalCloseIcon />
                         </span>
