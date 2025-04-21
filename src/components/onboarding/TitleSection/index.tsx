@@ -10,9 +10,9 @@ const TitleSection = ({ title, description, rootClassName, titleStyle, descripti
     return (
         <section className={`w-full flex flex-col items-center justify-center pt-16 md:pt-16 ${rootClassName}`}>
             <div className='max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 text-center'>
-                <h1 className={`text-2xl lg:text-5xl font-medium lg:font-semibold tracking-tight text-gray-900 mb-6 ${titleStyle}`}>
+                <h2 className={`text-2xl lg:text-5xl font-medium lg:font-semibold tracking-tight text-gray-900 mb-6 ${titleStyle}`}>
                     {title}
-                </h1>
+                </h2>
                 <p className={`text-sm lg:text-xl text-black lg:text-gray-600 italic ${descriptionStyle}`}>{description}</p>
             </div>
         </section>

@@ -78,7 +78,7 @@ const FormTabsSection = ({ formData, control, errors, trigger, setError, setValu
         return true;
     };
 
-    const learnerParentValidateKeys = ["parent_info.parent_first_name", "parent_info.parent_last_name", "parent_info.parent_email", "parent_info.parent_contact_number", "parent_info.parent_address", "parent_info.relationship_to_learner"];
+    const learnerParentValidateKeys = ["parent_info.parent_first_name", "parent_info.parent_last_name", "parent_info.parent_email", "parent_info.parent_contact_number", "parent_info.relationship_to_learner"];
 
     const handleNavigation = async (index: number) => {
         if (role === "learner") learnerParentValidateKeys.forEach((key) => clearErrors(key));

@@ -56,14 +56,14 @@ const ParentGuardianFields: FormField[] = [
         gridCols: 1,
         disabled: false,
     },
-    {
-        id: "parent_address",
-        label: "Address",
-        inputType: "textarea",
-        placeholder: "Type address here",
-        gridCols: 2,
-        inputClassName: "w-[49%]",
-    }
+    // {
+    //     id: "parent_address",
+    //     label: "Address",
+    //     inputType: "textarea",
+    //     placeholder: "Type address here",
+    //     gridCols: 2,
+    //     inputClassName: "w-[49%]",
+    // }
 ];
 
 // Learner's Personal Information Fields
