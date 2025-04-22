@@ -1,9 +1,12 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Poppins } from "next/font/google";
-import RootLayoutClient from "./RootLayoutClient";
-import DesktopVersionWrapper from "@/components/layouts/DesktopVersionWrapper";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+
+import RootLayoutClient from "./RootLayoutClient";
+import PostHogProvider from "@/providers/PostHog";
+import { GOOGLE_ANALYTICS_ID, GOOGLE_WEB_CLIENT_ID } from "@/definitions";
 
 const poppins = Poppins({
     weight: ["300", "400", "500", "600", "700"],
@@ -21,16 +24,31 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
-
     return (
         <html lang="en">
+            <head>
+                <Script
+                    src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ANALYTICS_ID}`}
+                    strategy="afterInteractive"
+                />
+                <Script
+                    id="gtag-init"
+                    strategy="afterInteractive"
+                    dangerouslySetInnerHTML={{
+                        __html: `
+                            window.dataLayer = window.dataLayer || [];
+                            function gtag(){dataLayer.push(arguments);}
+                            gtag('js', new Date());
+                            gtag('config', '${GOOGLE_ANALYTICS_ID}');
+                        `,
+                    }}
+                />
+            </head>
             <body className={poppins.className}>
-                <GoogleOAuthProvider clientId={clientId}>
-                    <RootLayoutClient>
-                        {children}
-                        {/* <DesktopVersionWrapper>{children}</DesktopVersionWrapper> */}
-                    </RootLayoutClient>
+                <GoogleOAuthProvider clientId={GOOGLE_WEB_CLIENT_ID || ""}>
+                    <PostHogProvider>
+                        <RootLayoutClient>{children}</RootLayoutClient>
+                    </PostHogProvider>
                 </GoogleOAuthProvider>
             </body>
         </html>
