@@ -2,8 +2,10 @@ import "./globals.css";
 import type { Metadata } from "next";
 import Script from "next/script";
 import { Poppins } from "next/font/google";
-import RootLayoutClient from "./RootLayoutClient";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+
+import RootLayoutClient from "./RootLayoutClient";
+import PostHogProvider from "@/providers/PostHog";
 import { GOOGLE_ANALYTICS_ID, GOOGLE_WEB_CLIENT_ID } from "@/definitions";
 
 const poppins = Poppins({
@@ -44,7 +46,9 @@ export default function RootLayout({
             </head>
             <body className={poppins.className}>
                 <GoogleOAuthProvider clientId={GOOGLE_WEB_CLIENT_ID || ""}>
-                    <RootLayoutClient>{children}</RootLayoutClient>
+                    <PostHogProvider>
+                        <RootLayoutClient>{children}</RootLayoutClient>
+                    </PostHogProvider>
                 </GoogleOAuthProvider>
             </body>
         </html>
