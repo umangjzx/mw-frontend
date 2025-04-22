@@ -72,7 +72,7 @@ const CommonHeader: React.FC = () => {
                                 onClick={titleIconClick}
                             />
                         }
-                        <h1 className="text-lg font-medium">{formatString(title ?? "")}</h1>
+                        <h3 className="text-lg font-medium">{formatString(title ?? "")}</h3>
                     </div>
                     {!isMobileOrTabScreen && leftButton?.showButton && (
                         <Button

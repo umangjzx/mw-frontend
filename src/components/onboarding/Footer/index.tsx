@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { FaLinkedin, FaInstagram, FaWhatsapp } from "react-icons/fa";
+import { FaLinkedin, FaInstagram, FaWhatsapp, FaFacebook } from "react-icons/fa";
 import { IconType } from "react-icons";
 import Logo from "@/components/common/Logo";
-import { FaSquareXTwitter } from "react-icons/fa6";
+// import { FaSquareXTwitter } from "react-icons/fa6";
 
 type Props = {};
 
@@ -27,10 +27,11 @@ const policyLinks: PolicyLink[] = [
 ];
 
 const socialLinks: SocialLink[] = [
-    { href: "https://linkedin.com", icon: FaLinkedin, label: "LinkedIn" },
-    { href: "https://x.com", icon: FaSquareXTwitter, label: "X" },
-    { href: "https://instagram.com", icon: FaInstagram, label: "Instagram" },
-    // { href: "https://whatsapp.com", icon: FaWhatsapp, label: "WhatsApp" },
+    { label: "LinkedIn", icon: FaLinkedin, href: "https://www.linkedin.com/company/melodywings" },
+    { label: "Instagram", icon: FaInstagram, href: "https://www.instagram.com/melodywings_" },
+    { label: "Facebook", icon: FaFacebook, href: "https://www.facebook.com/profile.php?id=61575239913366" },
+    // { label: "X", icon: FaSquareXTwitter, href: "https://x.com" },
+    // { label: "WhatsApp", icon: FaWhatsapp, href: "https://wa.me/1234567890" },
 ];
 
 const Footer = (props: Props) => {
@@ -40,6 +41,7 @@ const Footer = (props: Props) => {
                 <Link
                     key={link.href}
                     href={link.href}
+                    title={link.label}
                     target="_blank"
                     className="hover:text-gray-600 transition-all duration-300"
                     aria-label={link.label}
@@ -60,6 +62,7 @@ const Footer = (props: Props) => {
                             <Link
                                 key={link?.href}
                                 href={link?.href}
+                                rel="noopener noreferrer"
                                 target={link?.target}
                                 className="text-sm text-gray-600 underline hover:text-gray-900 transition-colors"
                             >
