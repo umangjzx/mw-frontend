@@ -7,4 +7,5 @@ interface MessageCardProps {
     time: string;
     date: string;
     image: string;
+    learnerId: string;
 }

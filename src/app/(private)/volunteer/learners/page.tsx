@@ -19,6 +19,7 @@ import Button from "@/components/common/Button";
 import MobileMessageModal from "@/components/learners/Modals/MobileMessageModal";
 import LottieLoader from "@/components/common/Loader/Lottie";
 import { useDebounce } from "use-debounce";
+import { useRouter } from "next/navigation";
 
 interface PaginationParams {
     page: number;
@@ -32,8 +33,9 @@ interface TableLearner {
     subject: string;
 }
 
-const LearnerCard = ({ learner, handleMessage }: { learner: any, handleMessage: () => void }) => {
+const LearnerCard = ({ learner, handleMessage }: { learner: any; handleMessage: () => void }) => {
     const { profile_picture = "", name = "", classesTaken = "", country = "" } = learner;
+
     return (
         <div className="bg-white rounded-xl w-full p-4 space-y-4">
             <div className="flex items-center gap-2">
@@ -71,12 +73,13 @@ const LearnerCard = ({ learner, handleMessage }: { learner: any, handleMessage: 
             </div>
         </div>
     );
-}
+};
 
 export default function LearnersPage() {
     const { setHeaderOptions } = useComponentStore();
     const pathname = usePathname();
     const isMobileScreen = InnerWidth() < 768;
+    const router = useRouter();
 
     const [learnerData, setLearnerData] = useState<TableLearner[]>([]);
     const [pagination, setPagination] = useState<PaginationParams>({
@@ -132,9 +135,12 @@ export default function LearnersPage() {
     });
 
     const handleMessageLearner = (learnerId: string) => {
-        console.log("Message learner:", learnerId);
-        setLearnerId(learnerId);
-        setMode("message");
+        GET_API(endpoints.chat.createChatForLearner(learnerId)).then((res: any) => {
+            console.log(res, "chat response");
+            alert("Chat created successfully");
+            router.push(`/volunteer/messages?chatId=${res.data.chat_id}&learnerId=${learnerId}`);
+        });
+        // setMode("message");
     };
 
     const handleUploadTestimonial = (learnerId: string) => {
@@ -159,44 +165,50 @@ export default function LearnersPage() {
 
     return (
         <div className="w-full h-full py-6 px-4 md:p-6 animate-fadeIn">
-            <LearnerMessageModal key={learnerId} receiverId={learnerId} isOpen={mode === "message"} onClose={handleClose} />
+            <LearnerMessageModal
+                key={learnerId}
+                receiverId={learnerId}
+                isOpen={mode === "message"}
+                onClose={handleClose}
+            />
             <TestmonialModal
                 isOpen={mode === "testimonial"}
                 mode={"create"}
                 onClose={handleClose}
             />
-            {
-                isMobileScreen ?
-                    isLoading ? (
-                        <LottieLoader isLoading={true} />
-                    ) :
-                        <div className="grid grid-cols-1">
-                            {
-                                learnerData.map((learner, index) => (
-                                    <LearnerCard
-                                        key={index}
-                                        learner={learner}
-                                        handleMessage={() => handleMessageLearner(learner?.id)}
-                                    />
-                                ))
-                            }
-                        </div> :
-                    <LearnersTable
-                        data={learnerData}
-                        handleMessageLearner={handleMessageLearner}
-                        handleUploadTestimonial={handleUploadTestimonial}
-                        loading={isLoading}
-                        pagination={{
-                            current: pagination.page,
-                            pageSize: pagination.size,
-                            total: total,
-                            showSizeChanger: true,
-                            showQuickJumper: true,
-                        }}
-                        onChange={handleTableChange}
-                    />
-            }
-            {isMobileScreen &&learnerData?.length === 0 && <div className="flex-center h-full">No Learner Found</div>}
+            {isMobileScreen ? (
+                isLoading ? (
+                    <LottieLoader isLoading={true} />
+                ) : (
+                    <div className="grid grid-cols-1">
+                        {learnerData.map((learner, index) => (
+                            <LearnerCard
+                                key={index}
+                                learner={learner}
+                                handleMessage={() => handleMessageLearner(learner?.id)}
+                            />
+                        ))}
+                    </div>
+                )
+            ) : (
+                <LearnersTable
+                    data={learnerData}
+                    handleMessageLearner={handleMessageLearner}
+                    handleUploadTestimonial={handleUploadTestimonial}
+                    loading={isLoading}
+                    pagination={{
+                        current: pagination.page,
+                        pageSize: pagination.size,
+                        total: total,
+                        showSizeChanger: true,
+                        showQuickJumper: true,
+                    }}
+                    onChange={handleTableChange}
+                />
+            )}
+            {isMobileScreen && learnerData?.length === 0 && (
+                <div className="flex-center h-full">No Learner Found</div>
+            )}
         </div>
     );
 }

@@ -2,6 +2,25 @@
 import Image from "next/image";
 import React from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import Cookies from "js-cookie";
+
+const formatDateTime = (dateTimeString: string) => {
+    const date = new Date(dateTimeString);
+
+    // Format date as DD/MM/YY
+    const formattedDate = `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}/${date.getFullYear().toString().slice(-2)}`;
+
+    // Format time as HH:MM AM/PM
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "pm" : "am";
+    const formattedHours = hours % 12 || 12;
+    const formattedTime = `${formattedHours}.${minutes.toString().padStart(2, "0")}${ampm}`;
+
+    return { formattedDate, formattedTime };
+};
 
 const MessageCard = ({
     name,
@@ -12,18 +31,24 @@ const MessageCard = ({
     unreadMessages,
     chat_id,
     volunteerId,
+    learnerId,
 }: MessageCardProps) => {
     const router = useRouter();
     const params = useSearchParams();
     const chatId = params.get("chatId");
+    const role = Cookies.get("role");
 
     const handleClick = () => {
-        router.push(`/learner/messages?chatId=${chat_id}&volunteerId=${volunteerId}`);
+        if (role === "learner") {
+            router.push(`/learner/messages?chatId=${chat_id}&volunteerId=${volunteerId}`);
+        } else {
+            router.push(`/volunteer/messages?chatId=${chat_id}&learnerId=${learnerId}`);
+        }
     };
     return (
         <div
             onClick={handleClick}
-            className={`flex items-center gap-4 border-b border-gray-200 p-4 hover:bg-[#f4f7fb] cursor-pointer transition-all duration-300 ${
+            className={`flex w-[407px] items-center gap-4 border-b border-gray-200 p-4 hover:bg-[#f4f7fb] cursor-pointer transition-all duration-300 ${
                 chat_id === chatId ? "bg-[#f4f7fb]" : ""
             }`}
         >
@@ -35,16 +60,19 @@ const MessageCard = ({
                     <p className="text-base font-medium">{name}</p>
                     <div>
                         {unreadMessages > 0 ? (
-                            <p className="text-xs font-normal text-[#22c55e]">7.00 pm</p>
+                            <p className="text-xs font-normal text-[#22c55e]">
+                                {time ? formatDateTime(time).formattedTime : ""}
+                            </p>
                         ) : (
-                            <p className="text-xs text-[#4F4F4F]">16/05/2025</p>
+                            <p className="text-xs text-[#4F4F4F]">
+                                {date ? formatDateTime(date).formattedDate : ""}
+                            </p>
                         )}
                     </div>
                 </div>
                 <div className="flex items-center gap-4">
                     <p className="text-sm font-normal text-gray-500 truncate w-full overflow-hidden whitespace-nowrap block">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
+                        {message ? message : "No message yet"}
                     </p>
                     {unreadMessages > 0 && (
                         <span className="text-[10px] w-4 h-4 rounded-full bg-[#22c55e] text-white flex items-center justify-center">

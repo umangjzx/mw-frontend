@@ -35,65 +35,6 @@ interface ChatMessage {
     };
 }
 
-const messages = [
-    {
-        name: "John Doe",
-        message: "Hey, how are you doing?",
-        time: "7:00 PM",
-        date: "16/05/2024",
-        image: "http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg",
-        unreadMessages: 2,
-    },
-    {
-        name: "Jane Smith",
-        message: "Can we schedule a meeting tomorrow?",
-        time: "6:30 PM",
-        date: "16/05/2024",
-        image: "http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg",
-        unreadMessages: 0,
-    },
-    {
-        name: "Mike Johnson",
-        message: "Thanks for your help with the project!",
-        time: "5:45 PM",
-        date: "16/05/2024",
-        image: "http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg",
-        unreadMessages: 1,
-    },
-    {
-        name: "Sarah Wilson",
-        message: "The event was a great success!",
-        time: "4:20 PM",
-        date: "16/05/2024",
-        image: "http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg",
-        unreadMessages: 0,
-    },
-    {
-        name: "David Brown",
-        message: "Let's discuss the upcoming workshop",
-        time: "3:15 PM",
-        date: "16/05/2024",
-        image: "http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg",
-        unreadMessages: 3,
-    },
-    {
-        name: "Emily Davis",
-        message: "I've sent you the updated documents",
-        time: "2:00 PM",
-        date: "16/05/2024",
-        image: "http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg",
-        unreadMessages: 0,
-    },
-    {
-        name: "Robert Taylor",
-        message: "Looking forward to our collaboration",
-        time: "1:30 PM",
-        date: "16/05/2024",
-        image: "http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg",
-        unreadMessages: 0,
-    },
-];
-
 const Messages = () => {
     const { setHeaderOptions } = useComponentStore();
     const pathname = usePathname();
@@ -110,19 +51,21 @@ const Messages = () => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
-
-    useEffect(() => {
-        scrollToBottom();
-    }, [individualChat]);
-
     const getAllChatsForLearners = () => {
         setIsLoading(true);
         GET_API(endpoints.chat.getAllchatsOfLearner(learnerId as string))
             .then((res: any) => {
                 setChats(res.data);
+
+                // Find matching chat and update receiver details
+                if (chatId) {
+                    const matchingChat = res.data.find((chat: any) => chat.chat_id === chatId);
+                    if (matchingChat) {
+                        setRecieverName(matchingChat.volunteer_name);
+                        setRecieverImage(matchingChat.volunteer_profile_picture.image_url);
+                    }
+                }
+
                 if (!chatId && !volunteerId && res.data.length > 0) {
                     const firstChat = res.data[0];
                     router.push(
@@ -135,30 +78,36 @@ const Messages = () => {
             });
     };
 
+    const getIndividualChat = async () => {
+        const response = await GET_API(endpoints.chat.getIndividualChat(chatId as string));
+        console.log(response.data, "response.data getIndividualChat");
+        if (response.data[0].receiver_id === learnerId) {
+            setRecieverName(response.data[0].sender_name);
+            setRecieverImage(response.data[0].sender_profile_picture.image_url);
+        } else {
+            setRecieverName(response.data[0].receiver_name);
+            setRecieverImage(response.data[0].receiver_profile_picture.image_url);
+        }
+        setIndividualChat(response.data);
+        return response.data;
+    };
+
     const {
         data,
         isLoading: isLoadingChats,
         isError: isErrorChats,
     } = useQuery({
-        queryKey: ["chats"],
+        queryKey: ["chats", chatId],
         queryFn: () => getAllChatsForLearners(),
+        // refetchInterval: 1000,
     });
-
-    const getIndividualChat = async () => {
-        const response = await GET_API(endpoints.chat.getIndividualChat(chatId as string));
-        setRecieverName(response.data[0].receiver_name);
-        setRecieverImage(response.data[0].receiver_profile_picture.image_url);
-        setIndividualChat(response.data);
-        return response.data;
-    };
 
     const { data: individualChatData, refetch: refetchIndividualChat } = useQuery({
         queryKey: ["individualChat", chatId],
         queryFn: () => getIndividualChat(),
         enabled: !!chatId,
+        // refetchInterval: 1000,
     });
-
-    console.log(individualChatData, "individualChatData");
 
     const handleSearch = (value: string) => {
         setSearchQuery(value);
@@ -182,6 +131,14 @@ const Messages = () => {
         );
     };
 
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [individualChat]);
+
     useEffect(() => {
         setHeaderOptions({
             title: "Messages",
@@ -194,18 +151,9 @@ const Messages = () => {
         setIndividualChat([]);
     }, [chatId, volunteerId]);
 
-    if (isLoadingChats) {
-        return <LottieLoader isLoading={true} />;
-    }
-
     return (
-        <div className="w-full h-full bg-white flex border border-gray-200 rounded-tl-[3rem] animate-fadeIn">
-            <ChatList
-                messages={chats}
-                searchQuery={searchQuery}
-                onSearch={handleSearch}
-                isLoading={isLoading}
-            />
+        <div className="w-full h-full bg-white flex border border-gray-200 rounded-tl-[3rem] ">
+            <ChatList messages={chats} searchQuery={searchQuery} onSearch={handleSearch} />
             <div className="w-full h-full flex-1">
                 <ChatHeader name={recieverName} location="Orlando, Florida" image={recieverImage} />
                 <div className="flex flex-col gap-4 p-4 h-[calc(100vh-15.5em)] overflow-y-auto">

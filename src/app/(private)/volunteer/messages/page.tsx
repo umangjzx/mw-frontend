@@ -1,8 +1,8 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useComponentStore } from "@/store/useComponenetStore";
 import { getHeaderIcon } from "@/layouts/helper";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import ChatList from "@/components/messages/ChatList";
 import ChatHeader from "@/components/messages/ChatHeader";
@@ -10,72 +10,118 @@ import MessageBubble from "@/components/messages/MessageBubble";
 import { Input } from "@/components/common/Input";
 import Button from "@/components/common/Button";
 import { useQuery } from "@tanstack/react-query";
-
-const messages = [
-    {
-        name: "John Doe",
-        message: "Hey, how are you doing?",
-        time: "7:00 PM",
-        date: "16/05/2024",
-        image: "http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg",
-        unreadMessages: 2,
-    },
-    {
-        name: "Jane Smith",
-        message: "Can we schedule a meeting tomorrow?",
-        time: "6:30 PM",
-        date: "16/05/2024",
-        image: "http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg",
-        unreadMessages: 0,
-    },
-    {
-        name: "Mike Johnson",
-        message: "Thanks for your help with the project!",
-        time: "5:45 PM",
-        date: "16/05/2024",
-        image: "http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg",
-        unreadMessages: 1,
-    },
-    {
-        name: "Sarah Wilson",
-        message: "The event was a great success!",
-        time: "4:20 PM",
-        date: "16/05/2024",
-        image: "http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg",
-        unreadMessages: 0,
-    },
-    {
-        name: "David Brown",
-        message: "Let's discuss the upcoming workshop",
-        time: "3:15 PM",
-        date: "16/05/2024",
-        image: "http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg",
-        unreadMessages: 3,
-    },
-    {
-        name: "Emily Davis",
-        message: "I've sent you the updated documents",
-        time: "2:00 PM",
-        date: "16/05/2024",
-        image: "http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg",
-        unreadMessages: 0,
-    },
-    {
-        name: "Robert Taylor",
-        message: "Looking forward to our collaboration",
-        time: "1:30 PM",
-        date: "16/05/2024",
-        image: "http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg",
-        unreadMessages: 0,
-    },
-];
+import { GET_API, POST_API } from "@/api/request";
+import { endpoints } from "@/api/constants";
+import Cookies from "js-cookie";
+import LottieLoader from "@/components/common/Loader/Lottie";
+import VolunteerChatList from "@/components/messages/VolunteerChatList";
+interface ChatMessage {
+    chat_id: string;
+    created_at: string;
+    created_by: string;
+    message: string;
+    read: boolean;
+    receiver_id: string;
+    receiver_name: string;
+    receiver_profile_picture: {
+        image_url: string;
+        image_id: string;
+    };
+    sender_id: string;
+    sender_name: string;
+    sender_profile_picture: {
+        image_url: string;
+        image_id: string;
+    };
+}
 
 const Messages = () => {
     const { setHeaderOptions } = useComponentStore();
     const pathname = usePathname();
+    const router = useRouter();
     const [searchQuery, setSearchQuery] = useQueryState("query");
     const [message, setMessage] = useState("");
-    console.log(message, "message");
+    const volunteerId = Cookies.get("volunteer_id");
+    const [chats, setChats] = useState([]);
+    const chatId = useSearchParams().get("chatId");
+    const learnerId = useSearchParams().get("learnerId");
+    const [individualChat, setIndividualChat] = useState<ChatMessage[]>([]);
+    const [recieverName, setRecieverName] = useState("");
+    const [recieverImage, setRecieverImage] = useState("");
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    console.log(learnerId, "learnerId");
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [individualChat]);
+
+    const getAllChatsForLearners = () => {
+        setIsLoading(true);
+        GET_API(endpoints.chat.getAllchatsOfVolunteer(volunteerId as string))
+            .then((res: any) => {
+                setChats(res.data);
+                console.log(res.data, "res.data getAllChatsForLearners");
+
+                // Find matching chat and update receiver details
+                if (chatId) {
+                    const matchingChat = res.data.find((chat: any) => chat.chat_id === chatId);
+                    if (matchingChat) {
+                        setRecieverName(matchingChat.learner_name);
+                        setRecieverImage(matchingChat.learner_profile_picture.image_url);
+                    }
+                }
+
+                if (!chatId && !learnerId && res.data.length > 0) {
+                    const firstChat = res.data[0];
+                    router.push(
+                        `/volunteer/messages?chatId=${firstChat.chat_id}&learnerId=${firstChat.learner_id}`
+                    );
+                }
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    };
+
+    const getIndividualChat = async () => {
+        const response = await GET_API(endpoints.chat.getIndividualChat(chatId as string));
+        console.log(response.data, "response.data getIndividualChat");
+
+        if (response.data[0].receiver_id === volunteerId) {
+            setRecieverName(response.data[0].sender_name);
+            setRecieverImage(response.data[0].sender_profile_picture.image_url);
+        } else {
+            setRecieverName(response.data[0].receiver_name);
+            setRecieverImage(response.data[0].receiver_profile_picture.image_url);
+        }
+
+        // setRecieverName(response.data[0].receiver_name);
+        // setRecieverImage(response.data[0].receiver_profile_picture.image_url);
+        setIndividualChat(response.data);
+        return response.data;
+    };
+
+    const {
+        data,
+        isLoading: isLoadingChats,
+        isError: isErrorChats,
+    } = useQuery({
+        queryKey: ["chats"],
+        queryFn: () => getAllChatsForLearners(),
+        // refetchInterval: 1000,
+    });
+
+    const { data: individualChatData, refetch: refetchIndividualChat } = useQuery({
+        queryKey: ["individualChat", chatId],
+        queryFn: () => getIndividualChat(),
+        enabled: !!chatId,
+        // refetchInterval: 1000,
+    });
 
     const handleSearch = (value: string) => {
         setSearchQuery(value);
@@ -83,6 +129,20 @@ const Messages = () => {
 
     const handleMessageChange = (value: string | string[]) => {
         setMessage(Array.isArray(value) ? value[0] : value);
+    };
+
+    const handleSendMessage = () => {
+        if (!message.trim()) return;
+        let payload = {
+            message: message,
+            chat_id: chatId as string,
+        };
+        POST_API(endpoints.chat.sendMessageToLearner(learnerId as string), payload).then(
+            (res: any) => {
+                setMessage("");
+                refetchIndividualChat();
+            }
+        );
     };
 
     useEffect(() => {
@@ -93,80 +153,53 @@ const Messages = () => {
         });
     }, [setHeaderOptions]);
 
+    useEffect(() => {
+        setIndividualChat([]);
+    }, [chatId, learnerId]);
+
     return (
-        <div className="w-full h-full bg-white flex border border-gray-200 rounded-tl-[3rem]">
-            <ChatList messages={messages} searchQuery={searchQuery} onSearch={handleSearch} />
+        <div className="w-full h-full bg-white flex border border-gray-200 rounded-tl-[3rem] animate-fadeIn">
+            <VolunteerChatList messages={chats} searchQuery={searchQuery} onSearch={handleSearch} />
             <div className="w-full h-full flex-1">
-                <ChatHeader
-                    name="Alexander Harris"
-                    location="Orlando, Florida"
-                    image="http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg"
-                />
+                <ChatHeader name={recieverName} location="Orlando, Florida" image={recieverImage} />
                 <div className="flex flex-col gap-4 p-4 h-[calc(100vh-15.5em)] overflow-y-auto">
-                    <MessageBubble
-                        message="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt"
-                        timestamp="9:54 PM"
-                        date="12th Nov"
-                        isOwnMessage={true}
-                        userImage="http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg"
-                    />
-                    <MessageBubble
-                        message="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt"
-                        timestamp="9:54 PM"
-                        date="12th Nov"
-                        isOwnMessage={false}
-                        userImage="http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg"
-                    />
-                    <MessageBubble
-                        message="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt"
-                        timestamp="9:54 PM"
-                        date="12th Nov"
-                        isOwnMessage={false}
-                        userImage="http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg"
-                    />
-                    <MessageBubble
-                        message="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt"
-                        timestamp="9:54 PM"
-                        date="12th Nov"
-                        isOwnMessage={false}
-                        userImage="http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg"
-                    />
-                    <MessageBubble
-                        message="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt"
-                        timestamp="9:54 PM"
-                        date="12th Nov"
-                        isOwnMessage={true}
-                        userImage="http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg"
-                    />
-                    <MessageBubble
-                        message="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt"
-                        timestamp="9:54 PM"
-                        date="12th Nov"
-                        isOwnMessage={false}
-                        userImage="http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg"
-                    />
-                    <MessageBubble
-                        message="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt"
-                        timestamp="9:54 PM"
-                        date="12th Nov"
-                        isOwnMessage={true}
-                        userImage="http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg"
-                    />
+                    {individualChat?.map((message: any, index: any) => {
+                        return (
+                            <MessageBubble
+                                key={message.chat_id}
+                                message={message.message}
+                                timestamp={new Date(message.created_at).toLocaleTimeString([], {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                })}
+                                date={new Date(message.created_at).toLocaleDateString()}
+                                isOwnMessage={message.sender_id === volunteerId}
+                                userImage={
+                                    message.sender_id === volunteerId
+                                        ? message.sender_profile_picture.image_url
+                                        : message.receiver_profile_picture.image_url
+                                }
+                            />
+                        );
+                    })}
+                    <div ref={messagesEndRef} />
                 </div>
-                <div className="p-4 flex items-center gap-8">
+                <div className="p-4 flex items-center gap-8 transition-all duration-300">
                     <Input
                         value={message}
                         inputType="text"
                         name="message"
-                        inputClassName="!bg-[#f4f7fb] !rounded-lg gap-1 font-medium items-center w-full"
+                        inputClassName="!bg-[#f4f7fb] !rounded-lg gap-1 font-medium items-center w-full transition-all duration-300"
                         className="!bg-transparent w-full !mb-0"
                         onChange={handleMessageChange}
                         placeholder={"Type message here"}
                     />
                     <Button
+                        disabled={!message.trim()}
+                        onClick={handleSendMessage}
                         title="Send Message"
                         btnVariant="secondary"
-                        className="!rounded-xl !text-sm"
+                        className="!rounded-xl !text-sm !bg-black hover:!bg-black !text-white transition-all duration-300"
                     />
                 </div>
             </div>

@@ -6,8 +6,8 @@ interface Message {
     chat_id: string;
     volunteer_id: string;
     learner_id: string;
-    volunteer_name: string;
-    volunteer_profile_picture: {
+    learner_name: string;
+    learner_profile_picture: {
         image_url: string;
         image_id: string;
     };
@@ -47,8 +47,6 @@ const ChatList: React.FC<ChatListProps> = ({
     onSearch,
     isLoading = false,
 }) => {
-    console.log(messages, "messages ChatList");
-
     return (
         <div className="max-w-[440px] h-full shrink-0 rounded-tl-[3.1rem] p-4 border-r border-gray-200">
             <div className="flex items-center justify-between rounded-tl-[3rem] py-2">
@@ -73,15 +71,15 @@ const ChatList: React.FC<ChatListProps> = ({
                     messages?.map((message) => (
                         <MessageCard
                             key={message?.chat_id}
-                            name={message?.volunteer_name}
-                            image={message?.volunteer_profile_picture?.image_url}
+                            name={message?.learner_name}
+                            image={message?.learner_profile_picture?.image_url}
                             chat_id={message?.chat_id}
                             volunteerId={message?.volunteer_id}
-                            learnerId={message?.learner_id}
                             unreadMessages={0}
                             message={message.message}
-                            time={""}
-                            date={""}
+                            time={message.created_at}
+                            date={message.created_at}
+                            learnerId={message?.learner_id}
                         />
                     ))
                 )}
