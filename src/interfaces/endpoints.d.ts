@@ -1,3 +1,4 @@
+import { create } from "zustand";
 type EndpointProps = {
     onboarding: {
         update: (role: "volunteer" | "learner") => `onboarding/${typeof role}`;
@@ -56,14 +57,14 @@ type EndpointProps = {
     resources: {
         create: string;
         get: string;
-        getMyResources: string,
-        getResourcesByCategory: (category: string) => string,
-        getCategories: string,
-        getResource: (resource_id: string) => string,
-        delete: (resource_id: string) => string,
-        update: (resource_id: string) => string,
-        like: (resource_id: string) => string,
-        dislike: (resource_id: string) => string,
+        getMyResources: string;
+        getResourcesByCategory: (category: string) => string;
+        getCategories: string;
+        getResource: (resource_id: string) => string;
+        delete: (resource_id: string) => string;
+        update: (resource_id: string) => string;
+        like: (resource_id: string) => string;
+        dislike: (resource_id: string) => string;
     };
     post: {
         createPost: string;
@@ -98,7 +99,7 @@ type EndpointProps = {
     };
     report: {
         create: string;
-    },
+    };
     media_uploader: {
         image: string;
         video: string;
@@ -106,6 +107,17 @@ type EndpointProps = {
         deleteImage: (id: string) => string;
         deleteVideo: (id: string) => string;
         deleteDocument: (id: string) => string;
+    };
+    chat: {
+        createChatForVolunteer: (volunteerId: string) => string;
+        createChatForLearner: (learnerId: string) => string;
+        sendMessageToVolunteer: (volunteerId: string) => string;
+        sendMessageToLearner: (learnerId: string) => string;
+        getMessagesForVolunteer: (volunteerId: string) => string;
+        getMessagesForLearner: (learnerId: string) => string;
+        getAllchatsOfVolunteer: (volunteerId: string) => string;
+        getAllchatsOfLearner: (learnerId: string) => string;
+        getIndividualChat: (chatId: string) => string;
     };
 };
 

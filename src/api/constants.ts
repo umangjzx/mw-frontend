@@ -1,4 +1,7 @@
+import { EndpointProps } from "@/interfaces/endpoints";
+
 type UserType = "volunteer" | "learner";
+type CommonPath = "skills" | "languages" | "subjects" | "media" | "categories";
 
 export const endpoints: EndpointProps = {
     onboarding: {
@@ -40,8 +43,7 @@ export const endpoints: EndpointProps = {
         bookSession: "session",
         getLearnerSessions: (id: string) => `session/learner/${id}`,
         cancelSession: (id: string) => `session/${id}`,
-        getApprovalNotifications: (id: string) =>
-            `session/pending_invites/${id}`,
+        getApprovalNotifications: (id: string) => `session/pending_invites/${id}`,
         getCalendarEvents: (id: string, userType: UserType, month?: string, status?: string) =>
             `session/${userType}/${id}${month ? `?month=${month}` : ""}${
                 status ? `?status=${status}` : ""
@@ -101,7 +103,7 @@ export const endpoints: EndpointProps = {
         update: "feedback/learner",
     },
     report: {
-        create: "report"
+        create: "report",
     },
     media_uploader: {
         image: "common/media_uploader/image",
@@ -110,5 +112,16 @@ export const endpoints: EndpointProps = {
         deleteImage: (id: string) => `common/media_uploader/image/${id}`,
         deleteVideo: (id: string) => `common/media_uploader/video/${id}`,
         deleteDocument: (id: string) => `common/media_uploader/document/${id}`,
+    },
+    chat: {
+        createChatForVolunteer: (volunteerId: string) => `chat/volunteer/${volunteerId}`,
+        createChatForLearner: (learnerId: string) => `chat/learner/${learnerId}`,
+        sendMessageToVolunteer: (volunteerId: string) => `chat/message/volunteer/${volunteerId}`,
+        sendMessageToLearner: (learnerId: string) => `chat/message/learner/${learnerId}`,
+        getMessagesForVolunteer: (volunteerId: string) => `chat/messages/volunteer/${volunteerId}`,
+        getMessagesForLearner: (learnerId: string) => `chat/messages/learner/${learnerId}`,
+        getAllchatsOfVolunteer: (volunteerId: string) => `chat/all/volunteer/${volunteerId}`,
+        getAllchatsOfLearner: (learnerId: string) => `chat/all/learner/${learnerId}`,
+        getIndividualChat: (chatId: string) => `chat/chat/${chatId}`,
     },
 };

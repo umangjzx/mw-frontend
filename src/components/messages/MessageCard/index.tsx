@@ -1,21 +1,38 @@
 "use client";
 import Image from "next/image";
 import React from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 
-const MessageCard = ({ name, message, time, date, image, unreadMessages }: MessageCardProps) => {
+const MessageCard = ({
+    name,
+    message,
+    time,
+    date,
+    image,
+    unreadMessages,
+    chat_id,
+    volunteerId,
+}: MessageCardProps) => {
+    const router = useRouter();
+    const params = useSearchParams();
+    const chatId = params.get("chatId");
+
+    const handleClick = () => {
+        router.push(`/learner/messages?chatId=${chat_id}&volunteerId=${volunteerId}`);
+    };
     return (
-        <div className="flex items-center gap-4 border-b border-gray-200 p-4 hover:bg-[#f4f7fb] cursor-pointer transition-all duration-300">
+        <div
+            onClick={handleClick}
+            className={`flex items-center gap-4 border-b border-gray-200 p-4 hover:bg-[#f4f7fb] cursor-pointer transition-all duration-300 ${
+                chat_id === chatId ? "bg-[#f4f7fb]" : ""
+            }`}
+        >
             <div className="relative w-11 h-11 rounded-full overflow-hidden">
-                <Image
-                    src="http://res.cloudinary.com/dxezkqczp/image/upload/v1747728621/MelodyWings/staging/656cdc7c-3134-45fd-bc17-072b4c83da1a/ccaacab8-8b89-4280-8951-f27bce591aa5/u2pxftkbs9syefnzfzfq.jpg"
-                    alt="message"
-                    fill
-                    className="object-cover"
-                />
+                <Image src={image} alt={name} fill className="object-cover" />
             </div>
             <div className="min-w-0 flex-1 flex flex-col gap-1">
                 <div className="flex items-center gap-2 justify-between">
-                    <p className="text-base font-medium">Alexander Harris</p>
+                    <p className="text-base font-medium">{name}</p>
                     <div>
                         {unreadMessages > 0 ? (
                             <p className="text-xs font-normal text-[#22c55e]">7.00 pm</p>

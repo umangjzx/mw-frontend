@@ -6,6 +6,10 @@ import Divider from "@/components/common/Divider";
 import { FaStar } from "react-icons/fa";
 import { SeeMoreIcon } from "@/assets/icons";
 import { formatString } from "@/utils/stringFormats";
+import Button from "@/components/common/Button";
+import { useRouter } from "next/navigation";
+import { GET_API } from "@/api/request";
+import { endpoints } from "@/api/constants";
 
 const VolunteerCard: React.FC<VolunteerCardProps> = ({
     onSeeMoreClick,
@@ -20,6 +24,14 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
     totalReviews,
     overallRating,
 }) => {
+    const router = useRouter();
+
+    const handleChatClick = async () => {
+        GET_API(endpoints.chat.createChatForVolunteer(volunteerId)).then((res: any) => {
+            console.log(res, "chat response");
+            router.push(`/learner/messages?chatId=${res.data.chat_id}&volunteerId=${volunteerId}`);
+        });
+    };
 
     return (
         <div className="bg-white rounded-xl w-full shadow-sm h-fit p-4 flex flex-col gap-4">
@@ -45,7 +57,9 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
                 <div className="flex flex-col">
                     <p className="text-base font-semibold lg:text-normal lg:font-medium">{name}</p>
                     <p className="text-sm font-medium">
-                        <span className="text-gray-light">{location && `From ${formatString(location || "")}`}</span>
+                        <span className="text-gray-light">
+                            {location && `From ${formatString(location || "")}`}
+                        </span>
                     </p>
                 </div>
             </div>
@@ -65,6 +79,12 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
             </div>
             <Divider />
             <div className="flex items-center justify-between">
+                <Button
+                    onClick={handleChatClick}
+                    title="Start Chat"
+                    btnVariant="secondary"
+                    className="!rounded-xl !text-sm"
+                />
                 <div className="border-stroke border w-fit px-3 py-1.5 rounded-full">
                     <div className="flex items-center gap-2">
                         {overallRating ? (
@@ -73,7 +93,9 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
                                     <FaStar />
                                 </span>
                                 <p className="text-sm font-medium flex items-center">
-                                    <span>{overallRating} - {totalReviews} Reviews</span>
+                                    <span>
+                                        {overallRating} - {totalReviews} Reviews
+                                    </span>
                                 </p>
                             </>
                         ) : (
