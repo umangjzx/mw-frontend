@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useComponentStore } from "@/store/useComponenetStore";
 import { getHeaderIcon } from "@/layouts/helper";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import ChatList from "@/components/messages/ChatList";
 import ChatHeader from "@/components/messages/ChatHeader";
@@ -97,6 +97,7 @@ const messages = [
 const Messages = () => {
     const { setHeaderOptions } = useComponentStore();
     const pathname = usePathname();
+    const router = useRouter();
     const [searchQuery, setSearchQuery] = useQueryState("query");
     const [message, setMessage] = useState("");
     const learnerId = Cookies.get("learner_id");
@@ -108,6 +109,8 @@ const Messages = () => {
     const [recieverImage, setRecieverImage] = useState("");
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const [isLoading, setIsLoading] = useState(false);
+
+    console.log(chats, "chats data");
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -122,6 +125,12 @@ const Messages = () => {
         GET_API(endpoints.chat.getAllchatsOfLearner(learnerId as string))
             .then((res: any) => {
                 setChats(res.data);
+                if (!chatId && !volunteerId && res.data.length > 0) {
+                    const firstChat = res.data[0];
+                    router.push(
+                        `/learner/messages?chatId=${firstChat.chat_id}&volunteerId=${firstChat.volunteer_id}`
+                    );
+                }
             })
             .finally(() => {
                 setIsLoading(false);
