@@ -9,13 +9,14 @@ import ChatHeader from "@/components/messages/ChatHeader";
 import MessageBubble from "@/components/messages/MessageBubble";
 import { Input } from "@/components/common/Input";
 import Button from "@/components/common/Button";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { GET_API, POST_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import Cookies from "js-cookie";
 import LottieLoader from "@/components/common/Loader/Lottie";
 
 interface ChatMessage {
+    message_id: string;
     chat_id: string;
     created_at: string;
     created_by: string;
@@ -50,6 +51,8 @@ const Messages = () => {
     const [recieverImage, setRecieverImage] = useState("");
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [messageId, setMessageId] = useState([]);
+    const queryClient = useQueryClient();
 
     const getAllChatsForLearners = () => {
         setIsLoading(true);
@@ -88,6 +91,11 @@ const Messages = () => {
             setRecieverName(response.data[0].receiver_name);
             setRecieverImage(response.data[0].receiver_profile_picture.image_url);
         }
+        const unreadMessageIds = response.data
+            .filter((msg: ChatMessage) => !msg.read)
+            .map((msg: ChatMessage) => msg.message_id);
+
+        setMessageId(unreadMessageIds);
         setIndividualChat(response.data);
         return response.data;
     };
@@ -135,6 +143,14 @@ const Messages = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
+    const postReadMessage = async () => {
+        const response = await POST_API(endpoints.chat.readMessage, {
+            message_ids: messageId,
+        }).then((res: any) => {
+            queryClient.invalidateQueries({ queryKey: ["chats"] });
+        });
+    };
+
     useEffect(() => {
         scrollToBottom();
     }, [individualChat]);
@@ -150,6 +166,12 @@ const Messages = () => {
     useEffect(() => {
         setIndividualChat([]);
     }, [chatId, volunteerId]);
+
+    useEffect(() => {
+        if (messageId.length > 0) {
+            postReadMessage();
+        }
+    }, [messageId]);
 
     return (
         <div className="w-full h-full bg-white flex border border-gray-200 rounded-tl-[3rem] ">

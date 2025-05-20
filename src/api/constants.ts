@@ -123,5 +123,6 @@ export const endpoints: EndpointProps = {
         getAllchatsOfVolunteer: (volunteerId: string) => `chat/all/volunteer/${volunteerId}`,
         getAllchatsOfLearner: (learnerId: string) => `chat/all/learner/${learnerId}`,
         getIndividualChat: (chatId: string) => `chat/chat/${chatId}`,
+        readMessage: `chat/message/read`,
     },
 };

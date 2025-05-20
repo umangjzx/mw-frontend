@@ -13,6 +13,7 @@ interface Message {
     };
     message: string;
     created_at: string;
+    unread_messages_count: number;
 }
 
 interface ChatListProps {
@@ -75,7 +76,7 @@ const ChatList: React.FC<ChatListProps> = ({
                             image={message?.learner_profile_picture?.image_url}
                             chat_id={message?.chat_id}
                             volunteerId={message?.volunteer_id}
-                            unreadMessages={0}
+                            unreadMessages={message?.unread_messages_count}
                             message={message.message}
                             time={message.created_at}
                             date={message.created_at}
