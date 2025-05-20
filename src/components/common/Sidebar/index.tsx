@@ -10,6 +10,7 @@ import {
     ResourceIcon,
     SignOutIcon,
     VolunteerIcon,
+    MessageIcon,
 } from "@/assets/icons";
 import Cookies from "js-cookie";
 import Link from "next/link";
@@ -35,15 +36,15 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
     const roleBasedLink =
         role === "volunteer"
             ? {
-                href: "/learners",
-                text: "Learners",
-                icon: <LearnerIcon />,
-            }
+                  href: "/learners",
+                  text: "Learners",
+                  icon: <LearnerIcon />,
+              }
             : {
-                href: "/volunteer",
-                text: "Seek Volunteer",
-                icon: <VolunteerIcon />,
-            };
+                  href: "/volunteer",
+                  text: "Seek Volunteer",
+                  icon: <VolunteerIcon />,
+              };
 
     const remainingLinks: any[] = [
         {
@@ -56,6 +57,11 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
             text: "Community",
             icon: <CommunityIcon />,
         },
+        {
+            href: "/messages",
+            text: "Messages",
+            icon: <MessageIcon />,
+        },
     ];
 
     // Combine all links in the desired order
@@ -65,31 +71,30 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
         clearCookies();
 
         if (typeof window !== "undefined") {
-            window.location.href = "/login"
+            window.location.href = "/login";
         } else {
             router.replace("/login");
             router.refresh();
         }
-
     };
 
     return (
         <div className="bg-white w-full h-full lg:h-screen flex flex-col items-center justify-between p-6">
             <div className="w-full">
-                {
-                    isMobileOrTabScreen ?
-                        <div className="shrink-0 flex items-center justify-between">
-                            <Image src="/logo.png" alt="Logo" height={44} width={50} />
-                            {onClose &&
-                                <span onClick={onClose} className="cursor-pointer">
-                                    <FeedModalCloseIcon />
-                                </span>
-                            }
-                        </div> :
-                        <Link href="/">
-                            <Logo />
-                        </Link>
-                }
+                {isMobileOrTabScreen ? (
+                    <div className="shrink-0 flex items-center justify-between">
+                        <Image src="/logo.png" alt="Logo" height={44} width={50} />
+                        {onClose && (
+                            <span onClick={onClose} className="cursor-pointer">
+                                <FeedModalCloseIcon />
+                            </span>
+                        )}
+                    </div>
+                ) : (
+                    <Link href="/">
+                        <Logo />
+                    </Link>
+                )}
                 <div className="flex flex-col items-center gap-3 w-full mt-[4rem]">
                     <Avatar />
                     <Divider className="max-md:!w-full" />
