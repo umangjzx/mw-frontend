@@ -4,6 +4,7 @@ import {
     ResourceIcon,
     VolunteerIcon,
     MessageIcon,
+    SettingIcon,
 } from "@/assets/icons";
 import CommonHeader from "@/components/common/Header";
 import { CalenderHeader } from "@/components/schedule";
@@ -28,6 +29,8 @@ export const getHeaderIcon = (pathname: string) => {
             return <VolunteerIcon />;
         case "messages":
             return <MessageIcon />;
+        case "settings":
+            return <SettingIcon />;
         default:
             return null;
     }

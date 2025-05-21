@@ -11,6 +11,7 @@ import {
     SignOutIcon,
     VolunteerIcon,
     MessageIcon,
+    SettingIcon,
 } from "@/assets/icons";
 import Cookies from "js-cookie";
 import Link from "next/link";
@@ -61,6 +62,11 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
             href: "/messages",
             text: "Messages",
             icon: <MessageIcon />,
+        },
+        {
+            href: "/settings",
+            text: "Settings",
+            icon: <SettingIcon />,
         },
     ];
 

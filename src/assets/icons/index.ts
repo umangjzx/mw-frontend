@@ -28,3 +28,4 @@ export { default as MobileFlagIcon } from "./MobileFlagIcon";
 export { default as DeleteIcon } from "./DeleteIcon";
 export { default as EditIcon } from "./EditIcon";
 export { default as MessageIcon } from "./MessageIcon";
+export { default as SettingIcon } from "./SettingIcon";

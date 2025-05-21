@@ -15,6 +15,7 @@ import { endpoints } from "@/api/constants";
 import Cookies from "js-cookie";
 import LottieLoader from "@/components/common/Loader/Lottie";
 import VolunteerChatList from "@/components/messages/VolunteerChatList";
+import NoMessage from "@/components/messages/NoMessage";
 interface ChatMessage {
     message_id: string;
     chat_id: string;
@@ -53,6 +54,7 @@ const Messages = () => {
     const [isLoading, setIsLoading] = useState(false);
     const queryClient = useQueryClient();
     const [messageId, setMessageId] = useState([]);
+    const [noChats, setNoChats] = useState<boolean | null>(null);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -67,8 +69,10 @@ const Messages = () => {
         GET_API(endpoints.chat.getAllchatsOfVolunteer(volunteerId as string))
             .then((res: any) => {
                 setChats(res.data);
-                console.log(res.data, "res.data getAllChatsForLearners");
 
+                if (res.data.length === 0) {
+                    setNoChats(true);
+                }
                 // Find matching chat and update receiver details
                 if (chatId) {
                     const matchingChat = res.data.find((chat: any) => chat.chat_id === chatId);
@@ -84,6 +88,10 @@ const Messages = () => {
                         `/volunteer/messages?chatId=${firstChat.chat_id}&learnerId=${firstChat.learner_id}`
                     );
                 }
+            })
+            .catch((err: any) => {
+                console.log(err);
+                setNoChats(true);
             })
             .finally(() => {
                 setIsLoading(false);
@@ -174,53 +182,74 @@ const Messages = () => {
         }
     }, [messageId]);
 
+    if (noChats === null) {
+        return <div></div>;
+    }
+
     return (
-        <div className="w-full h-full bg-white flex border border-gray-200 rounded-tl-[3rem] animate-fadeIn">
-            <VolunteerChatList messages={chats} searchQuery={searchQuery} onSearch={handleSearch} />
-            <div className="w-full h-full flex-1">
-                <ChatHeader name={recieverName} location="Orlando, Florida" image={recieverImage} />
-                <div className="flex flex-col gap-4 p-4 h-[calc(100vh-15.5em)] overflow-y-auto">
-                    {individualChat?.map((message: any, index: any) => {
-                        return (
-                            <MessageBubble
-                                key={message.chat_id}
-                                message={message.message}
-                                timestamp={new Date(message.created_at).toLocaleTimeString([], {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                })}
-                                date={new Date(message.created_at).toLocaleDateString()}
-                                isOwnMessage={message.sender_id === volunteerId}
-                                userImage={
-                                    message.sender_id === volunteerId
-                                        ? message.sender_profile_picture.image_url
-                                        : message.receiver_profile_picture.image_url
-                                }
+        <>
+            {noChats ? (
+                <NoMessage />
+            ) : (
+                <div className="w-full h-full bg-white flex border border-gray-200 rounded-tl-[3rem] animate-fadeIn">
+                    <VolunteerChatList
+                        messages={chats}
+                        searchQuery={searchQuery}
+                        onSearch={handleSearch}
+                    />
+                    <div className="w-full h-full flex-1">
+                        <ChatHeader
+                            name={recieverName}
+                            location="Orlando, Florida"
+                            image={recieverImage}
+                        />
+                        <div className="flex flex-col gap-4 p-4 h-[calc(100vh-15.5em)] overflow-y-auto">
+                            {individualChat?.map((message: any, index: any) => {
+                                return (
+                                    <MessageBubble
+                                        key={message.chat_id}
+                                        message={message.message}
+                                        timestamp={new Date(message.created_at).toLocaleTimeString(
+                                            [],
+                                            {
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                            }
+                                        )}
+                                        date={new Date(message.created_at).toLocaleDateString()}
+                                        isOwnMessage={message.sender_id === volunteerId}
+                                        userImage={
+                                            message.sender_id === volunteerId
+                                                ? message.sender_profile_picture.image_url
+                                                : message.receiver_profile_picture.image_url
+                                        }
+                                    />
+                                );
+                            })}
+                            <div ref={messagesEndRef} />
+                        </div>
+                        <div className="p-4 flex items-center gap-8 transition-all duration-300">
+                            <Input
+                                value={message}
+                                inputType="text"
+                                name="message"
+                                inputClassName="!bg-[#f4f7fb] !rounded-lg gap-1 font-medium items-center w-full transition-all duration-300"
+                                className="!bg-transparent w-full !mb-0"
+                                onChange={handleMessageChange}
+                                placeholder={"Type message here"}
                             />
-                        );
-                    })}
-                    <div ref={messagesEndRef} />
+                            <Button
+                                disabled={!message.trim()}
+                                onClick={handleSendMessage}
+                                title="Send Message"
+                                btnVariant="secondary"
+                                className="!rounded-xl !text-sm !bg-black hover:!bg-black !text-white transition-all duration-300"
+                            />
+                        </div>
+                    </div>
                 </div>
-                <div className="p-4 flex items-center gap-8 transition-all duration-300">
-                    <Input
-                        value={message}
-                        inputType="text"
-                        name="message"
-                        inputClassName="!bg-[#f4f7fb] !rounded-lg gap-1 font-medium items-center w-full transition-all duration-300"
-                        className="!bg-transparent w-full !mb-0"
-                        onChange={handleMessageChange}
-                        placeholder={"Type message here"}
-                    />
-                    <Button
-                        disabled={!message.trim()}
-                        onClick={handleSendMessage}
-                        title="Send Message"
-                        btnVariant="secondary"
-                        className="!rounded-xl !text-sm !bg-black hover:!bg-black !text-white transition-all duration-300"
-                    />
-                </div>
-            </div>
-        </div>
+            )}
+        </>
     );
 };
 
