@@ -13,7 +13,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { GET_API, POST_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import Cookies from "js-cookie";
-import LottieLoader from "@/components/common/Loader/Lottie";
+import { Spin } from "antd";
 import VolunteerChatList from "@/components/messages/VolunteerChatList";
 import NoMessage from "@/components/messages/NoMessage";
 interface ChatMessage {
@@ -204,28 +204,33 @@ const Messages = () => {
                             image={recieverImage}
                         />
                         <div className="flex flex-col gap-4 p-4 h-[calc(100vh-15.5em)] overflow-y-auto">
-                            {individualChat?.map((message: any, index: any) => {
-                                return (
-                                    <MessageBubble
-                                        key={message.chat_id}
-                                        message={message.message}
-                                        timestamp={new Date(message.created_at).toLocaleTimeString(
-                                            [],
-                                            {
+                            {isLoadingChats || !individualChatData ? (
+                                <div className="flex justify-center items-center h-full">
+                                    <Spin size="large" />
+                                </div>
+                            ) : (
+                                individualChat?.map((message: any, index: any) => {
+                                    return (
+                                        <MessageBubble
+                                            key={message.chat_id}
+                                            message={message.message}
+                                            timestamp={new Date(
+                                                message.created_at
+                                            ).toLocaleTimeString([], {
                                                 hour: "2-digit",
                                                 minute: "2-digit",
+                                            })}
+                                            date={new Date(message.created_at).toLocaleDateString()}
+                                            isOwnMessage={message.sender_id === volunteerId}
+                                            userImage={
+                                                message.sender_id === volunteerId
+                                                    ? message.sender_profile_picture.image_url
+                                                    : message.receiver_profile_picture.image_url
                                             }
-                                        )}
-                                        date={new Date(message.created_at).toLocaleDateString()}
-                                        isOwnMessage={message.sender_id === volunteerId}
-                                        userImage={
-                                            message.sender_id === volunteerId
-                                                ? message.sender_profile_picture.image_url
-                                                : message.receiver_profile_picture.image_url
-                                        }
-                                    />
-                                );
-                            })}
+                                        />
+                                    );
+                                })
+                            )}
                             <div ref={messagesEndRef} />
                         </div>
                         <div className="p-4 flex items-center gap-8 transition-all duration-300">
