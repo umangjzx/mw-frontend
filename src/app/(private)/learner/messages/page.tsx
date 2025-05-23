@@ -115,23 +115,28 @@ const Messages = () => {
 
     const getIndividualChat = async () => {
         setIsIndividualLoading(true);
-        const response = await GET_API(endpoints.chat.getIndividualChat(chatId as string));
-        console.log(response.data, "response.data getIndividualChat");
-        if (response.data[0].receiver_id === learnerId) {
-            setRecieverName(response.data[0].sender_name);
-            setRecieverImage(response.data[0].sender_profile_picture.image_url);
-        } else {
-            setRecieverName(response.data[0].receiver_name);
-            setRecieverImage(response.data[0].receiver_profile_picture.image_url);
-        }
-        const unreadMessageIds = response.data
-            .filter((msg: ChatMessage) => !msg.read)
-            .map((msg: ChatMessage) => msg.message_id);
+        try {
+            const response = await GET_API(endpoints.chat.getIndividualChat(chatId as string));
+            console.log(response.data, "response.data getIndividualChat");
+            if (response.data[0].receiver_id === learnerId) {
+                setRecieverName(response.data[0].learner_name);
+                setRecieverImage(response.data[0].learner_profile_picture.image_url);
+            } else {
+                setRecieverName(response.data[0].volunteer_name);
+                setRecieverImage(response.data[0].volunteer_profile_picture.image_url);
+            }
+            const unreadMessageIds = response.data
+                .filter((msg: ChatMessage) => !msg.read)
+                .map((msg: ChatMessage) => msg.message_id);
 
-        setMessageId(unreadMessageIds);
-        setIndividualChat(response.data);
-        setIsIndividualLoading(false);
-        return response.data;
+            setMessageId(unreadMessageIds);
+            setIndividualChat(response.data);
+            setIsIndividualLoading(false);
+            return response.data;
+        } catch (error) {
+            console.log(error);
+            setIsIndividualLoading(false);
+        }
     };
 
     const {
@@ -249,8 +254,8 @@ const Messages = () => {
                                             isOwnMessage={message.sender_id === learnerId}
                                             userImage={
                                                 message.sender_id === learnerId
-                                                    ? message.sender_profile_picture.image_url
-                                                    : message.receiver_profile_picture.image_url
+                                                    ? message.learner_profile_picture.image_url
+                                                    : message.volunteer_profile_picture.image_url
                                             }
                                         />
                                     );
