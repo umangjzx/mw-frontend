@@ -23,6 +23,7 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
     volunteerHrs,
     totalReviews,
     overallRating,
+    chatPermission,
 }) => {
     const router = useRouter();
 
@@ -80,6 +81,7 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
             <Divider />
             <div className="flex items-center justify-between">
                 <Button
+                    disabled={!chatPermission}
                     onClick={handleChatClick}
                     title="Start Chat"
                     btnVariant="secondary"

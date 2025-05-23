@@ -1,7 +1,10 @@
 "use client";
+import { endpoints } from "@/api/constants";
+import { GET_API, PUT_API } from "@/api/request";
 import { getHeaderIcon } from "@/layouts/helper";
 import { useComponentStore } from "@/store/useComponenetStore";
 import { Switch } from "antd";
+import Cookies from "js-cookie";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -9,6 +12,19 @@ const Settings = () => {
     const [isEnabled, setIsEnabled] = useState(false);
     const { setHeaderOptions } = useComponentStore();
     const pathname = usePathname();
+    const learnerId = Cookies.get("learner_id");
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handlePermission = (value: any) => {
+        setIsEnabled(value);
+        if (value) {
+            PUT_API(endpoints.chat.learnerPermission(learnerId as string), {
+                chat_permission: value,
+            }).then((res) => {
+                console.log(res, "PERMISSION LEARNER");
+            });
+        }
+    };
 
     useEffect(() => {
         setHeaderOptions({
@@ -17,6 +33,17 @@ const Settings = () => {
             hideSearch: true,
         });
     }, [setHeaderOptions]);
+
+    useEffect(() => {
+        setIsLoading(true);
+        GET_API(endpoints.learner.getIndividualLearner(learnerId as string))
+            .then((res: any) => {
+                setIsEnabled(res.data.chat_permission);
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    }, []);
     return (
         <div className="w-full h-full bg-white flex border border-gray-200 rounded-tl-[3rem] animate-fadeIn">
             <div className="p-10 flex flex-col gap-8 w-full">
@@ -32,7 +59,10 @@ const Settings = () => {
                     </div>
                     <Switch
                         checked={isEnabled}
-                        onChange={setIsEnabled}
+                        loading={isLoading}
+                        onChange={(value) => {
+                            handlePermission(value);
+                        }}
                         className="w-fit [&.ant-switch-checked]:bg-black"
                     />
                 </div>

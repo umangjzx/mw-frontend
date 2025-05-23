@@ -34,7 +34,13 @@ interface TableLearner {
 }
 
 const LearnerCard = ({ learner, handleMessage }: { learner: any; handleMessage: () => void }) => {
-    const { profile_picture = "", name = "", classesTaken = "", country = "" } = learner;
+    const {
+        profile_picture = "",
+        name = "",
+        classesTaken = "",
+        country = "",
+        chat_permission = false,
+    } = learner;
 
     return (
         <div className="bg-white rounded-xl w-full p-4 space-y-4">
@@ -65,9 +71,12 @@ const LearnerCard = ({ learner, handleMessage }: { learner: any; handleMessage: 
                     /> */}
                     <Button
                         title="Message Learner"
-                        customClassName="!px-2 !py-1 !h-auto !rounded-2xl !text-sm"
+                        customClassName={`!px-2 !py-1 !h-auto !rounded-2xl !text-sm ${
+                            !chat_permission ? "!text-gray-400" : ""
+                        }`}
                         btnVariant="tertiary"
                         onClick={handleMessage}
+                        disabled={!chat_permission}
                     />
                 </div>
             </div>
@@ -114,6 +123,7 @@ export default function LearnersPage() {
                 classesTaken: learner.total_sessions,
                 country: learner.country,
                 profile_picture: learner.profile_picture,
+                chat_permission: learner.chat_permission,
             }));
             setLearnerData(transformedData);
             setTotal(learners.total);
@@ -137,7 +147,6 @@ export default function LearnersPage() {
     const handleMessageLearner = (learnerId: string) => {
         GET_API(endpoints.chat.createChatForLearner(learnerId)).then((res: any) => {
             console.log(res, "chat response");
-            alert("Chat created successfully");
             router.push(`/volunteer/messages?chatId=${res.data.chat_id}&learnerId=${learnerId}`);
         });
         // setMode("message");

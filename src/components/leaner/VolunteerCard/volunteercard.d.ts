@@ -10,4 +10,5 @@ interface VolunteerCardProps {
     languages: string[];
     totalReviews: string;
     overallRating: string;
+    chatPermission?: boolean;
 }
