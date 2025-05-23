@@ -88,7 +88,7 @@ html {
     display: none;
 }
 
-.dangerous-html a{
+.dangerous-html a {
     color: blue !important;
     text-decoration: underline !important;
 }
@@ -149,16 +149,16 @@ html {
     padding: 8px 0px 8px 10px !important;
 }
 
-.MuiPaper-root.MuiPickersPopper-paper{
+.MuiPaper-root.MuiPickersPopper-paper {
     border-radius: 10px !important;
 }
 
-.MuiButtonBase-root.MuiMenuItem-root.MuiMultiSectionDigitalClockSection-item.Mui-selected{
+.MuiButtonBase-root.MuiMenuItem-root.MuiMultiSectionDigitalClockSection-item.Mui-selected {
     background-color: var(--background-secondary-color) !important;
     border-radius: 5px !important;
 }
 
-.MuiMultiSectionDigitalClock-root ul{
+.MuiMultiSectionDigitalClock-root ul {
     scrollbar-width: none !important;
 }
 
@@ -188,7 +188,6 @@ html {
     display: none;
 }
 
-
 /* Antd Checkbox Styles */
 .consent-checkbox .ant-checkbox {
     align-self: normal !important;
@@ -198,12 +197,11 @@ html {
 .consent-checkbox .ant-checkbox-inner {
     @apply !w-5 !h-5;
 }
-  
+
 .consent-checkbox .ant-checkbox-inner::after {
     @apply !h-[12px] !w-[5px] !top-[45%];
 }
 
-  
 /* Search Select Styles */
 .ant-select-selection-item {
     background: transparent !important;
@@ -364,17 +362,20 @@ html {
 @keyframes fadeIn {
     from {
         opacity: 0;
-        /* transform: translateY(10px); */
+        transform: translateY(10px);
     }
     to {
         opacity: 1;
-        /* transform: translateY(0); */
+        transform: translateY(0);
     }
 }
 
 .animate-fadeIn {
-    animation: fadeIn 0.5s ease-in-out;
-    animation-fill-mode: backwards;
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-fadeIn-messages {
+    animation: fadeIn 0.3s ease-out forwards;
 }
 
 .text-gradient {
