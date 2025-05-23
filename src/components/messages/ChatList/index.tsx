@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Input } from "@/components/common/Input";
 import MessageCard from "@/components/messages/MessageCard";
 
@@ -48,13 +48,20 @@ const ChatList: React.FC<ChatListProps> = ({
     onSearch,
     isLoading = false,
 }) => {
-    console.log(messages, "messages ChatList");
+    const filteredMessages = useMemo(() => {
+        if (!searchQuery) return messages;
+        return messages.filter((message) =>
+            message.volunteer_name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [messages, searchQuery]);
 
     return (
         <div className="max-w-[440px] h-full shrink-0 rounded-tl-[3.1rem] p-4 border-r border-gray-200">
             <div className="flex items-center justify-between rounded-tl-[3rem] py-2">
                 <p className="text-2xl font-medium">All Chats</p>
-                <p className="text-base text-gray-500 font-medium">{messages.length} Chats</p>
+                <p className="text-base text-gray-500 font-medium">
+                    {filteredMessages.length} Chats
+                </p>
             </div>
             <div className="py-4">
                 <Input
@@ -71,7 +78,7 @@ const ChatList: React.FC<ChatListProps> = ({
                 {isLoading ? (
                     <ChatListSkeleton />
                 ) : (
-                    messages?.map((message) => (
+                    filteredMessages?.map((message) => (
                         <MessageCard
                             key={message?.chat_id}
                             name={message?.volunteer_name}
