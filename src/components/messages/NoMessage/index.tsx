@@ -15,6 +15,14 @@ const NoMessage = () => {
             router.push("/learner/settings");
         }
     };
+
+    const handleStartConversation = () => {
+        if (role === "volunteer") {
+            router.push("/volunteer/learners");
+        } else {
+            router.push("/learner/volunteer");
+        }
+    };
     return (
         <div className="w-full h-full mt-[-5rem] flex flex-col gap-4 bg-white items-center justify-center animate-fadeIn">
             <div className="w-[319px] h-[259px] relative flex items-center justify-center">
