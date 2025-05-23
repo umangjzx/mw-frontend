@@ -119,6 +119,8 @@ type EndpointProps = {
         getAllchatsOfLearner: (learnerId: string) => string;
         getIndividualChat: (chatId: string) => string;
         readMessage: string;
+        volunteerPermission: (id: string) => string;
+        learnerPermission: (id: string) => string;
     };
 };
 
