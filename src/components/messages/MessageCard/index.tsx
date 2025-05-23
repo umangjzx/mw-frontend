@@ -3,7 +3,7 @@ import Image from "next/image";
 import React from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Cookies from "js-cookie";
-
+import moment from "moment";
 const formatDateTime = (dateTimeString: string) => {
     const date = new Date(dateTimeString);
 
@@ -65,7 +65,7 @@ const MessageCard = ({
                             </p>
                         ) : (
                             <p className="text-xs text-[#4F4F4F]">
-                                {date ? formatDateTime(date).formattedDate : ""}
+                                {date ? moment(date).format("DD MMM, YYYY") : ""}
                             </p>
                         )}
                     </div>

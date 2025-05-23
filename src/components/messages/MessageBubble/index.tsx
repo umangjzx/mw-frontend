@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-
+import moment from "moment";
 interface MessageBubbleProps {
     message: string;
     timestamp: string;
@@ -37,7 +37,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
                 >
                     <p>{message}</p>
                     <div className="flex justify-end mt-2 items-center gap-2 font-normal text-gray-500">
-                        <span>{date}</span>
+                        <span>{moment(date).format("DD MMM, YYYY")}</span>
                         <span>•</span>
                         <span>{timestamp}</span>
                     </div>

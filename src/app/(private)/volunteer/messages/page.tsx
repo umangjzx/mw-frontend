@@ -75,6 +75,7 @@ const Messages = () => {
     const queryClient = useQueryClient();
     const [messageId, setMessageId] = useState([]);
     const [noChats, setNoChats] = useState<boolean | null>(null);
+    console.log(isIndividualLoading, "isIndividualLoading");
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -123,23 +124,30 @@ const Messages = () => {
 
     const getIndividualChat = async () => {
         setIsIndividualLoading(true);
-        const response = await GET_API(endpoints.chat.getIndividualChat(chatId as string));
-        if (response.data[0].receiver_id === volunteerId) {
-            setRecieverName(response.data[0].sender_name);
-            setRecieverImage(response.data[0].sender_profile_picture.image_url);
-        } else {
-            setRecieverName(response.data[0].receiver_name);
-            setRecieverImage(response.data[0].receiver_profile_picture.image_url);
-        }
-        // Only store message IDs for unread messages
-        const unreadMessageIds = response.data
-            .filter((msg: ChatMessage) => !msg.read)
-            .map((msg: ChatMessage) => msg.message_id);
+        try {
+            const response = await GET_API(endpoints.chat.getIndividualChat(chatId as string));
+            console.log(response.data[0], "RESPONSE INDIVIDUAL CHAT");
 
-        setMessageId(unreadMessageIds);
-        setIndividualChat(response.data);
-        setIsIndividualLoading(false);
-        return response.data;
+            if (response.data[0].receiver_id === volunteerId) {
+                setRecieverName(response.data[0].volunteer_name);
+                setRecieverImage(response.data[0].volunteer_profile_picture.image_url);
+            } else {
+                setRecieverName(response.data[0].learner_name);
+                setRecieverImage(response.data[0].learner_profile_picture.image_url);
+            }
+            // Only store message IDs for unread messages
+            const unreadMessageIds = response.data
+                .filter((msg: ChatMessage) => !msg.read)
+                .map((msg: ChatMessage) => msg.message_id);
+
+            setMessageId(unreadMessageIds);
+            setIndividualChat(response.data);
+            setIsIndividualLoading(false);
+            return response.data;
+        } catch (error) {
+            console.log(error);
+            setIsIndividualLoading(false);
+        }
     };
 
     const {
@@ -253,8 +261,8 @@ const Messages = () => {
                                             isOwnMessage={message.sender_id === volunteerId}
                                             userImage={
                                                 message.sender_id === volunteerId
-                                                    ? message.sender_profile_picture.image_url
-                                                    : message.receiver_profile_picture.image_url
+                                                    ? message.volunteer_profile_picture.image_url
+                                                    : message.learner_profile_picture.image_url
                                             }
                                         />
                                     );
