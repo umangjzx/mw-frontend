@@ -17,13 +17,12 @@ const Settings = () => {
 
     const handlePermission = (value: any) => {
         setIsEnabled(value);
-        if (value) {
-            PUT_API(endpoints.chat.learnerPermission(learnerId as string), {
-                chat_permission: value,
-            }).then((res) => {
-                console.log(res, "PERMISSION LEARNER");
-            });
-        }
+
+        PUT_API(endpoints.chat.learnerPermission(learnerId as string), {
+            chat_permission: value,
+        }).then((res) => {
+            console.log(res, "PERMISSION LEARNER");
+        });
     };
 
     useEffect(() => {
