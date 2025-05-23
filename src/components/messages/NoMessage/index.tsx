@@ -33,7 +33,7 @@ const NoMessage = () => {
                 Looks like you haven't initiated a conversation with <br /> any of our volunteers.
             </p>
             <Button
-                onClick={() => {}}
+                onClick={handleStartConversation}
                 className="!bg-black !text-white hover:!bg-black/80 hover:!text-white !rounded-full"
             >
                 Start Conversation

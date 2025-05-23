@@ -25,6 +25,7 @@ type TextInputProps = BaseInputProps & {
     inputType: "text";
     value: string;
     onChange: (value: string | string[]) => void;
+    onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
     placeholder?: string;
     responseType?: string;
 };

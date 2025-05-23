@@ -32,6 +32,7 @@ const MessageCard = ({
     chat_id,
     volunteerId,
     learnerId,
+    isIndividualChatLoading,
 }: MessageCardProps) => {
     const router = useRouter();
     const params = useSearchParams();
@@ -39,6 +40,7 @@ const MessageCard = ({
     const role = Cookies.get("role");
 
     const handleClick = () => {
+        if (isIndividualChatLoading) return;
         if (role === "learner") {
             router.push(`/learner/messages?chatId=${chat_id}&volunteerId=${volunteerId}`);
         } else {
