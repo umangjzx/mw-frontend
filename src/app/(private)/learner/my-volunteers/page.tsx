@@ -34,7 +34,13 @@ interface TableVolunteer {
     subject: string;
 }
 
-const VolunteerCard = ({ volunteer, handleMessage }: { volunteer: any, handleMessage: () => void }) => {
+const VolunteerCard = ({
+    volunteer,
+    handleMessage,
+}: {
+    volunteer: any;
+    handleMessage: () => void;
+}) => {
     const { profile_picture = "", name = "", classesTaken = "", country = "" } = volunteer;
     return (
         <div className="bg-white rounded-xl w-full p-4 space-y-4">
@@ -73,7 +79,7 @@ const VolunteerCard = ({ volunteer, handleMessage }: { volunteer: any, handleMes
             </div>
         </div>
     );
-}
+};
 
 export default function VolunteerPage() {
     const router = useRouter();
@@ -92,9 +98,9 @@ export default function VolunteerPage() {
 
     const [debouncedQuery] = useDebounce(query, 500);
     const getAllVolunteers = async ({ page, size }: PaginationParams) => {
-        const endpoint = `${endpoints.learner.getConnectedVolunteers(
-            learner as string
-        )}?query=${debouncedQuery || ""}&page=${page}&size=${size}`;
+        const endpoint = `${endpoints.learner.getConnectedVolunteers(learner as string)}?query=${
+            debouncedQuery || ""
+        }&page=${page}&size=${size}`;
         const response: any = await GET_API(endpoint);
         return response.data;
     };
@@ -112,6 +118,7 @@ export default function VolunteerPage() {
                 classesTaken: volunteer.total_sessions,
                 country: volunteer.country,
                 profile_picture: volunteer.profile_picture,
+                chatPermission: volunteer.chat_permission,
             }));
             setVolunteerData(transformedData);
             setTotal(volunteers.total);
@@ -136,9 +143,10 @@ export default function VolunteerPage() {
     });
 
     const handleMessageVolunteer = (volunteedId: string) => {
-        console.log("Message Volunteer:", volunteedId);
-        setVolunteerId(volunteedId);
-        setMode("message");
+        GET_API(endpoints.chat.createChatForVolunteer(volunteedId)).then((res: any) => {
+            console.log(res, "chat response");
+            router.push(`/learner/messages?chatId=${res.data.chat_id}&volunteedId=${volunteedId}`);
+        });
     };
 
     const handleUploadTestimonial = (volunteedId: string) => {
@@ -166,44 +174,50 @@ export default function VolunteerPage() {
 
     return (
         <div className="w-full h-full p-6 animate-fadeIn">
-            <VolunteerMessageModal key={volunteedId} receiverId={volunteedId} isOpen={mode === "message"} onClose={handleClose} />
+            <VolunteerMessageModal
+                key={volunteedId}
+                receiverId={volunteedId}
+                isOpen={mode === "message"}
+                onClose={handleClose}
+            />
             <TestmonialModal
                 isOpen={mode === "testimonial"}
                 mode={"create"}
                 onClose={handleClose}
             />
-            {
-                isMobileScreen ?
-                    isLoading ? (
-                        <LottieLoader isLoading={true} />
-                    ) :
-                        <div className="grid grid-cols-1">
-                            {
-                                volunteerData.map((volunteer, index) => (
-                                    <VolunteerCard
-                                        key={index}
-                                        volunteer={volunteer}
-                                        handleMessage={() => handleMessageVolunteer(volunteer?.id)}
-                                    />
-                                ))
-                            }
-                        </div> :
-                    <VolunteerTable
-                        data={volunteerData}
-                        handleMessageVolunteer={handleMessageVolunteer}
-                        handleUploadTestimonial={handleUploadTestimonial}
-                        loading={isLoading}
-                        pagination={{
-                            current: pagination.page,
-                            pageSize: pagination.size,
-                            total: total,
-                            showSizeChanger: true,
-                            showQuickJumper: true,
-                        }}
-                        onChange={handleTableChange}
-                    />
-            }
-            {isMobileScreen && volunteerData?.length === 0 && <div className="flex-center h-full">No Volunteer Found</div>}
+            {isMobileScreen ? (
+                isLoading ? (
+                    <LottieLoader isLoading={true} />
+                ) : (
+                    <div className="grid grid-cols-1">
+                        {volunteerData.map((volunteer, index) => (
+                            <VolunteerCard
+                                key={index}
+                                volunteer={volunteer}
+                                handleMessage={() => handleMessageVolunteer(volunteer?.id)}
+                            />
+                        ))}
+                    </div>
+                )
+            ) : (
+                <VolunteerTable
+                    data={volunteerData}
+                    handleMessageVolunteer={handleMessageVolunteer}
+                    handleUploadTestimonial={handleUploadTestimonial}
+                    loading={isLoading}
+                    pagination={{
+                        current: pagination.page,
+                        pageSize: pagination.size,
+                        total: total,
+                        showSizeChanger: true,
+                        showQuickJumper: true,
+                    }}
+                    onChange={handleTableChange}
+                />
+            )}
+            {isMobileScreen && volunteerData?.length === 0 && (
+                <div className="flex-center h-full">No Volunteer Found</div>
+            )}
         </div>
     );
 }

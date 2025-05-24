@@ -40,7 +40,10 @@ const NoMessage = () => {
             </Button>
             <p className="text-base text-center">
                 Let volunteers reach out and help - turn on messages.{"  "}
-                <span className="font-medium hover:underline" onClick={handleGoToSettings}>
+                <span
+                    className="font-medium hover:underline cursor-pointer"
+                    onClick={handleGoToSettings}
+                >
                     Go to settings
                 </span>
             </p>
