@@ -21,6 +21,7 @@ interface ChatListProps {
     searchQuery: string | null;
     onSearch: (value: string) => void;
     isLoading?: boolean;
+    isIndividualChatLoading?: boolean;
 }
 
 const ChatListSkeleton = () => {
@@ -47,6 +48,7 @@ const ChatList: React.FC<ChatListProps> = ({
     searchQuery,
     onSearch,
     isLoading = false,
+    isIndividualChatLoading = false,
 }) => {
     const filteredMessages = useMemo(() => {
         if (!searchQuery) return messages;
@@ -90,6 +92,7 @@ const ChatList: React.FC<ChatListProps> = ({
                             time={message.created_at}
                             date={message.created_at}
                             learnerId={message?.learner_id}
+                            isIndividualChatLoading={isIndividualChatLoading}
                         />
                     ))
                 )}

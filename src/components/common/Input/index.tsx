@@ -1,10 +1,5 @@
 import React from "react";
-import {
-    Input as AntInput,
-    Checkbox,
-    DatePicker as AntDatePicker,
-    InputNumber,
-} from "antd";
+import { Input as AntInput, Checkbox, DatePicker as AntDatePicker, InputNumber } from "antd";
 import { cn } from "@/utils/merge-class";
 import { IoIosSearch } from "react-icons/io";
 import RadioInput from "./RadioButton";
@@ -65,7 +60,9 @@ export const Input: React.FC<InputProps> = (props) => {
         return (
             <label htmlFor={name} className={`text-sm font-medium text-gray-700 ${labelClassName}`}>
                 <div
-                    className={`flex ${sublabelAlignment === "right" ? "items-center" : "flex-col items-start"}`}
+                    className={`flex ${
+                        sublabelAlignment === "right" ? "items-center" : "flex-col items-start"
+                    }`}
                 >
                     {labelContent}
                     {sublabelContent}
@@ -95,6 +92,7 @@ export const Input: React.FC<InputProps> = (props) => {
                                 props?.responseType === "array" ? [e.target.value] : e.target.value
                             )
                         }
+                        onKeyDown={props.onKeyDown}
                         disabled={disabled}
                         rootClassName={cn(
                             props.inputClassName ? "w-[49%]" : "",
@@ -125,7 +123,7 @@ export const Input: React.FC<InputProps> = (props) => {
                         )}
                         className={cn(
                             `!mb-0 text-sm p-[6px] rounded-md hover:!bg-background-input !bg-background-input`,
-                            props?.inputClassName,
+                            props?.inputClassName
                         )}
                     />
                 );
@@ -223,7 +221,8 @@ export const Input: React.FC<InputProps> = (props) => {
                     current &&
                     (current.isBefore(startDate, "day") || current.isAfter(endDate, "day"));
 
-                const parseDate = (date: any) => date && dayjs(date, format).isValid() ? dayjs(date, format) : null;
+                const parseDate = (date: any) =>
+                    date && dayjs(date, format).isValid() ? dayjs(date, format) : null;
 
                 const handleDateChange = (date: any, dateString: string | string[]) => {
                     const validDate = parseDate(dateString);
@@ -288,7 +287,9 @@ export const Input: React.FC<InputProps> = (props) => {
     };
 
     return (
-        <div className={`mb-1 lg:mb-2 w-full h-auto flex flex-col gap-2 ${className} ${rootClassName}`}>
+        <div
+            className={`mb-1 lg:mb-2 w-full h-auto flex flex-col gap-2 ${className} ${rootClassName}`}
+        >
             {renderLabel()}
             {renderInput()}
             {error && <p className="text-xs text-red-500 capitalize">{error}</p>}

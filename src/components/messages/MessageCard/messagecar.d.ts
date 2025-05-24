@@ -8,4 +8,5 @@ interface MessageCardProps {
     date: string;
     image: string;
     learnerId: string;
+    isIndividualChatLoading?: boolean;
 }

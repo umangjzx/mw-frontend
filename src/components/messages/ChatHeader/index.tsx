@@ -18,9 +18,9 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ name, location, image }) => {
                     <p className="text-base font-medium transition-colors duration-300">{name}</p>
                 </div>
                 <div className="flex items-center gap-4">
-                    <p className="text-sm font-normal text-gray-500 transition-colors duration-300">
+                    {/* <p className="text-sm font-normal text-gray-500 transition-colors duration-300">
                         From <span className="text-black font-medium">{location}</span>
-                    </p>
+                    </p> */}
                 </div>
             </div>
         </div>

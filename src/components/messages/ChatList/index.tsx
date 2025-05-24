@@ -21,6 +21,7 @@ interface ChatListProps {
     searchQuery: string | null;
     onSearch: (value: string) => void;
     isLoading?: boolean;
+    isIndividualChatLoading?: boolean;
 }
 
 const ChatListSkeleton = () => {
@@ -47,6 +48,7 @@ const ChatList: React.FC<ChatListProps> = ({
     searchQuery,
     onSearch,
     isLoading = false,
+    isIndividualChatLoading = false,
 }) => {
     const filteredMessages = useMemo(() => {
         if (!searchQuery) return messages;
@@ -54,6 +56,8 @@ const ChatList: React.FC<ChatListProps> = ({
             message.volunteer_name.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [messages, searchQuery]);
+
+    console.log(isIndividualChatLoading, "isIndividualChatLoading");
 
     return (
         <div className="max-w-[440px] h-full shrink-0 rounded-tl-[3.1rem] p-4 border-r border-gray-200">
@@ -90,6 +94,7 @@ const ChatList: React.FC<ChatListProps> = ({
                             message={message.message}
                             time={message?.created_at}
                             date={message?.created_at}
+                            isIndividualChatLoading={isIndividualChatLoading}
                         />
                     ))
                 )}

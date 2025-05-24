@@ -35,7 +35,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
                         isOwnMessage ? "bg-[#f4f7fb]" : "bg-white border border-gray-200"
                     } max-w-[450px] rounded-lg px-2 py-4 transition-all duration-300 ease-in-out hover:shadow-sm`}
                 >
-                    <p>{message}</p>
+                    <p className="break-words">{message}</p>
                     <div className="flex justify-end mt-2 items-center gap-2 font-normal text-gray-500">
                         <span>{moment(date).format("DD MMM, YYYY")}</span>
                         <span>•</span>

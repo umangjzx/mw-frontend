@@ -72,6 +72,7 @@ const Messages = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [chatPermission, setChatPermission] = useState(true);
     const [isIndividualLoading, setIsIndividualLoading] = useState(false);
+    const [isSendMessageLoading, setIsSendMessageLoading] = useState(false);
     const queryClient = useQueryClient();
     const [messageId, setMessageId] = useState([]);
     const [noChats, setNoChats] = useState<boolean | null>(null);
@@ -175,18 +176,29 @@ const Messages = () => {
         setMessage(Array.isArray(value) ? value[0] : value);
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            handleSendMessage();
+        }
+    };
+
     const handleSendMessage = () => {
         if (!message.trim()) return;
+        setIsSendMessageLoading(true);
         let payload = {
             message: message,
             chat_id: chatId as string,
         };
-        POST_API(endpoints.chat.sendMessageToLearner(learnerId as string), payload).then(
-            (res: any) => {
+        POST_API(endpoints.chat.sendMessageToLearner(learnerId as string), payload)
+            .then((res: any) => {
                 setMessage("");
                 refetchIndividualChat();
-            }
-        );
+                setIsSendMessageLoading(false);
+            })
+            .finally(() => {
+                setIsSendMessageLoading(false);
+            });
     };
 
     const postReadMessage = async () => {
@@ -229,9 +241,10 @@ const Messages = () => {
                         messages={chats}
                         searchQuery={searchQuery}
                         onSearch={handleSearch}
+                        isIndividualChatLoading={isIndividualLoading}
                     />
                     <div className="w-full h-full flex-1">
-                        {isIndividualLoading ? (
+                        {isIndividualLoading && !isSendMessageLoading && !individualChat.length ? (
                             <ChatHeaderSkeleton />
                         ) : (
                             <ChatHeader
@@ -270,32 +283,37 @@ const Messages = () => {
                             )}
                             <div ref={messagesEndRef} />
                         </div>
-                        <div className="p-4 flex items-center gap-8 transition-all duration-300">
-                            {chatPermission ? (
-                                <>
-                                    <Input
-                                        value={message}
-                                        inputType="text"
-                                        name="message"
-                                        inputClassName="!bg-[#f4f7fb] !rounded-lg gap-1 font-medium items-center w-full transition-all duration-300"
-                                        className="!bg-transparent w-full !mb-0"
-                                        onChange={handleMessageChange}
-                                        placeholder={"Type message here"}
-                                    />
-                                    <Button
-                                        disabled={!message.trim() || !chatPermission}
-                                        onClick={handleSendMessage}
-                                        title="Send Message"
-                                        btnVariant="secondary"
-                                        className="!rounded-xl !text-sm !bg-black hover:!bg-black !text-white transition-all duration-300"
-                                    />
-                                </>
-                            ) : (
-                                <p className="text-gray-600 text-sm text-center w-full font-medium">
-                                    {recieverName} has disabled chat for this conversation
-                                </p>
-                            )}
-                        </div>
+                        {isIndividualLoading && !isSendMessageLoading && !individualChat.length ? (
+                            <div></div>
+                        ) : (
+                            <div className="p-4 flex items-center gap-8 transition-all duration-300">
+                                {chatPermission ? (
+                                    <>
+                                        <Input
+                                            value={message}
+                                            inputType="text"
+                                            name="message"
+                                            inputClassName="!bg-[#f4f7fb] !rounded-lg gap-1 font-medium items-center w-full transition-all duration-300"
+                                            className="!bg-transparent w-full !mb-0"
+                                            onChange={handleMessageChange}
+                                            onKeyDown={handleKeyDown}
+                                            placeholder={"Type message here"}
+                                        />
+                                        <Button
+                                            disabled={!message.trim() || !chatPermission}
+                                            onClick={handleSendMessage}
+                                            title="Send Message"
+                                            btnVariant="secondary"
+                                            className="!rounded-xl !text-sm !bg-black hover:!bg-black !text-white transition-all duration-300"
+                                        />
+                                    </>
+                                ) : (
+                                    <p className="text-gray-600 text-sm text-center w-full font-medium">
+                                        {recieverName} has disabled chat for this conversation
+                                    </p>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
