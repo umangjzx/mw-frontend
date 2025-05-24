@@ -7,7 +7,7 @@ interface Volunteer {
     name: string;
     classesTaken: number;
     subject: string;
-    chat_permission: boolean;
+    chatPermission: boolean;
 }
 
 interface Props {
@@ -57,7 +57,7 @@ const VolunteersTable: React.FC<VolunteersTableProps> = ({
             render: (_: any, record: Volunteer) => (
                 <div className="flex items-center gap-2">
                     <Button
-                        disabled={!record.chat_permission}
+                        disabled={!record.chatPermission}
                         onClick={() => handleMessageVolunteer(record.id)}
                         btnVariant="link"
                         title="Message Volunteer"

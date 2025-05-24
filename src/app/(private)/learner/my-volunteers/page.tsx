@@ -174,12 +174,12 @@ export default function VolunteerPage() {
 
     return (
         <div className="w-full h-full p-6 animate-fadeIn">
-            <VolunteerMessageModal
+            {/* <VolunteerMessageModal
                 key={volunteedId}
                 receiverId={volunteedId}
                 isOpen={mode === "message"}
                 onClose={handleClose}
-            />
+            /> */}
             <TestmonialModal
                 isOpen={mode === "testimonial"}
                 mode={"create"}
