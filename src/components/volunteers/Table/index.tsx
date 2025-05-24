@@ -7,6 +7,7 @@ interface Volunteer {
     name: string;
     classesTaken: number;
     subject: string;
+    chatPermission: boolean;
 }
 
 interface Props {
@@ -23,6 +24,7 @@ interface VolunteersTableProps {
     loading?: boolean;
     pagination?: any;
     onChange?: (pagination: any) => void;
+    chatPermission?: boolean;
 }
 
 const VolunteersTable: React.FC<VolunteersTableProps> = ({
@@ -32,6 +34,7 @@ const VolunteersTable: React.FC<VolunteersTableProps> = ({
     loading,
     pagination,
     onChange,
+    chatPermission,
 }) => {
     const columns = [
         {
@@ -54,6 +57,7 @@ const VolunteersTable: React.FC<VolunteersTableProps> = ({
             render: (_: any, record: Volunteer) => (
                 <div className="flex items-center gap-2">
                     <Button
+                        disabled={!record.chatPermission}
                         onClick={() => handleMessageVolunteer(record.id)}
                         btnVariant="link"
                         title="Message Volunteer"
@@ -74,7 +78,7 @@ const VolunteersTable: React.FC<VolunteersTableProps> = ({
             <AntTable
                 className="!capitalize"
                 dataSource={data}
-                columns={columns}
+                columns={columns as any}
                 loading={loading}
                 pagination={pagination}
                 onChange={onChange}

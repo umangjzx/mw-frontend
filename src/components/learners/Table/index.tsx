@@ -7,6 +7,7 @@ interface Learner {
     name: string;
     classesTaken: number;
     subject: string;
+    chat_permission: boolean;
 }
 
 interface Props {
@@ -23,6 +24,7 @@ interface LearnersTableProps {
     loading?: boolean;
     pagination?: any;
     onChange?: (pagination: any) => void;
+    chatPermission?: boolean;
 }
 
 const LearnersTable: React.FC<LearnersTableProps> = ({
@@ -32,6 +34,7 @@ const LearnersTable: React.FC<LearnersTableProps> = ({
     loading,
     pagination,
     onChange,
+    chatPermission,
 }) => {
     const columns = [
         {
@@ -54,9 +57,13 @@ const LearnersTable: React.FC<LearnersTableProps> = ({
             render: (_: any, record: Learner) => (
                 <div className="flex items-center gap-2">
                     <Button
+                        disabled={!record.chat_permission}
                         onClick={() => handleMessageLearner(record.id)}
                         btnVariant="link"
                         title="Message Learner"
+                        className={`${
+                            !record.chat_permission ? "!text-gray-400" : "!text-primary"
+                        }`}
                     />
                     {/* <Button
                         onClick={() => handleUploadTestimonial(record.id)}
@@ -74,7 +81,7 @@ const LearnersTable: React.FC<LearnersTableProps> = ({
             <AntTable
                 className="!capitalize"
                 dataSource={data}
-                columns={columns}
+                columns={columns as any}
                 loading={loading}
                 pagination={pagination}
                 onChange={onChange}

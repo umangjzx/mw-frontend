@@ -30,7 +30,7 @@ const CommonHeader: React.FC = () => {
         title,
         titleIconClick,
         actionButtons = [],
-        hideSearch
+        hideSearch,
     } = headerOptions || {};
 
     const isMobileOrTabScreen = InnerWidth() < 1024;
@@ -39,39 +39,42 @@ const CommonHeader: React.FC = () => {
 
     useEffect(() => {
         setIsSideNavBarOpen(false);
-    }, [pathname])
+    }, [pathname]);
 
     const handleSearch = (value: string) => {
         setSearchQuery(value === "" ? null : value);
     };
 
     const handleMobileSearchClose = () => {
-        setSearchQuery(null)
+        setSearchQuery(null);
         setIsSearchInputOpen(false);
-    }
+    };
 
     return (
         <div className="w-full h-full relative">
             <div className="w-full h-auto lg:h-full p-2 px-3 flex items-center justify-between">
                 <div className="flex items-center gap-5">
                     <div className="flex capitalize items-center">
-                        {
-                            showTitleButton ||
-                            <div className="lg:hidden cursor-pointer mr-2" onClick={() => setIsSideNavBarOpen(true)}>
+                        {showTitleButton || (
+                            <div
+                                className="lg:hidden cursor-pointer mr-2"
+                                onClick={() => setIsSideNavBarOpen(true)}
+                            >
                                 <SideMenuIcon height="22px" width="22px" />
                             </div>
-                        }
-                        {
-                            (showTitleButton || !isMobileOrTabScreen) &&
+                        )}
+                        {(showTitleButton || !isMobileOrTabScreen) && (
                             <Button
                                 icon={titleIcon}
                                 rootClassName={cn(
                                     "flex items-center justify-center !w-10 !h-10 rounded-full hover:bg-gray-100",
-                                    titleIconClick ? "cursor-pointer border-stroke mr-2" : "!border-none"
+                                    titleIconClick
+                                        ? "cursor-pointer border-stroke mr-2"
+                                        : "!border-none"
                                 )}
                                 onClick={titleIconClick}
                             />
-                        }
+                        )}
                         <h3 className="text-lg font-medium">{formatString(title ?? "")}</h3>
                     </div>
                     {!isMobileOrTabScreen && leftButton?.showButton && (
@@ -100,15 +103,15 @@ const CommonHeader: React.FC = () => {
                             icon={actionButtonIcon}
                         />
                     )}
-                    {
-                        hideSearch || (isMobileOrTabScreen ?
+                    {hideSearch ||
+                        (isMobileOrTabScreen ? (
                             <Button
                                 icon={<IoIosSearch className="!text-xl" />}
                                 onClick={() => setIsSearchInputOpen(true)}
                                 customClassName="!rounded-full !p-2 !h-fit"
                                 btnVariant="tertiary"
                             />
-                            :
+                        ) : (
                             <Input
                                 value={searchQuery ?? ""}
                                 inputType="search"
@@ -117,9 +120,32 @@ const CommonHeader: React.FC = () => {
                                 className="!bg-transparent !w-fit !mb-0"
                                 onChange={handleSearch}
                                 placeholder={searchPlaceholder ?? "Search"}
-                            />)
-                    }
-                    {!isMobileOrTabScreen && actionButtons?.map((button: ActionButtons) => (
+                            />
+                        ))}
+                    {!isMobileOrTabScreen &&
+                        actionButtons?.map((button: ActionButtons) => (
+                            <Button
+                                title={button?.buttonTitle}
+                                onClick={button?.buttonOnClick}
+                                rootClassName={button?.buttonClassName}
+                                size="small"
+                                icon={button?.buttonIcon}
+                            />
+                        ))}
+                </div>
+            </div>
+            {(leftButton?.showButton || actionButtons?.length > 0) && (
+                <div className="lg:hidden w-full flex gap-2 px-3 pb-2">
+                    {leftButton?.showButton && (
+                        <Button
+                            title={leftButton?.buttonTitle}
+                            onClick={leftButton?.buttonOnClick}
+                            rootClassName={leftButton?.buttonClassName}
+                            size="small"
+                            icon={leftButton?.buttonIcon}
+                        />
+                    )}
+                    {actionButtons?.map((button: ActionButtons) => (
                         <Button
                             title={button?.buttonTitle}
                             onClick={button?.buttonOnClick}
@@ -129,33 +155,13 @@ const CommonHeader: React.FC = () => {
                         />
                     ))}
                 </div>
-            </div>
-            {
-                (leftButton?.showButton || actionButtons?.length > 0) && (
-                    <div className="lg:hidden w-full flex gap-2 px-3 pb-2">
-                        {leftButton?.showButton && (
-                            <Button
-                                title={leftButton?.buttonTitle}
-                                onClick={leftButton?.buttonOnClick}
-                                rootClassName={leftButton?.buttonClassName}
-                                size="small"
-                                icon={leftButton?.buttonIcon}
-                            />
-                        )}
-                        {actionButtons?.map((button: ActionButtons) => (
-                            <Button
-                                title={button?.buttonTitle}
-                                onClick={button?.buttonOnClick}
-                                rootClassName={button?.buttonClassName}
-                                size="small"
-                                icon={button?.buttonIcon}
-                            />
-                        ))}
-                    </div>
-                )
-            }
-            {isMobileOrTabScreen &&
-                <div className={`absolute z-100 w-full h-full bg-white flex-center gap-2 px-5 transform transition-all duration-500 ${isSearchInputOpen ? "top-0 right-0" : "top-0 -right-full"}`}>
+            )}
+            {isMobileOrTabScreen && (
+                <div
+                    className={`absolute z-100 w-full h-full bg-white flex-center gap-2 px-5 transform transition-all duration-500 ${
+                        isSearchInputOpen ? "top-0 right-0" : "top-0 -right-full"
+                    }`}
+                >
                     <Input
                         value={searchQuery ?? ""}
                         inputType="search"
@@ -169,13 +175,12 @@ const CommonHeader: React.FC = () => {
                         <FeedModalCloseIcon width="25" height="25" />
                     </span>
                 </div>
-            }
-            {
-                isMobileOrTabScreen &&
+            )}
+            {isMobileOrTabScreen && (
                 <SideModal isOpen={isSideNavBarOpen}>
                     <Sidebar onClose={() => setIsSideNavBarOpen(!isSideNavBarOpen)} />
                 </SideModal>
-            }
+            )}
         </div>
     );
 };

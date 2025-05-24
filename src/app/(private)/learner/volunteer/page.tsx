@@ -93,7 +93,7 @@ export default function LearnersPage() {
     const appliedFiltersCount = useMemo(() => {
         const filters = [language_ids, subject_ids, country, start_date, start_time];
         return filters.filter((filter) => filter).length;
-    }, [language_ids, subject_ids, country, start_date, start_time])
+    }, [language_ids, subject_ids, country, start_date, start_time]);
 
     useEffect(() => {
         if (data?.items) {
@@ -104,12 +104,15 @@ export default function LearnersPage() {
                 location: volunteer?.country,
                 volunteerHrs: volunteer?.total_volunteered_hours?.toString(),
                 studentConnected: volunteer?.students_connected?.toString(),
-                subjects: volunteer?.volunteer_subjects?.map((subject: any) => subject?.subject_name),
+                subjects: volunteer?.volunteer_subjects?.map(
+                    (subject: any) => subject?.subject_name
+                ),
                 languages: volunteer?.volunteer_languages?.map(
                     (language: any) => language?.language_name
                 ),
                 totalReviews: volunteer?.total_reviews,
                 overallRating: volunteer?.overall_rating,
+                chatPermission: volunteer?.chat_permission,
             }));
             setVolunteerCardData(formattedData);
         }
@@ -149,19 +152,23 @@ export default function LearnersPage() {
                 buttonTitle: `Filters (${appliedFiltersCount})`,
                 buttonOnClick: () => setIsFilterOpen(true),
                 buttonIcon: <RiFilter3Line className="text-lg" />,
-                buttonClassName: "!bg-white !text-balck hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4 !rounded-full",
+                buttonClassName:
+                    "!bg-white !text-balck hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4 !rounded-full",
                 buttonPlacement: "right",
                 showButton: true,
             },
             actionButtons: [
                 {
-                    buttonTitle: isMobileScreen ? "Volunteer History" : "Volunteers I have worked with",
+                    buttonTitle: isMobileScreen
+                        ? "Volunteer History"
+                        : "Volunteers I have worked with",
                     buttonOnClick: () => router.push("/learner/my-volunteers"),
-                    buttonClassName: "!bg-black !text-white hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4 !rounded-full",
+                    buttonClassName:
+                        "!bg-black !text-white hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4 !rounded-full",
                     buttonPlacement: "right",
                     showButton: true,
-                }
-            ]
+                },
+            ],
         });
     }, [pathname, setHeaderOptions, appliedFiltersCount]);
 
@@ -180,28 +187,37 @@ export default function LearnersPage() {
                 <div className="flex-center h-full w-full">Something went wrong</div>
             ) : (
                 <>
-                    {volunteerCardData.length === 0 ?
+                    {volunteerCardData.length === 0 ? (
                         <div className="flex-center h-full w-full flex-col gap-1">
                             <p>No Volunteer Found</p>
                             {query && (
-                                <button className="text-blue-500 underline" onClick={() => setSearchQuery(null)}>Clear Search</button>
+                                <button
+                                    className="text-blue-500 underline"
+                                    onClick={() => setSearchQuery(null)}
+                                >
+                                    Clear Search
+                                </button>
                             )}
                             {appliedFiltersCount > 0 && (
-                                <button className="text-blue-500 underline" onClick={() => router.push("/learner/volunteer")}>Clear Filters</button>
+                                <button
+                                    className="text-blue-500 underline"
+                                    onClick={() => router.push("/learner/volunteer")}
+                                >
+                                    Clear Filters
+                                </button>
                             )}
                         </div>
-                        :
-                        (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full h-auto p-5 py-7 lg:p-10">
-                                {volunteerCardData.map((volunteer) => (
-                                    <VolunteerCard
-                                        key={volunteer.volunteerId}
-                                        onSeeMoreClick={handleSeeMoreClick}
-                                        {...volunteer}
-                                    />
-                                ))}
-                            </div>
-                        )}
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full h-auto p-5 py-7 lg:p-10">
+                            {volunteerCardData.map((volunteer) => (
+                                <VolunteerCard
+                                    key={volunteer.volunteerId}
+                                    onSeeMoreClick={handleSeeMoreClick}
+                                    {...volunteer}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </>
             )}
         </div>
