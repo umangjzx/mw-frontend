@@ -77,6 +77,7 @@ const Messages = () => {
     const [messageId, setMessageId] = useState([]);
     const [noChats, setNoChats] = useState<boolean | null>(null);
     console.log(isIndividualLoading, "isIndividualLoading");
+    const [location, setLocation] = useState("");
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -104,6 +105,7 @@ const Messages = () => {
                         setRecieverName(matchingChat.learner_name);
                         setRecieverImage(matchingChat.learner_profile_picture.image_url);
                         setChatPermission(matchingChat.chat_permission);
+                        setLocation(matchingChat.learner_country);
                     }
                 }
 
@@ -136,6 +138,7 @@ const Messages = () => {
                 setRecieverName(response.data[0].learner_name);
                 setRecieverImage(response.data[0].learner_profile_picture.image_url);
             }
+            setLocation(response.data[0].learner_country);
             // Only store message IDs for unread messages
             const unreadMessageIds = response.data
                 .filter((msg: ChatMessage) => !msg.read)
@@ -249,7 +252,7 @@ const Messages = () => {
                         ) : (
                             <ChatHeader
                                 name={recieverName}
-                                location="Orlando, Florida"
+                                location={location}
                                 image={recieverImage}
                             />
                         )}

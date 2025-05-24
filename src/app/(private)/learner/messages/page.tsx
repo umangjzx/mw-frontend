@@ -16,6 +16,7 @@ import Cookies from "js-cookie";
 import { Spin, Tooltip } from "antd";
 import NoMessage from "@/components/messages/NoMessage";
 import LottieLoader from "@/components/common/Loader/Lottie";
+import VolunteerViewModal from "@/components/leaner/VolunteerViewModal";
 
 const ChatHeaderSkeleton = () => {
     return (
@@ -75,6 +76,14 @@ const Messages = () => {
     const [messageId, setMessageId] = useState([]);
     const queryClient = useQueryClient();
     const [noChats, setNoChats] = useState<boolean | null>(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const [volunteerIdQuery, setVolunteerIdQuery] = useQueryState("volunteerId");
+    const [location, setLocation] = useState("");
+
+    const handleModal = () => {
+        setIsOpen(false);
+        setVolunteerIdQuery(null);
+    };
 
     const getAllChatsForLearners = () => {
         setIsLoading(true);
@@ -95,6 +104,7 @@ const Messages = () => {
                         setRecieverImage(matchingChat.volunteer_profile_picture.image_url);
                         console.log(matchingChat.chat_permission, "MATCHING CHAT");
                         setChatPermission(matchingChat.chat_permission);
+                        setLocation(matchingChat.volunteer_country);
                     }
                 }
 
@@ -122,9 +132,11 @@ const Messages = () => {
             if (response.data[0].receiver_id === learnerId) {
                 setRecieverName(response.data[0].learner_name);
                 setRecieverImage(response.data[0].learner_profile_picture.image_url);
+                setLocation(response.data[0].volunteer_country);
             } else {
                 setRecieverName(response.data[0].volunteer_name);
                 setRecieverImage(response.data[0].volunteer_profile_picture.image_url);
+                setLocation(response.data[0].volunteer_country);
             }
             const unreadMessageIds = response.data
                 .filter((msg: ChatMessage) => !msg.read)
@@ -227,10 +239,10 @@ const Messages = () => {
     if (noChats === null) {
         return <LottieLoader isLoading={true} />;
     }
-    console.log(isIndividualLoading, isSendMessageLoading, "send message loading");
 
     return (
         <>
+            <VolunteerViewModal isOpen={isOpen} onClose={handleModal} />
             {noChats ? (
                 <NoMessage />
             ) : (
@@ -247,8 +259,12 @@ const Messages = () => {
                         ) : (
                             <ChatHeader
                                 name={recieverName}
-                                location="Orlando, Florida"
+                                location={location}
                                 image={recieverImage}
+                                onSeeMoreClick={() => {
+                                    // setVolunteerIdQuery(volunteerId);
+                                    // setIsOpen(true);
+                                }}
                             />
                         )}
                         <div className="flex flex-col gap-4 p-4 h-[calc(100vh-16em)] overflow-y-auto">

@@ -64,30 +64,8 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
                     </p>
                 </div>
             </div>
-            <div className="flex flex-col gap-2.5">
-                <div className="flex flex-wrap gap-2.5">
-                    <CardChips label="Volunteer Hrs" value={volunteerHrs || "0"} />
-                </div>
-                <div className="flex max-lg:flex-col gap-2.5">
-                    <CardChips label="Student connected" value={studentConnected} />
-                    <CardChips label="Subject" value={subjects?.join(", ")} />
-                </div>
-                {Array.isArray(languages) && languages?.length > 0 && (
-                    <div>
-                        <CardChips label="Language" value={languages.join(", ")} />
-                    </div>
-                )}
-            </div>
-            <Divider />
-            <div className="flex items-center justify-between">
-                <Button
-                    disabled={!chatPermission}
-                    onClick={handleChatClick}
-                    title="Start Chat"
-                    btnVariant="secondary"
-                    className="!rounded-xl !text-sm"
-                />
-                <div className="border-stroke border w-fit px-3 py-1.5 rounded-full">
+            <div className="border-stroke border w-fit px-3 py-1.5 rounded-full">
+                <div className="flex flex-col gap-2.5">
                     <div className="flex items-center gap-2">
                         {overallRating ? (
                             <>
@@ -105,9 +83,28 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
                         )}
                     </div>
                 </div>
-                <span className="cursor-pointer" onClick={() => onSeeMoreClick(volunteerId)}>
-                    <SeeMoreIcon />
-                </span>
+            </div>
+            <div className="flex flex-wrap gap-2.5">
+                <CardChips label="Volunteer Hrs" value={volunteerHrs || "0"} />
+            </div>
+            <div className="flex max-lg:flex-col gap-2.5">
+                <CardChips label="Student connected" value={studentConnected} />
+                <CardChips label="Subject" value={subjects?.join(", ")} />
+            </div>
+            {Array.isArray(languages) && languages?.length > 0 && (
+                <div>
+                    <CardChips label="Language" value={languages.join(", ")} />
+                </div>
+            )}
+            <Divider />
+            <div className="flex items-center justify-between">
+                <Button
+                    disabled={!chatPermission}
+                    onClick={handleChatClick}
+                    title="Start Chat"
+                    btnVariant="secondary"
+                    className="!rounded-xl !text-sm !w-full !bg-white hover:!bg-black hover:!text-white !text-black !border-stroke"
+                />
             </div>
         </div>
     );
