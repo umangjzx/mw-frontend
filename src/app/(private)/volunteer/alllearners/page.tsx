@@ -144,9 +144,9 @@ export default function LearnersPage() {
 
     useEffect(() => {
         setHeaderOptions({
-            searchPlaceholder: "Find your learner",
+            searchPlaceholder: "Find your tutor",
             actionButtonPlacement: "right",
-            title: "Learners",
+            title: "Volunteers",
             titleIcon: getHeaderIcon(pathname),
             leftButton: {
                 buttonTitle: `Filters (${appliedFiltersCount})`,
@@ -160,8 +160,8 @@ export default function LearnersPage() {
             actionButtons: [
                 {
                     buttonTitle: isMobileScreen
-                        ? "Learners History"
-                        : "Learners I have worked with",
+                        ? "Volunteer History"
+                        : "Volunteers I have worked with",
                     buttonOnClick: () => router.push("/learner/my-volunteers"),
                     buttonClassName:
                         "!bg-black !text-white hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4 !rounded-full",
