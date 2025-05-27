@@ -16,18 +16,19 @@ import { RiFilter3Line } from "react-icons/ri";
 import LottieLoader from "@/components/common/Loader/Lottie";
 import InnerWidth from "@/utils/innerWidth";
 import { useDebounce } from "use-debounce";
-
-interface VolunteerCardData {
-    volunteerId: string;
+import LearnerCard from "@/components/leaner/LearnerCard";
+interface LearnerCardData {
+    learnerId: string;
     profileImage: string;
     name: string;
     location: string;
-    volunteerHrs: string;
+    learnerHrs: string;
     studentConnected: string;
     subjects: string[];
-    languages: string[];
+    languages: string;
     totalReviews: string;
     overallRating: string;
+    developementDisability: string;
 }
 
 export default function LearnersPage() {
@@ -37,7 +38,7 @@ export default function LearnersPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    const [volunteerCardData, setVolunteerCardData] = useState<VolunteerCardData[]>([]);
+    const [learnerCardData, setLearnerCardData] = useState<LearnerCardData[]>([]);
     const [isOpenSchedule, setIsOpenSchedule] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
@@ -51,7 +52,7 @@ export default function LearnersPage() {
     const [end_date] = useQueryState("end_date");
     const [start_time] = useQueryState("start_time");
     const [end_time] = useQueryState("end_time");
-    const [volunteerId, setVolunteerId] = useQueryState("volunteerId");
+    const [learnerId, setLearnerId] = useQueryState("learnerId");
     const [modalQuery, setModalQuery] = useQueryState("modal");
 
     const isMobileScreen = InnerWidth() < 768;
@@ -72,17 +73,17 @@ export default function LearnersPage() {
             end_time,
         ],
         queryFn: async () => {
-            const endpoint = `${endpoints.volunteer.getAllVolunteers}?${new URLSearchParams({
+            const endpoint = `${endpoints.learner.getAllLearners}?${new URLSearchParams({
                 query: query || "",
                 page: page,
                 size: size,
-                language_ids: language_ids || "",
-                subject_ids: subject_ids || "",
-                country: country || "",
-                start_date: start_date || "",
-                end_date: end_date || "",
-                start_time: start_time || "",
-                end_time: end_time || "",
+                // language_ids: language_ids || "",
+                // subject_ids: subject_ids || "",
+                // country: country || "",
+                // start_date: start_date || "",
+                // end_date: end_date || "",
+                // start_time: start_time || "",
+                // end_time: end_time || "",
             })}`;
             const response: any = await GET_API(endpoint);
             return response.data;
@@ -97,34 +98,36 @@ export default function LearnersPage() {
 
     useEffect(() => {
         if (data?.items) {
-            const formattedData: VolunteerCardData[] = data.items.map((volunteer: any) => ({
-                volunteerId: volunteer?.volunteer_id,
-                profileImage: volunteer?.profile_picture?.image_url,
-                name: `${volunteer?.volunteer_first_name} ${volunteer?.volunteer_last_name}`,
-                location: volunteer?.country,
-                volunteerHrs: volunteer?.total_volunteered_hours?.toString(),
-                studentConnected: volunteer?.students_connected?.toString(),
-                subjects: volunteer?.volunteer_subjects?.map(
-                    (subject: any) => subject?.subject_name
-                ),
-                languages: volunteer?.volunteer_languages?.map(
-                    (language: any) => language?.language_name
-                ),
-                totalReviews: volunteer?.total_reviews,
-                overallRating: volunteer?.overall_rating,
-                chatPermission: volunteer?.chat_permission,
+            const formattedData: LearnerCardData[] = data.items.map((learner: any) => ({
+                learnerId: learner?.learner_id,
+                profileImage: learner?.profile_picture?.image_url,
+                name: `${learner?.learner_personal_info?.learner_first_name} ${learner?.learner_personal_info?.learner_last_name}`,
+                location: learner?.learner_personal_info?.learner_contact_details?.country,
+                learnerHrs: learner?.total_classes_attended?.toString(),
+                studentConnected: learner?.students_connected?.toString(),
+                subjects: learner?.learner_subjects?.map((subject: any) => subject?.subject_name),
+                // languages: learner?.learner_personal_info?.learner_primary_language?.map(
+                //     (language: any) => language?.language_name
+                // ),
+                languages: learner?.learner_personal_info?.learner_primary_language,
+                totalReviews: learner?.total_reviews,
+                overallRating: learner?.overall_rating,
+                chatPermission: learner?.chat_permission,
+                developementDisability:
+                    learner?.learner_special_needs?.type_of_developmental_disability,
             }));
-            setVolunteerCardData(formattedData);
+            setLearnerCardData(formattedData);
+            console.log(formattedData, "formattedData");
         }
     }, [data]);
 
     const handleModal = () => {
-        setVolunteerId(null);
+        setLearnerId(null);
         setModalQuery(null);
     };
 
-    const handleSeeMoreClick = (volunteerId: string) => {
-        setVolunteerId(volunteerId);
+    const handleSeeMoreClick = (learnerId: string) => {
+        setLearnerId(learnerId);
     };
 
     useEffect(() => {
@@ -133,14 +136,14 @@ export default function LearnersPage() {
         if (modal === "add_new_meeting") {
             setIsOpenSchedule(true);
             setIsOpen(false);
-        } else if (volunteerId) {
+        } else if (learnerId) {
             setIsOpen(true);
             setIsOpenSchedule(false);
         } else {
             setIsOpen(false);
             setIsOpenSchedule(false);
         }
-    }, [searchParams, volunteerId]);
+    }, [searchParams, learnerId]);
 
     useEffect(() => {
         setHeaderOptions({
@@ -162,7 +165,7 @@ export default function LearnersPage() {
                     buttonTitle: isMobileScreen
                         ? "Learners History"
                         : "Learners I have worked with",
-                    buttonOnClick: () => router.push("/learner/my-volunteers"),
+                    buttonOnClick: () => router.push("/volunteer/my-learners"),
                     buttonClassName:
                         "!bg-black !text-white hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4 !rounded-full",
                     buttonPlacement: "right",
@@ -187,9 +190,9 @@ export default function LearnersPage() {
                 <div className="flex-center h-full w-full">Something went wrong</div>
             ) : (
                 <>
-                    {volunteerCardData.length === 0 ? (
+                    {learnerCardData.length === 0 ? (
                         <div className="flex-center h-full w-full flex-col gap-1">
-                            <p>No Volunteer Found</p>
+                            <p>No Learners Found</p>
                             {query && (
                                 <button
                                     className="text-blue-500 underline"
@@ -209,11 +212,11 @@ export default function LearnersPage() {
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full h-auto p-5 py-7 lg:p-10">
-                            {volunteerCardData.map((volunteer) => (
-                                <VolunteerCard
-                                    key={volunteer.volunteerId}
+                            {learnerCardData.map((learner) => (
+                                <LearnerCard
+                                    key={learner.learnerId}
                                     onSeeMoreClick={handleSeeMoreClick}
-                                    {...volunteer}
+                                    {...learner}
                                 />
                             ))}
                         </div>
