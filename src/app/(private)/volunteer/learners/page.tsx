@@ -97,8 +97,8 @@ export default function LearnersPage() {
     }, [language_ids, subject_ids, country, start_date, start_time]);
 
     useEffect(() => {
-        if (data?.items) {
-            const formattedData: LearnerCardData[] = data.items.map((learner: any) => ({
+        if (data) {
+            const formattedData: LearnerCardData[] = data.map((learner: any) => ({
                 learnerId: learner?.learner_id,
                 profileImage: learner?.profile_picture?.image_url,
                 name: `${learner?.learner_personal_info?.learner_first_name} ${learner?.learner_personal_info?.learner_last_name}`,
@@ -106,9 +106,6 @@ export default function LearnersPage() {
                 learnerHrs: learner?.total_classes_attended?.toString(),
                 studentConnected: learner?.students_connected?.toString(),
                 subjects: learner?.learner_subjects?.map((subject: any) => subject?.subject_name),
-                // languages: learner?.learner_personal_info?.learner_primary_language?.map(
-                //     (language: any) => language?.language_name
-                // ),
                 languages: learner?.learner_personal_info?.learner_primary_language,
                 totalReviews: learner?.total_reviews,
                 overallRating: learner?.overall_rating,
@@ -151,15 +148,6 @@ export default function LearnersPage() {
             actionButtonPlacement: "right",
             title: "Learners",
             titleIcon: getHeaderIcon(pathname),
-            leftButton: {
-                buttonTitle: `Filters (${appliedFiltersCount})`,
-                buttonOnClick: () => setIsFilterOpen(true),
-                buttonIcon: <RiFilter3Line className="text-lg" />,
-                buttonClassName:
-                    "!bg-white !text-balck hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4 !rounded-full",
-                buttonPlacement: "right",
-                showButton: true,
-            },
             actionButtons: [
                 {
                     buttonTitle: isMobileScreen
