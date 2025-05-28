@@ -15,6 +15,7 @@ import { useSearchParams } from "next/navigation";
 import { useSendData } from "@/hooks/useReactQuery";
 import { z } from "zod";
 import InnerWidth from "@/utils/innerWidth";
+import { showToast } from "@/components/common/Toast";
 
 // Define Zod schema for form validation
 const meetingFormSchema = z.object({
@@ -82,18 +83,22 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
         setFetchingVolunteers(false);
     };
 
-    const getIndividualVolunteer = async() => {
-        const { data } = await GET_API(endpoints.volunteer.getIndividualVolunteer(volunteerId||""))
-        setFormData((prev) => ({ ...prev, select_volunteer: data?.volunteer_id }))
-        setVolunteers([{
-            label: data?.volunteer_first_name + " " + data?.volunteer_last_name,
-            value: data?.volunteer_id,
-         }]);
-    }
+    const getIndividualVolunteer = async () => {
+        const { data } = await GET_API(
+            endpoints.volunteer.getIndividualVolunteer(volunteerId || "")
+        );
+        setFormData((prev) => ({ ...prev, select_volunteer: data?.volunteer_id }));
+        setVolunteers([
+            {
+                label: data?.volunteer_first_name + " " + data?.volunteer_last_name,
+                value: data?.volunteer_id,
+            },
+        ]);
+    };
 
     const { data } = useQuery({
         queryKey: ["volunteers"],
-        queryFn: () => (volunteerId)? getIndividualVolunteer() : getVolunteers(),
+        queryFn: () => (volunteerId ? getIndividualVolunteer() : getVolunteers()),
         enabled: isOpen,
     });
 
@@ -118,9 +123,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
         }
     };
 
-    const {
-        refetch: refetchAvailableDays,
-    } = useQuery({
+    const { refetch: refetchAvailableDays } = useQuery({
         queryKey: ["availableDays"],
         queryFn: getAvailableDays,
         enabled: !!selectedVolunteerId,
@@ -275,6 +278,10 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
             });
             setAvailableSlots([]);
             onClose();
+            showToast({
+                message: "Meeting scheduled successfully",
+                type: "success",
+            });
         },
         error: (err) => {
             console.log("Error: ", err);
@@ -324,7 +331,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
                         field.name === "select_date" ? volunteerAvailableDays : undefined;
                     console.log(`Field ${field.name} availableDays:`, availableDaysForField);
 
-                    if(field.name === "select_date" && selectedVolunteerId === "") return null;
+                    if (field.name === "select_date" && selectedVolunteerId === "") return null;
 
                     return (
                         <Input
