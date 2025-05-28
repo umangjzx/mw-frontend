@@ -17,6 +17,8 @@ import { Spin, Tooltip } from "antd";
 import NoMessage from "@/components/messages/NoMessage";
 import LottieLoader from "@/components/common/Loader/Lottie";
 import VolunteerViewModal from "@/components/leaner/VolunteerViewModal";
+import AddNewMeetingModal from "@/components/schedule/Modals/AddNewMeetingModal";
+import { se } from "date-fns/locale";
 
 const ChatHeaderSkeleton = () => {
     return (
@@ -79,6 +81,7 @@ const Messages = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [volunteerIdQuery, setVolunteerIdQuery] = useQueryState("volunteerId");
     const [location, setLocation] = useState("");
+    const [isOpenSchedule, setIsOpenSchedule] = useState(false);
 
     const handleModal = () => {
         setIsOpen(false);
@@ -214,6 +217,8 @@ const Messages = () => {
         });
     };
 
+    const handleScheduleMeeting = () => setIsOpenSchedule(!isOpenSchedule);
+
     useEffect(() => {
         scrollToBottom();
     }, [individualChat]);
@@ -242,6 +247,8 @@ const Messages = () => {
 
     return (
         <>
+            <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleScheduleMeeting} />
+
             <VolunteerViewModal isOpen={isOpen} onClose={handleModal} />
             {noChats ? (
                 <NoMessage />
@@ -257,15 +264,23 @@ const Messages = () => {
                         {isIndividualLoading && !isSendMessageLoading && !individualChat.length ? (
                             <ChatHeaderSkeleton />
                         ) : (
-                            <ChatHeader
-                                name={recieverName}
-                                location={location}
-                                image={recieverImage}
-                                onSeeMoreClick={() => {
-                                    // setVolunteerIdQuery(volunteerId);
-                                    // setIsOpen(true);
-                                }}
-                            />
+                            <div className="flex items-center gap-4 justify-between">
+                                <ChatHeader
+                                    name={recieverName}
+                                    location={location}
+                                    image={recieverImage}
+                                    onSeeMoreClick={() => {
+                                        // setVolunteerIdQuery(volunteerId);
+                                        // setIsOpen(true);
+                                    }}
+                                />
+                                <Button
+                                    onClick={handleScheduleMeeting}
+                                    title="Schedule Meeting"
+                                    btnVariant="secondary"
+                                    className="!rounded-xl !text-sm !bg-black hover:!bg-black !text-white transition-all duration-300"
+                                />
+                            </div>
                         )}
                         <div className="flex flex-col gap-4 p-4 h-[calc(100vh-16em)] overflow-y-auto">
                             {isIndividualLoading ? (
