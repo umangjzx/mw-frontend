@@ -256,32 +256,23 @@ const Messages = () => {
                         {isIndividualLoading && !isSendMessageLoading && !individualChat.length ? (
                             <ChatHeaderSkeleton />
                         ) : (
-                            // <div className="flex items-center gap-4 justify-between">
-                            //     <ChatHeader
-                            //         name={recieverName}
-                            //         location={location}
-                            //         image={recieverImage}
-                            //         onSeeMoreClick={() => {
-                            //             // setVolunteerIdQuery(volunteerId);
-                            //             // setIsOpen(true);
-                            //         }}
-                            //     />
-                            //     <Button
-                            //         onClick={handleScheduleMeeting}
-                            //         title="Schedule Meeting"
-                            //         btnVariant="secondary"
-                            //         className="!rounded-xl !text-sm !bg-black hover:!bg-black !text-white transition-all duration-300"
-                            //     />
-                            // </div>
-                            <ChatHeader
-                                name={recieverName}
-                                location={location}
-                                image={recieverImage}
-                                onSeeMoreClick={() => {
-                                    // setVolunteerIdQuery(volunteerId);
-                                    // setIsOpen(true);
-                                }}
-                            />
+                            <div className="flex items-center gap-4 justify-between">
+                                <ChatHeader
+                                    name={recieverName}
+                                    location={location}
+                                    image={recieverImage}
+                                    onSeeMoreClick={() => {
+                                        // setVolunteerIdQuery(volunteerId);
+                                        // setIsOpen(true);
+                                    }}
+                                />
+                                <Button
+                                    onClick={handleScheduleMeeting}
+                                    title="Schedule Meeting"
+                                    btnVariant="secondary"
+                                    className="!rounded-xl !text-sm !bg-black hover:!bg-black !text-white transition-all duration-300"
+                                />
+                            </div>
                         )}
                         <div className="flex flex-col gap-4 p-4 h-[calc(100vh-16em)] overflow-y-auto">
                             {isIndividualLoading ? (

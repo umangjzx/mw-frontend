@@ -16,9 +16,10 @@ import "./styles.css";
 
 interface CalendarProps {
     events: any;
+    onDateSelect?: (date: string) => void;
 }
 
-const Calendar: React.FC<CalendarProps> = ({ events }) => {
+const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
     const [showModal, setShowModal] = useState<ModalType>(null);
     const [currentEventData, setCurrentEventData] = useState<{
         events: EventApi[];
@@ -211,6 +212,17 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
         setShowPreview(false);
     };
 
+    const handleDateClick = (arg: any) => {
+        const clickedDate = moment(arg.dateStr);
+        const currentDate = moment().startOf("day");
+
+        if (clickedDate.isSameOrAfter(currentDate)) {
+            if (onDateSelect) {
+                onDateSelect(arg.dateStr);
+            }
+        }
+    };
+
     return (
         <>
             <MeetingPreviewModal
@@ -253,9 +265,10 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                     initialView="dayGridMonth"
                     editable={false}
-                    selectable={false}
+                    selectable={true}
                     selectMirror={false}
                     eventClick={handleEventClick}
+                    dateClick={handleDateClick}
                     dayMaxEvents={true}
                     weekends={true}
                     headerToolbar={false}

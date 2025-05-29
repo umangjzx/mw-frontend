@@ -62,6 +62,8 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
     const [slotError, setSlotError] = useState<string>("");
     const [fetchingSlots, setFetchingSlots] = useState<boolean>(false);
     const [volunteerAvailableDays, setVolunteerAvailableDays] = useState<string[]>([]);
+    const [volunteerAvailableDates, setVolunteerAvailableDates] = useState<string[]>([]);
+    const [volunteerUnavailableDates, setVolunteerUnavailableDates] = useState<string[]>([]);
     const [selectedVolunteerId, setSelectedVolunteerId] = useState<string>("");
 
     const getVolunteers = async () => {
@@ -114,8 +116,17 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
                 ? response.data
                 : response.data.available_days;
 
+            // Handle available and unavailable dates
+            const availableDates = response.data.available_dates || [];
+            const unavailableDates = response.data.unavailable_dates || [];
+
             console.log("Processed Available Days:", availableDays);
+            console.log("Available Dates:", availableDates);
+            console.log("Unavailable Dates:", unavailableDates);
+
             setVolunteerAvailableDays(availableDays);
+            setVolunteerAvailableDates(availableDates);
+            setVolunteerUnavailableDates(unavailableDates);
             return availableDays;
         } catch (error) {
             console.error("Error fetching available days:", error);
@@ -329,7 +340,14 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
                 {LearnerScheduleModalConstants.map((field: any) => {
                     const availableDaysForField =
                         field.name === "select_date" ? volunteerAvailableDays : undefined;
+                    const availableDatesForField =
+                        field.name === "select_date" ? volunteerAvailableDates : undefined;
+                    const unavailableDatesForField =
+                        field.name === "select_date" ? volunteerUnavailableDates : undefined;
+
                     console.log(`Field ${field.name} availableDays:`, availableDaysForField);
+                    console.log(`Field ${field.name} availableDates:`, availableDatesForField);
+                    console.log(`Field ${field.name} unavailableDates:`, unavailableDatesForField);
 
                     if (field.name === "select_date" && selectedVolunteerId === "") return null;
 
@@ -343,6 +361,8 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
                             disabled={field.name === "select_volunteer" && volunteerId}
                             error={errors[field.name as keyof FormData]}
                             availableDays={availableDaysForField}
+                            availableDates={availableDatesForField}
+                            unavailableDates={unavailableDatesForField}
                         />
                     );
                 })}
