@@ -140,7 +140,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
     const handleMoreLinkClick = (arg: any) => {
         arg.jsEvent.preventDefault();
 
-        const dateEvents = arg.allSegs.map((seg: any) => (seg?.event));
+        const dateEvents = arg.allSegs.map((seg: any) => seg?.event);
         setCurrentEventData({
             events: dateEvents,
             date: formatDate(arg.date, {
@@ -216,7 +216,10 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
             <MeetingPreviewModal
                 isOpen={showPreview}
                 data={events}
-                onClose={() => {setShowPreview(false); setShowModal(null)}}
+                onClose={() => {
+                    setShowPreview(false);
+                    setShowModal(null);
+                }}
                 event={selectedEvent}
                 style={{
                     position: "fixed",
@@ -231,7 +234,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
                 onCancel={handleCloseModal}
                 onProceed={() => setShowModal(null)}
                 value={""}
-                onChange={() => { }}
+                onChange={() => {}}
                 onClose={handleCloseModal}
             />
 

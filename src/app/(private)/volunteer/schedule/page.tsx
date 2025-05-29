@@ -24,7 +24,6 @@ export default function SchedulePage() {
     const [isOpenFeedback, setIsOpenFeedback] = useState(false);
     const queryClient = useQueryClient();
 
-    
     const router = useRouter();
     const isMobileOrTabScreen = InnerWidth() < 1024;
 
@@ -77,12 +76,11 @@ export default function SchedulePage() {
                 <LottieLoader isLoading={true} />
             ) : (
                 <>
-                    {
-                        isMobileOrTabScreen ?
-                            <MobileCalender events={data || []} />
-                            :
-                            <Calendar events={data || []} />
-                    }
+                    {isMobileOrTabScreen ? (
+                        <MobileCalender events={data || []} />
+                    ) : (
+                        <Calendar events={data || []} />
+                    )}
                     <MyScheduleModal isOpen={isOpenSchedule} onClose={handleNavigate} />
                     <ApprovalModal isOpen={isOpenApproval} onClose={handleNavigate} />
                     <FeedbackModal

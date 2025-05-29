@@ -117,12 +117,12 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
     } = extendedProps;
 
     const handleFeedBack = () => {
-        onClose()
+        onClose();
         router.push(`/${role}/schedule?current_month=${currentMonth}&modal=feedback`);
     };
 
     const handleMarkAsCompleted = () => {
-        setLoadingCompleted(true)
+        setLoadingCompleted(true);
         PUT_API(endpoints.session.markAsCompleted(sessionId), {}).then(() => {
             if (role === "volunteer") {
                 queryClient.invalidateQueries({ queryKey: ["volunteer-events"] });
@@ -130,7 +130,7 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                 queryClient.invalidateQueries({ queryKey: ["learner-events"] });
             }
             onClose();
-            setLoadingCompleted(false)
+            setLoadingCompleted(false);
         });
     };
 

@@ -189,6 +189,7 @@ export const Input: React.FC<InputProps> = (props) => {
                             value={props.value ? dayjs(props.value) : null}
                             onChange={(date) => props.onChange(date?.toDate())}
                             format="YYYY-MM-DD"
+                            disabled={props.disabled}
                             disabledDate={(current) => {
                                 // Check if date is before today
                                 const isBeforeToday = current && current.isBefore(today, "day");

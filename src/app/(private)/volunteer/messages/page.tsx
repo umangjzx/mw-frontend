@@ -129,15 +129,9 @@ const Messages = () => {
         setIsIndividualLoading(true);
         try {
             const response = await GET_API(endpoints.chat.getIndividualChat(chatId as string));
-            console.log(response.data[0], "RESPONSE INDIVIDUAL CHAT");
 
-            if (response.data[0].receiver_id === volunteerId) {
-                setRecieverName(response.data[0].volunteer_name);
-                setRecieverImage(response.data[0].volunteer_profile_picture.image_url);
-            } else {
-                setRecieverName(response.data[0].learner_name);
-                setRecieverImage(response.data[0].learner_profile_picture.image_url);
-            }
+            setRecieverName(response.data[0].learner_name);
+            setRecieverImage(response.data[0].learner_profile_picture.image_url);
             setLocation(response.data[0].learner_country);
             // Only store message IDs for unread messages
             const unreadMessageIds = response.data

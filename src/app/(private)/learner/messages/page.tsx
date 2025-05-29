@@ -17,6 +17,8 @@ import { Spin, Tooltip } from "antd";
 import NoMessage from "@/components/messages/NoMessage";
 import LottieLoader from "@/components/common/Loader/Lottie";
 import VolunteerViewModal from "@/components/leaner/VolunteerViewModal";
+import AddNewMeetingModal from "@/components/schedule/Modals/AddNewMeetingModal";
+import { se } from "date-fns/locale";
 
 const ChatHeaderSkeleton = () => {
     return (
@@ -79,6 +81,7 @@ const Messages = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [volunteerIdQuery, setVolunteerIdQuery] = useQueryState("volunteerId");
     const [location, setLocation] = useState("");
+    const [isOpenSchedule, setIsOpenSchedule] = useState(false);
 
     const handleModal = () => {
         setIsOpen(false);
@@ -102,7 +105,6 @@ const Messages = () => {
                     if (matchingChat) {
                         setRecieverName(matchingChat.volunteer_name);
                         setRecieverImage(matchingChat.volunteer_profile_picture.image_url);
-                        console.log(matchingChat.chat_permission, "MATCHING CHAT");
                         setChatPermission(matchingChat.chat_permission);
                         setLocation(matchingChat.volunteer_country);
                     }
@@ -128,16 +130,9 @@ const Messages = () => {
         setIsIndividualLoading(true);
         try {
             const response = await GET_API(endpoints.chat.getIndividualChat(chatId as string));
-            console.log(response.data, "response.data getIndividualChat");
-            if (response.data[0].receiver_id === learnerId) {
-                setRecieverName(response.data[0].learner_name);
-                setRecieverImage(response.data[0].learner_profile_picture.image_url);
-                setLocation(response.data[0].volunteer_country);
-            } else {
-                setRecieverName(response.data[0].volunteer_name);
-                setRecieverImage(response.data[0].volunteer_profile_picture.image_url);
-                setLocation(response.data[0].volunteer_country);
-            }
+            setRecieverName(response.data[0].volunteer_name);
+            setRecieverImage(response.data[0].volunteer_profile_picture.image_url);
+            setLocation(response.data[0].volunteer_country);
             const unreadMessageIds = response.data
                 .filter((msg: ChatMessage) => !msg.read)
                 .map((msg: ChatMessage) => msg.message_id);
@@ -214,6 +209,8 @@ const Messages = () => {
         });
     };
 
+    const handleScheduleMeeting = () => setIsOpenSchedule(!isOpenSchedule);
+
     useEffect(() => {
         scrollToBottom();
     }, [individualChat]);
@@ -242,6 +239,8 @@ const Messages = () => {
 
     return (
         <>
+            <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleScheduleMeeting} />
+
             <VolunteerViewModal isOpen={isOpen} onClose={handleModal} />
             {noChats ? (
                 <NoMessage />
@@ -257,6 +256,23 @@ const Messages = () => {
                         {isIndividualLoading && !isSendMessageLoading && !individualChat.length ? (
                             <ChatHeaderSkeleton />
                         ) : (
+                            // <div className="flex items-center gap-4 justify-between">
+                            //     <ChatHeader
+                            //         name={recieverName}
+                            //         location={location}
+                            //         image={recieverImage}
+                            //         onSeeMoreClick={() => {
+                            //             // setVolunteerIdQuery(volunteerId);
+                            //             // setIsOpen(true);
+                            //         }}
+                            //     />
+                            //     <Button
+                            //         onClick={handleScheduleMeeting}
+                            //         title="Schedule Meeting"
+                            //         btnVariant="secondary"
+                            //         className="!rounded-xl !text-sm !bg-black hover:!bg-black !text-white transition-all duration-300"
+                            //     />
+                            // </div>
                             <ChatHeader
                                 name={recieverName}
                                 location={location}
