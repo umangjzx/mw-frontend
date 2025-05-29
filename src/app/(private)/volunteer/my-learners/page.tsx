@@ -166,7 +166,10 @@ export default function LearnersPage() {
     useEffect(() => {
         setHeaderOptions({
             title: "Learners",
-            titleIcon: getHeaderIcon(pathname),
+            titleIcon: getHeaderIcon("backIcon"),
+            titleIconClick: () => router.push("/volunteer/learners"),
+            searchPlaceholder: "Find your learner",
+            showTitleButton: true,
         });
     }, [setHeaderOptions]);
 
