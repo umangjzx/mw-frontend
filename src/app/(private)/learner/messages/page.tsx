@@ -105,7 +105,6 @@ const Messages = () => {
                     if (matchingChat) {
                         setRecieverName(matchingChat.volunteer_name);
                         setRecieverImage(matchingChat.volunteer_profile_picture.image_url);
-                        console.log(matchingChat.chat_permission, "MATCHING CHAT");
                         setChatPermission(matchingChat.chat_permission);
                         setLocation(matchingChat.volunteer_country);
                     }
@@ -131,16 +130,9 @@ const Messages = () => {
         setIsIndividualLoading(true);
         try {
             const response = await GET_API(endpoints.chat.getIndividualChat(chatId as string));
-            console.log(response.data, "response.data getIndividualChat");
-            if (response.data[0].receiver_id === learnerId) {
-                setRecieverName(response.data[0].learner_name);
-                setRecieverImage(response.data[0].learner_profile_picture.image_url);
-                setLocation(response.data[0].volunteer_country);
-            } else {
-                setRecieverName(response.data[0].volunteer_name);
-                setRecieverImage(response.data[0].volunteer_profile_picture.image_url);
-                setLocation(response.data[0].volunteer_country);
-            }
+            setRecieverName(response.data[0].volunteer_name);
+            setRecieverImage(response.data[0].volunteer_profile_picture.image_url);
+            setLocation(response.data[0].volunteer_country);
             const unreadMessageIds = response.data
                 .filter((msg: ChatMessage) => !msg.read)
                 .map((msg: ChatMessage) => msg.message_id);
@@ -264,23 +256,32 @@ const Messages = () => {
                         {isIndividualLoading && !isSendMessageLoading && !individualChat.length ? (
                             <ChatHeaderSkeleton />
                         ) : (
-                            <div className="flex items-center gap-4 justify-between">
-                                <ChatHeader
-                                    name={recieverName}
-                                    location={location}
-                                    image={recieverImage}
-                                    onSeeMoreClick={() => {
-                                        // setVolunteerIdQuery(volunteerId);
-                                        // setIsOpen(true);
-                                    }}
-                                />
-                                <Button
-                                    onClick={handleScheduleMeeting}
-                                    title="Schedule Meeting"
-                                    btnVariant="secondary"
-                                    className="!rounded-xl !text-sm !bg-black hover:!bg-black !text-white transition-all duration-300"
-                                />
-                            </div>
+                            // <div className="flex items-center gap-4 justify-between">
+                            //     <ChatHeader
+                            //         name={recieverName}
+                            //         location={location}
+                            //         image={recieverImage}
+                            //         onSeeMoreClick={() => {
+                            //             // setVolunteerIdQuery(volunteerId);
+                            //             // setIsOpen(true);
+                            //         }}
+                            //     />
+                            //     <Button
+                            //         onClick={handleScheduleMeeting}
+                            //         title="Schedule Meeting"
+                            //         btnVariant="secondary"
+                            //         className="!rounded-xl !text-sm !bg-black hover:!bg-black !text-white transition-all duration-300"
+                            //     />
+                            // </div>
+                            <ChatHeader
+                                name={recieverName}
+                                location={location}
+                                image={recieverImage}
+                                onSeeMoreClick={() => {
+                                    // setVolunteerIdQuery(volunteerId);
+                                    // setIsOpen(true);
+                                }}
+                            />
                         )}
                         <div className="flex flex-col gap-4 p-4 h-[calc(100vh-16em)] overflow-y-auto">
                             {isIndividualLoading ? (
