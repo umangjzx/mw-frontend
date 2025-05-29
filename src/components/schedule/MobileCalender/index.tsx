@@ -10,23 +10,28 @@ import MobileMeetingPreviewModal from "./MeetingPreview";
 
 interface CalendarProps {
     events: any;
+    onDateSelect?: (date: string) => void;
 }
 
-const MobileCalender: React.FC<CalendarProps> = ({ events = [] }) => {
+const MobileCalender: React.FC<CalendarProps> = ({ events = [], onDateSelect }) => {
     const calendarRef = useRef<any>(null);
     const searchParams = useSearchParams();
     const currentDate = searchParams.get("current_month");
     const modalParam = searchParams.get("modal");
     const { setEventDetails } = useAppStore();
-    
-    const groupedEvents = useMemo(() => 
-        Object.values(events?.reduce((acc: Record<string, any[]>, item: any) => {
-            (acc[item.date] ||= []).push(item);
-            return acc;
-        }, {})).sort((a: any, b: any) => 
-            new Date(a[0].date).getTime() - new Date(b[0].date).getTime()
-        ), 
-    [events]);
+
+    const groupedEvents = useMemo(
+        () =>
+            Object.values(
+                events?.reduce((acc: Record<string, any[]>, item: any) => {
+                    (acc[item.date] ||= []).push(item);
+                    return acc;
+                }, {})
+            ).sort(
+                (a: any, b: any) => new Date(a[0].date).getTime() - new Date(b[0].date).getTime()
+            ),
+        [events]
+    );
 
     const [showModal, setShowModal] = useState<ModalType>(null);
     const [showPreview, setShowPreview] = useState(true);
@@ -56,7 +61,6 @@ const MobileCalender: React.FC<CalendarProps> = ({ events = [] }) => {
         }
     }, [modalParam]);
 
-
     const handleCloseModal = () => {
         setShowModal(null);
         const url = new URL(window.location.href);
@@ -71,12 +75,21 @@ const MobileCalender: React.FC<CalendarProps> = ({ events = [] }) => {
         }
     }, [currentDate]);
 
+    const handleDateClick = (date: string) => {
+        if (onDateSelect) {
+            onDateSelect(date);
+        }
+    };
+
     return (
         <>
             <MobileMeetingPreviewModal
                 isOpen={showPreview}
                 data={events}
-                onClose={() => { setShowPreview(false); setShowModal(null) }}
+                onClose={() => {
+                    setShowPreview(false);
+                    setShowModal(null);
+                }}
                 event={selectedEvent}
             />
             <AlertModal
@@ -84,13 +97,20 @@ const MobileCalender: React.FC<CalendarProps> = ({ events = [] }) => {
                 onCancel={handleCloseModal}
                 onProceed={() => setShowModal(null)}
                 value={""}
-                onChange={() => { }}
+                onChange={() => {}}
                 onClose={handleCloseModal}
             />
             <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {groupedEvents.map((eventsByDate: any, index: number) => (
-                    <div key={index} className="h-full w-full p-4 rounded-xl bg-white">
-                        <p className="font-medium text-sm mb-4">{eventsByDate[0]?.date && moment(eventsByDate[0]?.date).format("DD MMM YYYY")}</p>
+                    <div
+                        key={index}
+                        className="h-full w-full p-4 rounded-xl bg-white cursor-pointer hover:bg-gray-50"
+                        onClick={() => handleDateClick(eventsByDate[0]?.date)}
+                    >
+                        <p className="font-medium text-sm mb-4">
+                            {eventsByDate[0]?.date &&
+                                moment(eventsByDate[0]?.date).format("DD MMM YYYY")}
+                        </p>
                         <div className="space-y-2">
                             {eventsByDate.map((event: any, i: number) => (
                                 <div key={i} onClick={() => handleEventClick(event)}>
@@ -100,12 +120,11 @@ const MobileCalender: React.FC<CalendarProps> = ({ events = [] }) => {
                         </div>
                     </div>
                 ))}
-                {
-                    groupedEvents?.length === 0 &&
+                {groupedEvents?.length === 0 && (
                     <div className="col-span-2 min-h-[70vh] h-full flex-center">
                         <p className="text-base">No Events Found</p>
                     </div>
-                }
+                )}
             </div>
         </>
     );

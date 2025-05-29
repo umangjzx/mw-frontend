@@ -1,6 +1,6 @@
 "use client";
 import { endpoints } from "@/api/constants";
-import { PUT_API } from "@/api/request";
+import { PUT_API, POST_API } from "@/api/request";
 import FeedModalCloseIcon from "@/assets/icons/FeedModalCloseIcon";
 import Button from "@/components/common/Button";
 import Divider from "@/components/common/Divider";
@@ -117,12 +117,12 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
     } = extendedProps;
 
     const handleFeedBack = () => {
-        onClose()
+        onClose();
         router.push(`/${role}/schedule?current_month=${currentMonth}&modal=feedback`);
     };
 
     const handleMarkAsCompleted = () => {
-        setLoadingCompleted(true)
+        setLoadingCompleted(true);
         PUT_API(endpoints.session.markAsCompleted(sessionId), {}).then(() => {
             if (role === "volunteer") {
                 queryClient.invalidateQueries({ queryKey: ["volunteer-events"] });
@@ -130,13 +130,33 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                 queryClient.invalidateQueries({ queryKey: ["learner-events"] });
             }
             onClose();
-            setLoadingCompleted(false)
+            setLoadingCompleted(false);
         });
     };
 
     const handleLinkCopy = () => {
         navigator.clipboard.writeText(meetLink);
         showToast({ type: "success", message: "Link copied to clipboard" });
+    };
+
+    const handleDeleteSlot = async (volunteer_slot_id: string) => {
+        const payload = [
+            {
+                date: moment(event.start).format("YYYY-MM-DD"),
+                volunteer_slot_id: volunteer_slot_id,
+            },
+        ];
+        console.log(payload, "payload");
+        await POST_API(endpoints.volunteer_slot.deleteParticularSlot, payload)
+            .then(() => {
+                showToast({ type: "success", message: "Slot deleted" });
+                onClose();
+                // Optionally, refresh the calendar data
+                queryClient.invalidateQueries({ queryKey: ["volunteer-events"] });
+            })
+            .catch((err) => {
+                console.log(err, "error in deleting slot");
+            });
     };
 
     const renderFeedbackForVolunter = () => {
@@ -210,6 +230,53 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
             return renderFeedbackForLearner();
         }
     };
+
+    if (extendedProps.isAvailableSlot) {
+        return createPortal(
+            <div
+                className={`meeting-preview-modal border border-stroke bg-white rounded-lg shadow-lg ${
+                    isVisible ? "modal-visible" : "modal-hidden"
+                }`}
+                style={{
+                    ...style,
+                    position: "fixed",
+                    zIndex: 9999,
+                }}
+                onClick={(e) => e.stopPropagation()}
+                onMouseLeave={onMouseLeave}
+            >
+                <div className="flex flex-col gap-6 p-5">
+                    <div className="flex justify-between gap-3">
+                        <div className="flex flex-col gap-1">
+                            <p className="font-semibold text-xl text-black">No Events</p>
+                            <p className="text-gray-light font-medium text-sm">
+                                {`${startTime} - ${endTime}`}
+                            </p>
+                        </div>
+                        <Button
+                            onClick={onClose}
+                            customClassName="!bg-transparent !border-none !p-0 !w-fit !h-fit"
+                        >
+                            <FeedModalCloseIcon />
+                        </Button>
+                    </div>
+                    <Divider />
+                    <div className="flex flex-row items-center justify-between">
+                        <span className="text-gray-light font-medium text-base">
+                            Availability Status
+                        </span>
+                        <Button
+                            onClick={() => handleDeleteSlot(extendedProps.volunteer_slot_id)}
+                            customClassName="w-fit bg-white !text-[#DC2626] border border-[#DC2626] hover:bg-white hover:!text-[#DC2626] hover:border hover:border-[#DC2626] text-base rounded-full !py-2 !px-8"
+                        >
+                            Delete
+                        </Button>
+                    </div>
+                </div>
+            </div>,
+            document.body
+        );
+    }
 
     return createPortal(
         <div

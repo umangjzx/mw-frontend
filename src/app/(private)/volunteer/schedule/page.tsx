@@ -17,21 +17,20 @@ import LottieLoader from "@/components/common/Loader/Lottie";
 import { useQueryState } from "nuqs";
 import MobileCalender from "@/components/schedule/MobileCalender";
 import InnerWidth from "@/utils/innerWidth";
+import OnetImeScheduleModal from "@/components/schedule/Modals/OnetImeScheduleModal";
 
 export default function SchedulePage() {
     const [isOpenSchedule, setIsOpenSchedule] = useState(false);
     const [isOpenApproval, setIsOpenApproval] = useState(false);
     const [isOpenFeedback, setIsOpenFeedback] = useState(false);
     const queryClient = useQueryClient();
-
-    
     const router = useRouter();
     const isMobileOrTabScreen = InnerWidth() < 1024;
-
     const { eventDetails, currentMonth } = useAppStore();
-
     const [modal] = useQueryState("modal");
     const volunteerId = Cookies.get("volunteer_id");
+    const [isOpenOnetImeSchedule, setIsOpenOnetImeSchedule] = useState(false);
+    const [selectedDate, setSelectedDate] = useState<string>("");
 
     const getEvents = () => getCalendarEvents(volunteerId as string, "volunteer", currentMonth);
 
@@ -42,6 +41,15 @@ export default function SchedulePage() {
 
     const handleNavigate = () => {
         router.push(`/volunteer/schedule?current_month=${currentMonth}`);
+    };
+
+    const handleDateSelect = (date: string) => {
+        setSelectedDate(date);
+        setIsOpenOnetImeSchedule(true);
+    };
+
+    const handleOpenOnetImeSchedule = () => {
+        setIsOpenOnetImeSchedule(!isOpenOnetImeSchedule);
     };
 
     const handleSubmitFeedback = async (formData: any) => {
@@ -77,12 +85,11 @@ export default function SchedulePage() {
                 <LottieLoader isLoading={true} />
             ) : (
                 <>
-                    {
-                        isMobileOrTabScreen ?
-                            <MobileCalender events={data || []} />
-                            :
-                            <Calendar events={data || []} />
-                    }
+                    {isMobileOrTabScreen ? (
+                        <MobileCalender events={data || []} onDateSelect={handleDateSelect} />
+                    ) : (
+                        <Calendar events={data || []} onDateSelect={handleDateSelect} />
+                    )}
                     <MyScheduleModal isOpen={isOpenSchedule} onClose={handleNavigate} />
                     <ApprovalModal isOpen={isOpenApproval} onClose={handleNavigate} />
                     <FeedbackModal
@@ -92,6 +99,12 @@ export default function SchedulePage() {
                         onSubmit={onSave}
                         data={eventDetails}
                         Loading={isPending}
+                    />
+                    <OnetImeScheduleModal
+                        isOpen={isOpenOnetImeSchedule}
+                        onClose={handleOpenOnetImeSchedule}
+                        isMobileScreen={isMobileOrTabScreen}
+                        currentDate={selectedDate}
                     />
                 </>
             )}

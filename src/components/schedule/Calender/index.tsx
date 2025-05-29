@@ -16,9 +16,10 @@ import "./styles.css";
 
 interface CalendarProps {
     events: any;
+    onDateSelect?: (date: string) => void;
 }
 
-const Calendar: React.FC<CalendarProps> = ({ events }) => {
+const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
     const [showModal, setShowModal] = useState<ModalType>(null);
     const [currentEventData, setCurrentEventData] = useState<{
         events: EventApi[];
@@ -140,7 +141,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
     const handleMoreLinkClick = (arg: any) => {
         arg.jsEvent.preventDefault();
 
-        const dateEvents = arg.allSegs.map((seg: any) => (seg?.event));
+        const dateEvents = arg.allSegs.map((seg: any) => seg?.event);
         setCurrentEventData({
             events: dateEvents,
             date: formatDate(arg.date, {
@@ -211,12 +212,21 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
         setShowPreview(false);
     };
 
+    const handleDateClick = (arg: any) => {
+        if (onDateSelect) {
+            onDateSelect(arg.dateStr);
+        }
+    };
+
     return (
         <>
             <MeetingPreviewModal
                 isOpen={showPreview}
                 data={events}
-                onClose={() => {setShowPreview(false); setShowModal(null)}}
+                onClose={() => {
+                    setShowPreview(false);
+                    setShowModal(null);
+                }}
                 event={selectedEvent}
                 style={{
                     position: "fixed",
@@ -231,7 +241,7 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
                 onCancel={handleCloseModal}
                 onProceed={() => setShowModal(null)}
                 value={""}
-                onChange={() => { }}
+                onChange={() => {}}
                 onClose={handleCloseModal}
             />
 
@@ -250,9 +260,10 @@ const Calendar: React.FC<CalendarProps> = ({ events }) => {
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                     initialView="dayGridMonth"
                     editable={false}
-                    selectable={false}
+                    selectable={true}
                     selectMirror={false}
                     eventClick={handleEventClick}
+                    dateClick={handleDateClick}
                     dayMaxEvents={true}
                     weekends={true}
                     headerToolbar={false}

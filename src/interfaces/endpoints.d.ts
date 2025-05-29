@@ -31,6 +31,10 @@ type EndpointProps = {
         get: string;
         availableSlots: (id: string, date: string) => string;
         availableDays: (id: string) => string;
+        getAllSlotsForMonth: (month: string) => string;
+        deleteParticularSlot: string;
+        getAvailableDaysForDate: (date: string) => string;
+        createSlotForParticularDate: string;
     };
     session: {
         bookSession: string;
