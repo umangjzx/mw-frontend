@@ -191,18 +191,44 @@ export const Input: React.FC<InputProps> = (props) => {
                             format="YYYY-MM-DD"
                             disabled={props.disabled}
                             disabledDate={(current) => {
-                                // Check if date is before today
-                                const isBeforeToday = current && current.isBefore(today, "day");
+                                if (!current) return true;
 
-                                // Add more detailed logging
-                                const currentDay = current?.format("dddd");
-                                const isAvailable = props.availableDays?.includes(currentDay);
+                                // Disable before today
+                                if (current.isBefore(today, "day")) return true;
 
-                                const isDayDisabled = props.availableDays
-                                    ? !isAvailableDay(current, props.availableDays)
-                                    : false;
+                                const currentDay = current.format("dddd");
+                                const currentDate = current.format("YYYY-MM-DD");
 
-                                return isBeforeToday || isDayDisabled;
+                                // Disable if in unavailableDates
+                                if (
+                                    props.unavailableDates &&
+                                    props.unavailableDates.includes(currentDate)
+                                )
+                                    return true;
+
+                                // If both availableDays and availableDates are provided, enable if either matches
+                                if (props.availableDays && props.availableDates) {
+                                    if (
+                                        props.availableDays.includes(currentDay) ||
+                                        props.availableDates.includes(currentDate)
+                                    ) {
+                                        return false; // enabled
+                                    }
+                                    return true; // disabled
+                                }
+
+                                // If only availableDays is provided
+                                if (props.availableDays) {
+                                    return !props.availableDays.includes(currentDay);
+                                }
+
+                                // If only availableDates is provided
+                                if (props.availableDates) {
+                                    return !props.availableDates.includes(currentDate);
+                                }
+
+                                // Otherwise, enable all future dates
+                                return false;
                             }}
                             placeholder="Click to select date"
                             className={cn(
