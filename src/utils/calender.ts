@@ -114,21 +114,27 @@ export const getCalendarEvents = async (
                     });
                 } else {
                     // If there's no session but there's a slot, create a "no event" card
-                    events.push({
-                        title: "No Event",
-                        date: dayData.date,
-                        start: moment(`${dayData.date} ${slot.start_time}`).format(),
-                        end: moment(`${dayData.date} ${slot.end_time}`).format(),
-                        backgroundColor: "var(--gray-100)",
-                        classNames: ["event-item", "rounded-md", "py-1", "my-0.5"],
-                        textColor: "var(--gray-500)",
-                        borderColor: "var(--gray-300)",
-                        status: "available",
-                        extendedProps: {
-                            volunteer_slot_id: slot.volunteer_slot_id,
-                            isAvailableSlot: true,
-                        },
-                    });
+                    // Only show for future dates
+                    const slotDate = moment(dayData.date);
+                    const currentDate = moment().startOf("day");
+
+                    if (slotDate.isSameOrAfter(currentDate)) {
+                        events.push({
+                            title: "No Event",
+                            date: dayData.date,
+                            start: moment(`${dayData.date} ${slot.start_time}`).format(),
+                            end: moment(`${dayData.date} ${slot.end_time}`).format(),
+                            backgroundColor: "var(--gray-100)",
+                            classNames: ["event-item", "rounded-md", "py-1", "my-0.5"],
+                            textColor: "var(--gray-500)",
+                            borderColor: "var(--gray-300)",
+                            status: "available",
+                            extendedProps: {
+                                volunteer_slot_id: slot.volunteer_slot_id,
+                                isAvailableSlot: true,
+                            },
+                        });
+                    }
                 }
             });
         });

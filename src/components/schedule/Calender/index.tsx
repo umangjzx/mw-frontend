@@ -213,8 +213,13 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
     };
 
     const handleDateClick = (arg: any) => {
-        if (onDateSelect) {
-            onDateSelect(arg.dateStr);
+        const clickedDate = moment(arg.dateStr);
+        const currentDate = moment().startOf("day");
+
+        if (clickedDate.isSameOrAfter(currentDate)) {
+            if (onDateSelect) {
+                onDateSelect(arg.dateStr);
+            }
         }
     };
 
