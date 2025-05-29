@@ -2,7 +2,7 @@ import SideModal from "@/components/common/Modals/SideModal";
 import moment from "moment";
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/common/Input";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { GET_API, POST_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import dayjs from "dayjs";
@@ -35,6 +35,7 @@ const OnetImeScheduleModal = ({
     const [slots, setSlots] = useState([{ start_time: "", end_time: "" }]);
     const [existingSlots, setExistingSlots] = useState<any[]>([]);
     const [invalidSlots, setInvalidSlots] = useState<number[]>([]);
+    const queryClient = useQueryClient();
 
     const getAvailableDaysForDate = async () => {
         console.log(currentDate, "currentDate");
@@ -80,9 +81,21 @@ const OnetImeScheduleModal = ({
         POST_API(endpoints.volunteer_slot.createSlotForParticularDate, formattedData)
             .then((res) => {
                 console.log(res, "res");
+                onClose();
+                showToast({
+                    message: "Slots created successfully",
+                    type: "success",
+                });
+                queryClient.invalidateQueries({
+                    queryKey: ["volunteer-events"],
+                });
             })
             .catch((err) => {
                 console.log(err, "err");
+                showToast({
+                    message: "Error creating slots",
+                    type: "error",
+                });
             });
     };
 
@@ -108,6 +121,8 @@ const OnetImeScheduleModal = ({
         const updatedSlots = [...slots];
         updatedSlots[index][type] = value || "";
         let newInvalidSlots = [...invalidSlots];
+
+        // Check for overlap with existing slots
         if (updatedSlots[index].start_time && updatedSlots[index].end_time) {
             if (
                 isOverlapping(
@@ -123,6 +138,22 @@ const OnetImeScheduleModal = ({
         } else {
             newInvalidSlots = newInvalidSlots.filter((i) => i !== index);
         }
+
+        // Check for duplicate slots in the new slots array
+        const isDuplicate = updatedSlots.some(
+            (slot, idx) =>
+                idx !== index &&
+                slot.start_time === updatedSlots[index].start_time &&
+                slot.end_time === updatedSlots[index].end_time &&
+                slot.start_time !== "" &&
+                slot.end_time !== ""
+        );
+        if (isDuplicate) {
+            if (!newInvalidSlots.includes(index)) newInvalidSlots.push(index);
+        } else {
+            newInvalidSlots = newInvalidSlots.filter((i) => i !== index);
+        }
+
         setInvalidSlots(newInvalidSlots);
         setSlots(updatedSlots);
     };
@@ -177,6 +208,7 @@ const OnetImeScheduleModal = ({
                     onChange={() => {}}
                     key={"selected_date"}
                     label="Select Date"
+                    labelClassName="!text-[1rem] !font-medium"
                     inputType="datepicker"
                     placeholder="Select a date"
                     value={new Date(currentDate)}
@@ -184,16 +216,18 @@ const OnetImeScheduleModal = ({
                     disabled={true}
                     error={""}
                 />
-                <div>
+                <div className="border-b border-gray-200 pb-6">
                     <p className="font-medium mt-4">Existing Slots</p>
-                    {existingSlots.length === 0 && <p>No slots for this date.</p>}
+                    {existingSlots.length === 0 && (
+                        <p className="text-gray-500 mt-1">No slots for this date.</p>
+                    )}
                     {existingSlots.map((slot, idx) => (
-                        <div key={idx} className="flex items-center gap-2 mt-2">
-                            <div className="bg-gray-200 rounded px-4 py-2">
+                        <div key={idx} className="flex items-center gap-2 mt-2 w-full">
+                            <div className="bg-gray-200 rounded-xl px-4 py-2 w-full text-center font-medium text-sm">
                                 {dayjs(slot.start_time, "HH:mm").format("h:mm A")}
                             </div>
                             <span>to</span>
-                            <div className="bg-gray-200 rounded px-4 py-2">
+                            <div className="bg-gray-200 rounded-xl px-4 py-2 w-full text-center font-medium text-sm">
                                 {dayjs(slot.end_time, "HH:mm").format("h:mm A")}
                             </div>
                         </div>
@@ -214,6 +248,12 @@ const OnetImeScheduleModal = ({
                                 onChange={(val) => handleTimeChange(idx, "end_time", val)}
                                 error={invalidSlots.includes(idx)}
                             />
+                            <button
+                                onClick={addSlot}
+                                className="mt- text-blue-500 flex items-center"
+                            >
+                                {idx === slots.length - 1 && <AddSlotIcon />}
+                            </button>
                             <span
                                 onClick={() => removeSlot(idx)}
                                 className="cursor-pointer text-red-500"
@@ -222,9 +262,6 @@ const OnetImeScheduleModal = ({
                             </span>
                         </div>
                     ))}
-                    <button onClick={addSlot} className="mt-2 text-blue-500 flex items-center">
-                        <AddSlotIcon /> <span className="ml-1">Add Slot</span>
-                    </button>
                 </div>
             </div>
         </SideModal>
