@@ -157,9 +157,7 @@ const SignUpAsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
             .catch((err) => {
                 setIsSignUpLoading(false);
                 setModalLoader(false);
-                console.log(err?.response?.data?.detail, "MESSAGE");
                 showToast({ type: "error", message: err?.response?.data?.detail });
-                // if (err?.status === 400) return
             });
     };
 
