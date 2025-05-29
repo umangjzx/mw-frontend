@@ -1,6 +1,6 @@
 import SideModal from "@/components/common/Modals/SideModal";
 import moment from "moment";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Input } from "@/components/common/Input";
 import { useQuery } from "@tanstack/react-query";
 import { GET_API, POST_API } from "@/api/request";
@@ -11,6 +11,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import TrashIcon from "@/assets/icons/TrashIcon";
 import AddSlotIcon from "@/assets/icons/AddSlotIcon";
 import { generateTimeSlotId } from "@/utils/timeFunctions";
+import { showToast } from "@/components/common/Toast";
+
 interface OnetImeScheduleModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -31,6 +33,8 @@ const OnetImeScheduleModal = ({
 }: OnetImeScheduleModalProps) => {
     const [isPending, setIsPending] = useState(false);
     const [slots, setSlots] = useState([{ start_time: "", end_time: "" }]);
+    const [existingSlots, setExistingSlots] = useState<any[]>([]);
+    const [invalidSlots, setInvalidSlots] = useState<number[]>([]);
 
     const getAvailableDaysForDate = async () => {
         console.log(currentDate, "currentDate");
@@ -38,6 +42,7 @@ const OnetImeScheduleModal = ({
             const response = await GET_API(
                 endpoints.volunteer_slot.getAvailableDaysForDate(currentDate)
             );
+            setExistingSlots(response.data.slots || []);
             return response.data;
         }
     };
@@ -47,9 +52,22 @@ const OnetImeScheduleModal = ({
         enabled: !!currentDate && currentDate !== "",
     });
 
+    useEffect(() => {
+        if (availableDays && availableDays.slots) {
+            setExistingSlots(availableDays.slots);
+        }
+    }, [availableDays]);
+
     console.log(availableDays, "availableDays for date");
 
     const handleSubmit = () => {
+        if (invalidSlots.length > 0) {
+            showToast({
+                message: "Please fix overlapping slots before submitting.",
+                type: "error",
+            });
+            return;
+        }
         slots.forEach((slot, idx) => {
             console.log(`Slot ${idx + 1}: Start - ${slot.start_time}, End - ${slot.end_time}`);
         });
@@ -70,6 +88,18 @@ const OnetImeScheduleModal = ({
 
     const addSlot = () => setSlots([...slots, { start_time: "", end_time: "" }]);
     const removeSlot = (index: number) => setSlots(slots.filter((_, i) => i !== index));
+
+    function isOverlapping(newStart: string, newEnd: string, slots: any[]) {
+        if (!newStart || !newEnd) return false;
+        const newStartTime = dayjs(newStart, "HH:mm");
+        const newEndTime = dayjs(newEnd, "HH:mm");
+        return slots.some((slot) => {
+            const slotStart = dayjs(slot.start_time, "HH:mm");
+            const slotEnd = dayjs(slot.end_time, "HH:mm");
+            return newStartTime.isBefore(slotEnd) && newEndTime.isAfter(slotStart);
+        });
+    }
+
     const handleTimeChange = (
         index: number,
         type: "start_time" | "end_time",
@@ -77,10 +107,31 @@ const OnetImeScheduleModal = ({
     ) => {
         const updatedSlots = [...slots];
         updatedSlots[index][type] = value || "";
+        let newInvalidSlots = [...invalidSlots];
+        if (updatedSlots[index].start_time && updatedSlots[index].end_time) {
+            if (
+                isOverlapping(
+                    updatedSlots[index].start_time,
+                    updatedSlots[index].end_time,
+                    existingSlots
+                )
+            ) {
+                if (!newInvalidSlots.includes(index)) newInvalidSlots.push(index);
+            } else {
+                newInvalidSlots = newInvalidSlots.filter((i) => i !== index);
+            }
+        } else {
+            newInvalidSlots = newInvalidSlots.filter((i) => i !== index);
+        }
+        setInvalidSlots(newInvalidSlots);
         setSlots(updatedSlots);
     };
 
-    const TimePickerComponent: React.FC<TimePickerComponentProps> = ({ value, onChange }) => {
+    const TimePickerComponent: React.FC<TimePickerComponentProps & { error?: boolean }> = ({
+        value,
+        onChange,
+        error,
+    }) => {
         const [selectedTime, setSelectedTime] = useState<dayjs.Dayjs | null>(
             value ? dayjs(value, "HH:mm") : null
         );
@@ -100,6 +151,11 @@ const OnetImeScheduleModal = ({
                         }
                     }}
                     closeOnSelect={false}
+                    slotProps={{
+                        textField: {
+                            sx: error ? { border: "2px solid #ef4444", borderRadius: "12px" } : {},
+                        },
+                    }}
                 />
             </LocalizationProvider>
         );
@@ -130,16 +186,33 @@ const OnetImeScheduleModal = ({
                 />
                 <div>
                     <p className="font-medium mt-4">Existing Slots</p>
+                    {existingSlots.length === 0 && <p>No slots for this date.</p>}
+                    {existingSlots.map((slot, idx) => (
+                        <div key={idx} className="flex items-center gap-2 mt-2">
+                            <div className="bg-gray-200 rounded px-4 py-2">
+                                {dayjs(slot.start_time, "HH:mm").format("h:mm A")}
+                            </div>
+                            <span>to</span>
+                            <div className="bg-gray-200 rounded px-4 py-2">
+                                {dayjs(slot.end_time, "HH:mm").format("h:mm A")}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div>
+                    <p className="font-medium mt-4">Create New Slots</p>
                     {slots.map((slot, idx) => (
                         <div key={idx} className="flex items-center gap-2 mt-2">
                             <TimePickerComponent
                                 value={slot.start_time}
                                 onChange={(val) => handleTimeChange(idx, "start_time", val)}
+                                error={invalidSlots.includes(idx)}
                             />
                             <span>to</span>
                             <TimePickerComponent
                                 value={slot.end_time}
                                 onChange={(val) => handleTimeChange(idx, "end_time", val)}
+                                error={invalidSlots.includes(idx)}
                             />
                             <span
                                 onClick={() => removeSlot(idx)}
