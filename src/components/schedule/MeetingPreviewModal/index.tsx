@@ -334,7 +334,7 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                     <p className="text-black font-medium">
                         {role === "learner"
                             ? volunteer_full_name
-                            : `${learner.firstName} ${learner.lastName}`}
+                            : `${learner.firstName}, ${volunteer_full_name}`}
                     </p>
                 </div>
                 <Divider />
