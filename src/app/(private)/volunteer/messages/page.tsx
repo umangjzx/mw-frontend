@@ -78,6 +78,7 @@ const Messages = () => {
     const [noChats, setNoChats] = useState<boolean | null>(null);
     console.log(isIndividualLoading, "isIndividualLoading");
     const [location, setLocation] = useState("");
+    const [isRefetching, setIsRefetching] = useState(false);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -122,6 +123,7 @@ const Messages = () => {
             })
             .finally(() => {
                 setIsLoading(false);
+                setIsRefetching(false);
             });
     };
 
@@ -129,6 +131,11 @@ const Messages = () => {
         setIsIndividualLoading(true);
         try {
             const response = await GET_API(endpoints.chat.getIndividualChat(chatId as string));
+
+            if (response.data.length === 0) {
+                queryClient.invalidateQueries({ queryKey: ["chats"] });
+                setIsRefetching(true);
+            }
 
             setRecieverName(response.data[0].learner_name);
             setRecieverImage(response.data[0].learner_profile_picture.image_url);
@@ -155,6 +162,7 @@ const Messages = () => {
     } = useQuery({
         queryKey: ["chats"],
         queryFn: () => getAllChatsForLearners(),
+
         // refetchInterval: 1000,
     });
 
@@ -241,7 +249,8 @@ const Messages = () => {
                         isIndividualChatLoading={isIndividualLoading}
                     />
                     <div className="w-full h-full flex-1">
-                        {isIndividualLoading && !isSendMessageLoading && !individualChat.length ? (
+                        {(isIndividualLoading && !isSendMessageLoading && !individualChat.length) ||
+                        isRefetching ? (
                             <ChatHeaderSkeleton />
                         ) : (
                             <ChatHeader
@@ -280,7 +289,8 @@ const Messages = () => {
                             )}
                             <div ref={messagesEndRef} />
                         </div>
-                        {isIndividualLoading && !isSendMessageLoading && !individualChat.length ? (
+                        {(isIndividualLoading && !isSendMessageLoading && !individualChat.length) ||
+                        isRefetching ? (
                             <div></div>
                         ) : (
                             <div className="p-4 flex items-center gap-8 transition-all duration-300">

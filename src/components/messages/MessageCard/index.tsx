@@ -67,7 +67,11 @@ const MessageCard = ({
                             </p>
                         ) : (
                             <p className="text-xs text-[#4F4F4F]">
-                                {date ? moment(date).format("DD MMM, YYYY") : ""}
+                                {date === "0001-01-01T00:00:00"
+                                    ? ""
+                                    : date
+                                    ? moment(date).format("DD MMM, YYYY")
+                                    : ""}
                             </p>
                         )}
                     </div>
