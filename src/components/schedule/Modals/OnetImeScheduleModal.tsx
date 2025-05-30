@@ -12,6 +12,7 @@ import TrashIcon from "@/assets/icons/TrashIcon";
 import AddSlotIcon from "@/assets/icons/AddSlotIcon";
 import { generateTimeSlotId } from "@/utils/timeFunctions";
 import { showToast } from "@/components/common/Toast";
+import { Spin } from "antd";
 
 interface OnetImeScheduleModalProps {
     isOpen: boolean;
@@ -37,18 +38,24 @@ const OnetImeScheduleModal = ({
     const [existingSlots, setExistingSlots] = useState<any[]>([]);
     const [invalidSlots, setInvalidSlots] = useState<number[]>([]);
     const queryClient = useQueryClient();
+    const [isAvailableDaysLoading, setIsAvailableDaysLoading] = useState(false);
 
     const getAvailableDaysForDate = async () => {
         console.log(currentDate, "currentDate");
         if (currentDate !== "") {
+            setIsAvailableDaysLoading(true);
             const response = await GET_API(
                 endpoints.volunteer_slot.getAvailableDaysForDate(currentDate)
             );
             setExistingSlots(response.data.slots || []);
+            setIsAvailableDaysLoading(false);
+            if (slots.length === 0 && isOpen) {
+                addSlot();
+            }
             return response.data;
         }
     };
-    const { data: availableDays } = useQuery({
+    const { data: availableDays, isLoading } = useQuery({
         queryKey: ["availableDays", currentDate],
         queryFn: () => getAvailableDaysForDate(),
     });
@@ -259,13 +266,6 @@ const OnetImeScheduleModal = ({
         onClose();
     };
 
-    useEffect(() => {
-        console.log(slots, "slots in useEffect");
-        if (slots.length === 0) {
-            addSlot();
-        }
-    }, [currentDate, isOpen]);
-
     return (
         <SideModal
             title={`${moment(currentDate).format("DD MMMM YYYY")}`}
@@ -276,72 +276,80 @@ const OnetImeScheduleModal = ({
             onCancel={handleClose}
             modalWidth={isMobileScreen ? 600 : 400}
         >
-            <div className="flex flex-col max-lg:gap-3 px-5 mt-7">
-                <Input
-                    name="selected_date"
-                    onChange={() => {}}
-                    key={"selected_date"}
-                    label="Select Date"
-                    labelClassName="!text-[1rem] !font-medium"
-                    inputType="datepicker"
-                    placeholder="Select a date"
-                    value={new Date(currentDate)}
-                    required={true}
-                    disabled={true}
-                    error={""}
-                />
-                <div className="border-b border-gray-200 pb-6">
-                    <p className="font-medium mt-4">Existing Slots</p>
-                    {existingSlots.length === 0 && (
-                        <p className="text-gray-500 mt-1">No slots for this date.</p>
-                    )}
-                    {existingSlots.map((slot, idx) => (
-                        <div key={idx} className="flex items-center gap-2 mt-2 w-full">
-                            <div className="bg-gray-200 rounded-xl px-4 py-2 w-full text-center font-medium text-sm">
-                                {dayjs(slot.start_time, "HH:mm").format("h:mm A")}
-                            </div>
-                            <span>to</span>
-                            <div className="bg-gray-200 rounded-xl px-4 py-2 w-full text-center font-medium text-sm">
-                                {dayjs(slot.end_time, "HH:mm").format("h:mm A")}
-                            </div>
-                        </div>
-                    ))}
+            {isAvailableDaysLoading ? (
+                <div className="flex items-center justify-center h-full">
+                    <Spin />
                 </div>
-                <div>
-                    <p className="font-medium mt-4">Create New Slots</p>
-                    {slots.map((slot, idx) => (
-                        <div key={idx} className="flex items-center gap-2 mt-2">
-                            <TimePickerComponent
-                                value={slot.start_time}
-                                onChange={(val) => handleTimeChange(idx, "start_time", val)}
-                                error={invalidSlots.includes(idx)}
-                                disabledTimes={disabledTimes}
-                            />
-                            <span>to</span>
-                            <TimePickerComponent
-                                value={slot.end_time}
-                                onChange={(val) => handleTimeChange(idx, "end_time", val)}
-                                error={invalidSlots.includes(idx)}
-                                disabledTimes={disabledTimes}
-                            />
-                            <button
-                                onClick={addSlot}
-                                className="mt- text-blue-500 flex items-center"
-                            >
-                                {idx === slots.length - 1 && <AddSlotIcon />}
-                            </button>
-                            {slots.length > 1 && (
-                                <span
-                                    onClick={() => removeSlot(idx)}
-                                    className="cursor-pointer text-red-500"
+            ) : (
+                <div className="flex flex-col max-lg:gap-3 px-5 mt-7">
+                    <Input
+                        name="selected_date"
+                        onChange={() => {}}
+                        key={"selected_date"}
+                        label="Select Date"
+                        labelClassName="!text-[1rem] !font-medium"
+                        inputType="datepicker"
+                        placeholder="Select a date"
+                        value={new Date(currentDate)}
+                        required={true}
+                        disabled={true}
+                        error={""}
+                    />
+
+                    <div className="border-b border-gray-200 pb-6">
+                        <p className="font-medium mt-4">Existing Slots</p>
+                        {existingSlots.length === 0 && (
+                            <p className="text-gray-500 mt-1">No slots for this date.</p>
+                        )}
+                        {existingSlots.map((slot, idx) => (
+                            <div key={idx} className="flex items-center gap-2 mt-2 w-full">
+                                <div className="bg-gray-200 rounded-xl px-4 py-2 w-full text-center font-medium text-sm">
+                                    {dayjs(slot.start_time, "HH:mm").format("h:mm A")}
+                                </div>
+                                <span>to</span>
+                                <div className="bg-gray-200 rounded-xl px-4 py-2 w-full text-center font-medium text-sm">
+                                    {dayjs(slot.end_time, "HH:mm").format("h:mm A")}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div>
+                        <p className="font-medium mt-4">Create New Slots</p>
+                        {slots.map((slot, idx) => (
+                            <div key={idx} className="flex items-center gap-2 mt-2">
+                                <TimePickerComponent
+                                    value={slot.start_time}
+                                    onChange={(val) => handleTimeChange(idx, "start_time", val)}
+                                    error={invalidSlots.includes(idx)}
+                                    disabledTimes={disabledTimes}
+                                />
+                                <span>to</span>
+                                <TimePickerComponent
+                                    value={slot.end_time}
+                                    onChange={(val) => handleTimeChange(idx, "end_time", val)}
+                                    error={invalidSlots.includes(idx)}
+                                    disabledTimes={disabledTimes}
+                                />
+                                <button
+                                    onClick={addSlot}
+                                    className="mt- text-blue-500 flex items-center"
                                 >
-                                    <TrashIcon />
-                                </span>
-                            )}
-                        </div>
-                    ))}
+                                    {idx === slots.length - 1 && <AddSlotIcon />}
+                                </button>
+                                {slots.length > 1 && (
+                                    <span
+                                        onClick={() => removeSlot(idx)}
+                                        className="cursor-pointer text-red-500"
+                                    >
+                                        <TrashIcon />
+                                    </span>
+                                )}
+                            </div>
+                        ))}
+                    </div>
                 </div>
-            </div>
+            )}
         </SideModal>
     );
 };
