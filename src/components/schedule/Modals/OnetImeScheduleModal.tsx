@@ -23,6 +23,7 @@ interface OnetImeScheduleModalProps {
 interface TimePickerComponentProps {
     value: string;
     onChange: (value: string) => void;
+    disabledTimes?: string[];
 }
 
 const OnetImeScheduleModal = ({
@@ -50,7 +51,6 @@ const OnetImeScheduleModal = ({
     const { data: availableDays } = useQuery({
         queryKey: ["availableDays", currentDate],
         queryFn: () => getAvailableDaysForDate(),
-        enabled: !!currentDate && currentDate !== "",
     });
 
     useEffect(() => {
@@ -86,6 +86,8 @@ const OnetImeScheduleModal = ({
                     message: "Slots created successfully",
                     type: "success",
                 });
+                setSlots([]);
+                setExistingSlots([]);
                 queryClient.invalidateQueries({
                     queryKey: ["volunteer-events"],
                 });
@@ -100,17 +102,24 @@ const OnetImeScheduleModal = ({
     };
 
     const addSlot = () => setSlots([...slots, { start_time: "", end_time: "" }]);
-    const removeSlot = (index: number) => setSlots(slots.filter((_, i) => i !== index));
+    const removeSlot = (index: number) => {
+        setSlots((prevSlots) => prevSlots.filter((_, i) => i !== index));
+        setInvalidSlots((prevInvalid) =>
+            prevInvalid.filter((i) => i !== index).map((i) => (i > index ? i - 1 : i))
+        );
+    };
 
-    function isOverlapping(newStart: string, newEnd: string, slots: any[]) {
-        if (!newStart || !newEnd) return false;
-        const newStartTime = dayjs(newStart, "HH:mm");
-        const newEndTime = dayjs(newEnd, "HH:mm");
-        return slots.some((slot) => {
-            const slotStart = dayjs(slot.start_time, "HH:mm");
-            const slotEnd = dayjs(slot.end_time, "HH:mm");
-            return newStartTime.isBefore(slotEnd) && newEndTime.isAfter(slotStart);
-        });
+    function areSlotsOverlapping(
+        slotA: { start_time: string; end_time: string },
+        slotB: { start_time: string; end_time: string }
+    ) {
+        if (!slotA.start_time || !slotA.end_time || !slotB.start_time || !slotB.end_time)
+            return false;
+        const startA = dayjs(slotA.start_time, "HH:mm");
+        const endA = dayjs(slotA.end_time, "HH:mm");
+        const startB = dayjs(slotB.start_time, "HH:mm");
+        const endB = dayjs(slotB.end_time, "HH:mm");
+        return startA.isBefore(endB) && endA.isAfter(startB);
     }
 
     const handleTimeChange = (
@@ -122,34 +131,43 @@ const OnetImeScheduleModal = ({
         updatedSlots[index][type] = value || "";
         let newInvalidSlots = [...invalidSlots];
 
-        // Check for overlap with existing slots
+        // Only validate if both start and end are set
         if (updatedSlots[index].start_time && updatedSlots[index].end_time) {
-            if (
-                isOverlapping(
-                    updatedSlots[index].start_time,
-                    updatedSlots[index].end_time,
-                    existingSlots
-                )
-            ) {
+            // Check for exact match with existing slots
+            const isExactMatch = existingSlots.some(
+                (slot) =>
+                    slot.start_time === updatedSlots[index].start_time &&
+                    slot.end_time === updatedSlots[index].end_time
+            );
+            // Check for overlap with existing slots
+            const isOverlap = existingSlots.some((slot) => {
+                const slotStart = dayjs(slot.start_time, "HH:mm");
+                const slotEnd = dayjs(slot.end_time, "HH:mm");
+                const newStart = dayjs(updatedSlots[index].start_time, "HH:mm");
+                const newEnd = dayjs(updatedSlots[index].end_time, "HH:mm");
+                return newStart.isBefore(slotEnd) && newEnd.isAfter(slotStart);
+            });
+            // Check for duplicate in new slots
+            const isDuplicate = updatedSlots.some(
+                (slot, idx) =>
+                    idx !== index &&
+                    slot.start_time === updatedSlots[index].start_time &&
+                    slot.end_time === updatedSlots[index].end_time
+            );
+
+            // Check for overlaps among new slots
+            updatedSlots.forEach((slot, idx) => {
+                if (idx !== index && areSlotsOverlapping(updatedSlots[index], slot)) {
+                    if (!newInvalidSlots.includes(index)) newInvalidSlots.push(index);
+                    if (!newInvalidSlots.includes(idx)) newInvalidSlots.push(idx);
+                }
+            });
+
+            if (isExactMatch || isOverlap || isDuplicate) {
                 if (!newInvalidSlots.includes(index)) newInvalidSlots.push(index);
             } else {
                 newInvalidSlots = newInvalidSlots.filter((i) => i !== index);
             }
-        } else {
-            newInvalidSlots = newInvalidSlots.filter((i) => i !== index);
-        }
-
-        // Check for duplicate slots in the new slots array
-        const isDuplicate = updatedSlots.some(
-            (slot, idx) =>
-                idx !== index &&
-                slot.start_time === updatedSlots[index].start_time &&
-                slot.end_time === updatedSlots[index].end_time &&
-                slot.start_time !== "" &&
-                slot.end_time !== ""
-        );
-        if (isDuplicate) {
-            if (!newInvalidSlots.includes(index)) newInvalidSlots.push(index);
         } else {
             newInvalidSlots = newInvalidSlots.filter((i) => i !== index);
         }
@@ -162,6 +180,7 @@ const OnetImeScheduleModal = ({
         value,
         onChange,
         error,
+        disabledTimes = [],
     }) => {
         const [selectedTime, setSelectedTime] = useState<dayjs.Dayjs | null>(
             value ? dayjs(value, "HH:mm") : null
@@ -182,6 +201,22 @@ const OnetImeScheduleModal = ({
                         }
                     }}
                     closeOnSelect={false}
+                    shouldDisableTime={(timeValue, clockType) => {
+                        if (clockType === "hours" || clockType === "minutes") {
+                            const hour =
+                                clockType === "hours" ? timeValue : tempTime ? tempTime.hour() : 0;
+                            const minute =
+                                clockType === "minutes"
+                                    ? timeValue
+                                    : tempTime
+                                    ? tempTime.minute()
+                                    : 0;
+                            // @ts-ignore
+                            const timeStr = dayjs().hour(hour).minute(minute).format("HH:mm");
+                            return disabledTimes.includes(timeStr);
+                        }
+                        return false;
+                    }}
                     slotProps={{
                         textField: {
                             sx: error ? { border: "2px solid #ef4444", borderRadius: "12px" } : {},
@@ -192,14 +227,33 @@ const OnetImeScheduleModal = ({
         );
     };
 
+    // Collect all start and end times from existingSlots
+    const disabledTimes = [
+        ...existingSlots.map((slot) => slot.start_time),
+        ...existingSlots.map((slot) => slot.end_time),
+    ];
+
+    const handleClose = () => {
+        setSlots([]);
+        setInvalidSlots([]);
+        onClose();
+    };
+
+    useEffect(() => {
+        console.log(slots, "slots in useEffect");
+        if (slots.length === 0) {
+            addSlot();
+        }
+    }, [currentDate]);
+
     return (
         <SideModal
             title={`${moment(currentDate).format("DD MMMM YYYY")}`}
-            onClose={onClose}
+            onClose={handleClose}
             isOpen={isOpen}
             onSave={handleSubmit}
             isLoading={isPending}
-            onCancel={onClose}
+            onCancel={handleClose}
             modalWidth={isMobileScreen ? 600 : 400}
         >
             <div className="flex flex-col max-lg:gap-3 px-5 mt-7">
@@ -241,12 +295,14 @@ const OnetImeScheduleModal = ({
                                 value={slot.start_time}
                                 onChange={(val) => handleTimeChange(idx, "start_time", val)}
                                 error={invalidSlots.includes(idx)}
+                                disabledTimes={disabledTimes}
                             />
                             <span>to</span>
                             <TimePickerComponent
                                 value={slot.end_time}
                                 onChange={(val) => handleTimeChange(idx, "end_time", val)}
                                 error={invalidSlots.includes(idx)}
+                                disabledTimes={disabledTimes}
                             />
                             <button
                                 onClick={addSlot}
@@ -254,12 +310,14 @@ const OnetImeScheduleModal = ({
                             >
                                 {idx === slots.length - 1 && <AddSlotIcon />}
                             </button>
-                            <span
-                                onClick={() => removeSlot(idx)}
-                                className="cursor-pointer text-red-500"
-                            >
-                                <TrashIcon />
-                            </span>
+                            {slots.length > 1 && (
+                                <span
+                                    onClick={() => removeSlot(idx)}
+                                    className="cursor-pointer text-red-500"
+                                >
+                                    <TrashIcon />
+                                </span>
+                            )}
                         </div>
                     ))}
                 </div>

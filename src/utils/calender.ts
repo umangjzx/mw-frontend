@@ -102,7 +102,7 @@ export const getCalendarEvents = async (
                             volunteer_full_name: slot.session_details.volunteer_full_name,
                             learner: {
                                 id: slot.session_details.learner_id,
-                                firstName: slot.session_details.learner_first_name,
+                                firstName: slot.session_details.learner_full_name,
                                 lastName: slot.session_details.learner_last_name,
                                 picture: slot.session_details.learner_picture,
                             },
