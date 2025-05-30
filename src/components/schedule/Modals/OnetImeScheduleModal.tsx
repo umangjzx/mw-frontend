@@ -62,6 +62,16 @@ const OnetImeScheduleModal = ({
     console.log(availableDays, "availableDays for date");
 
     const handleSubmit = () => {
+        // Check if all slots are empty
+        const allEmpty = slots.every((slot) => !slot.start_time || !slot.end_time);
+        if (allEmpty) {
+            showToast({
+                message: "Please select at least one valid slot before saving.",
+                type: "error",
+            });
+            return;
+        }
+
         if (invalidSlots.length > 0) {
             showToast({
                 message: "Please fix overlapping slots before submitting.",
@@ -129,6 +139,16 @@ const OnetImeScheduleModal = ({
     ) => {
         const updatedSlots = [...slots];
         updatedSlots[index][type] = value || "";
+
+        // Swap logic: if both times are set and start_time > end_time, swap them
+        const start = updatedSlots[index].start_time;
+        const end = updatedSlots[index].end_time;
+        if (start && end && dayjs(start, "HH:mm").isAfter(dayjs(end, "HH:mm"))) {
+            // Swap
+            updatedSlots[index].start_time = end;
+            updatedSlots[index].end_time = start;
+        }
+
         let newInvalidSlots = [...invalidSlots];
 
         // Only validate if both start and end are set
@@ -244,7 +264,7 @@ const OnetImeScheduleModal = ({
         if (slots.length === 0) {
             addSlot();
         }
-    }, [currentDate]);
+    }, [currentDate, isOpen]);
 
     return (
         <SideModal
