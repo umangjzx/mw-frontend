@@ -17,6 +17,7 @@ import LottieLoader from "@/components/common/Loader/Lottie";
 import InnerWidth from "@/utils/innerWidth";
 import { useDebounce } from "use-debounce";
 import LearnerCard from "@/components/leaner/LearnerCard";
+import LearnerViewModal from "@/components/volunteers/Modals/LearnerViewModal";
 interface LearnerCardData {
     learnerId: string;
     profileImage: string;
@@ -166,7 +167,7 @@ export default function LearnersPage() {
     return (
         <div className="h-full animate-fadeIn">
             <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleModal} />
-            <VolunteerViewModal isOpen={isOpen} onClose={handleModal} />
+            <LearnerViewModal isOpen={isOpen} onClose={handleModal} />
             <VolunteerFilterModal
                 isFilterApplying={false}
                 isOpen={isFilterOpen}
