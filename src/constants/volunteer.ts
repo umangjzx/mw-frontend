@@ -1,5 +1,5 @@
-import nationalities from "@/data/nationalities.json"
-import timezones from "@/data/timezones.json"
+import nationalities from "@/data/nationalities.json";
+import timezones from "@/data/timezones.json";
 
 export const ADULT_VOLUNTEER_AGE = 21;
 
@@ -76,21 +76,21 @@ const ProfileDetailsFields: FormField[] = [
         inputType: "checkbox",
         placeholder: "I've consent from my parent or guardian to be a volunteer.",
         gridCols: 2,
-        inputClassName: "max-md:text-sm w-fit"
+        inputClassName: "max-md:text-sm w-fit",
     },
     {
         id: "volunteer_parent_name",
         label: "Parent Full Name",
         inputType: "text",
         placeholder: "Enter Parent FullName",
-        gridCols: 1
+        gridCols: 1,
     },
     {
         id: "volunteer_parent_email",
         label: "Parent Email ID",
         inputType: "text",
         placeholder: "Enter Email ID",
-        gridCols: 1
+        gridCols: 1,
     },
     {
         id: "volunteer_languages",
@@ -156,7 +156,7 @@ const ProfileDetailsFields: FormField[] = [
         label: "Prior Volunteer Experience",
         inputType: "text",
         placeholder: "Describe your volunteer work here",
-        gridCols: 1,    
+        gridCols: 1,
         required: true,
     },
     {
@@ -219,7 +219,7 @@ export const ContactDetailsFields: FormField[] = [
         label: "Time Zone",
         inputType: "select",
         placeholder: "Search or select time zone",
-        options: timezones,        
+        options: timezones,
         showSearch: true,
         gridCols: 1,
         inputClassName: "!w-full",
@@ -486,11 +486,12 @@ export const VolunteerFormSections: FormSectionConfig[] = [
             {
                 id: "volunteer_description",
                 label: "Why do you want to tutor with us, and what do you hope to gain from this experience? What subjects would you like to teach, and why?",
-                sublabel: "Please share an overview of your profile, your areas of expertise and the reasons behind your choice, such as your passion for the subject or past teaching experience.",
+                sublabel:
+                    "Please share an overview of your profile, your areas of expertise and the reasons behind your choice, such as your passion for the subject or past teaching experience.",
                 inputType: "textarea",
                 placeholder: "Describe here",
                 required: true,
-                gridCols: 2
+                gridCols: 2,
             },
             {
                 id: "profile_picture",
@@ -505,7 +506,7 @@ export const VolunteerFormSections: FormSectionConfig[] = [
                 id: "profile_video",
                 label: "Profile Video",
                 sublabel:
-                    "Record a Video summarizing your profile and qualifications. This will help the learners to get to know you better!  Feel free to share your hobbies, extracurricular activities, and explain how and why you believe you're well-suited to teach the subject you've chosen to special needs children. You can keep it casual ! Speak from the heart and share what feels natural.",
+                    "Record a Video summarizing your profile and qualifications. This will help the learners to get to know you better!  Feel free to share your hobbies, extracurricular activities, and explain how and why you believe you're well-suited to teach the subject you've chosen to special needs learners. You can keep it casual ! Speak from the heart and share what feels natural.",
                 inputType: "upload",
                 gridCols: 2,
                 variant: "file",
@@ -555,7 +556,9 @@ export const VolunteerFormSections: FormSectionConfig[] = [
     },
 ];
 
-export const VolunteerProfileFormConstants: FormSectionConfig[] = VolunteerFormSections?.filter((section) => section.parent !== "consent_and_permissions");
+export const VolunteerProfileFormConstants: FormSectionConfig[] = VolunteerFormSections?.filter(
+    (section) => section.parent !== "consent_and_permissions"
+);
 
 export const VolunteerOnboardingConstants = {
     title: "Join as a Volunteer",
@@ -571,5 +574,6 @@ export const VolunteerThankyouCardConstants = {
 
 export const VolunteerRejectedMessage = {
     title: "Thank you for your interest!",
-    description: "At this time, we are unable to proceed with your application. We truly appreciate your willingness to contribute and encourage you to check back for future opportunities!"
-}
+    description:
+        "At this time, we are unable to proceed with your application. We truly appreciate your willingness to contribute and encourage you to check back for future opportunities!",
+};

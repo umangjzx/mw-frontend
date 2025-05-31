@@ -246,7 +246,7 @@ const Messages = () => {
                         messages={chats}
                         searchQuery={searchQuery}
                         onSearch={handleSearch}
-                        isIndividualChatLoading={isIndividualLoading}
+                        isIndividualChatLoading={isIndividualLoading || isLoading}
                     />
                     <div className="w-full h-full flex-1">
                         {(isIndividualLoading && !isSendMessageLoading && !individualChat.length) ||
