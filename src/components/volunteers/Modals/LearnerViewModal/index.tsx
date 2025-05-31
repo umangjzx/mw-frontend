@@ -471,7 +471,7 @@ const OverviewContent = ({ learnerData }: { learnerData: VolunteerData }) => {
         <div className="flex flex-col gap-4">
             <div className="px-5">
                 <h3 className="font-medium mb-3">Personal Details</h3>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-3">
                     {personalDetails.map((item, index) => (
                         <DetailCard
                             key={index}
@@ -485,7 +485,7 @@ const OverviewContent = ({ learnerData }: { learnerData: VolunteerData }) => {
 
             <div className="px-5">
                 <h3 className="font-medium mb-3">Learner Goals</h3>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-3">
                     {learnerGoals.map((item, index) => (
                         <DetailChipCard key={index} tags={item?.tags} title={item?.title} />
                     ))}
@@ -494,7 +494,7 @@ const OverviewContent = ({ learnerData }: { learnerData: VolunteerData }) => {
 
             <div className="px-5">
                 <h3 className="font-medium mb-3">Learner Special Needs</h3>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-3">
                     {specialNeeds.map((item, index) =>
                         item.tags ? (
                             <DetailChipCard
@@ -517,7 +517,7 @@ const OverviewContent = ({ learnerData }: { learnerData: VolunteerData }) => {
 
             <div className="px-5">
                 <h3 className="font-medium mb-3">Current Interests</h3>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-3">
                     {currentInterests.map((item, index) => (
                         <DetailChipCard key={index} tags={item?.tags} title={item?.title} />
                     ))}
@@ -526,7 +526,7 @@ const OverviewContent = ({ learnerData }: { learnerData: VolunteerData }) => {
 
             <div className="px-5">
                 <h3 className="font-medium mb-3">Social Skills</h3>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-3">
                     {socialSkills.map((item, index) => (
                         <DetailChipCard
                             key={index}
@@ -540,7 +540,7 @@ const OverviewContent = ({ learnerData }: { learnerData: VolunteerData }) => {
 
             <div className="px-5">
                 <h3 className="font-medium mb-3">Additional Information</h3>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-3">
                     {additionalInfo.map((item, index) => (
                         <DetailCard
                             key={index}
