@@ -133,7 +133,7 @@ const ProfileInfo = ({
                 </p>
                 <TagComponent
                     text="Learner"
-                    tagClassName="!bg-[#FFE9D4] !border-none px-2 max-md:hidden"
+                    tagClassName="!bg-[#dff5ff] !border-none px-2 max-md:hidden"
                 />
                 <OverViewCard
                     title="Hours Attended"
@@ -225,6 +225,15 @@ const TabButtons = ({
                     ))}
                 </div>
             )}
+        </div>
+    );
+};
+
+const ContentRender = ({ title, description }: { title: string; description: string }) => {
+    return (
+        <div className="flex flex-col gap-1.5">
+            <p className="font-normal text-gray-light text-sm">{title}</p>
+            <p className="font-medium">{description}</p>
         </div>
     );
 };
@@ -468,14 +477,13 @@ const OverviewContent = ({ learnerData }: { learnerData: VolunteerData }) => {
     ].filter((item) => item.description !== "");
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-5">
             <div className="px-5">
-                <h3 className="font-medium mb-3">Personal Details</h3>
-                <div className="flex flex-col gap-3">
+                <h3 className="font-medium mb-3 text-xl">Personal Details</h3>
+                <div className="grid grid-cols-2 gap-3">
                     {personalDetails.map((item, index) => (
-                        <DetailCard
+                        <ContentRender
                             key={index}
-                            className=""
                             title={item?.title}
                             description={item?.description}
                         />
@@ -484,29 +492,31 @@ const OverviewContent = ({ learnerData }: { learnerData: VolunteerData }) => {
             </div>
 
             <div className="px-5">
-                <h3 className="font-medium mb-3">Learner Goals</h3>
-                <div className="flex flex-col gap-3">
+                <h3 className="font-medium mb-3 text-xl">Learner Goals</h3>
+                <div className="grid grid-cols-2 gap-3">
                     {learnerGoals.map((item, index) => (
-                        <DetailChipCard key={index} tags={item?.tags} title={item?.title} />
+                        <ContentRender
+                            key={index}
+                            title={item?.title}
+                            description={item?.tags.join(", ")}
+                        />
                     ))}
                 </div>
             </div>
 
             <div className="px-5">
-                <h3 className="font-medium mb-3">Learner Special Needs</h3>
-                <div className="flex flex-col gap-3">
+                <h3 className="font-medium mb-3 text-xl ">Learner Special Needs</h3>
+                <div className="grid grid-cols-2 gap-3">
                     {specialNeeds.map((item, index) =>
                         item.tags ? (
-                            <DetailChipCard
+                            <ContentRender
                                 key={index}
-                                className=""
-                                tags={item?.tags}
                                 title={item?.title}
+                                description={item?.tags.join(", ")}
                             />
                         ) : (
-                            <DetailCard
+                            <ContentRender
                                 key={index}
-                                className=""
                                 title={item?.title}
                                 description={item?.description}
                             />
@@ -516,35 +526,37 @@ const OverviewContent = ({ learnerData }: { learnerData: VolunteerData }) => {
             </div>
 
             <div className="px-5">
-                <h3 className="font-medium mb-3">Current Interests</h3>
-                <div className="flex flex-col gap-3">
+                <h3 className="font-medium mb-3 text-xl">Current Interests</h3>
+                <div className="grid grid-cols-2 gap-3">
                     {currentInterests.map((item, index) => (
-                        <DetailChipCard key={index} tags={item?.tags} title={item?.title} />
-                    ))}
-                </div>
-            </div>
-
-            <div className="px-5">
-                <h3 className="font-medium mb-3">Social Skills</h3>
-                <div className="flex flex-col gap-3">
-                    {socialSkills.map((item, index) => (
-                        <DetailChipCard
+                        <ContentRender
                             key={index}
-                            className="!gap-2"
-                            tags={item?.tags}
                             title={item?.title}
+                            description={item?.tags.join(", ")}
                         />
                     ))}
                 </div>
             </div>
 
             <div className="px-5">
-                <h3 className="font-medium mb-3">Additional Information</h3>
-                <div className="flex flex-col gap-3">
-                    {additionalInfo.map((item, index) => (
-                        <DetailCard
+                <h3 className="font-medium mb-3 text-xl">Social Skills</h3>
+                <div className="grid grid-cols-2 gap-3">
+                    {socialSkills.map((item, index) => (
+                        <ContentRender
                             key={index}
-                            className=""
+                            title={item?.title}
+                            description={item?.tags.join(", ")}
+                        />
+                    ))}
+                </div>
+            </div>
+
+            <div className="px-5">
+                <h3 className="font-medium mb-3 text-xl">Additional Information</h3>
+                <div className="grid grid-cols-2 gap-3">
+                    {additionalInfo.map((item, index) => (
+                        <ContentRender
+                            key={index}
                             title={item?.title}
                             description={item?.description}
                         />
