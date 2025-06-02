@@ -13,6 +13,7 @@ import { generateTimeSlotId } from "@/utils/timeFunctions";
 import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { showToast } from "@/components/common/Toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface TimeSlot {
     start_time: string;
@@ -47,6 +48,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
     const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
     const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const [deletedSlots, setDeletedSlots] = useState<string[]>([]);
+    const queryClient = useQueryClient();
 
     useEffect(() => {
         GET_API(endpoints.volunteer_slot.get).then((res: any) => {
@@ -153,10 +155,11 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                 .sort((a, b) =>
                     type === "start_time"
                         ? 0
-                        : dayjs(a.start_time, "HH:mm").isBefore(dayjs(b.start_time, "HH:mm")) ? -1 : 1
+                        : dayjs(a.start_time, "HH:mm").isBefore(dayjs(b.start_time, "HH:mm"))
+                        ? -1
+                        : 1
                 ),
         }));
-
     };
 
     const addTimeSlot = (day: string) => {
@@ -218,6 +221,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
         success: () => {
             setDeletedSlots([]);
             onClose();
+            queryClient.invalidateQueries({ queryKey: ["volunteer-events"] });
         },
         error: (err) => {
             console.log("Error: ", err);
@@ -232,15 +236,25 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
         return Object.values(errors).some((dayErrors) => dayErrors.length > 0);
     };
 
-    const TimePickerComponent = ({ day, slot, slotIndex, type }: { day: string, slot: TimeSlot, slotIndex: number, type: "start_time" | "end_time" }) => {
+    const TimePickerComponent = ({
+        day,
+        slot,
+        slotIndex,
+        type,
+    }: {
+        day: string;
+        slot: TimeSlot;
+        slotIndex: number;
+        type: "start_time" | "end_time";
+    }) => {
         const [selectedTime, setSelectedTime] = useState<dayjs.Dayjs | null>(
             type === "start_time"
                 ? slot.start_time
                     ? dayjs(slot.start_time, "HH:mm")
                     : null
                 : slot.end_time
-                    ? dayjs(slot.end_time, "HH:mm")
-                    : null
+                ? dayjs(slot.end_time, "HH:mm")
+                : null
         );
 
         const [tempTime, setTempTime] = useState<dayjs.Dayjs | null>(selectedTime);
@@ -260,7 +274,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                     }}
                     closeOnSelect={false}
                     sx={{
-                        '& .MuiOutlinedInput-root': {
+                        "& .MuiOutlinedInput-root": {
                             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                                 border: "2px solid var(--background-secondary-color) !important",
                             },
@@ -332,7 +346,9 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                                                             />
                                                         </div>
                                                         <span
-                                                            onClick={() => removeTimeSlot(day, slotIndex)}
+                                                            onClick={() =>
+                                                                removeTimeSlot(day, slotIndex)
+                                                            }
                                                             className="text-red-500 hover:text-red-700 cursor-pointer"
                                                         >
                                                             <TrashIcon />
