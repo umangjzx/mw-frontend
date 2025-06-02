@@ -82,6 +82,7 @@ const Messages = () => {
     const [volunteerIdQuery, setVolunteerIdQuery] = useQueryState("volunteerId");
     const [location, setLocation] = useState("");
     const [isOpenSchedule, setIsOpenSchedule] = useState(false);
+    const [isRefetching, setIsRefetching] = useState(false);
 
     const handleModal = () => {
         setIsOpen(false);
@@ -123,6 +124,7 @@ const Messages = () => {
             })
             .finally(() => {
                 setIsLoading(false);
+                setIsRefetching(false);
             });
     };
 
@@ -130,6 +132,12 @@ const Messages = () => {
         setIsIndividualLoading(true);
         try {
             const response = await GET_API(endpoints.chat.getIndividualChat(chatId as string));
+
+            if (response.data.length === 0) {
+                queryClient.invalidateQueries({ queryKey: ["chats"] });
+                setIsRefetching(true);
+            }
+
             setRecieverName(response.data[0].volunteer_name);
             setRecieverImage(response.data[0].volunteer_profile_picture.image_url);
             setLocation(response.data[0].volunteer_country);
@@ -152,7 +160,7 @@ const Messages = () => {
         isLoading: isLoadingChats,
         isError: isErrorChats,
     } = useQuery({
-        queryKey: ["chats", chatId],
+        queryKey: ["chats"],
         queryFn: () => getAllChatsForLearners(),
         // refetchInterval: 1000,
     });
@@ -236,7 +244,6 @@ const Messages = () => {
     if (noChats === null) {
         return <LottieLoader isLoading={true} />;
     }
-
     return (
         <>
             <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleScheduleMeeting} />
@@ -250,38 +257,30 @@ const Messages = () => {
                         messages={chats}
                         searchQuery={searchQuery}
                         onSearch={handleSearch}
-                        isIndividualChatLoading={isIndividualLoading}
+                        isIndividualChatLoading={isIndividualLoading || isLoading}
                     />
                     <div className="w-full h-full flex-1">
-                        {isIndividualLoading && !isSendMessageLoading && !individualChat.length ? (
+                        {(isIndividualLoading && !isSendMessageLoading && !individualChat.length) ||
+                        isRefetching ? (
                             <ChatHeaderSkeleton />
                         ) : (
-                            // <div className="flex items-center gap-4 justify-between">
-                            //     <ChatHeader
-                            //         name={recieverName}
-                            //         location={location}
-                            //         image={recieverImage}
-                            //         onSeeMoreClick={() => {
-                            //             // setVolunteerIdQuery(volunteerId);
-                            //             // setIsOpen(true);
-                            //         }}
-                            //     />
-                            //     <Button
-                            //         onClick={handleScheduleMeeting}
-                            //         title="Schedule Meeting"
-                            //         btnVariant="secondary"
-                            //         className="!rounded-xl !text-sm !bg-black hover:!bg-black !text-white transition-all duration-300"
-                            //     />
-                            // </div>
-                            <ChatHeader
-                                name={recieverName}
-                                location={location}
-                                image={recieverImage}
-                                onSeeMoreClick={() => {
-                                    // setVolunteerIdQuery(volunteerId);
-                                    // setIsOpen(true);
-                                }}
-                            />
+                            <div className="flex items-center gap-4 justify-between">
+                                <ChatHeader
+                                    name={recieverName}
+                                    location={location}
+                                    image={recieverImage}
+                                    onSeeMoreClick={() => {
+                                        // setVolunteerIdQuery(volunteerId);
+                                        // setIsOpen(true);
+                                    }}
+                                />
+                                <Button
+                                    onClick={handleScheduleMeeting}
+                                    title="Schedule Meeting"
+                                    btnVariant="secondary"
+                                    className="!rounded-xl !text-sm !bg-black hover:!bg-black !text-white transition-all duration-300"
+                                />
+                            </div>
                         )}
                         <div className="flex flex-col gap-4 p-4 h-[calc(100vh-16em)] overflow-y-auto">
                             {isIndividualLoading ? (
@@ -312,7 +311,8 @@ const Messages = () => {
                             )}
                             <div ref={messagesEndRef} />
                         </div>
-                        {isIndividualLoading && !isSendMessageLoading && !individualChat.length ? (
+                        {(isIndividualLoading && !isSendMessageLoading && !individualChat.length) ||
+                        isRefetching ? (
                             <div></div>
                         ) : (
                             <div className="p-4 flex items-center gap-8 transition-all duration-300">

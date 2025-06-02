@@ -38,7 +38,10 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
         <div className="bg-white rounded-xl w-full shadow-sm h-fit p-4 flex flex-col gap-4">
             {/* Profile Header */}
             <div className="flex items-center gap-4">
-                <div className="w-[36px] h-[36px] rounded-full relative">
+                <div
+                    onClick={() => onSeeMoreClick(volunteerId)}
+                    className="w-[36px] h-[36px] rounded-full relative cursor-pointer"
+                >
                     {profileImage !== "image_url" ? (
                         <Image
                             src={profileImage}

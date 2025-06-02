@@ -1,5 +1,5 @@
-import nationalities from "@/data/nationalities.json"
-import timezones from "@/data/timezones.json"
+import nationalities from "@/data/nationalities.json";
+import timezones from "@/data/timezones.json";
 
 export const LearnerOnboardingConstants = {
     title: "Enroll a learner",
@@ -177,7 +177,7 @@ const LearnerPersonalFields: FormField[] = [
         inputType: "select",
         placeholder: "Search or select time zone",
         showSearch: true,
-        options: timezones,        
+        options: timezones,
         gridCols: 1,
         inputClassName: "!w-full",
         required: true,
@@ -196,7 +196,7 @@ const DisabilityInfoFields: FormField[] = [
         variant: "single",
         responseAsLabel: "development_disability_name",
         responseAsValue: "development_disability_name",
-        placeholder: "Search, select or add a type",
+        placeholder: "Select or create a type",
         gridCols: 1,
         required: true,
     },
@@ -224,7 +224,7 @@ const DisabilityInfoFields: FormField[] = [
         creatable: true,
         responseAsLabel: "assistive_device_name",
         responseAsValue: "assistive_device_name",
-        placeholder: "Search, select or add device",
+        placeholder: "select or create a device",
         gridCols: 1,
         required: true,
     },
@@ -238,7 +238,7 @@ const DisabilityInfoFields: FormField[] = [
         creatable: true,
         responseAsLabel: "communication_style_name",
         responseAsValue: "communication_style_name",
-        placeholder: "Search, select or add style",
+        placeholder: "select or create a style",
         gridCols: 1,
         required: true,
     },
@@ -260,7 +260,7 @@ const DisabilityInfoFields: FormField[] = [
         variant: "multi",
         responseAsLabel: "area_of_support_name",
         responseAsValue: "area_of_support_name",
-        placeholder: "Search, select or add areas of support",
+        placeholder: "select or create an area of support",
         gridCols: 1,
         required: true,
     },
@@ -289,10 +289,10 @@ const EducationBackgroundFields: FormField[] = [
     {
         id: "academic_strengths",
         label: "Academic Strengths",
-        sublabel: "(subjects the child enjoys or does well in)",
+        sublabel: "(subjects the learner enjoys or does well in)",
         inputType: "select-creatable",
         variant: "multi",
-        placeholder: "Search, select or add strengths",
+        placeholder: "select or create a strength",
         gridCols: 1,
         disabled: false,
         options: [
@@ -308,10 +308,10 @@ const EducationBackgroundFields: FormField[] = [
     {
         id: "academic_challenges",
         label: "Academic Challenges",
-        sublabel: "(subjects where the child may need extra support)",
+        sublabel: "(subjects where the learner may need extra support)",
         inputType: "select-creatable",
         variant: "multi",
-        placeholder: "Search, select or add challenges",
+        placeholder: "select or create a challenge",
         gridCols: 1,
         disabled: false,
         options: [
@@ -371,7 +371,7 @@ const BehaviorSocialFields: FormField[] = [
         sublabel: "(engaging, shy, prefers one-on-one group settings)",
         inputType: "select-creatable",
         variant: "multi",
-        placeholder: "Search, select or add style",
+        placeholder: "select or create a style",
         gridCols: 1,
         options: [
             { label: "Engaging", value: "engaging" },
@@ -389,7 +389,7 @@ const BehaviorSocialFields: FormField[] = [
         sublabel: "(e.g., triggers, behaviors, suggested responses)",
         inputType: "select-creatable",
         variant: "multi",
-        placeholder: "Search, select or add concerns",
+        placeholder: "select or create a concern",
         gridCols: 1,
         options: [
             {
@@ -465,7 +465,7 @@ const BehaviorSocialFields: FormField[] = [
         sublabel: "(e.g., positive reinforcement, breaks)",
         inputType: "select-creatable",
         variant: "multi",
-        placeholder: "Search, select or add techniques",
+        placeholder: "select or create a technique",
         gridCols: 1,
         options: [
             { label: "Provide a Quiet Space", value: "provide_a_quiet_space" },
@@ -495,7 +495,7 @@ const InterestsHobbiesFields: FormField[] = [
     {
         id: "favorite_activities",
         label: "Favorite Activities/Main Interests",
-        sublabel: "(Eg., music, sports, rhymes - any activity that motivates the child)",
+        sublabel: "(Eg., music, sports - any activity that motivates the learner)",
         inputType: "text",
         placeholder: "Enter here",
         gridCols: 1,
@@ -516,11 +516,11 @@ const InterestsHobbiesFields: FormField[] = [
 const ExpectationsGoalsFields: FormField[] = [
     {
         id: "expected_goals",
-        label: "Parent/Guardian’s Goals for the Child ",
+        label: "Parent/Guardian’s Goals for the learner ",
         sublabel: "(e.g., improve social skills, academic progress, explore new hobbies)",
         inputType: "select-creatable",
         variant: "multi",
-        placeholder: "Search, select or add goals",
+        placeholder: "select or create a goal",
         gridCols: 1,
         options: [
             { label: "Improve Communication", value: "improve_communication" },
@@ -541,7 +541,7 @@ const ExpectationsGoalsFields: FormField[] = [
             { label: "Prepare for Changes", value: "prepare_for_changes" },
             { label: "Teach Problem-Solving", value: "teach_problem_solving" },
             { label: "Find Family Support", value: "find_family_support" },
-            { label: "Learn Child’s Needs", value: "learn_childs_needs" },
+            { label: "Learn Learner's Needs", value: "learn_learners_needs" },
             { label: "Teach Self-Advocacy", value: "teach_self_advocacy" },
             { label: "Others", value: "others" },
             { label: "N/A", value: "N/A" },
@@ -558,7 +558,7 @@ const ExpectationsGoalsFields: FormField[] = [
         endpoint: "skills",
         responseAsLabel: "skill_name",
         responseAsValue: ["skill_id", "skill_name"],
-        placeholder: "Search, select or add skills",
+        placeholder: "select or create a skill",
         gridCols: 1,
         required: true,
     },
@@ -657,7 +657,7 @@ export const LearnerFormSections: FormSectionConfig[] = [
                 parent: "learner_goals",
                 title: "Expectations and Goals",
                 fields: ExpectationsGoalsFields,
-            }
+            },
         ],
         type: "card",
     },
@@ -712,7 +712,9 @@ export const LearnerFormSections: FormSectionConfig[] = [
     },
 ];
 
-export const LearnerProfileFormSections: FormSectionConfig[] = LearnerFormSections?.filter((section) => section.parent !== "consent_and_permissions");
+export const LearnerProfileFormSections: FormSectionConfig[] = LearnerFormSections?.filter(
+    (section) => section.parent !== "consent_and_permissions"
+);
 
 export const LearnerThankyouCardConstants = {
     title: "Thank You for Enrolling in MelodyWings!",

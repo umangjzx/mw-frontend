@@ -91,6 +91,8 @@ type DatePickerInputProps = BaseInputProps & {
     onChange: (value: Date | null) => void;
     placeholder?: string;
     availableDays?: string[];
+    availableDates?: string[];
+    unavailableDates?: string[];
 };
 
 type SessionDatePickerInputProps = BaseInputProps & {
