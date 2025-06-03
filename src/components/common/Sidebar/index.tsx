@@ -28,7 +28,7 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
     const baseLinksData = [
         {
             href: "/schedule",
-            text: "Schedule",
+            text: "My Schedule",
             icon: <CalendarIcon />,
         },
     ];

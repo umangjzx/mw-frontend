@@ -32,7 +32,7 @@ const Header = () => {
     const handleCloseSideNavBar = () => {
         setIsLoginModalOpen(false);
         setIsSideNavBarOpen(!isSideNavBarOpen);
-    }
+    };
 
     const links = [
         { title: "About Us", link: "/about-us" },
@@ -111,10 +111,12 @@ const Header = () => {
                 </div>
             </SideNavBar>
             <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
-            <SignUpAsModal isOpen={paramMode === "learner" || paramMode === "volunteer"} onClose={() => setParamMode(null)} />
+            <SignUpAsModal
+                isOpen={paramMode === "learner" || paramMode === "volunteer"}
+                onClose={() => setParamMode(null)}
+            />
         </div>
     );
 };
 
 export default Header;
-
