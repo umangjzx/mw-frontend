@@ -163,7 +163,7 @@ const ProfileDetailsFields: FormField[] = [
         id: "volunteer_skills",
         label: "Skills and Expertise to teach Learners",
         inputType: "async-select",
-        placeholder: "Search, select or add a skill",
+        placeholder: "Don't see your option? Type it in to add.",
         creatable: true,
         gridCols: 2,
         inputClassName: "!w-[49%]",

@@ -59,7 +59,12 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
                     )}
                 </div>
                 <div className="flex flex-col">
-                    <p className="text-base font-semibold lg:text-normal lg:font-medium">{name}</p>
+                    <p
+                        onClick={() => onSeeMoreClick(volunteerId)}
+                        className="text-base font-semibold lg:text-normal hover:underline cursor-pointer lg:font-medium"
+                    >
+                        {name}
+                    </p>
                     <p className="text-sm font-medium">
                         <span className="text-gray-light">
                             {location && `From ${formatString(location || "")}`}
