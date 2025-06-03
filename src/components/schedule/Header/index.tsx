@@ -39,23 +39,26 @@ const Header = (props: Props) => {
             <div className="w-full h-full md:flex items-center justify-between">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                        <div className="lg:hidden cursor-pointer" onClick={() => setIsSideNavBarOpen(true)}>
+                        <div
+                            className="lg:hidden cursor-pointer"
+                            onClick={() => setIsSideNavBarOpen(true)}
+                        >
                             <SideMenuIcon height="22px" width="22px" />
                         </div>
                         <Button
-                            onClick={() => { }}
-                            title="Schedule"
+                            onClick={() => {}}
+                            title="My Schedule"
                             icon={isMobileOrTabScreen ? "" : <CalendarIcon />}
                             rootClassName="bg-transparent text-xl border-none font-medium shadow-none max-lg:!px-2"
                         />
                     </div>
-                    {role === "volunteer" &&
+                    {role === "volunteer" && (
                         <Button
                             onClick={handleNotification}
                             icon={<NotificationIcon height="21px" width="21px" />}
                             customClassName="lg:hidden !border-none !bg-transparent font-semibold !text-black rounded-full !p-0"
                         />
-                    }
+                    )}
                 </div>
                 <div className="max-lg:hidden flex items-center gap-4">
                     <MonthYearSlider
@@ -65,10 +68,7 @@ const Header = (props: Props) => {
                     />
                 </div>
                 <div className="flex items-center gap-2 max-lg:mt-1">
-                    {
-                        isMobileOrTabScreen &&
-                        <MonthYearPicker />
-                    }
+                    {isMobileOrTabScreen && <MonthYearPicker />}
                     {role === "learner" ? (
                         <Button
                             onClick={handleAddMeeting}
@@ -77,29 +77,27 @@ const Header = (props: Props) => {
                         />
                     ) : (
                         <div className="flex items-center gap-2">
-                            {
-                                !isMobileOrTabScreen &&
+                            {!isMobileOrTabScreen && (
                                 <Button
                                     onClick={handleNotification}
                                     icon={<NotificationIcon />}
                                     customClassName="!bg-transparent font-semibold !text-black rounded-full !py-3 !px-3"
                                 />
-                            }
+                            )}
                             <Button
                                 onClick={handleMySchedule}
-                                title="My Schedule"
+                                title="Schedule my availability"
                                 customClassName="!bg-transparent font-medium !text-black rounded-full !py-3 !px-3"
                             />
                         </div>
                     )}
                 </div>
             </div>
-            {
-                isMobileOrTabScreen &&
+            {isMobileOrTabScreen && (
                 <SideModal isOpen={isSideNavBarOpen}>
                     <Sidebar onClose={() => setIsSideNavBarOpen(!isSideNavBarOpen)} />
                 </SideModal>
-            }
+            )}
         </div>
     );
 };

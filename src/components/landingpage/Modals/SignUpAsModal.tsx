@@ -11,6 +11,8 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/components/common/Toast";
 import ModalLoader from "@/components/common/Loader/Modal";
+import { getCookie } from "@/utils/auth";
+import { handleCookie } from "@/api/auth";
 
 const learnerOptions = [
     { label: "I am a parent filling this profile", value: "parent" },
@@ -151,8 +153,20 @@ const SignUpAsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
         await apiGoogleSignUp(access_token, payloads)
             .then((response: any) => {
                 setModalLoader(true);
-                router.replace("/onboarding");
-                router.refresh();
+                const { onboarded_status } = response;
+                console.log("response from signup", onboarded_status);
+                const role = getCookie("role");
+                const routes: Record<string, string> = {
+                    details_pending: "/onboarding",
+                    verification_pending: "/onboarding/verification",
+                    verification_rejected: "/onboarding/verification",
+                    verification_completed: `/${role}/schedule`,
+                };
+                if (routes[onboarded_status]) {
+                    console.log("pushing to", routes[onboarded_status]);
+                    router.push(routes[onboarded_status]);
+                    // router.refresh();
+                }
             })
             .catch((err) => {
                 setIsSignUpLoading(false);
