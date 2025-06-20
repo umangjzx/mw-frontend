@@ -26,13 +26,30 @@ const ParentGuardianFields: FormField[] = [
     {
         id: "relationship_to_learner",
         label: "Relationship to the Learner",
-        inputType: "select-creatable",
+        inputType: "select",
         variant: "single",
+        showSearch: true,
         placeholder: "Select relationship",
         gridCols: 1,
         options: [
             { label: "Parent", value: "parent" },
             { label: "Guardian", value: "guardian" },
+            { label: "Sibling", value: "sibling" },
+            { label: "Grandparent", value: "grandparent" },
+            { label: "Aunt/Uncle", value: "aunt_uncle" },
+            { label: "Cousin", value: "cousin" },
+            { label: "Spouse/Partner", value: "spouse_partner" },
+            { label: "Friend", value: "friend" },
+            { label: "Teacher/Educator", value: "teacher_educator" },
+            { label: "Mentor", value: "mentor" },
+            { label: "Coach", value: "coach" },
+            { label: "Employer/Supervisor", value: "employer_supervisor" },
+            { label: "Colleague", value: "colleague" },
+            { label: "Neighbor", value: "neighbor" },
+            { label: "Caregiver/Nanny", value: "caregiver_nanny" },
+            { label: "Social Worker", value: "social_worker" },
+            { label: "Counselor/Therapist", value: "counselor_therapist" },
+            { label: "Other (Please Specify)", value: "other" },
         ],
     },
     {
@@ -516,7 +533,7 @@ const InterestsHobbiesFields: FormField[] = [
 const ExpectationsGoalsFields: FormField[] = [
     {
         id: "expected_goals",
-        label: "Parent/Guardian’s Goals for the learner ",
+        label: "Parent/Guardian's Goals for the learner ",
         sublabel: "(e.g., improve social skills, academic progress, explore new hobbies)",
         inputType: "select-creatable",
         variant: "multi",
@@ -719,5 +736,5 @@ export const LearnerProfileFormSections: FormSectionConfig[] = LearnerFormSectio
 export const LearnerThankyouCardConstants = {
     title: "Thank You for Enrolling in MelodyWings!",
     description:
-        "We’re excited to have you join our community. Our team will review your details and get back to you shortly with the next steps. We appreciate your trust in us, and we look forward to helping you on this learning journey.",
+        "We're excited to have you join our community. Our team will review your details and get back to you shortly with the next steps. We appreciate your trust in us, and we look forward to helping you on this learning journey.",
 };
