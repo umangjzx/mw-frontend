@@ -184,15 +184,15 @@ export default function LearnersPage() {
             actionButtonPlacement: "right",
             title: "Learners",
             titleIcon: getHeaderIcon(pathname),
-            leftButton: {
-                buttonTitle: `Filters (${appliedFiltersCount})`,
-                buttonOnClick: () => setIsFilterOpen(true),
-                buttonIcon: <RiFilter3Line className="text-lg" />,
-                buttonClassName:
-                    "!bg-white !text-balck hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4 !rounded-full",
-                buttonPlacement: "right",
-                showButton: true,
-            },
+            // leftButton: {
+            //     buttonTitle: `Filters (${appliedFiltersCount})`,
+            //     buttonOnClick: () => setIsFilterOpen(true),
+            //     buttonIcon: <RiFilter3Line className="text-lg" />,
+            //     buttonClassName:
+            //         "!bg-white !text-balck hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4 !rounded-full",
+            //     buttonPlacement: "right",
+            //     showButton: true,
+            // },
             actionButtons: [
                 {
                     buttonTitle: isMobileScreen
