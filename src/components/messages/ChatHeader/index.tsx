@@ -10,7 +10,7 @@ interface ChatHeaderProps {
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({ name, location, image, onSeeMoreClick }) => {
     return (
-        <div className="flex items-center gap-4 border-b border-gray-200 p-4 hover:bg-[#f4f7fb] cursor-pointer transition-all duration-300 animate-fadeIn">
+        <div className="flex items-center gap-4  p-4 hover:bg-[#f4f7fb] cursor-pointer transition-all duration-300 w-full animate-fadeIn">
             <div
                 onClick={onSeeMoreClick}
                 className="relative w-11 h-11 rounded-full overflow-hidden transition-transform duration-300 hover:scale-105"

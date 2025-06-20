@@ -67,6 +67,7 @@ export const customStyles: StylesConfig = {
     placeholder: (base: any) => ({
         ...base,
         color: "#808080",
+        fontSize: "14px",
         fontFamily: "var(--font-light)",
     }),
     input: (base: any) => ({

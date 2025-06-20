@@ -1,4 +1,12 @@
-import nationalities from "@/data/nationalities.json"
+import nationalities from "@/data/nationalities.json";
+import developmentalDisabilities from "@/data/developmentalDisabilities.json";
+import areasOfSupport from "@/data/areasOfSupport.json";
+import academicStrengths from "@/data/academicStrengths.json";
+import academicChallenges from "@/data/academicChallenges.json";
+import behavioralConcerns from "@/data/behavioralConcerns.json";
+import techniquesThatWork from "@/data/techniquesThatWork.json";
+import skillsExpertise from "@/data/skills_expertise.json";
+import parentGoals from "@/data/parentGoals.json";
 
 export const VolunteerFilterModalConstants = [
     {
@@ -20,6 +28,16 @@ export const VolunteerFilterModalConstants = [
         responseAsLabel: "language_name",
         responseAsValue: "language_id",
     },
+    {
+        name: "skill_ids",
+        label: "Skills and Expertise to Learn",
+        inputType: "async-select",
+        variant: "multi",
+        endpoint: "skills",
+        responseAsLabel: "skill_name",
+        responseAsValue: "skill_id",
+        placeholder: "Select Skills to Learn",
+    },
     // {
     //     name: "subjects",
     //     label: "Subjects",
@@ -36,5 +54,95 @@ export const VolunteerFilterModalConstants = [
         inputType: "timerange",
         placeholder: "Available Time",
         clearable: true,
+    },
+];
+export const LearnerFilterModalConstants = [
+    {
+        name: "learner_primary_language",
+        label: "Languages Known",
+        inputType: "async-select",
+        variant: "multi",
+        placeholder: "Select Language",
+        endpoint: "languages",
+        responseAsLabel: "language_name",
+        responseAsValue: "language_name",
+    },
+    {
+        name: "type_of_developmental_disability",
+        label: "Type of Developmental Disability",
+        inputType: "async-select",
+        variant: "multi",
+        placeholder: "Select Developmental Disability",
+        endpoint: "development_disabilities",
+        responseAsLabel: "development_disability_name",
+        responseAsValue: "development_disability_name",
+    },
+    {
+        name: "areas_of_support_needed",
+        label: "Areas of Support Needed",
+        inputType: "async-select",
+        variant: "multi",
+        placeholder: "Select Areas of Support",
+        endpoint: "areas_of_support",
+        responseAsLabel: "area_of_support_name",
+        responseAsValue: "area_of_support_name",
+    },
+    {
+        id: "academic_strengths",
+        name: "academic_strengths",
+        label: "Academic Strengths",
+        inputType: "select-creatable",
+        variant: "multi",
+        placeholder: "Select Academic Strengths",
+        options: academicStrengths,
+        showSearch: true,
+    },
+    {
+        id: "academic_challenges",
+        name: "academic_challenges",
+        label: "Academic Challenges",
+        inputType: "select-creatable",
+        variant: "multi",
+        placeholder: "Select Academic Challenges",
+        options: academicChallenges,
+        showSearch: true,
+    },
+    {
+        id: "behavioral_concerns",
+        name: "behavioral_concerns",
+        label: "Behavioral Concerns",
+        inputType: "select-creatable",
+        variant: "multi",
+        placeholder: "Select Behavioral Concerns",
+        options: behavioralConcerns,
+        showSearch: true,
+    },
+    {
+        name: "techniques_to_calm",
+        label: "Techniques That Work",
+        inputType: "select-creatable",
+        variant: "multi",
+        placeholder: "Select Techniques",
+        options: techniquesThatWork,
+        showSearch: true,
+    },
+    {
+        name: "skill_ids",
+        label: "Skills and Expertise to Learn",
+        inputType: "async-select",
+        variant: "multi",
+        endpoint: "skills",
+        responseAsLabel: "skill_name",
+        responseAsValue: "skill_id",
+        placeholder: "Select Skills to Learn",
+    },
+    {
+        name: "expected_goals",
+        label: "Parent/Guardian's Goals for the Learner",
+        inputType: "select-creatable",
+        variant: "multi",
+        placeholder: "Select Parent Goals",
+        options: parentGoals,
+        showSearch: true,
     },
 ];

@@ -248,16 +248,18 @@ const Messages = () => {
                         onSearch={handleSearch}
                         isIndividualChatLoading={isIndividualLoading || isLoading}
                     />
-                    <div className="w-full h-full flex-1">
+                    <div className="w-full h-full flex-1 ">
                         {(isIndividualLoading && !isSendMessageLoading && !individualChat.length) ||
                         isRefetching ? (
                             <ChatHeaderSkeleton />
                         ) : (
-                            <ChatHeader
-                                name={recieverName}
-                                location={location}
-                                image={recieverImage}
-                            />
+                            <div className="flex items-center gap-4 justify-between border-b border-gray-200">
+                                <ChatHeader
+                                    name={recieverName}
+                                    location={location}
+                                    image={recieverImage}
+                                />
+                            </div>
                         )}
                         <div className="flex flex-col gap-4 p-4 h-[calc(100vh-16em)] overflow-y-auto">
                             {isIndividualLoading ? (

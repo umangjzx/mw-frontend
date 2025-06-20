@@ -1,0 +1,20 @@
+[
+    { "label": "Autism Spectrum Disorder", "value": "autism_spectrum_disorder" },
+    { "label": "Attention Deficit Hyperactivity Disorder (ADHD)", "value": "adhd" },
+    { "label": "Down Syndrome", "value": "down_syndrome" },
+    { "label": "Cerebral Palsy", "value": "cerebral_palsy" },
+    { "label": "Intellectual Disability", "value": "intellectual_disability" },
+    { "label": "Learning Disabilities", "value": "learning_disabilities" },
+    { "label": "Speech and Language Disorders", "value": "speech_language_disorders" },
+    { "label": "Sensory Processing Disorder", "value": "sensory_processing_disorder" },
+    { "label": "Fetal Alcohol Spectrum Disorder", "value": "fetal_alcohol_spectrum_disorder" },
+    { "label": "Fragile X Syndrome", "value": "fragile_x_syndrome" },
+    { "label": "Prader-Willi Syndrome", "value": "prader_willi_syndrome" },
+    { "label": "Williams Syndrome", "value": "williams_syndrome" },
+    { "label": "Tourette Syndrome", "value": "tourette_syndrome" },
+    { "label": "Dyslexia", "value": "dyslexia" },
+    { "label": "Dyscalculia", "value": "dyscalculia" },
+    { "label": "Dysgraphia", "value": "dysgraphia" },
+    { "label": "Other", "value": "other" },
+    { "label": "Not Specified", "value": "not_specified" }
+]
