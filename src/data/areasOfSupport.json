@@ -1,0 +1,23 @@
+[
+    { "label": "Academic Support", "value": "academic_support" },
+    { "label": "Behavioral Support", "value": "behavioral_support" },
+    { "label": "Communication Skills", "value": "communication_skills" },
+    { "label": "Social Skills", "value": "social_skills" },
+    { "label": "Life Skills", "value": "life_skills" },
+    { "label": "Motor Skills", "value": "motor_skills" },
+    { "label": "Sensory Integration", "value": "sensory_integration" },
+    { "label": "Emotional Regulation", "value": "emotional_regulation" },
+    { "label": "Reading and Writing", "value": "reading_writing" },
+    { "label": "Mathematics", "value": "mathematics" },
+    { "label": "Science", "value": "science" },
+    { "label": "Art and Creativity", "value": "art_creativity" },
+    { "label": "Music and Movement", "value": "music_movement" },
+    { "label": "Technology Skills", "value": "technology_skills" },
+    { "label": "Physical Therapy", "value": "physical_therapy" },
+    { "label": "Occupational Therapy", "value": "occupational_therapy" },
+    { "label": "Speech Therapy", "value": "speech_therapy" },
+    { "label": "Attention and Focus", "value": "attention_focus" },
+    { "label": "Memory and Learning", "value": "memory_learning" },
+    { "label": "Self-Care Skills", "value": "self_care_skills" },
+    { "label": "Other", "value": "other" }
+]

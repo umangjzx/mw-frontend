@@ -1,0 +1,8 @@
+[
+    { "label": "Math", "value": "math" },
+    { "label": "Science", "value": "science" },
+    { "label": "History", "value": "history" },
+    { "label": "English", "value": "english" },
+    { "label": "Others", "value": "others" },
+    { "label": "N/A", "value": "N/A" }
+]
