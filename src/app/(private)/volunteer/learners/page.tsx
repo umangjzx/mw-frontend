@@ -1,23 +1,22 @@
 "use client";
 
-import { getHeaderIcon } from "@/layouts/helper";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
-import VolunteerCard from "@/components/leaner/VolunteerCard";
-import VolunteerViewModal from "@/components/leaner/VolunteerViewModal";
-import { useQuery } from "@tanstack/react-query";
-import { GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
-import { useComponentStore } from "@/store/useComponenetStore";
-import AddNewMeetingModal from "@/components/schedule/Modals/AddNewMeetingModal";
-import { useQueryState } from "nuqs";
-import VolunteerFilterModal from "@/components/learners/Modals/VolunteerFilter";
-import { RiFilter3Line } from "react-icons/ri";
+import { GET_API } from "@/api/request";
 import LottieLoader from "@/components/common/Loader/Lottie";
-import InnerWidth from "@/utils/innerWidth";
-import { useDebounce } from "use-debounce";
 import LearnerCard from "@/components/leaner/LearnerCard";
+import LearnerFilterModal from "@/components/learners/Modals/LearnerFilter";
+import AddNewMeetingModal from "@/components/schedule/Modals/AddNewMeetingModal";
 import LearnerViewModal from "@/components/volunteers/Modals/LearnerViewModal";
+import { getHeaderIcon } from "@/layouts/helper";
+import { useComponentStore } from "@/store/useComponenetStore";
+import InnerWidth from "@/utils/innerWidth";
+import { useQuery } from "@tanstack/react-query";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useQueryState } from "nuqs";
+import { useEffect, useMemo, useState } from "react";
+import { RiFilter3Line } from "react-icons/ri";
+import { useDebounce } from "use-debounce";
+
 interface LearnerCardData {
     learnerId: string;
     profileImage: string;
@@ -30,6 +29,8 @@ interface LearnerCardData {
     totalReviews: string;
     overallRating: string;
     developementDisability: string;
+    expected_goals: string;
+    skill_ids: string;
 }
 
 export default function LearnersPage() {
@@ -46,13 +47,15 @@ export default function LearnersPage() {
     const [size] = useQueryState("size", { defaultValue: "10" });
     const [page] = useQueryState("page", { defaultValue: "1" });
     const [searchQuery, setSearchQuery] = useQueryState("query");
-    const [language_ids] = useQueryState("language_ids");
-    const [subject_ids] = useQueryState("subject_ids");
-    const [country] = useQueryState("country");
-    const [start_date] = useQueryState("start_date");
-    const [end_date] = useQueryState("end_date");
-    const [start_time] = useQueryState("start_time");
-    const [end_time] = useQueryState("end_time");
+    const [learner_primary_language] = useQueryState("learner_primary_language");
+    const [type_of_developmental_disability] = useQueryState("type_of_developmental_disability");
+    const [areas_of_support_needed] = useQueryState("areas_of_support_needed");
+    const [academic_strengths] = useQueryState("academic_strengths");
+    const [academic_challenges] = useQueryState("academic_challenges");
+    const [behavioral_concerns] = useQueryState("behavioral_concerns");
+    const [techniques_to_calm] = useQueryState("techniques_to_calm");
+    const [skill_ids] = useQueryState("skill_ids");
+    const [expected_goals] = useQueryState("expected_goals");
     const [learnerId, setLearnerId] = useQueryState("learnerId");
     const [modalQuery, setModalQuery] = useQueryState("modal");
 
@@ -65,27 +68,37 @@ export default function LearnersPage() {
             query,
             page,
             size,
-            country,
-            language_ids,
-            subject_ids,
-            start_date,
-            end_date,
-            start_time,
-            end_time,
+            learner_primary_language,
+            type_of_developmental_disability,
+            areas_of_support_needed,
+            academic_strengths,
+            academic_challenges,
+            behavioral_concerns,
+            techniques_to_calm,
+            skill_ids,
+            expected_goals,
         ],
         queryFn: async () => {
-            const endpoint = `${endpoints.learner.getAllLearners}?${new URLSearchParams({
+            const params: Record<string, string> = {
                 query: query || "",
                 page: page,
                 size: size,
-                // language_ids: language_ids || "",
-                // subject_ids: subject_ids || "",
-                // country: country || "",
-                // start_date: start_date || "",
-                // end_date: end_date || "",
-                // start_time: start_time || "",
-                // end_time: end_time || "",
-            })}`;
+            };
+
+            // Only add parameters if they have values
+            if (learner_primary_language)
+                params.learner_primary_language = learner_primary_language;
+            if (type_of_developmental_disability)
+                params.type_of_developmental_disability = type_of_developmental_disability;
+            if (areas_of_support_needed) params.areas_of_support_needed = areas_of_support_needed;
+            if (academic_strengths) params.academic_strengths = academic_strengths;
+            if (academic_challenges) params.academic_challenges = academic_challenges;
+            if (behavioral_concerns) params.behavioral_concerns = behavioral_concerns;
+            if (techniques_to_calm) params.techniques_to_calm = techniques_to_calm;
+            if (skill_ids) params.skill_ids = skill_ids;
+            if (expected_goals) params.expected_goals = expected_goals;
+
+            const endpoint = `${endpoints.learner.getAllLearners}?${new URLSearchParams(params)}`;
             const response: any = await GET_API(endpoint);
             return response.data;
         },
@@ -93,13 +106,33 @@ export default function LearnersPage() {
     });
 
     const appliedFiltersCount = useMemo(() => {
-        const filters = [language_ids, subject_ids, country, start_date, start_time];
+        const filters = [
+            learner_primary_language,
+            type_of_developmental_disability,
+            areas_of_support_needed,
+            academic_strengths,
+            academic_challenges,
+            behavioral_concerns,
+            techniques_to_calm,
+            skill_ids,
+            expected_goals,
+        ];
         return filters.filter((filter) => filter).length;
-    }, [language_ids, subject_ids, country, start_date, start_time]);
+    }, [
+        learner_primary_language,
+        type_of_developmental_disability,
+        areas_of_support_needed,
+        academic_strengths,
+        academic_challenges,
+        behavioral_concerns,
+        techniques_to_calm,
+        skill_ids,
+        expected_goals,
+    ]);
 
     useEffect(() => {
         if (data) {
-            const formattedData: LearnerCardData[] = data.map((learner: any) => ({
+            const formattedData: LearnerCardData[] = data?.items?.map((learner: any) => ({
                 learnerId: learner?.learner_id,
                 profileImage: learner?.profile_picture?.image_url,
                 name: `${learner?.learner_personal_info?.learner_first_name} ${learner?.learner_personal_info?.learner_last_name}`,
@@ -113,6 +146,8 @@ export default function LearnersPage() {
                 chatPermission: learner?.chat_permission,
                 developementDisability:
                     learner?.learner_special_needs?.type_of_developmental_disability,
+                skill_ids: learner?.learner_special_needs?.skill_ids,
+                expected_goals: learner?.learner_special_needs?.expected_goals,
             }));
             setLearnerCardData(formattedData);
             console.log(formattedData, "formattedData");
@@ -149,6 +184,15 @@ export default function LearnersPage() {
             actionButtonPlacement: "right",
             title: "Learners",
             titleIcon: getHeaderIcon(pathname),
+            // leftButton: {
+            //     buttonTitle: `Filters (${appliedFiltersCount})`,
+            //     buttonOnClick: () => setIsFilterOpen(true),
+            //     buttonIcon: <RiFilter3Line className="text-lg" />,
+            //     buttonClassName:
+            //         "!bg-white !text-balck hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4 !rounded-full",
+            //     buttonPlacement: "right",
+            //     showButton: true,
+            // },
             actionButtons: [
                 {
                     buttonTitle: isMobileScreen
@@ -168,7 +212,7 @@ export default function LearnersPage() {
         <div className="h-full animate-fadeIn">
             <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleModal} />
             <LearnerViewModal isOpen={isOpen} onClose={handleModal} />
-            <VolunteerFilterModal
+            <LearnerFilterModal
                 isFilterApplying={false}
                 isOpen={isFilterOpen}
                 onClose={() => setIsFilterOpen(false)}

@@ -47,6 +47,7 @@ export default function LearnersPage() {
     const [language_ids] = useQueryState("language_ids");
     const [subject_ids] = useQueryState("subject_ids");
     const [country] = useQueryState("country");
+    const [skill_ids] = useQueryState("skill_ids");
     const [start_date] = useQueryState("start_date");
     const [end_date] = useQueryState("end_date");
     const [start_time] = useQueryState("start_time");
@@ -66,6 +67,7 @@ export default function LearnersPage() {
             country,
             language_ids,
             subject_ids,
+            skill_ids,
             start_date,
             end_date,
             start_time,
@@ -79,6 +81,7 @@ export default function LearnersPage() {
                 language_ids: language_ids || "",
                 subject_ids: subject_ids || "",
                 country: country || "",
+                skill_ids: skill_ids || "",
                 start_date: start_date || "",
                 end_date: end_date || "",
                 start_time: start_time || "",
@@ -91,9 +94,9 @@ export default function LearnersPage() {
     });
 
     const appliedFiltersCount = useMemo(() => {
-        const filters = [language_ids, subject_ids, country, start_date, start_time];
+        const filters = [language_ids, subject_ids, country, skill_ids, start_date, start_time];
         return filters.filter((filter) => filter).length;
-    }, [language_ids, subject_ids, country, start_date, start_time]);
+    }, [language_ids, subject_ids, country, skill_ids, start_date, start_time]);
 
     useEffect(() => {
         if (data?.items) {

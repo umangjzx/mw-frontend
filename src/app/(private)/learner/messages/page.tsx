@@ -264,7 +264,7 @@ const Messages = () => {
                         isRefetching ? (
                             <ChatHeaderSkeleton />
                         ) : (
-                            <div className="flex items-center gap-4 justify-between">
+                            <div className="flex items-center gap-4 justify-between border-b border-gray-200">
                                 <ChatHeader
                                     name={recieverName}
                                     location={location}
@@ -336,6 +336,7 @@ const Messages = () => {
                                                     !chatPermission ||
                                                     isIndividualLoading
                                                 }
+                                                loading={isSendMessageLoading}
                                                 onClick={handleSendMessage}
                                                 title="Send Message"
                                                 btnVariant="secondary"
