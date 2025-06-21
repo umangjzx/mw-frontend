@@ -310,6 +310,7 @@ const Messages = () => {
                                         />
                                         <Button
                                             disabled={!message.trim() || !chatPermission}
+                                            loading={isSendMessageLoading}
                                             onClick={handleSendMessage}
                                             title="Send Message"
                                             btnVariant="secondary"

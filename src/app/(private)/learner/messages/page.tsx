@@ -336,6 +336,7 @@ const Messages = () => {
                                                     !chatPermission ||
                                                     isIndividualLoading
                                                 }
+                                                loading={isSendMessageLoading}
                                                 onClick={handleSendMessage}
                                                 title="Send Message"
                                                 btnVariant="secondary"
