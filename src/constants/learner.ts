@@ -26,7 +26,8 @@ const ParentGuardianFields: FormField[] = [
     {
         id: "relationship_to_learner",
         label: "Relationship to the Learner",
-        inputType: "select",
+        inputType: "select-creatable",
+        creatable: true,
         variant: "single",
         showSearch: true,
         placeholder: "Select relationship",
@@ -49,7 +50,6 @@ const ParentGuardianFields: FormField[] = [
             { label: "Caregiver/Nanny", value: "caregiver_nanny" },
             { label: "Social Worker", value: "social_worker" },
             { label: "Counselor/Therapist", value: "counselor_therapist" },
-            { label: "Other (Please Specify)", value: "other" },
         ],
     },
     {
