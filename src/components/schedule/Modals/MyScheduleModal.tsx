@@ -8,12 +8,13 @@ import cn from "classnames";
 import dayjs from "dayjs";
 import AddSlotIcon from "@/assets/icons/AddSlotIcon";
 import { useSendData } from "@/hooks/useReactQuery";
-import { generateTimeSlotId } from "@/utils/timeFunctions";
+import { convertToUTC, generateTimeSlotId } from "@/utils/timeFunctions";
 
 import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { showToast } from "@/components/common/Toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAppStore } from "@/store/useAppStore";
 
 interface TimeSlot {
     start_time: string;
@@ -49,6 +50,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
     const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const [deletedSlots, setDeletedSlots] = useState<string[]>([]);
     const queryClient = useQueryClient();
+    const { volunteerUtcOffset } = useAppStore();
 
     useEffect(() => {
         GET_API(endpoints.volunteer_slot.get).then((res: any) => {
@@ -190,6 +192,10 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             slots: schedule[day]
                 .filter((slot) => slot.start_time && slot.end_time) // Only include filled slots
                 .map((slot) => {
+                    // const start_time = convertToUTC(volunteerUtcOffset, slot.start_time);
+                    // const end_time = convertToUTC(volunteerUtcOffset, slot.end_time);
+                    // console.log("formatScheduleForAPI", start_time,  end_time);
+                    
                     return {
                         volunteer_slot_id: generateTimeSlotId(slot.start_time, slot.end_time),
                         start_time: slot.start_time,

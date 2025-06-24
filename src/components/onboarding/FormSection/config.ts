@@ -81,6 +81,9 @@ export const volunteerFormSchema = z.object({
         timezone: z
             .string({ required_error: "Time Zone is required" })
             .min(1, { message: "Time Zone cannot be empty" }),
+        utc_offset: z
+            .string()
+            .optional(),
     }),
 
     // Legal and Safety Info validations
@@ -363,7 +366,8 @@ export const defaultVolunteerData: Volunteer = {
         },
         zip_code: "638451",
         country: "india",
-        timezone: "asia/kolkata"
+        timezone: "asia/kolkata",
+        utc_offset: "+05:30"
     },
     legal_and_safety_info: {
         criminal_background_check_details: {
@@ -460,6 +464,9 @@ export const learnerFormSchema = z.object({
             timezone: z
                 .string({ required_error: "Time Zone is required" })
                 .min(1, { message: "Time Zone cannot be empty" }),
+                utc_offset: z
+                .string()
+                .optional(),
         }),
     }),
 
@@ -633,7 +640,8 @@ export const defaultLearnerData: Learner = {
             },
             zip_code: "638451",
             country: "india",
-            timezone: "asia/kolkata"
+            timezone: "asia/kolkata",
+            utc_offset: "+05:30"
         },
     },
     // parent_info: {
