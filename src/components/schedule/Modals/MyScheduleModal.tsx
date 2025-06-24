@@ -200,6 +200,8 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                         volunteer_slot_id: generateTimeSlotId(slot.start_time, slot.end_time),
                         start_time: slot.start_time,
                         end_time: slot.end_time,
+                        utc_start_time: convertToUTC(volunteerUtcOffset, slot.start_time),
+                        utc_end_time: convertToUTC(volunteerUtcOffset, slot.end_time),
                     };
                 }),
         }));
