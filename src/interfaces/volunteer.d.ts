@@ -110,6 +110,7 @@ type Volunteercontactdetails = {
     zip_code: string;
     country: string;
     timezone: string;
+    utc_offset: string;
 };
 
 type Contactnumber = {

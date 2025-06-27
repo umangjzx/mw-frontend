@@ -8,12 +8,13 @@ import cn from "classnames";
 import dayjs from "dayjs";
 import AddSlotIcon from "@/assets/icons/AddSlotIcon";
 import { useSendData } from "@/hooks/useReactQuery";
-import { generateTimeSlotId } from "@/utils/timeFunctions";
+import { convertToUTC, generateTimeSlotId } from "@/utils/timeFunctions";
 
 import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { showToast } from "@/components/common/Toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAppStore } from "@/store/useAppStore";
 
 interface TimeSlot {
     start_time: string;
@@ -35,6 +36,11 @@ interface APIScheduleFormat {
     slots: APITimeSlot[];
 }
 
+interface DeletedSlot {
+    volunteer_slot_id: string;
+    day: string;
+}
+
 const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) => {
     const [schedule, setSchedule] = useState<DaySchedule>({
         Sunday: [],
@@ -47,13 +53,14 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
     });
     const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
     const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const [deletedSlots, setDeletedSlots] = useState<string[]>([]);
+    const [deletedSlots, setDeletedSlots] = useState<DeletedSlot[]>([]);
     const queryClient = useQueryClient();
-
+    const { volunteerUtcOffset } = useAppStore();
+    
     useEffect(() => {
         GET_API(endpoints.volunteer_slot.get).then((res: any) => {
             const newSchedule = { ...schedule };
-
+            
             // Initialize all days with empty arrays
             days.forEach((day) => {
                 newSchedule[day] = [];
@@ -173,7 +180,13 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
         setSchedule((prev) => {
             const slotToRemove = prev[day][slotIndex];
             if (slotToRemove.volunteer_slot_id) {
-                setDeletedSlots((prev) => [...prev, slotToRemove.volunteer_slot_id!]);
+                setDeletedSlots((prev) => {
+                    // Check if the ID already exists in the array to prevent duplicates
+                    if (!prev.some((slot) => slot.volunteer_slot_id === slotToRemove.volunteer_slot_id)) {
+                        return [...prev, { volunteer_slot_id: slotToRemove.volunteer_slot_id!, day }];
+                    }
+                    return prev;
+                });
             }
 
             return {
@@ -190,10 +203,16 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             slots: schedule[day]
                 .filter((slot) => slot.start_time && slot.end_time) // Only include filled slots
                 .map((slot) => {
+                    // const start_time = convertToUTC(volunteerUtcOffset, slot.start_time);
+                    // const end_time = convertToUTC(volunteerUtcOffset, slot.end_time);
+                    // console.log("formatScheduleForAPI", start_time,  end_time);
+                    
                     return {
                         volunteer_slot_id: generateTimeSlotId(slot.start_time, slot.end_time),
                         start_time: slot.start_time,
                         end_time: slot.end_time,
+                        utc_start_time: convertToUTC(volunteerUtcOffset, slot.start_time),
+                        utc_end_time: convertToUTC(volunteerUtcOffset, slot.end_time),
                     };
                 }),
         }));

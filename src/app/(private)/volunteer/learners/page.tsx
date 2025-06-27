@@ -237,7 +237,7 @@ export default function LearnersPage() {
                             {appliedFiltersCount > 0 && (
                                 <button
                                     className="text-blue-500 underline"
-                                    onClick={() => router.push("/learner/volunteer")}
+                                    onClick={() => router.push("/volunteer/learners")}
                                 >
                                     Clear Filters
                                 </button>

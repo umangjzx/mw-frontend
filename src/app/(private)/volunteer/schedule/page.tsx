@@ -18,6 +18,7 @@ import { useQueryState } from "nuqs";
 import MobileCalender from "@/components/schedule/MobileCalender";
 import InnerWidth from "@/utils/innerWidth";
 import OnetImeScheduleModal from "@/components/schedule/Modals/OnetImeScheduleModal";
+import { GET_API } from "@/api/request";
 
 export default function SchedulePage() {
     const [isOpenSchedule, setIsOpenSchedule] = useState(false);
@@ -26,7 +27,7 @@ export default function SchedulePage() {
     const queryClient = useQueryClient();
     const router = useRouter();
     const isMobileOrTabScreen = InnerWidth() < 1024;
-    const { eventDetails, currentMonth } = useAppStore();
+    const { eventDetails, currentMonth,setVolunteerUtcOffset,setVolunteerTimeZone } = useAppStore();
     const [modal] = useQueryState("modal");
     const volunteerId = Cookies.get("volunteer_id");
     const [isOpenOnetImeSchedule, setIsOpenOnetImeSchedule] = useState(false);
@@ -37,6 +38,22 @@ export default function SchedulePage() {
     const { data, isFetching } = useQuery({
         queryKey: ["volunteer-events", currentMonth],
         queryFn: getEvents,
+    });
+
+    const getVolunteerDetails = async () => {
+        const res = await GET_API(endpoints.volunteer.getIndividualVolunteer(volunteerId as string));
+        if (res?.status === 200) {
+            console.log("res?.data?.utc_offset", res?.data?.volunteer_contact_details?.utc_offset);
+            setVolunteerUtcOffset(res?.data?.volunteer_contact_details?.utc_offset);
+            setVolunteerTimeZone(res?.data?.volunteer_contact_details?.timezone);
+            return res?.data;
+        }
+        return null;
+    };
+
+    const { data: volunteerDetails } = useQuery<any>({
+        queryKey: ["volunteer-details", volunteerId],
+        queryFn: getVolunteerDetails,
     });
 
     const handleNavigate = () => {

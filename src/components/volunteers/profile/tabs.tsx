@@ -67,6 +67,7 @@ export const VolunteerContactDetails = ({ data }: { data: Volunteercontactdetail
         { label: "Country", value: data?.country },
         { label: "Zip Code", value: data?.zip_code },
         { label: "Timezone", value: data?.timezone },
+        { label: "UTC Offset", value: data?.utc_offset },
     ]
 
     const contactDetails = [

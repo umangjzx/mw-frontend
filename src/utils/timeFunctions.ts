@@ -1,5 +1,11 @@
 import moment from "moment-timezone";
 
+/**
+ * Extracts timezone offset from timezone label
+ * @param timezoneLabel - The timezone label (e.g., "Asia/Kolkata (GMT+05:30)")
+ * @returns The offset in the format "offset:+05:30" or null if not found
+ */
+
 type UserTimeZoneProps = {
     date: string;
     timeZone?: string;
@@ -53,3 +59,24 @@ export const generateTimeSlotId = (startTime: string, endTime: string) => {
     const hash = require("crypto").createHash("sha256");
     return hash.update(`${startTime}-${endTime}`).digest("hex");
 };
+
+export const convertToUTC = (utc_offset: string, time: string): string => {
+    // Use a fixed anchor date to ensure consistent behavior
+    const anchorDate = "2000-01-01";  // arbitrary fixed date
+    const local = moment(`${anchorDate} ${time}`, "YYYY-MM-DD HH:mm").utcOffset(utc_offset, true);
+    const utcTime = local.utc().format("HH:mm");
+    return utcTime;
+  };
+
+export const extractTimezoneOffset = (timezoneLabel: string): string | null => {
+    if (!timezoneLabel) return null;
+    
+    // Extract the GMT offset part from the label
+    const gmtMatch = timezoneLabel.match(/\(GMT([+-]\d{2}:\d{2})\)/);
+    
+    if (gmtMatch && gmtMatch[1]) {
+        return `${gmtMatch[1]}`;
+    }
+    
+    return null;
+}; 

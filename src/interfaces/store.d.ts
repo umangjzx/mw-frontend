@@ -26,6 +26,10 @@ type HeaderOptions = {
 } | null;
 
 type UseVolunteerProps = {
+    volunteerTimeZone: string;
+    setVolunteerTimeZone: (timezone: string) => void;
+    volunteerUtcOffset: string;
+    setVolunteerUtcOffset: (offset: string) => void;
     volunteerName: string;
     setVolunteerName: (name: string) => void;
     volunteerImage: string;
@@ -35,6 +39,10 @@ type UseVolunteerProps = {
 };
 
 type UseLearnerProps = {
+    learnerTimeZone: string;
+    setLearnerTimeZone: (timezone: string) => void;
+    learnerUtcOffset: string;
+    setLearnerUtcOffset: (offset: string) => void;
     learnerName: string;
     setLearnerName: (name: string) => void;
     learnerImage: string;
