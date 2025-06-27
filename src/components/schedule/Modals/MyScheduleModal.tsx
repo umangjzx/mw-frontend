@@ -36,6 +36,11 @@ interface APIScheduleFormat {
     slots: APITimeSlot[];
 }
 
+interface DeletedSlot {
+    volunteer_slot_id: string;
+    day: string;
+}
+
 const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) => {
     const [schedule, setSchedule] = useState<DaySchedule>({
         Sunday: [],
@@ -48,14 +53,14 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
     });
     const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
     const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const [deletedSlots, setDeletedSlots] = useState<string[]>([]);
+    const [deletedSlots, setDeletedSlots] = useState<DeletedSlot[]>([]);
     const queryClient = useQueryClient();
     const { volunteerUtcOffset } = useAppStore();
-
+    
     useEffect(() => {
         GET_API(endpoints.volunteer_slot.get).then((res: any) => {
             const newSchedule = { ...schedule };
-
+            
             // Initialize all days with empty arrays
             days.forEach((day) => {
                 newSchedule[day] = [];
@@ -175,7 +180,13 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
         setSchedule((prev) => {
             const slotToRemove = prev[day][slotIndex];
             if (slotToRemove.volunteer_slot_id) {
-                setDeletedSlots((prev) => [...prev, slotToRemove.volunteer_slot_id!]);
+                setDeletedSlots((prev) => {
+                    // Check if the ID already exists in the array to prevent duplicates
+                    if (!prev.some((slot) => slot.volunteer_slot_id === slotToRemove.volunteer_slot_id)) {
+                        return [...prev, { volunteer_slot_id: slotToRemove.volunteer_slot_id!, day }];
+                    }
+                    return prev;
+                });
             }
 
             return {

@@ -16,6 +16,7 @@ import { useSendData } from "@/hooks/useReactQuery";
 import { z } from "zod";
 import InnerWidth from "@/utils/innerWidth";
 import { showToast } from "@/components/common/Toast";
+import Cookies from "js-cookie";
 
 // Define Zod schema for form validation
 const meetingFormSchema = z.object({
@@ -65,6 +66,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
     const [volunteerAvailableDates, setVolunteerAvailableDates] = useState<string[]>([]);
     const [volunteerUnavailableDates, setVolunteerUnavailableDates] = useState<string[]>([]);
     const [selectedVolunteerId, setSelectedVolunteerId] = useState<string>("");
+    const learnerId = Cookies.get("learner_id");
 
     const getVolunteers = async () => {
         setFetchingVolunteers(true);
@@ -269,6 +271,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
             session_end_time: formData.end_time,
             session_title: formData.title_of_the_meeting,
             session_description: formData.description,
+            learner_id: learnerId,
         };
         return await POST_API(endpoints.session.bookSession, payload);
     };

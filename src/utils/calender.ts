@@ -20,6 +20,9 @@ interface EventResponse {
     status: string;
     feedback_collected_from_learner: boolean;
     feedback_collected_from_volunteer: boolean;
+    learner_start_time: string;
+    learner_end_time: string;
+    learner_start_date: string;
 }
 
 interface CalendarEvent {
@@ -82,12 +85,12 @@ export const getCalendarEvents = async (
                     // If there's a session, create an event with the session details
                     events.push({
                         title: slot.session_details.session_title,
-                        date: slot.session_details.session_date,
+                        date: slot.session_details.volunteer_start_date,
                         start: moment(
-                            `${slot.session_details.session_date} ${slot.session_details.session_start_time}`
+                            `${slot.session_details.volunteer_start_date} ${slot.session_details.volunteer_start_time}`
                         ).format(),
                         end: moment(
-                            `${slot.session_details.session_date} ${slot.session_details.session_end_time}`
+                            `${slot.session_details.volunteer_start_date} ${slot.session_details.volunteer_end_time}`
                         ).format(),
                         backgroundColor: "var(--success-light-color)",
                         classNames: ["event-item", "rounded-md", "py-1", "my-0.5"],
@@ -144,9 +147,9 @@ export const getCalendarEvents = async (
         return (
             response?.data?.items?.map((item: EventResponse) => ({
                 title: item.session_title,
-                date: item.session_date,
-                start: moment(`${item.session_date} ${item.session_start_time}`).format(),
-                end: moment(`${item.session_date} ${item.session_end_time}`).format(),
+                date: item.learner_start_date,
+                start: moment(`${item.learner_start_date} ${item.learner_start_time}`).format(),
+                end: moment(`${item.learner_start_date} ${item.learner_end_time}`).format(),
                 backgroundColor: "var(--success-light-color)",
                 classNames: ["event-item", "rounded-md", "py-1", "my-0.5"],
                 textColor: "var(--success-color)",

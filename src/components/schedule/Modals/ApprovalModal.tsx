@@ -21,6 +21,9 @@ type SessionsData = {
     session_title: string;
     session_id: string;
     overlapped_slot: boolean;
+    volunteer_start_time: string;
+    volunteer_end_time: string;
+    volunteer_start_date: string;
 }
 
 interface NotificationData {
