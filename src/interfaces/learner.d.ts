@@ -74,7 +74,8 @@ interface Learnercontactdetails {
     contact_number: Parentcontactnumber;
     zip_code: string;
     country: string,
-    timezone: string
+    timezone: string,
+    utc_offset: string
 }
 
 interface Parentinfo {

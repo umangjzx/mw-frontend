@@ -48,6 +48,7 @@ export const ProfileDetails = ({ data }: { data: Learnerpersonalinfo }) => {
         { label: "Zip Code", value: contact_data?.zip_code },
         { label: "Country", value: formatString(contact_data?.country) },
         { label: "Timezone", value: formatString(contact_data?.timezone) },
+        { label: "UTC Offset", value: contact_data?.utc_offset },
     ].filter(item => item.value);
 
     return (
