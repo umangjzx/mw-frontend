@@ -111,8 +111,8 @@ const ProfileDetailsFields: FormField[] = [
         inputType: "select",
         placeholder: "Select education level",
         options: [
-            { label: "High School", value: "high_school" },
             { label: "Bachelor's Degree", value: "bachelors" },
+            { label: "High School", value: "high_school" },
             { label: "Master's Degree", value: "masters" },
             { label: "PhD", value: "phd" },
             { label: "Others", value: "others" },
