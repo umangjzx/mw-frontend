@@ -2,13 +2,13 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import AboutUsImg from '@/assets/images/our-team/AboutUs.png';
-
+import AboutMe from '@/assets/images/AboutMe.png';
 function AboutSectionCard() {
   return (
     <div className="bg-white rounded-3xl w-full flex flex-col gap-10 p-5 md:p-10 mt-5">
       <div className="w-full flex gap-10 max-lg:flex-col max-md:border-b max-md:pb-8" >
         <div className="lg:w-[22%] flex justify-center items-center">
-          <Image src={AboutUsImg} alt="About Us" className='!h-[300px] lg:!h-full  max-lg:w-auto object-cover rounded-lg' />
+          <Image src={AboutMe} alt="About Us" className='!h-[300px] lg:!h-full  max-lg:w-auto object-cover rounded-lg' />
         </div>
         <div className="lg:w-[78%]">
           <p className="text-sm md:text-base lg:text-xl font-normal leading-8 max-md:!leading-6 text-justify tracking-wide">
