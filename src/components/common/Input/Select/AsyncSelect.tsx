@@ -9,6 +9,7 @@ import TagComponent from "../../Tag";
 import { cn } from "@/utils/merge-class";
 import { StylesConfig } from "react-select";
 import { usePathname } from "next/navigation";
+import { v4 as uuidv4 } from "uuid";
 
 const AsyncSelect = ({
     variant,
@@ -158,11 +159,11 @@ const AsyncSelect = ({
 
     // Add createOption handler
     const handleCreate = (inputValue: string) => {
-        console.log("Input: ", inputValue);
-
         if (creatable && "onCreate" in props) {
-            const [key1 = "label", key2 = "value"]: string[] = Object.keys(data[0]);
-            const option = { [key1]: inputValue, [key2]: inputValue };
+            const keys = Object.keys(data[0] || {});
+            const [key1 = "label", key2 = "value"] = keys;
+            const randomId = key2.toLowerCase() === "language_id" ? uuidv4() : inputValue;
+            const option = { [key1]: inputValue, [key2]: randomId };
             setData((prev) => [...prev, option]);
             props.onCreate(Array.isArray(responseAsValue) ? option : inputValue);
         }
