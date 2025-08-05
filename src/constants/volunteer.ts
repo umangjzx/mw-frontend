@@ -1,5 +1,5 @@
 import nationalities from "@/data/nationalities.json";
-import timezones from "@/data/timezones.json";
+import timezones from "@/data/selectiveTimeZones.json";
 
 export const ADULT_VOLUNTEER_AGE = 21;
 
