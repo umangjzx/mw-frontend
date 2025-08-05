@@ -103,7 +103,7 @@ const ProfileDetailsFields: FormField[] = [
         endpoint: "languages",
         responseAsLabel: "language_name",
         responseAsValue: ["language_id", "language_name"],
-        variant: "single",
+        variant: "multi",
         required: true,
     },
     {
