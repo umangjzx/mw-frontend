@@ -61,8 +61,17 @@ export const FormField = ({ field, control, setValue, errors, parent, clearError
         // Check if this is a timezone field
         if (field.id === "timezone" && field.options && value) {
             // Find the selected option to get the full label
-            const selectedOption = field.options.find((opt: any) => opt.value === value);
+            let selectedOption = null;
             
+            // Search through the nested timezone structure
+            for (const region of field.options) {
+                if ('options' in region && region.options) {
+                    selectedOption = region.options.find((opt: any) => opt.value === value);
+                    if (selectedOption) break;
+                }
+            }
+            
+            console.log("selectedOption in handleChange", selectedOption)
             if (selectedOption?.label) {
                 // Extract the timezone offset
                 const offset = extractTimezoneOffset(selectedOption.label);
