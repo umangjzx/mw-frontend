@@ -1,5 +1,5 @@
 import nationalities from "@/data/nationalities.json";
-import timezones from "@/data/timezones.json";
+import timezones from "@/data/selectiveTimeZones.json";
 
 export const LearnerOnboardingConstants = {
     title: "Enroll a learner",
@@ -140,11 +140,13 @@ const LearnerPersonalFields: FormField[] = [
         id: "learner_primary_language",
         label: "Primary Language",
         inputType: "async-select",
+        creatable: true,
+        showSearch: true,
         endpoint: "languages",
         variant: "single",
         responseAsLabel: "language_name",
         responseAsValue: "language_name",
-        placeholder: "Search or select language",
+        placeholder: "Don't see your option? Type it in to add.",
         gridCols: 1,
         required: true,
     },
