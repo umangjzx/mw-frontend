@@ -1,5 +1,5 @@
 import nationalities from "@/data/nationalities.json";
-import timezones from "@/data/timezones.json";
+import timezones from "@/data/selectiveTimeZones.json";
 
 export const ADULT_VOLUNTEER_AGE = 21;
 
@@ -96,13 +96,14 @@ const ProfileDetailsFields: FormField[] = [
         id: "volunteer_languages",
         label: "Languages Spoken",
         inputType: "async-select",
-        variant: "multi",
-        placeholder: "Search or select languages",
+        placeholder: "Don't see your option? Type it in to add.",
+        creatable: true,
+        gridCols: 2,
+        inputClassName: "!w-[49%]",
         endpoint: "languages",
         responseAsLabel: "language_name",
         responseAsValue: ["language_id", "language_name"],
-        gridCols: 2,
-        inputClassName: "!w-[49%]",
+        variant: "multi",
         required: true,
     },
     {

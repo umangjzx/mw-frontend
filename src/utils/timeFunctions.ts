@@ -71,11 +71,11 @@ export const convertToUTC = (utc_offset: string, time: string): string => {
 export const extractTimezoneOffset = (timezoneLabel: string): string | null => {
     if (!timezoneLabel) return null;
     
-    // Extract the GMT offset part from the label
-    const gmtMatch = timezoneLabel.match(/\(GMT([+-]\d{2}:\d{2})\)/);
+    // Extract the UTC offset part from the label
+    const utcMatch = timezoneLabel.match(/\(UTC([+-]\d{2}:\d{2})\)/);
     
-    if (gmtMatch && gmtMatch[1]) {
-        return `${gmtMatch[1]}`;
+    if (utcMatch && utcMatch[1]) {
+        return `${utcMatch[1]}`;
     }
     
     return null;
