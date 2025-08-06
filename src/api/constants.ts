@@ -25,12 +25,14 @@ export const endpoints: EndpointProps = {
         getAllLearners: "learner",
         getIndividualLearner: (id: string) => `learner/${id}`,
         getConnectedVolunteers: (id: string) => `learner/${id}/connected_volunteers`,
+        getTotalLearnersCount: "learner/total_learners_count",
     },
     volunteer: {
         update: (id: string) => `volunteers/${id}`,
         getAllVolunteers: "volunteers",
         getIndividualVolunteer: (id: string) => `volunteers/${id}`,
         getConnectedLearners: (id: string) => `volunteers/${id}/connected_learners`,
+        getTotalVolunteersHours: "volunteers/total_volunteered_hours",
     },
     volunteer_slot: {
         update: "volunteer_slots",
