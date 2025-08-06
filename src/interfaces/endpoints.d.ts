@@ -19,12 +19,14 @@ type EndpointProps = {
         getAllLearners: string;
         getIndividualLearner: (id: string) => string;
         getConnectedVolunteers: (id: string) => string;
+        getTotalLearnersCount: string;
     };
     volunteer: {
         update: (id: string) => string;
         getAllVolunteers: string;
         getIndividualVolunteer: (id: string) => string;
         getConnectedLearners: (id: string) => string;
+        getTotalVolunteersHours: string;
     };
     volunteer_slot: {
         update: string;
