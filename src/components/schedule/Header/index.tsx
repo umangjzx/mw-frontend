@@ -11,6 +11,7 @@ import MonthYearPicker from "./MonthYearPicker";
 import SideModal from "@/components/common/Modals/MobileSideModal";
 import Sidebar from "@/components/common/Sidebar";
 import { useState } from "react";
+import { VIEW_DEMO_LINK } from "@/definitions";
 
 type Props = {};
 
@@ -32,6 +33,10 @@ const Header = (props: Props) => {
 
     const handleNotification = () => {
         router.push("/volunteer/schedule?modal=approval_notification");
+    };
+
+    const handleViewDemo = () => {
+        window.open(VIEW_DEMO_LINK, '_blank');
     };
 
     return (
@@ -70,11 +75,18 @@ const Header = (props: Props) => {
                 <div className="flex items-center gap-2 max-lg:mt-1">
                     {isMobileOrTabScreen && <MonthYearPicker />}
                     {role === "learner" ? (
-                        <Button
-                            onClick={handleAddMeeting}
-                            title="Add New Meeting"
-                            customClassName="!bg-black max-lg:!text-sm !font-medium !text-white rounded-full p-1 lg:!p-3"
-                        />
+                        <div className="flex items-center gap-2">
+                            <Button
+                                onClick={handleViewDemo}
+                                title="View Demo"
+                                customClassName="!bg-white max-lg:!text-sm !font-medium !text-black rounded-full p-1 lg:!p-3"
+                            />
+                            <Button
+                                onClick={handleAddMeeting}
+                                title="Add New Meeting"
+                                customClassName="!bg-black max-lg:!text-sm !font-medium !text-white rounded-full p-1 lg:!p-3"
+                            />
+                        </div>
                     ) : (
                         <div className="flex items-center gap-2">
                             {!isMobileOrTabScreen && (
