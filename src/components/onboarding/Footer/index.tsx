@@ -23,7 +23,7 @@ type SocialLink = {
 const policyLinks: PolicyLink[] = [
     { href: "/privacy-policy", target: "_blank", label: "Privacy Policy" },
     { href: "/terms-and-conditions", target: "_blank", label: "Terms & Conditions" },
-    { href: "mailto:support@melodywings.org", target: "_blank", label: "Contact Us" }
+    { href: "mailto:support@melodywings.org", target: "_blank", label: "Contact Us - support@melodywings.org" }
 ];
 
 const socialLinks: SocialLink[] = [

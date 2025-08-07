@@ -112,8 +112,18 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
     };
 
     const renderEventContent = (eventInfo: any) => {
-        const startTime = moment(eventInfo.event.start).format("h:mm A");
-        const endTime = moment(eventInfo.event.end).format("h:mm A");
+        const startMoment = moment(eventInfo.event.start);
+        const endMoment = moment(eventInfo.event.end);
+        let startTime, endTime;
+        
+        if (startMoment.isValid() && endMoment.isValid()) {
+            startTime = startMoment.format("h:mm A");
+            endTime = endMoment.format("h:mm A");
+        } else {
+            // Fallback for invalid dates
+            startTime = "Invalid";
+            endTime = "Time";
+        }
         return (
             <EventCard
                 title={eventInfo.event.title}
@@ -223,6 +233,27 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
         }
     };
 
+    // Preprocess events to handle midnight crossing
+    const processedEvents = events?.map((event: any) => {
+        if (event.start && event.end) {
+            const startMoment = moment(event.start);
+            const endMoment = moment(event.end);
+            
+            // If end time is before start time on the same day, it's a midnight crossing event
+            if (startMoment.isValid() && endMoment.isValid() && endMoment.isBefore(startMoment)) {
+                // Adjust the end time to the next day
+                const adjustedEnd = endMoment.clone().add(1, 'day').toISOString();
+                return {
+                    ...event,
+                    end: adjustedEnd
+                };
+            }
+        }
+        return event;
+    }) || [];
+
+    console.log(processedEvents, "processed events in calendar");
+
     return (
         <>
             <MeetingPreviewModal
@@ -275,7 +306,7 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
                     dayHeaderContent={customDayHeaderContent}
                     eventContent={(eventInfo) => renderEventContent(eventInfo)}
                     dayCellClassNames={dayCellClassNames}
-                    events={events || []}
+                    events={processedEvents}
                     moreLinkClassNames={["!text-primary", "hover:!bg-transparent"]}
                     moreLinkClick={handleMoreLinkClick}
                 />
