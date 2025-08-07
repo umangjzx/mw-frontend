@@ -36,7 +36,9 @@ const Header = (props: Props) => {
     };
 
     const handleViewDemo = () => {
-        window.open(VIEW_DEMO_LINK, '_blank');
+        if(typeof window !== 'undefined') {
+            window.open(VIEW_DEMO_LINK, '_blank');
+        }
     };
 
     return (
