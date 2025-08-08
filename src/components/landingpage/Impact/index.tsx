@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import numeral from "numeral";
+import { Spin } from "antd";
 
 const Impact = () => {
 
@@ -19,12 +20,12 @@ const Impact = () => {
         return response.data;
     };
 
-    const {data: totalLearnersCount} = useQuery({
+    const {data: totalLearnersCount, isLoading: isLoadingLearners} = useQuery({
         queryKey: ["totalLearnersCount"],
         queryFn: () => getTotalLearnersCount(),
     });
 
-    const {data: totalVolunteersHours} = useQuery({
+    const {data: totalVolunteersHours, isLoading: isLoadingVolunteers} = useQuery({
         queryKey: ["totalVolunteersHours"],
         queryFn: () => getTotalVolunteersHours(),
     });
@@ -52,7 +53,11 @@ const Impact = () => {
                                 style={gradientInnerTextStyle}
                                 className="text-center lg:text-start text-[4rem] font-semibold tracking-tighter"
                             >
-                                {formatHours(totalVolunteersHours?.total_volunteered_hours || 0)}+
+                                {isLoadingVolunteers ? (
+                                    <Spin size="large" />
+                                ) : (
+                                    `${formatHours(totalVolunteersHours?.total_volunteered_hours || 0)}+`
+                                )}
                             </span>
                             <p className="text-xl md:text-base lg:text-xl font-medium -mt-2">Total Hours</p>
                         </div>
@@ -61,7 +66,11 @@ const Impact = () => {
                                 style={gradientInnerTextStyle}
                                 className="text-center lg:text-start text-[4rem] font-semibold tracking-tighter"
                             >
-                                {formatCount(totalLearnersCount || 0)}
+                                {isLoadingLearners ? (
+                                    <Spin size="large" />
+                                ) : (
+                                    formatCount(totalLearnersCount || 0)
+                                )}
                             </span>
                             <p className="text-xl md:text-base lg:text-xl font-medium -mt-2"> Learners Supported</p>
                         </div>
@@ -71,7 +80,11 @@ const Impact = () => {
                                 style={gradientInnerTextStyle}
                                 className="text-center lg:text-start text-[4rem] font-semibold tracking-tighter"
                             >
-                                {formatCount(totalVolunteersHours?.verified_volunteers_count || 0)}
+                                {isLoadingVolunteers ? (
+                                    <Spin size="large" />
+                                ) : (
+                                    formatCount(totalVolunteersHours?.verified_volunteers_count || 0)
+                                )}
                             </span>
                             <p className="text-xl md:text-base lg:text-xl font-medium -mt-2">Volunteers Engaged</p>
                         </div>
