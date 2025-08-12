@@ -158,7 +158,6 @@ const FormTabs = ({ formData, control, errors, trigger, setError, clearErrors, s
     };
 
     const handleUpdateStepAndData = async (index: number, data: any) => {
-        alert(index)
         setIsStepUpdatePending(true);
         try {
             const res = await PUT_API(endpoints.onboarding.update(role as "volunteer" | "learner"), { ...data, step: index });
