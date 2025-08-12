@@ -39,7 +39,7 @@ const EditProfileModal = ({
 
     const UserProfileFormConstants = isVolunteer ? VolunteerProfileFormConstants : LearnerProfileFormSections;
     const UserProfileFormSchema = isVolunteer ? volunteerFormSchema : learnerFormSchema;
-
+    
     const {
         control,
         handleSubmit,

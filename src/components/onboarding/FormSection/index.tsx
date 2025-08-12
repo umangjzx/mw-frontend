@@ -18,7 +18,7 @@ type FormSectionProps = {
 
 const FormSection = ({ schema, formData }: FormSectionProps) => {
     const { form, onSubmit, isLoading, isRedirecting } = useOnboardingForm(schema);
-    const { control, formState: { errors, isValid, dirtyFields }, trigger, setError, setValue, clearErrors } = form;
+    const { control, formState: { errors, isValid, dirtyFields }, trigger, setError, setValue, clearErrors, reset } = form;
 
     const role = getCookie("role");
     const isVolunteer = role === "volunteer";
@@ -64,6 +64,7 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
             {isUserLoading && <ModalLoader isLoading={isUserLoading} title="Fetching user details..." />}
             {isRedirecting && <ModalLoader isLoading={isRedirecting} title="Loading..." />}
             <FormTabs 
+                reset={reset}
                 setValue={setValue}
                 setError={setError}
                 clearErrors={clearErrors}

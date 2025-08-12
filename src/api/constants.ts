@@ -10,6 +10,8 @@ export const endpoints: EndpointProps = {
             `onboarding/status/${role}/${id}`,
         setLearnerOnboardingStatus: (id: string) =>
             `onboarding/update_verification_status/learner/${id}?verification_status=verification_completed`,
+        getOnboardingVolunteerData: (id: string) => `auth/decrypt_volunteer_details/${id}`,
+        getOnboardingLearnerData: (id: string) => `auth/decrypt_learner_details/${id}`,
     },
     auth: {
         oauth2callback: "auth/oauth2callback",
