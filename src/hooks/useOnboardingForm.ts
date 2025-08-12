@@ -21,7 +21,7 @@ export const useOnboardingForm = (schema: any) => {
 
     const { mutate: updateOnboarding, isPending } = useSendData({
         fn: (data: z.infer<typeof schema>) =>
-            PUT_API(endpoints.onboarding.update(role as "volunteer" | "learner"), data),
+            PUT_API(endpoints.onboarding.update(role as "volunteer" | "learner"), { ...data, step: role === "volunteer" ? 5 : 6 }),
         success: () => {
             showToast({ type: "success", message: "Form Submitted!" });
             setIsRedirecting(true);

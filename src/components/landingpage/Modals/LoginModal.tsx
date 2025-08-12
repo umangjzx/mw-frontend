@@ -31,6 +31,7 @@ export const LoginModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =
                 const role = getCookie("role");
                 const routes: Record<string, string> = {
                     details_pending: "/onboarding",
+                    partially_filled: "/onboarding",
                     verification_pending: "/onboarding/verification",
                     verification_rejected: "/onboarding/verification",
                     verification_completed: `/${role}/schedule`,

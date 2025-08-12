@@ -12,6 +12,10 @@ import { calculateAge, isAgeUnder18 } from "@/utils/timeFunctions";
 import { ADULT_VOLUNTEER_AGE } from "@/constants/volunteer";
 import { PrivacyPolicyElement, TermsAndConditionElement } from "./Consents";
 import { getCookie } from "@/utils/auth";
+import { GET_API, PUT_API } from "@/api/request";
+import { endpoints } from "@/api/constants";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import Cookies from "js-cookie";
 
 const currentVersion = process.env.NEXT_PUBLIC_CURRENT_VERSION;
 
@@ -27,17 +31,72 @@ type FormTabsProps = {
     clearErrors: UseFormClearErrors<any>;
     setValue: (name: string, value: any, options?: any) => void;
     isLoading: boolean;
+    reset: (data: any) => void;
 };
 
-const FormTabs = ({ formData, control, errors, trigger, setError, clearErrors, setValue, validateForm, handleFillForm, onSubmit, isLoading }: FormTabsProps) => {
+const FormTabs = ({ formData, control, errors, trigger, setError, clearErrors, setValue, validateForm, handleFillForm, onSubmit, isLoading, reset }: FormTabsProps) => {
     const role = getCookie("role");
+    const isVolunteer = role === "volunteer";
     const volunteer_birth_date = useWatch({ name: 'volunteer_birth_date', control: control });
     const enrolled_by = useWatch({ name: 'enrolled_by', control: control });
-
+    const [isStepUpdatePending, setIsStepUpdatePending] = useState(false);
     // Form Tabs
     const [activeTab, setActiveTab] = useState(0);
     const [highestTab, setHighestTab] = useState(0);
     const tabButtonsRef = useRef<HTMLDivElement>(null);
+    const queryClient = useQueryClient();
+        const userId = getCookie(isVolunteer ? "volunteer_id" : "learner_id") || "";
+
+    // Utility function to filter out null values from API data
+    const filterNullValues = (data: any): any => {
+        if (data === null || data === undefined) return undefined;
+        
+        if (Array.isArray(data)) {
+            return data.map(item => filterNullValues(item)).filter(item => item !== undefined);
+        }
+        
+        if (typeof data === 'object') {
+            const filtered: any = {};
+            for (const [key, value] of Object.entries(data)) {
+                const filteredValue = filterNullValues(value);
+                if (filteredValue !== undefined) {
+                    filtered[key] = filteredValue;
+                }
+            }
+            return Object.keys(filtered).length > 0 ? filtered : undefined;
+        }
+        
+        return data;
+    };
+
+    const getOnboardingData = () => {
+        if(isVolunteer){
+            return GET_API(endpoints.onboarding.getOnboardingVolunteerData(userId)); 
+        } else {
+            return GET_API(endpoints.onboarding.getOnboardingLearnerData(userId));
+        }
+    }
+
+    const { data: onboardingData, isLoading: isOnboardingDataLoading } = useQuery({
+        queryKey: ["onboardingData"],
+        queryFn: getOnboardingData,
+        enabled: !!userId,
+    });
+
+    
+    useEffect(() => {
+        if(onboardingData?.data?.onboarded_status === "partially_filled"){
+            setActiveTab(onboardingData?.data?.step);
+            setHighestTab(onboardingData?.data?.step);
+            console.log(onboardingData?.data, "ONBOARDING DATA");
+            
+            // Filter out null values before resetting the form
+            const filteredData = filterNullValues(onboardingData?.data);
+            if (filteredData) {
+                reset(filteredData);
+            }
+        }
+    }, [onboardingData]);
 
     const handleValidationErrors = ({ success, errors }: { success: boolean; errors: any }) => {
         if (!success) {
@@ -83,16 +142,35 @@ const FormTabs = ({ formData, control, errors, trigger, setError, clearErrors, s
 
     const learnerParentValidateKeys = ["parent_info.parent_first_name", "parent_info.parent_last_name", "parent_info.parent_email", "parent_info.parent_contact_number", "parent_info.relationship_to_learner"];
 
-    const handleNavigation = async (index: number) => {
+    const handleNavigation = async (index: number, type: "next" | "tab") => {
         if (role === "learner") learnerParentValidateKeys.forEach((key) => clearErrors(key));
 
         if (index > activeTab) {
             const isValidSection = await validateCurrentSection();
             if (!isValidSection) return;
         }
-        setActiveTab(index);
+        let isLastStep = role === "volunteer" ? index === 5 : index === 6;
+        if(!isLastStep && type === "next"){
+            await handleUpdateStepAndData(index, control._formValues);
+        }
         setHighestTab(Math.max(highestTab, index));
+        setActiveTab(index);
     };
+
+    const handleUpdateStepAndData = async (index: number, data: any) => {
+        alert(index)
+        setIsStepUpdatePending(true);
+        try {
+            const res = await PUT_API(endpoints.onboarding.update(role as "volunteer" | "learner"), { ...data, step: index });
+            console.log(res, "RES DATA");
+            queryClient.invalidateQueries({ queryKey: ["onboardingData"] });
+            Cookies.set("onboarded_status", "partially_filled");
+        } catch (err) {
+            console.log(err, "ERR DATA");
+        } finally {
+            setIsStepUpdatePending(false);
+        }
+    }
 
     useEffect(() => {
         if (errors?.parent_info) setActiveTab(1)
@@ -160,7 +238,7 @@ const FormTabs = ({ formData, control, errors, trigger, setError, clearErrors, s
                         <button
                             key={section.title || index}
                             type="button"
-                            onClick={() => handleNavigation(index)}
+                            onClick={() => handleNavigation(index,'tab' )}
                             className={`lg:px-4 py-2 w-full text-sm font-medium ${index > highestTab ? "cursor-not-allowed" : ""}`}
                             disabled={index > highestTab}
                         >
@@ -253,7 +331,9 @@ const FormTabs = ({ formData, control, errors, trigger, setError, clearErrors, s
                                     </>
                                 ) : (
                                     <Button
-                                        onClick={() => handleNavigation(activeTab + 1)}
+                                        loading={isStepUpdatePending}
+                                        disabled={isStepUpdatePending}
+                                        onClick={() => handleNavigation(activeTab + 1, 'next')}
                                         title="Next"
                                         size="large"
                                         customClassName="w-full sm:w-[50%] lg:w-fit max-lg:mx-auto hover:!bg-background-secondary !text-sm !bg-background-secondary !text-black !rounded-lg !shadow-2xl !font-medium"
