@@ -22,12 +22,13 @@ const ContactInput = (props: ContactInputProps) => {
                 return;
             }
 
+           
             if (phoneNumber.length === 10) {
-                setErrorMsg("");
-            } else if (phoneNumber.length < 10 && phoneNumber.length > 0) {
-                setErrorMsg(`Phone number should be exactly 10 digits (${phoneNumber.length}/10)`);
+                setErrorMsg(""); 
+            } else if (phoneNumber.length > 0) {
+                setErrorMsg(`Phone number must be exactly 10 digits (${phoneNumber.length}/10)`);
             } else {
-                setErrorMsg("");
+                setErrorMsg(""); 
             }
         }
 
