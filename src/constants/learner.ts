@@ -106,7 +106,7 @@ const LearnerPersonalFields: FormField[] = [
         label: "Date of Birth",
         inputType: "birthdatepicker",
         placeholder: "DD/MM/YYYY",
-        format: "DD MMM YYYY",
+        format: "DD-MM-YYYY",
         gridCols: 1,
         required: true,
         birthDatePicker: { minAge: 0, maxAge: 100 },

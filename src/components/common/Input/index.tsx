@@ -188,7 +188,7 @@ export const Input: React.FC<InputProps> = (props) => {
                         <AntDatePicker
                             value={props.value ? dayjs(props.value) : null}
                             onChange={(date) => props.onChange(date?.toDate())}
-                            format="DD MMM YYYY"
+                            format="DD-MM-YYYY"
                             disabled={props.disabled}
                             disabledDate={(current) => {
                                 if (!current) return true;
@@ -240,7 +240,7 @@ export const Input: React.FC<InputProps> = (props) => {
                 );
 
             case "birthdatepicker":
-                const { birthDatePicker, format = "DD MMM YYYY", value, onChange } = props;
+                const { birthDatePicker, format = "DD-MM-YYYY", value, onChange } = props;
                 const startDate = dayjs().subtract(birthDatePicker?.maxAge || 100, "year");
                 const endDate = dayjs().subtract(birthDatePicker?.minAge || 0, "year");
 
