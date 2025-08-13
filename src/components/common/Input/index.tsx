@@ -180,27 +180,32 @@ export const Input: React.FC<InputProps> = (props) => {
             case "async-select":
                 return <AsyncSelect {...props} />;
             case "datepicker":
-                let today = new Date();
-                today.setHours(0, 0, 0, 0);
+                let today = dayjs().startOf("day");
+
+                const parseDate = (date: any) => {
+                    if (!date) return null;
+                    // If it's already a Dayjs object, return it
+                    if (dayjs.isDayjs(date)) return date;
+                    // If it's a Date object, convert to Dayjs
+                    if (date instanceof Date) return dayjs(date);
+                    // If it's a string, try to parse it
+                    if (typeof date === "string") {
+                        const parsed = dayjs(date, "DD-MM-YYYY");
+                        return parsed.isValid() ? parsed : null;
+                    }
+                    return null;
+                };
 
                 return (
                     <div>
                         <AntDatePicker
-                            value={
-                                props.value
-                                    ? dayjs(props.value, "DD-MM-YYYY").format("DD MMM YYYY")
-                                    : ""
-                            }
+                            value={parseDate(props.value)}
                             onChange={(date) => {
                                 if (date && !Array.isArray(date)) {
-                                    const formattedDate = dayjs(date).format("DD-MM-YYYY");
-                                    onChange(formattedDate);
-                                    console.log(
-                                        "date changed",
-                                        date,
-                                        "formatted as:",
-                                        formattedDate
-                                    );
+                                    // Convert Dayjs to Date object as expected by the type
+                                    const dateObject = date.toDate();
+                                    props.onChange(dateObject);
+                                    console.log("date changed", date, "formatted as:", dateObject);
                                 }
                             }}
                             format="DD MMM YYYY"
@@ -263,7 +268,7 @@ export const Input: React.FC<InputProps> = (props) => {
                     current &&
                     (current.isBefore(startDate, "day") || current.isAfter(endDate, "day"));
 
-                const parseDate = (date: any) =>
+                const parseBirthDate = (date: any) =>
                     date && dayjs(date, format).isValid() ? dayjs(date, format) : null;
 
                 const handleDateChange = (date: any, dateString: string | string[]) => {
@@ -276,12 +281,12 @@ export const Input: React.FC<InputProps> = (props) => {
                 return (
                     <div>
                         <AntDatePicker
-                            value={parseDate(value) || null}
+                            value={parseBirthDate(value) || null}
                             disabledDate={disabledDate}
                             onChange={handleDateChange}
                             format="DD MMM YYYY"
                             allowClear={false}
-                            defaultPickerValue={parseDate(value) || endDate}
+                            defaultPickerValue={parseBirthDate(value) || endDate}
                             disabled={props?.disabled}
                             placeholder="Click to select date"
                             className={cn(
