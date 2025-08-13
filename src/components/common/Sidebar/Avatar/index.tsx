@@ -22,37 +22,42 @@ const Avatar = () => {
         setLearnerName,
         setVolunteerName,
         setVolunteerDetails,
-        setLearnerDetails
-    } = useAppStore()
+        setLearnerDetails,
+    } = useAppStore();
 
     const getUserDetails = async () => {
         const endpoint = isVolunteer
-                ? endpoints.volunteer.getIndividualVolunteer(volunteerId as string)
-                : endpoints.learner.getIndividualLearner(learnerId as string);
+            ? endpoints.volunteer.getIndividualVolunteer(volunteerId as string)
+            : endpoints.learner.getIndividualLearner(learnerId as string);
         const { status, data } = await GET_API(endpoint);
 
-        if(status !== 200 || !data) return null;
+        if (status !== 200 || !data) return null;
         if (role === "learner") {
             setLearnerDetails(data);
-            const learnerName = data?.learner_personal_info?.learner_first_name + " " + data?.learner_personal_info?.learner_last_name;
-            setLearnerName(learnerName)
+            const learnerName =
+                data?.learner_personal_info?.learner_first_name +
+                " " +
+                data?.learner_personal_info?.learner_last_name;
+            setLearnerName(learnerName);
             setUserName(learnerName);
             setUserImage(data?.profile_picture?.image_url);
         } else {
             setVolunteerDetails(data);
             const volunteerName = data?.volunteer_first_name + " " + data?.volunteer_last_name;
             setUserName(volunteerName);
-            setVolunteerName(volunteerName)
+            setVolunteerName(volunteerName);
             setUserImage(data?.profile_picture?.image_url);
         }
 
         return data;
     };
 
-    const queryKey = isVolunteer ? ["volunteerDetails", volunteerId] : ["learnerDetails", learnerId];
+    const queryKey = isVolunteer
+        ? ["volunteerDetails", volunteerId]
+        : ["learnerDetails", learnerId];
     const { data } = useQuery({
         queryKey: queryKey,
-        queryFn: async() => await getUserDetails(),
+        queryFn: async () => await getUserDetails(),
     });
 
     return (
@@ -62,6 +67,11 @@ const Avatar = () => {
             </div>
             <p className="font-medium text-center">{userName}</p>
             <TagComponent text={role || ""} />
+            <p className="text-xs text-gray-light  text-center">
+                {isVolunteer
+                    ? data?.volunteer_contact_details?.timezone
+                    : data?.learner_personal_info?.learner_contact_details?.timezone}
+            </p>
         </Link>
     );
 };
