@@ -13,7 +13,14 @@ interface FormFieldProps {
     parent?: string | null;
 }
 
-export const FormField = ({ field, control, setValue, errors, parent, clearErrors }: FormFieldProps) => {
+export const FormField = ({
+    field,
+    control,
+    setValue,
+    errors,
+    parent,
+    clearErrors,
+}: FormFieldProps) => {
     const getFieldValue = (field: any) => {
         if (parent) {
             const parentKey = parent.split(".");
@@ -45,7 +52,7 @@ export const FormField = ({ field, control, setValue, errors, parent, clearError
     const handleCreate = (newValue: any) => {
         const fieldName = getFieldProperty(field, "name");
         if (field.variant === "single") {
-            return setValue(fieldName, newValue)
+            return setValue(fieldName, newValue);
         }
         const currentValues = getFieldValue(field) || [];
 
@@ -57,44 +64,48 @@ export const FormField = ({ field, control, setValue, errors, parent, clearError
 
     const handleChange = (value: any) => {
         const fieldName = getFieldProperty(field, "name");
-        
+
         // Check if this is a timezone field
         if (field.id === "timezone" && field.options && value) {
             // Find the selected option to get the full label
             let selectedOption = null;
-            
+
             // Search through the nested timezone structure
             for (const region of field.options) {
-                if ('options' in region && region.options) {
+                if ("options" in region && region.options) {
                     selectedOption = region.options.find((opt: any) => opt.value === value);
                     if (selectedOption) break;
                 }
             }
-            
-            console.log("selectedOption in handleChange", selectedOption)
+
+            console.log("selectedOption in handleChange", selectedOption);
             if (selectedOption?.label) {
                 // Extract the timezone offset
                 const offset = extractTimezoneOffset(selectedOption.label);
-                console.log("offset in handleChange", offset ,"PARENT", parent)
-                
+                console.log("offset in handleChange", offset, "PARENT", parent);
+
                 // Store the offset in volunteer_contact_details
                 if (offset && parent === "volunteer_contact_details") {
                     setValue("volunteer_contact_details.utc_offset", offset);
                 }
-                
+
                 // Store the offset in learner_contact_details
                 if (offset && parent === "learner_personal_info.learner_contact_details") {
                     setValue("learner_personal_info.learner_contact_details.utc_offset", offset);
                 }
             }
         }
-        
+
         // Call the original onChange
         return value;
     };
 
     return (
-        <div className={`${field.gridCols === 2 ? "col-span-2 w-full" : "col-span-2 md:col-span-1 w-full"}`}>
+        <div
+            className={`${
+                field.gridCols === 2 ? "col-span-2 w-full" : "col-span-2 md:col-span-1 w-full"
+            }`}
+        >
             <Controller
                 name={getFieldProperty(field, "name")}
                 control={control}
@@ -106,7 +117,7 @@ export const FormField = ({ field, control, setValue, errors, parent, clearError
                         value={getFieldValue(field)}
                         onChange={(e: any) => {
                             const processedValue = handleChange(e);
-                            onChange(processedValue); 
+                            onChange(processedValue);
                             clearErrors(getFieldProperty(field, "name"));
                         }}
                         name={getFieldProperty(field, "name") as keyof FormData}
