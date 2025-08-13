@@ -132,8 +132,8 @@ export default function VolunteerFilterModal({
                     >
                         {filterData?.available_days?.[0] && filterData?.available_days?.[1]
                             ? `${dayjs(filterData?.available_days[0]).format(
-                                  "DD MMM YYYY"
-                              )} - ${dayjs(filterData?.available_days[1]).format("DD MMM YYYY")}`
+                                  "DD-MM-YYYY"
+                              )} - ${dayjs(filterData?.available_days[1]).format("DD-MM-YYYY")}`
                             : "Select Available Date Range"}
                     </button>
                 </div>

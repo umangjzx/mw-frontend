@@ -90,7 +90,7 @@ const OnetImeScheduleModal = ({
             console.log(`Slot ${idx + 1}: Start - ${slot.start_time}, End - ${slot.end_time}`);
         });
         const formattedData = slots.map((slot) => ({
-            date: moment(currentDate).format("DD MMM YYYY"),
+            date: moment(currentDate).format("DD-MM-YYYY"),
             volunteer_slot_id: generateTimeSlotId(slot.start_time, slot.end_time),
             start_time: slot.start_time,
             end_time: slot.end_time,
