@@ -45,7 +45,7 @@ export const toUserTimeZone = ({
 
 export const calculateAge = (dob: string) => {
     if (!dob) return "";
-    return moment()?.diff(moment(dob, "DD-MM-YYYY"), "years")?.toString();
+    return moment()?.diff(moment(dob, "DD MMM YYYY"), "years")?.toString();
 };
 
 export const isAgeUnder18 = (dob: string) => {

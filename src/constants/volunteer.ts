@@ -50,7 +50,7 @@ const ProfileDetailsFields: FormField[] = [
         label: "Enter your birthday",
         inputType: "birthdatepicker",
         placeholder: "DD/MM/YYYY",
-        format: "DD-MM-YYYY",
+        format: "DD MMM YYYY",
         sublabel: "Minors must be at least 13 years of age to begin volunteering",
         gridCols: 1,
         required: true,
