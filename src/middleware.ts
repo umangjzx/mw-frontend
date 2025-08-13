@@ -30,6 +30,10 @@ export default function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/onboarding", origin));
   }
 
+  if (onboardedStatus === "partially_filled" && pathname !== "/onboarding") {
+    return NextResponse.redirect(new URL("/onboarding", origin));
+  }
+
   if (["verification_pending", "verification_rejected"].includes(onboardedStatus) && pathname !== "/onboarding/verification") {
     return NextResponse.redirect(new URL("/onboarding/verification", origin));
   }

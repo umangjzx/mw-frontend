@@ -11,7 +11,7 @@ import WhyWeBuild from "@/components/landingpage/WhyWeBuild";
 import Footer from "@/components/onboarding/Footer";
 import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
-
+import SkillsToLearn from "@/components/landingpage/SkillsToLearn";
 export default function Page() {
     const [_, setParamMode] = useQueryState("signup_as");
 
@@ -61,6 +61,9 @@ export default function Page() {
                     <div className="reveal lg:px-[9%]">
                         <ForVolunteer handleSignUp={() => setParamMode("volunteer")} />
                     </div>
+                </div>
+                <div className="reveal px-[9%]">
+                    <SkillsToLearn />
                 </div>
                 <div className="reveal px-[7%]">
                     <Community />

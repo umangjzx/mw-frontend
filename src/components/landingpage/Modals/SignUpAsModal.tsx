@@ -158,6 +158,7 @@ const SignUpAsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                 const role = getCookie("role");
                 const routes: Record<string, string> = {
                     details_pending: "/onboarding",
+                    partially_filled: "/onboarding",
                     verification_pending: "/onboarding/verification",
                     verification_rejected: "/onboarding/verification",
                     verification_completed: `/${role}/schedule`,

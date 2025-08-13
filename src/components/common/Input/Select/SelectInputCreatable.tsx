@@ -79,7 +79,7 @@ const SelectInputCreatable = ({
 
             {isMultiSelect && (
                 <div className='flex flex-wrap gap-1'>
-                    {value.map(item => (
+                    {value?.map((item: any) => (
                         <TagComponent
                             key={item}
                             onClose={() => onChange(value.filter(v => v !== item))}
