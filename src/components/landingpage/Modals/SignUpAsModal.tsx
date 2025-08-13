@@ -13,6 +13,7 @@ import { showToast } from "@/components/common/Toast";
 import ModalLoader from "@/components/common/Loader/Modal";
 import { getCookie } from "@/utils/auth";
 import { handleCookie } from "@/api/auth";
+import dayjs from "dayjs";
 
 const learnerOptions = [
     { label: "I am a parent filling this profile", value: "parent" },
@@ -24,9 +25,15 @@ const DateOfBirthInput = ({ value, onChange }: { value: any; onChange: (value: a
         name="dob"
         label="Select your Date of Birth"
         inputType="birthdatepicker"
-        format="DD-MM-YYYY"
-        value={value}
-        onChange={onChange}
+        format="DD MMM YYYY"
+        value={value ? dayjs(value, "DD-MM-YYYY").format("DD MMM YYYY") : ""}
+        onChange={(date) => {
+            if (date && !Array.isArray(date)) {
+                const formattedDate = dayjs(date).format("DD-MM-YYYY");
+                onChange(formattedDate);
+                console.log("date changed", date, "formatted as:", formattedDate);
+            }
+        }}
         birthDatePicker={{ minAge: 13, maxAge: 100 }}
     />
 );

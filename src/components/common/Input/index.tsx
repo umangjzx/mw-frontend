@@ -186,9 +186,24 @@ export const Input: React.FC<InputProps> = (props) => {
                 return (
                     <div>
                         <AntDatePicker
-                            value={props.value ? dayjs(props.value) : null}
-                            onChange={(date) => props.onChange(date?.toDate())}
-                            format="DD-MM-YYYY"
+                            value={
+                                props.value
+                                    ? dayjs(props.value, "DD-MM-YYYY").format("DD MMM YYYY")
+                                    : ""
+                            }
+                            onChange={(date) => {
+                                if (date && !Array.isArray(date)) {
+                                    const formattedDate = dayjs(date).format("DD-MM-YYYY");
+                                    onChange(formattedDate);
+                                    console.log(
+                                        "date changed",
+                                        date,
+                                        "formatted as:",
+                                        formattedDate
+                                    );
+                                }
+                            }}
+                            format="DD MMM YYYY"
                             disabled={props.disabled}
                             disabledDate={(current) => {
                                 if (!current) return true;
@@ -252,8 +267,10 @@ export const Input: React.FC<InputProps> = (props) => {
                     date && dayjs(date, format).isValid() ? dayjs(date, format) : null;
 
                 const handleDateChange = (date: any, dateString: string | string[]) => {
-                    const validDate = parseDate(dateString);
-                    onChange(validDate ? validDate.format(format) : null);
+                    // Pass the raw date object to the parent component
+                    const formattedDate = dayjs(date).format("DD-MM-YYYY");
+                    onChange(formattedDate);
+                    console.log("formatted as:", formattedDate);
                 };
 
                 return (
@@ -262,7 +279,7 @@ export const Input: React.FC<InputProps> = (props) => {
                             value={parseDate(value) || null}
                             disabledDate={disabledDate}
                             onChange={handleDateChange}
-                            format={format}
+                            format="DD MMM YYYY"
                             allowClear={false}
                             defaultPickerValue={parseDate(value) || endDate}
                             disabled={props?.disabled}
