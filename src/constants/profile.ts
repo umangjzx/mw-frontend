@@ -1,15 +1,14 @@
 import { z } from "zod";
-import nationalities from "@/data/nationalities.json"
+import nationalities from "@/data/nationalities.json";
 
 const contactNumberValidation = z
     .object({
         number: z
             .string({ required_error: "Phone Number is required" })
-            .refine((num) => num.length >= 7 && num.length <= 15, {
-                message: "Phone number must be between 7 and 15 digits",
+            .refine((num) => num.length === 10, {
+                message: "Phone number must be exactly 10 digits",
             }),
-        country_code: z
-            .string({ required_error: "Country Code is required" }),
+        country_code: z.string({ required_error: "Country Code is required" }),
     })
     .or(z.undefined())
     .refine((value) => value?.country_code, {
@@ -18,14 +17,18 @@ const contactNumberValidation = z
     .refine((value) => value?.number, {
         message: "Phone Number is required",
     })
-    .refine((value) => value !== undefined && value?.number?.length >= 7 && value?.number?.length <= 15, {
-        message: "Phone number must be between 7 and 15 digits",
+    .refine((value) => value !== undefined && value?.number?.length === 10, {
+        message: "Phone number must be exactly 10 digits",
     });
 
 // Volunteer:
 export const VolunteerProfileFormSchema = z.object({
-    volunteer_first_name: z.string({ required_error: "First Name is required" }).min(1, "First Name  is required"),
-    volunteer_last_name: z.string({ required_error: "Last Name is required" }).min(1, "Last Name  is required"),
+    volunteer_first_name: z
+        .string({ required_error: "First Name is required" })
+        .min(1, "First Name  is required"),
+    volunteer_last_name: z
+        .string({ required_error: "Last Name is required" })
+        .min(1, "Last Name  is required"),
     profile_picture: z
         .object({
             image_url: z.string(),
@@ -38,7 +41,9 @@ export const VolunteerProfileFormSchema = z.object({
     volunteer_description: z
         .string({ required_error: "Bio is required" })
         .min(1, "Bio is required"),
-    country: z.string({ required_error: "Country selection is required" }).min(1, "Country selection is required"),
+    country: z
+        .string({ required_error: "Country selection is required" })
+        .min(1, "Country selection is required"),
     volunteer_subjects: z
         .array(z.any(), { required_error: "At least one subject is required" })
         .min(1, "At least one subject is required"),
@@ -126,11 +131,14 @@ export const VolunteerProfileFormConstants: FormField[] = [
     },
 ];
 
-
 // Learner:
 export const LearnerProfileFormSchema = z.object({
-    learner_first_name: z.string({ required_error: "First Name is required" }).min(1, "First Name is required"),
-    learner_last_name: z.string({ required_error: "Last Name is required" }).min(1, "Last Name is required"),
+    learner_first_name: z
+        .string({ required_error: "First Name is required" })
+        .min(1, "First Name is required"),
+    learner_last_name: z
+        .string({ required_error: "Last Name is required" })
+        .min(1, "Last Name is required"),
     profile_picture: z
         .object({
             image_url: z.string(),
@@ -140,19 +148,16 @@ export const LearnerProfileFormSchema = z.object({
         .refine((value) => value, {
             message: "Please upload a single profile image.",
         }),
-    learner_description: z
-        .string({ required_error: "Bio is required" })
-        .min(1, "Bio is required"),
-    learner_language: z
-        .string({ required_error: "Language selection is required" }),
+    learner_description: z.string({ required_error: "Bio is required" }).min(1, "Bio is required"),
+    learner_language: z.string({ required_error: "Language selection is required" }),
     learner_subjects: z
         .array(z.any(), { required_error: "At least one subject is required" })
         .min(1, "At least one subject is required"),
     contact_number: contactNumberValidation,
-    email: z
-        .string({ required_error: "Email address is required" })
-        .email("Invalid email format"),
-    country: z.string({ required_error: "Country selection is required" }).min(1, "Country selection is required"),
+    email: z.string({ required_error: "Email address is required" }).email("Invalid email format"),
+    country: z
+        .string({ required_error: "Country selection is required" })
+        .min(1, "Country selection is required"),
 });
 
 export const LearnerProfileFormConstants: FormField[] = [

@@ -12,8 +12,11 @@ const ContactInput = (props: ContactInputProps) => {
     const [maxNumberLength, setMaxNumberLength] = useState(10);
     const formData = props.value;
 
+    // Use form error only
+    const displayError = props.error;
+
     const handleChange = (value: any, name: string) => {
-        const updatedFormData = { ...formData, [name]: value };
+        const updatedFormData = { ...formData, [name]: value } as any;
 
         if (name === "number") {
             const phoneNumber = value?.toString() || "";
@@ -22,14 +25,8 @@ const ContactInput = (props: ContactInputProps) => {
                 return;
             }
 
-           
-            if (phoneNumber.length === 10) {
-                setErrorMsg(""); 
-            } else if (phoneNumber.length > 0) {
-                setErrorMsg(`Phone number must be exactly 10 digits (${phoneNumber.length}/10)`);
-            } else {
-                setErrorMsg(""); 
-            }
+            // Set validation status without local error messages
+            updatedFormData.isValid = phoneNumber.length === 10;
         }
 
         props.onChange(updatedFormData);
@@ -82,7 +79,10 @@ const ContactInput = (props: ContactInputProps) => {
                     onKeyDown={preventExcessInput}
                 />
             </div>
-            {errorMsg && <p className="text-xs text-red-500 mt-1">{errorMsg}</p>}
+            {/* {displayError && <p className="text-xs text-red-500 mt-1">{displayError}</p>} */}
+            {formData?.number && formData.number.toString().length === 10 && !displayError && (
+                <p className="text-xs text-green-500 mt-1">✓ Phone number is valid</p>
+            )}
         </>
     );
 };

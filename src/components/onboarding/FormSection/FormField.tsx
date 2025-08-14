@@ -96,6 +96,17 @@ export const FormField = ({
             }
         }
 
+        // Check if this is a contact number field and validate phone number length
+        if (field.inputType === "contact-input" && value) {
+            const phoneNumber = value.number?.toString() || "";
+            if (phoneNumber.length > 0 && phoneNumber.length !== 10) {
+                // Set error for phone number validation
+                const errorKey = getFieldProperty(field, "name");
+                clearErrors(errorKey);
+                // Don't return early - let the validation schema handle the error
+            }
+        }
+
         // Call the original onChange
         return value;
     };
@@ -118,7 +129,16 @@ export const FormField = ({
                         onChange={(e: any) => {
                             const processedValue = handleChange(e);
                             onChange(processedValue);
-                            clearErrors(getFieldProperty(field, "name"));
+
+                            // Clear errors when user starts typing
+                            if (field.inputType === "contact-input" && e?.number) {
+                                const phoneNumber = e.number.toString();
+                                if (phoneNumber.length === 10) {
+                                    clearErrors(getFieldProperty(field, "name"));
+                                }
+                            } else {
+                                clearErrors(getFieldProperty(field, "name"));
+                            }
                         }}
                         name={getFieldProperty(field, "name") as keyof FormData}
                         inputClassName={field.inputClassName}
