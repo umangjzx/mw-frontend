@@ -25,15 +25,8 @@ const DateOfBirthInput = ({ value, onChange }: { value: any; onChange: (value: a
         name="dob"
         label="Select your Date of Birth"
         inputType="birthdatepicker"
-        format="DD MMM YYYY"
-        value={value ? dayjs(value, "DD-MM-YYYY").format("DD MMM YYYY") : ""}
-        onChange={(date) => {
-            if (date && !Array.isArray(date)) {
-                const formattedDate = dayjs(date).format("DD-MM-YYYY");
-                onChange(formattedDate);
-                console.log("date changed", date, "formatted as:", formattedDate);
-            }
-        }}
+        value={value}
+        onChange={onChange}
         birthDatePicker={{ minAge: 13, maxAge: 100 }}
     />
 );
