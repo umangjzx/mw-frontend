@@ -315,7 +315,7 @@ export const Input: React.FC<InputProps> = (props) => {
             case "upload":
                 return <Uploader {...props} />;
             case "contact-input":
-                return <ContactInput {...props} />;
+                return <ContactInput {...props} error={error} />;
             case "timerange":
                 return (
                     <div className="flex items-center gap-2">
@@ -341,7 +341,7 @@ export const Input: React.FC<InputProps> = (props) => {
         >
             {renderLabel()}
             {renderInput()}
-            {error && <p className="text-xs text-red-500 capitalize">{error}</p>}
+            {error && <p className="text-xs text-red-500 capitalize font-medium">{error}</p>}
         </div>
     );
 };

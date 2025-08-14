@@ -366,7 +366,7 @@ const FeedViewModal = ({
                                             />
                                             <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
                                             <p className="font-medium md:font-semibold text-black">
-                                                {toUserTimeZone({ date: post?.created_at, format: "DD/MM/YYYY" })}
+                                                {toUserTimeZone({ date: post?.created_at, format: "DD MMM YYYY" })}
                                             </p>
                                         </div>
 

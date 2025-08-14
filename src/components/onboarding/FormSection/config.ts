@@ -6,8 +6,8 @@ const contactNumberValidation = z
     .object({
         number: z
             .string({ required_error: "Phone Number is required" })
-            .refine((num) => num.length >= 7 && num.length <= 15, {
-                message: "Phone number must be between 7 and 15 digits",
+            .refine((num) => num.length === 10, {
+                message: "Phone number must be exactly 10 digits",
             }),
         country_code: z.string({ required_error: "Country Code is required" }),
     })
@@ -18,12 +18,9 @@ const contactNumberValidation = z
     .refine((value) => value?.number, {
         message: "Phone Number is required",
     })
-    .refine(
-        (value) => value !== undefined && value?.number?.length >= 7 && value?.number?.length <= 15,
-        {
-            message: "Phone number must be between 7 and 15 digits",
-        }
-    );
+    .refine((value) => value !== undefined && value?.number?.length === 10, {
+        message: "Phone number must be exactly 10 digits",
+    });
 
 // Volunteer Schema & Default Data
 
