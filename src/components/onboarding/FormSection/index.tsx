@@ -52,10 +52,12 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
     } else if (userData?.enrolled_by === "parent") {
         form.setValue("enrolled_by", "parent");
         form.setValue("parent_info.parent_email", userData?.email || "");
-        form.setValue(
-            "learner_personal_info.learner_date_of_birth",
-            userData?.learner_personal_info?.learner_date_of_birth || ""
-        );
+        if (userData?.learner_personal_info?.learner_date_of_birth) {
+            form.setValue(
+                "learner_personal_info.learner_date_of_birth",
+                userData?.learner_personal_info?.learner_date_of_birth
+            );
+        }
         form.setValue("learner_personal_info.learner_contact_details.email", userData?.email || "");
     } else {
         form.setValue("enrolled_by", "self");
