@@ -348,7 +348,7 @@ const FormTabs = ({
 
     const hideFields = (field: any) =>
         role === "learner"
-            ? enrolled_by !== "parent" &&
+            ? enrolled_by === "parent" &&
               field.parent === "learner_contact_details" &&
               ["email", "contact_number"].includes(field.id)
             : fields.includes(field.id) && volunteerAge();
