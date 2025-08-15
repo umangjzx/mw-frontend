@@ -1,7 +1,7 @@
 import { z } from "zod";
 import nationalities from "@/data/nationalities.json";
 
-const contactNumberValidation = z
+export const contactNumberValidation = z
     .object({
         number: z
             .string({ required_error: "Phone Number is required" })
