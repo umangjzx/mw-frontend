@@ -347,16 +347,9 @@ const FormTabs = ({
     };
 
     const hideFields = (field: any) =>
-        role === "learner"
-            ? enrolled_by === "parent" &&
-              field.parent === "learner_contact_details" &&
-              ["email", "contact_number"].includes(field.id)
-            : fields.includes(field.id) && volunteerAge();
+        role === "learner" ? null : fields.includes(field.id) && volunteerAge();
 
     const diableField = (field: any) => {
-        console.log(getValues(), "GET VALUES", field);
-
-        // alert(JSON.stringify(getValues()));
         if (role !== "learner") {
             return false;
         }
