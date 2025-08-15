@@ -32,6 +32,7 @@ type FormTabsProps = {
     setValue: (name: string, value: any, options?: any) => void;
     isLoading: boolean;
     reset: (data: any) => void;
+    getValues: () => any;
 };
 
 const FormTabs = ({
@@ -47,6 +48,7 @@ const FormTabs = ({
     onSubmit,
     isLoading,
     reset,
+    getValues,
 }: FormTabsProps) => {
     const role = getCookie("role");
     const isVolunteer = role === "volunteer";
@@ -351,10 +353,28 @@ const FormTabs = ({
               ["email", "contact_number"].includes(field.id)
             : fields.includes(field.id) && volunteerAge();
 
-    const diableField = (field: any) =>
-        role === "learner" &&
-        ((enrolled_by === "parent" && field.id === "parent_email") ||
-            (enrolled_by === "self" && ["email", "learner_date_of_birth"].includes(field.id)));
+    const diableField = (field: any) => {
+        console.log(getValues(), "GET VALUES", field);
+
+        // alert(JSON.stringify(getValues()));
+        if (role !== "learner") {
+            return false;
+        }
+
+        if (enrolled_by === "parent" && field.id === "parent_email") {
+            return true;
+        } else if (enrolled_by === "self" && ["email"].includes(field.id)) {
+            return true;
+        } else if (enrolled_by === "self" && field.id === "learner_date_of_birth") {
+            if (getValues()?.learner_personal_info?.learner_date_of_birth) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        return false;
+    };
 
     return (
         <form onSubmit={onSubmit} className="w-full pb-16">

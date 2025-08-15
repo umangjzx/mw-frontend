@@ -26,6 +26,7 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
         setValue,
         clearErrors,
         reset,
+        getValues,
     } = form;
 
     const role = getCookie("role");
@@ -44,16 +45,28 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
             return res.data;
         },
     });
-    console.log(userData, "USER DATA");
+
     if (isVolunteer) {
         form.setValue("volunteer_birth_date", userData?.date_of_birth || "");
         form.setValue("volunteer_contact_details.email", userData?.email || "");
     } else if (userData?.enrolled_by === "parent") {
         form.setValue("enrolled_by", "parent");
         form.setValue("parent_info.parent_email", userData?.email || "");
+        form.setValue(
+            "learner_personal_info.learner_date_of_birth",
+            userData?.learner_personal_info?.learner_date_of_birth || ""
+        );
+        form.setValue("learner_personal_info.learner_contact_details.email", userData?.email || "");
     } else {
         form.setValue("enrolled_by", "self");
-        form.setValue("learner_personal_info.learner_date_of_birth", userData?.date_of_birth || "");
+        if (userData?.learner_personal_info?.learner_date_of_birth) {
+            form.setValue(
+                "learner_personal_info.learner_date_of_birth",
+                userData?.learner_personal_info?.learner_date_of_birth || ""
+            );
+        } else {
+            form.setValue("learner_personal_info.learner_date_of_birth", userData?.date_of_birth);
+        }
         form.setValue("learner_personal_info.learner_contact_details.email", userData?.email || "");
     }
     form.setValue("cookie_consent_accepted", getCookie("cookieConsent") === "accepted");
@@ -87,8 +100,8 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
                 validateForm={validateForm}
                 handleFillForm={handleFillForm}
                 onSubmit={onSubmit}
+                getValues={getValues}
                 isLoading={isLoading}
-                
             />
         </div>
     );
