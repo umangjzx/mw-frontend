@@ -473,7 +473,7 @@ export const learnerFormSchema = z
             }),
             learner_contact_details: z.object({
                 email: z.string().optional().or(z.null()),
-                contact_number: z.any().optional().or(z.null()),
+                contact_number: contactNumberValidation,
                 zip_code: z
                     .string({ required_error: "Zip code is required" })
                     .min(1, { message: "Zip code cannot be empty" }),

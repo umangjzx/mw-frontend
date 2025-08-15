@@ -164,6 +164,19 @@ const FormTabs = ({
         });
 
         // Also check for parent contact numbers in learner form
+        if (
+            role === "learner" &&
+            control._formValues?.learner_personal_info.learner_contact_details?.contact_number
+        ) {
+            const parentPhone =
+                control._formValues.learner_personal_info.learner_contact_details.contact_number.number?.toString();
+            if (parentPhone && parentPhone.length !== 10) {
+                phoneNumberErrors["learner_personal_info.learner_contact_details.contact_number"] =
+                    "Contact number must be exactly 10 digits";
+                hasPhoneNumberErrors = true;
+            }
+        }
+
         if (role === "learner" && control._formValues?.parent_info?.parent_contact_number) {
             const parentPhone =
                 control._formValues.parent_info.parent_contact_number.number?.toString();
@@ -333,7 +346,7 @@ const FormTabs = ({
 
     const hideFields = (field: any) =>
         role === "learner"
-            ? enrolled_by === "parent" &&
+            ? enrolled_by !== "parent" &&
               field.parent === "learner_contact_details" &&
               ["email", "contact_number"].includes(field.id)
             : fields.includes(field.id) && volunteerAge();

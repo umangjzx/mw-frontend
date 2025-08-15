@@ -88,6 +88,7 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
                 handleFillForm={handleFillForm}
                 onSubmit={onSubmit}
                 isLoading={isLoading}
+                
             />
         </div>
     );

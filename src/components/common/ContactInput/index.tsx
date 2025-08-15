@@ -61,7 +61,8 @@ const ContactInput = (props: ContactInputProps) => {
             <div className="flex items-center gap-2">
                 <Select
                     name="country_code"
-                    value={formData?.country_code}
+                    value={formData?.country_code }
+
                     onChange={(e) => handleChange(e, "country_code")}
                     options={mobileCountryCodes}
                     inputType="select"
