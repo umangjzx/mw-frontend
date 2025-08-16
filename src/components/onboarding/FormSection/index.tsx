@@ -10,6 +10,7 @@ import { defaultLearnerData, defaultVolunteerData } from "./config";
 import FormTabs from "./FormTabs";
 import { getCookie } from "@/utils/auth";
 import ModalLoader from "@/components/common/Loader/Modal";
+import { useEffect } from "react";
 
 type FormSectionProps = {
     schema: z.ZodSchema;
@@ -46,32 +47,33 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
         },
     });
 
-    if (isVolunteer) {
-        form.setValue("volunteer_birth_date", userData?.date_of_birth || "");
-        form.setValue("volunteer_contact_details.email", userData?.email || "");
-    } else if (userData?.enrolled_by === "parent") {
-        form.setValue("enrolled_by", "parent");
-        form.setValue("parent_info.parent_email", userData?.email || "");
-        if (userData?.learner_personal_info?.learner_date_of_birth) {
-            form.setValue(
-                "learner_personal_info.learner_date_of_birth",
-                userData?.learner_personal_info?.learner_date_of_birth
-            );
+    // Set form values when userData changes
+    useEffect(() => {
+        if (userData) {
+            if (isVolunteer) {
+                form.setValue("volunteer_birth_date", userData?.date_of_birth || "");
+                form.setValue("volunteer_contact_details.email", userData?.email || "");
+            } else if (userData?.enrolled_by === "parent") {
+                form.setValue("enrolled_by", "parent");
+                form.setValue("parent_info.parent_email", userData?.email || "");
+            } else {
+                form.setValue("enrolled_by", "self");
+                form.setValue(
+                    "learner_personal_info.learner_date_of_birth",
+                    userData?.date_of_birth
+                );
+                form.setValue(
+                    "learner_personal_info.learner_contact_details.email",
+                    userData?.email || ""
+                );
+            }
         }
-        form.setValue("learner_personal_info.learner_contact_details.email", userData?.email || "");
-    } else {
-        form.setValue("enrolled_by", "self");
-        if (userData?.learner_personal_info?.learner_date_of_birth) {
-            form.setValue(
-                "learner_personal_info.learner_date_of_birth",
-                userData?.learner_personal_info?.learner_date_of_birth || ""
-            );
-        } else {
-            form.setValue("learner_personal_info.learner_date_of_birth", userData?.date_of_birth);
-        }
-        form.setValue("learner_personal_info.learner_contact_details.email", userData?.email || "");
-    }
-    form.setValue("cookie_consent_accepted", getCookie("cookieConsent") === "accepted");
+    }, [userData, isVolunteer, form]);
+
+    // Set cookie consent separately as it doesn't depend on userData
+    useEffect(() => {
+        form.setValue("cookie_consent_accepted", getCookie("cookieConsent") === "accepted");
+    }, [form]);
 
     const validateForm = () =>
         isValid || showToast({ type: "error", message: "Fill required fields!" });

@@ -73,9 +73,23 @@ const FormTabs = ({
         if (typeof data === "object") {
             const filtered: any = {};
             for (const [key, value] of Object.entries(data)) {
+                // Special handling for critical fields that should be preserved even if null
+                if (key === "learner_contact_details" && data.learner_personal_info) {
+                    // Preserve the entire learner_contact_details object structure
+                    filtered[key] = value;
+                    continue;
+                }
+
                 const filteredValue = filterNullValues(value);
                 if (filteredValue !== undefined) {
-                    filtered[key] = filteredValue;
+                    if (typeof filteredValue === "object" && !Array.isArray(filteredValue)) {
+                        const nestedFiltered = filterNullValues(filteredValue);
+                        if (nestedFiltered !== undefined) {
+                            filtered[key] = nestedFiltered;
+                        }
+                    } else {
+                        filtered[key] = filteredValue;
+                    }
                 }
             }
             return Object.keys(filtered).length > 0 ? filtered : undefined;
@@ -102,15 +116,47 @@ const FormTabs = ({
         if (onboardingData?.data?.onboarded_status === "partially_filled") {
             setActiveTab(onboardingData?.data?.step);
             setHighestTab(onboardingData?.data?.step);
-            console.log(onboardingData?.data, "ONBOARDING DATA");
+            console.log(onboardingData?.data, "ONBOARDING DAT ss");
 
             // Filter out null values before resetting the form
             const filteredData = filterNullValues(onboardingData?.data);
+            console.log(filteredData, "FILTERED DATA I");
+
+            // Debug email field
+            if (role === "learner") {
+                console.log(
+                    "Original email from onboarding:",
+                    onboardingData?.data?.learner_personal_info?.learner_contact_details?.email
+                );
+                console.log(
+                    "Filtered email:",
+                    filteredData?.learner_personal_info?.learner_contact_details?.email
+                );
+                console.log(
+                    "Current form email before reset:",
+                    getValues()?.learner_personal_info?.learner_contact_details?.email
+                );
+            }
+
             if (filteredData) {
                 reset(filteredData);
+
+                // After reset, ensure critical fields like email are properly set
+                // This handles cases where the onboarding data might be incomplete
+                if (role === "learner") {
+                    const onboardingEmail =
+                        filteredData.learner_personal_info?.learner_contact_details?.email;
+                    if (onboardingEmail) {
+                        setValue(
+                            "learner_personal_info.learner_contact_details.email",
+                            onboardingEmail
+                        );
+                        console.log("Email set after reset:", onboardingEmail);
+                    }
+                }
             }
         }
-    }, [onboardingData]);
+    }, [onboardingData, role, reset, setValue, getValues]);
 
     const handleValidationErrors = ({ success, errors }: { success: boolean; errors: any }) => {
         if (!success) {
