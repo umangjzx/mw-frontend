@@ -336,19 +336,40 @@ const EducationBackgroundFields: FormField[] = [
         options: [
             { label: "Challenges with memory", value: "challenges_with_memory" },
             { label: "Challenges with problem-solving", value: "challenges_with_problem_solving" },
-            { label: "Challenges with verbal expression", value: "challenges_with_verbal_expression" },
-            { label: "Difficulty following instructions", value: "difficulty_following_instructions" },
+            {
+                label: "Challenges with verbal expression",
+                value: "challenges_with_verbal_expression",
+            },
+            {
+                label: "Difficulty following instructions",
+                value: "difficulty_following_instructions",
+            },
             { label: "Difficulty managing time", value: "difficulty_managing_time" },
             { label: "Difficulty staying motivated", value: "difficulty_staying_motivated" },
-            { label: "Difficulty transitioning between tasks", value: "difficulty_transitioning_between_tasks" },
-            { label: "Difficulty understanding abstract concepts", value: "difficulty_understanding_abstract_concepts" },
-            { label: "Difficulty with fine motor skills", value: "difficulty_with_fine_motor_skills" },
+            {
+                label: "Difficulty transitioning between tasks",
+                value: "difficulty_transitioning_between_tasks",
+            },
+            {
+                label: "Difficulty understanding abstract concepts",
+                value: "difficulty_understanding_abstract_concepts",
+            },
+            {
+                label: "Difficulty with fine motor skills",
+                value: "difficulty_with_fine_motor_skills",
+            },
             { label: "Difficulty with reading", value: "difficulty_with_reading" },
             { label: "Impulsivity", value: "impulsivity" },
-            { label: "Sensitivity to sensory distractions", value: "sensitivity_to_sensory_distractions" },
+            {
+                label: "Sensitivity to sensory distractions",
+                value: "sensitivity_to_sensory_distractions",
+            },
             { label: "Short attention span", value: "short_attention_span" },
             { label: "Slow processing speed", value: "slow_processing_speed" },
-            { label: "Struggles with self-regulation during tasks", value: "struggles_with_self_regulation_during_tasks" },
+            {
+                label: "Struggles with self-regulation during tasks",
+                value: "struggles_with_self_regulation_during_tasks",
+            },
             { label: "Struggles with test-taking", value: "struggles_with_test_taking" },
             { label: "Struggles with writing", value: "struggles_with_writing" },
             { label: "Trouble staying organized", value: "trouble_staying_organized" },

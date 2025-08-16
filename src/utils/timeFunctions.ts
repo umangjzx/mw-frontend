@@ -21,7 +21,8 @@ export const timesAgo = (date: string) => {
 
     if (diffInMinutes < 1) return "Just now";
 
-    let timeString = createdAt.fromNow(true)
+    let timeString = createdAt
+        .fromNow(true)
         .replace(/^an /, "1 ")
         .replace(/^a /, "1 ")
         .replace("minutes", "mins")
@@ -62,21 +63,21 @@ export const generateTimeSlotId = (startTime: string, endTime: string) => {
 
 export const convertToUTC = (utc_offset: string, time: string): string => {
     // Use a fixed anchor date to ensure consistent behavior
-    const anchorDate = "2000-01-01";  // arbitrary fixed date
+    const anchorDate = "2000-01-01"; // arbitrary fixed date
     const local = moment(`${anchorDate} ${time}`, "YYYY-MM-DD HH:mm").utcOffset(utc_offset, true);
     const utcTime = local.utc().format("HH:mm");
     return utcTime;
-  };
+};
 
 export const extractTimezoneOffset = (timezoneLabel: string): string | null => {
     if (!timezoneLabel) return null;
-    
+
     // Extract the UTC offset part from the label
     const utcMatch = timezoneLabel.match(/\(UTC([+-]\d{2}:\d{2})\)/);
-    
+
     if (utcMatch && utcMatch[1]) {
         return `${utcMatch[1]}`;
     }
-    
+
     return null;
-}; 
+};

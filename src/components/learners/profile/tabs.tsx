@@ -2,6 +2,7 @@ import ContactDetails from "@/components/profile/Bio/ContactDetails";
 import { MdEmail } from "react-icons/md";
 import { FaPhoneAlt } from "react-icons/fa";
 import { formatString, formatStringBy } from "@/utils/stringFormats";
+import dayjs from "dayjs";
 
 const InfoItem = ({ label, value }: { label: string, value: string | string[] }) => {
     if (!value) return null;
@@ -41,7 +42,7 @@ export const ProfileDetails = ({ data }: { data: Learnerpersonalinfo }) => {
     const details = [
         { label: "First Name", value: data?.learner_first_name },
         { label: "Last Name", value: data?.learner_last_name },
-        { label: "Date of Birth", value: data?.learner_date_of_birth },
+        { label: "Date of Birth", value: dayjs(data?.learner_date_of_birth).format("DD MMM YYYY") },
         { label: "Gender", value: formatString(data?.learner_gender) },
         { label: "Preferred Pronoun", value: formatStringBy({ str: data?.learner_preferred_pronoun, to: "/" }) },
         { label: "Primary Language", value: formatString(data?.learner_primary_language) },
