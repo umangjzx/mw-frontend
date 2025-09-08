@@ -286,59 +286,7 @@ const FormTabs = ({
 
     const handleNavigation = async (index: number, type: "next" | "tab") => {
         if (role === "learner") learnerParentValidateKeys.forEach((key) => clearErrors(key));
-
-        if (index > activeTab) {
-            const isValidSection = await validateCurrentSection();
-            if (!isValidSection) return;
-        }
-
-        // Additional validation for phone numbers when navigating
-        if (type === "next") {
-            const currentFields = formData[activeTab]?.fields || [];
-            const hasInvalidPhoneNumbers = currentFields.some((field: any) => {
-                if (field.inputType === "contact-input") {
-                    const fieldName = formData[activeTab]?.parent
-                        ? `${formData[activeTab].parent}.${field.parent || field.id}`
-                        : field.parent || field.id;
-
-                    let fieldValue;
-                    if (formData[activeTab]?.parent) {
-                        const parentKeys = formData[activeTab].parent.split(".");
-                        if (parentKeys.length > 1) {
-                            fieldValue =
-                                control._formValues?.[parentKeys[0]]?.[parentKeys[1]]?.[field.id];
-                        } else {
-                            fieldValue =
-                                control._formValues?.[formData[activeTab].parent]?.[field.id];
-                        }
-                    } else {
-                        fieldValue = control._formValues?.[field.id];
-                    }
-
-                    return (
-                        fieldValue &&
-                        fieldValue.number &&
-                        fieldValue.number.toString().length !== 10
-                    );
-                }
-                return false;
-            });
-
-            if (hasInvalidPhoneNumbers) {
-                showToast({
-                    type: "error",
-                    message:
-                        "Please fix phone number validation errors before proceeding to the next step.",
-                });
-                return;
-            }
-        }
-
-        let isLastStep = role === "volunteer" ? index === 5 : index === 6;
-        if (!isLastStep && type === "next") {
-            await handleUpdateStepAndData(index, control._formValues);
-        }
-        setHighestTab(Math.max(highestTab, index));
+        await handleUpdateStepAndData(index, control._formValues);
         setActiveTab(index);
     };
 
@@ -442,10 +390,7 @@ const FormTabs = ({
                             key={section.title || index}
                             type="button"
                             onClick={() => handleNavigation(index, "tab")}
-                            className={`lg:px-4 py-2 w-full text-sm font-medium ${
-                                index > highestTab ? "cursor-not-allowed" : ""
-                            }`}
-                            disabled={index > highestTab}
+                            className="lg:px-4 py-2 w-full text-sm font-medium"
                         >
                             <p className="hidden lg:block text-base">
                                 {section.title || `Step ${index + 1}`}
