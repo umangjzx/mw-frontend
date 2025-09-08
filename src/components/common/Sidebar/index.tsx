@@ -85,7 +85,7 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
     };
 
     return (
-        <div className="bg-white w-full h-full lg:h-screen flex flex-col items-center justify-between p-6">
+        <div className="bg-white w-full h-full lg:h-screen flex flex-col items-center justify-between p-6 overflow-y-auto">
             <div className="w-full">
                 {isMobileOrTabScreen ? (
                     <div className="shrink-0 flex items-center justify-between">
@@ -111,7 +111,7 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
                     ))}
                 </div>
             </div>
-            <button onClick={handleSignOut} className="flex gap-1">
+            <button onClick={handleSignOut} className="flex gap-1 mt-2">
                 <span className={`text-[1.25rem] transition-all duration-300 "text-black"`}>
                     <SignOutIcon />
                 </span>
