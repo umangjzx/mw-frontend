@@ -232,6 +232,8 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
     };
 
     if (extendedProps.isAvailableSlot) {
+        if (typeof window === "undefined") return null; // SSR safety check
+        
         return createPortal(
             <div
                 className={`meeting-preview-modal border border-stroke bg-white rounded-lg shadow-lg ${
@@ -278,6 +280,8 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
         );
     }
 
+    if (typeof window === "undefined") return null; // SSR safety check
+    
     return createPortal(
         <div
             className={`meeting-preview-modal border border-stroke bg-white rounded-lg shadow-lg ${

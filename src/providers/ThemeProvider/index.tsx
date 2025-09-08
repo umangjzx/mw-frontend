@@ -74,6 +74,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
 
     // Function to update theme based on current role
     const updateTheme = () => {
+        if (typeof window === "undefined") return; // SSR safety check
         const theme = getTheme();
         document.documentElement.style.setProperty("--primary-color", theme.primary);
         document.documentElement.style.setProperty("--background-color", theme.background);
@@ -105,6 +106,8 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
 
     // Listen for storage events (in case cookies are changed in another tab)
     useEffect(() => {
+        if (typeof window === "undefined") return; // SSR safety check
+        
         const handleStorageChange = (e: StorageEvent) => {
             if (e.key === "role") {
                 updateTheme();
