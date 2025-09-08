@@ -16,6 +16,7 @@ import { RiFilter3Line } from "react-icons/ri";
 import LottieLoader from "@/components/common/Loader/Lottie";
 import InnerWidth from "@/utils/innerWidth";
 import { useDebounce } from "use-debounce";
+import Pagination from "@/components/common/Pagination";
 
 interface VolunteerCardData {
     volunteerId: string;
@@ -41,7 +42,7 @@ export default function LearnersPage() {
     const [isOpenSchedule, setIsOpenSchedule] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-    const [size] = useQueryState("size", { defaultValue: "10" });
+    const [size] = useQueryState("size", { defaultValue: "12" });
     const [page] = useQueryState("page", { defaultValue: "1" });
     const [searchQuery, setSearchQuery] = useQueryState("query");
     const [language_ids] = useQueryState("language_ids");
@@ -211,14 +212,27 @@ export default function LearnersPage() {
                             )}
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full h-auto p-5 py-7 lg:p-10">
-                            {volunteerCardData.map((volunteer) => (
-                                <VolunteerCard
-                                    key={volunteer.volunteerId}
-                                    onSeeMoreClick={handleSeeMoreClick}
-                                    {...volunteer}
-                                />
-                            ))}
+                        <div className="flex flex-col w-full justify-between min-h-[calc(100vh-100px)]">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full h-auto p-5 py-7 lg:p-10">
+                                {volunteerCardData.map((volunteer) => (
+                                    <VolunteerCard
+                                        key={volunteer.volunteerId}
+                                        onSeeMoreClick={handleSeeMoreClick}
+                                        {...volunteer}
+                                    />
+                                ))}
+                            </div>
+                            {data && data.total > 0 && (
+                                <div className="px-5 lg:px-10 pb-5 pagination-container">
+                                    <Pagination
+                                        currentPage={parseInt(page)}
+                                        totalPages={Math.ceil(data.total / parseInt(size))}
+                                        totalItems={data.total}
+                                        itemsPerPage={parseInt(size)}
+                                        className="mt-4"
+                                    />
+                                </div>
+                            )}
                         </div>
                     )}
                 </>
