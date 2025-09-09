@@ -17,6 +17,7 @@ import { useQueryState } from "nuqs";
 import { useEffect, useMemo, useState } from "react";
 import { RiFilter3Line } from "react-icons/ri";
 import { useDebounce } from "use-debounce";
+import { PAGINATION } from "@/definitions";
 
 interface LearnerCardData {
     learnerId: string;
@@ -45,7 +46,7 @@ export default function LearnersPage() {
     const [isOpenSchedule, setIsOpenSchedule] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-    const [size] = useQueryState("size", { defaultValue: "12" });
+    const [size] = useQueryState("size", { defaultValue: PAGINATION });
     const [page] = useQueryState("page", { defaultValue: "1" });
     const [searchQuery, setSearchQuery] = useQueryState("query");
     const [learner_primary_language] = useQueryState("learner_primary_language");
