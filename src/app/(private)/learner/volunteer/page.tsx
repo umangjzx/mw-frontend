@@ -43,7 +43,7 @@ export default function LearnersPage() {
     const [isOpenSchedule, setIsOpenSchedule] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-    const [size] = useQueryState("size", { defaultValue: PAGINATION });
+    const [size] = useQueryState("size", { defaultValue: PAGINATION as string });
     const [page] = useQueryState("page", { defaultValue: "1" });
     const [searchQuery, setSearchQuery] = useQueryState("query");
     const [language_ids] = useQueryState("language_ids");
