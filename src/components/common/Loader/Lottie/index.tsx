@@ -15,6 +15,8 @@ const LottieLoader: React.FC<Props> = ({ isLoading, customClassName, zIndex }) =
     const role = Cookies.get("role");
 
     useEffect(() => {
+        if (typeof window === "undefined") return; // SSR safety check
+        
         if (isLoading) {
             document.body.style.overflow = "hidden";
         } else {

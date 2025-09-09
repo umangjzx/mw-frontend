@@ -3,6 +3,7 @@
 import { endpoints } from "@/api/constants";
 import { GET_API } from "@/api/request";
 import LottieLoader from "@/components/common/Loader/Lottie";
+import Pagination from "@/components/common/Pagination";
 import LearnerCard from "@/components/leaner/LearnerCard";
 import LearnerFilterModal from "@/components/learners/Modals/LearnerFilter";
 import AddNewMeetingModal from "@/components/schedule/Modals/AddNewMeetingModal";
@@ -16,6 +17,7 @@ import { useQueryState } from "nuqs";
 import { useEffect, useMemo, useState } from "react";
 import { RiFilter3Line } from "react-icons/ri";
 import { useDebounce } from "use-debounce";
+import { PAGINATION } from "@/definitions";
 
 interface LearnerCardData {
     learnerId: string;
@@ -44,7 +46,7 @@ export default function LearnersPage() {
     const [isOpenSchedule, setIsOpenSchedule] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-    const [size] = useQueryState("size", { defaultValue: "10" });
+    const [size] = useQueryState("size", { defaultValue: PAGINATION as string });
     const [page] = useQueryState("page", { defaultValue: "1" });
     const [searchQuery, setSearchQuery] = useQueryState("query");
     const [learner_primary_language] = useQueryState("learner_primary_language");
@@ -244,6 +246,8 @@ export default function LearnersPage() {
                             )}
                         </div>
                     ) : (
+                        <div className="flex flex-col w-full justify-between min-h-[calc(100vh-100px)]">
+                        
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full h-auto p-5 py-7 lg:p-10">
                             {learnerCardData.map((learner) => (
                                 <LearnerCard
@@ -252,6 +256,18 @@ export default function LearnersPage() {
                                     {...learner}
                                 />
                             ))}
+                        </div>
+                        {data && data.total > 0 && (
+                            <div className="px-5 lg:px-10 pb-5">
+                                <Pagination
+                                    currentPage={parseInt(page)}
+                                    totalPages={Math.ceil(data.total / parseInt(size))}
+                                    totalItems={data.total}
+                                    itemsPerPage={parseInt(size)}
+                                    className="mt-4"
+                                />
+                                </div>
+                            )}
                         </div>
                     )}
                 </>

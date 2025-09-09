@@ -144,6 +144,8 @@ const NotificationSection: React.FC = () => {
             fetchNextPage();
         }
 
+        if (typeof window === "undefined") return; // SSR safety check
+        
         const visibleItems = document.querySelectorAll<HTMLDivElement>(".notification-item");
         const newVisibleIds: string[] = [];
         visibleItems.forEach((item) => {

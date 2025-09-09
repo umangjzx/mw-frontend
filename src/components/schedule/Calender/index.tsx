@@ -165,6 +165,8 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
 
     // Add a click handler to close the preview when clicking outside
     useEffect(() => {
+        if (typeof window === "undefined") return; // SSR safety check
+        
         const handleClickOutside = (event: MouseEvent) => {
             if (showPreview) {
                 const modal = document.querySelector(".meeting-preview-modal");
