@@ -66,6 +66,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
     const [volunteerAvailableDates, setVolunteerAvailableDates] = useState<string[]>([]);
     const [volunteerUnavailableDates, setVolunteerUnavailableDates] = useState<string[]>([]);
     const [selectedVolunteerId, setSelectedVolunteerId] = useState<string>("");
+    const [isLoadingAvailableDays, setIsLoadingAvailableDays] = useState(false);
     const learnerId = Cookies.get("learner_id");
 
     const getVolunteers = async () => {
@@ -108,6 +109,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
 
     const getAvailableDays = async () => {
         try {
+            setIsLoadingAvailableDays(true);
             const response = await GET_API(
                 endpoints.volunteer_slot.availableDays(formData.select_volunteer as string)
             );
@@ -129,9 +131,11 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
             setVolunteerAvailableDays(availableDays);
             setVolunteerAvailableDates(availableDates);
             setVolunteerUnavailableDates(unavailableDates);
+            setIsLoadingAvailableDays(false);
             return availableDays;
         } catch (error) {
             console.error("Error fetching available days:", error);
+            setIsLoadingAvailableDays(false);
             return [];
         }
     };
@@ -366,6 +370,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
                             availableDays={availableDaysForField}
                             availableDates={availableDatesForField}
                             unavailableDates={unavailableDatesForField}
+                            isLoading={field.name === "select_date" ? isLoadingAvailableDays : false}
                         />
                     );
                 })}

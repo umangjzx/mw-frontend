@@ -23,13 +23,21 @@ type SocialLink = {
 const policyLinks: PolicyLink[] = [
     { href: "/privacy-policy", target: "_blank", label: "Privacy Policy" },
     { href: "/terms-and-conditions", target: "_blank", label: "Terms & Conditions" },
-    { href: "mailto:support@melodywings.org", target: "_blank", label: "Contact Us - support@melodywings.org" }
+    {
+        href: "mailto:support@melodywings.org",
+        target: "_blank",
+        label: "Contact Us - support@melodywings.org",
+    },
 ];
 
 const socialLinks: SocialLink[] = [
     { label: "LinkedIn", icon: FaLinkedin, href: "https://www.linkedin.com/company/melodywings" },
     { label: "Instagram", icon: FaInstagram, href: "https://www.instagram.com/melodywings_" },
-    { label: "Facebook", icon: FaFacebook, href: "https://www.facebook.com/profile.php?id=61575239913366" },
+    {
+        label: "Facebook",
+        icon: FaFacebook,
+        href: "https://www.facebook.com/profile.php?id=61575239913366",
+    },
     // { label: "X", icon: FaSquareXTwitter, href: "https://x.com" },
     // { label: "WhatsApp", icon: FaWhatsapp, href: "https://wa.me/1234567890" },
 ];
@@ -73,6 +81,8 @@ const Footer = (props: Props) => {
 
                     <div className="flex-center flex-col gap-6">
                         <Logo className="flex !flex-col" />
+                        <p className="text-gray-500 text-center text-sm">501c.3 | EIN:33-3734582</p>
+
                         <div className="lg:hidden">{renderSocialLinks()}</div>
                         {/* Center - Terms of Use and Privacy Policy text */}
                         <p className="text-gray-500 text-center text-sm">
