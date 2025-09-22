@@ -208,7 +208,7 @@ export const Input: React.FC<InputProps> = (props) => {
                                     console.log("date changed", date, "formatted as:", dateObject);
                                 }
                             }}
-                            format="DD MMM YYYY"
+                            format="DD-MMM-YYYY"
                             disabled={props.disabled || props.isLoading}
                             disabledDate={(current) => {
                                 if (!current) return true;
@@ -289,7 +289,7 @@ export const Input: React.FC<InputProps> = (props) => {
                             value={parseBirthDate(value) || null}
                             disabledDate={disabledDate}
                             onChange={handleDateChange}
-                            format="DD MMM YYYY"
+                            format="DD-MMM-YYYY"
                             allowClear={false}
                             defaultPickerValue={parseBirthDate(value) || endDate}
                             disabled={props?.disabled}
