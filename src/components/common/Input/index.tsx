@@ -1,5 +1,5 @@
 import React from "react";
-import { Input as AntInput, Checkbox, DatePicker as AntDatePicker, InputNumber } from "antd";
+import { Input as AntInput, Checkbox, DatePicker as AntDatePicker, InputNumber, Spin } from "antd";
 import { cn } from "@/utils/merge-class";
 import { IoIosSearch } from "react-icons/io";
 import RadioInput from "./RadioButton";
@@ -197,7 +197,7 @@ export const Input: React.FC<InputProps> = (props) => {
                 };
 
                 return (
-                    <div>
+                    <div className="relative">
                         <AntDatePicker
                             value={parseDate(props.value)}
                             onChange={(date) => {
@@ -209,7 +209,7 @@ export const Input: React.FC<InputProps> = (props) => {
                                 }
                             }}
                             format="DD MMM YYYY"
-                            disabled={props.disabled}
+                            disabled={props.disabled || props.isLoading}
                             disabledDate={(current) => {
                                 if (!current) return true;
 
@@ -250,12 +250,17 @@ export const Input: React.FC<InputProps> = (props) => {
                                 // Otherwise, enable all future dates
                                 return false;
                             }}
-                            placeholder="Click to select date"
+                            placeholder={props.isLoading ? "Loading available dates..." : "Click to select date"}
                             className={cn(
                                 "w-full text-sm p-2 rounded-lg border border-stroke focus:!border-stroke focus:!bg-background-input placeholder:text-sm hover:bg-background-input bg-background-input",
                                 props.inputClassName
                             )}
                         />
+                        {props.isLoading && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 rounded-lg">
+                                <Spin size="small" />
+                            </div>
+                        )}
                     </div>
                 );
 
