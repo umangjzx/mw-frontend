@@ -63,6 +63,7 @@ interface VolunteerData {
     volunteer_work_experience: string;
     volunteer_contact_details?: {
         country?: string;
+        timezone?: string;
     }
     volunteer_languages: Array<{ language_name: string; language_id: string }>;
     volunteer_subjects: Array<{ subject_name: string; subject_id: string }>;
@@ -95,6 +96,8 @@ const ProfileInfo = ({
                     {`${volunteerData?.volunteer_first_name} ${volunteerData?.volunteer_last_name}`}
                 </p>
                 <TagComponent text="Volunteer" tagClassName="!bg-[#FFE9D4] !border-none px-2 max-md:hidden" />
+                <p className="text-xs font-medium text-gray-800">{volunteerData?.volunteer_contact_details?.timezone}</p>
+                
                 <OverViewCard
                     title="Hours Volunteered"
                     value={volunteerData?.total_volunteered_hours || 0}

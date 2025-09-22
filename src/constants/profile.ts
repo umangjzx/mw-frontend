@@ -122,9 +122,9 @@ export const VolunteerProfileFormConstants: FormField[] = [
     },
     {
         name: "country",
-        label: "Country",
+        label: "Country of Residence",
         inputType: "select",
-        placeholder: "Select Country",
+        placeholder: "Select Country of Residence",
         options: nationalities,
         showSearch: true,
         required: true,
@@ -231,9 +231,9 @@ export const LearnerProfileFormConstants: FormField[] = [
     },
     {
         name: "country",
-        label: "Country",
+        label: "Country of Residence",
         inputType: "select",
-        placeholder: "Select Country",
+        placeholder: "Select Country of Residence",
         options: nationalities,
         showSearch: true,
         required: true,

@@ -42,12 +42,12 @@ export const ProfileDetails = ({ data }: { data: Learnerpersonalinfo }) => {
     const details = [
         { label: "First Name", value: data?.learner_first_name },
         { label: "Last Name", value: data?.learner_last_name },
-        { label: "Date of Birth", value:  moment(data?.learner_date_of_birth, "DD-MM-YYYY").format("DD MMM YYYY") },
+        { label: "Date of Birth", value:  moment(data?.learner_date_of_birth, "DD-MM-YYYY").format("DD-MMM-YYYY") },
         { label: "Gender", value: formatString(data?.learner_gender) },
         { label: "Preferred Pronoun", value: formatStringBy({ str: data?.learner_preferred_pronoun, to: "/" }) },
         { label: "Primary Language", value: formatString(data?.learner_primary_language) },
         { label: "Zip Code", value: contact_data?.zip_code },
-        { label: "Country", value: formatString(contact_data?.country) },
+        { label: "Country of Residence", value: formatString(contact_data?.country) },
         { label: "Timezone", value: formatString(contact_data?.timezone) },
         { label: "UTC Offset", value: contact_data?.utc_offset },
     ].filter(item => item.value);

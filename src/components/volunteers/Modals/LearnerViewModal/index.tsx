@@ -66,6 +66,7 @@ interface VolunteerData {
         learner_primary_language: string;
         learner_contact_details: {
             country: string;
+            timezone: string;
         };
     };
     parent_info: {
@@ -114,7 +115,9 @@ const ProfileInfo = ({
 }: {
     text: string | null;
     learnerData: VolunteerData;
-}) => (
+}) => {
+
+    return (
     <div className="grid md:grid-cols-[1.7fr,2fr,2fr] gap-4 px-5 max-md:py-5">
         <div className="flex items-center gap-3">
             <div className="relative w-[80px] h-[80px] rounded-full shrink-0">
@@ -135,6 +138,7 @@ const ProfileInfo = ({
                     text="Learner"
                     tagClassName="!bg-[#dff5ff] !border-none px-2 max-md:hidden"
                 />
+                <p className="text-xs font-medium text-gray-800">{learnerData?.learner_personal_info?.learner_contact_details?.timezone}</p>
                 <OverViewCard
                     title="Hours Attended"
                     value={learnerData?.total_attended_hours || 0}
@@ -162,7 +166,7 @@ const ProfileInfo = ({
             className="max-md:hidden"
         />
     </div>
-);
+)};
 
 const TabButtons = ({
     activeTab,
@@ -239,6 +243,7 @@ const ContentRender = ({ title, description }: { title: string; description: str
 };
 
 const OverviewContent = ({ learnerData }: { learnerData: VolunteerData }) => {
+    
     const personalDetails = [
         {
             title: "Name",
@@ -249,12 +254,19 @@ const OverviewContent = ({ learnerData }: { learnerData: VolunteerData }) => {
         {
             title: "Age",
             description: learnerData?.learner_personal_info?.learner_date_of_birth
-                ? String(
-                      new Date().getFullYear() -
-                          new Date(
-                              learnerData.learner_personal_info.learner_date_of_birth
-                          ).getFullYear()
-                  )
+                ? (() => {
+                      // Parse DD-MM-YYYY format
+                      const dateStr = learnerData.learner_personal_info.learner_date_of_birth;
+                      const [day, month, year] = dateStr.split('-');
+                      const birthDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                      const today = new Date();
+                      let age = today.getFullYear() - birthDate.getFullYear();
+                      const monthDiff = today.getMonth() - birthDate.getMonth();
+                      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                          age--;
+                      }
+                      return String(age);
+                  })()
                 : "",
         },
         {
