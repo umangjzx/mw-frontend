@@ -20,12 +20,14 @@ const LearnerProfileBio = ({ data }: any) => {
     const learner_first_name = data?.learner_personal_info?.learner_first_name;
     const learner_last_name = data?.learner_personal_info?.learner_last_name;
     const contactDetail = data?.learner_personal_info?.learner_contact_details;
+    const timezone = contactDetail?.timezone;
 
     const profileHeader = {
         full_name: `${learner_first_name} ${learner_last_name}`,
         profile_picture: data?.profile_picture?.image_url,
         country: contactDetail?.country,
         gender: data?.learner_personal_info?.learner_gender,
+        timezone: timezone,
     }
 
     useEffect(() => {
