@@ -33,6 +33,10 @@ interface LearnerCardData {
     developementDisability: string;
     expected_goals: string;
     skill_ids: string;
+    skillsToLearn?: Array<{
+        skill_name: string;
+        skill_id: string;
+    }>;
 }
 
 export default function LearnersPage() {
@@ -150,6 +154,7 @@ export default function LearnersPage() {
                     learner?.learner_special_needs?.type_of_developmental_disability,
                 skill_ids: learner?.learner_special_needs?.skill_ids,
                 expected_goals: learner?.learner_special_needs?.expected_goals,
+                skillsToLearn: learner?.skills,
             }));
             setLearnerCardData(formattedData);
             console.log(formattedData, "formattedData");
@@ -209,6 +214,7 @@ export default function LearnersPage() {
             ],
         });
     }, [pathname, setHeaderOptions, appliedFiltersCount]);
+    
 
     return (
         <div className="h-full animate-fadeIn">

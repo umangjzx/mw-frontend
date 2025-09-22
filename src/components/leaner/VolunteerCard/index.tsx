@@ -24,6 +24,7 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
     totalReviews,
     overallRating,
     chatPermission,
+    skillsToLearn,
 }) => {
     const router = useRouter();
 
@@ -35,7 +36,7 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
     };
 
     return (
-        <div className="bg-white rounded-xl w-full shadow-sm h-fit p-4 flex flex-col gap-4">
+        <div className="bg-white rounded-xl w-full shadow-sm h-auto p-4 flex flex-col gap-4">
             {/* Profile Header */}
             <div className="flex items-center gap-4">
                 <div
@@ -61,7 +62,7 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
                 <div className="flex flex-col">
                     <p
                         onClick={() => onSeeMoreClick(volunteerId)}
-                        className="text-base font-semibold lg:text-normal hover:underline cursor-pointer lg:font-medium"
+                        className="text-base font-semibold lg:text-normal hover:underline hover:text-primary cursor-pointer lg:font-medium"
                     >
                         {name}
                     </p>
@@ -102,6 +103,14 @@ const VolunteerCard: React.FC<VolunteerCardProps> = ({
             {Array.isArray(languages) && languages?.length > 0 && (
                 <div>
                     <CardChips label="Language" value={languages.join(", ")} />
+                </div>
+            )}
+            {skillsToLearn && skillsToLearn.length > 0 && (
+                <div>
+                    <CardChips 
+                        label="Skills to Learn" 
+                        value={skillsToLearn.map(skill => skill.skill_name).join(", ")} 
+                    />
                 </div>
             )}
             <Divider />

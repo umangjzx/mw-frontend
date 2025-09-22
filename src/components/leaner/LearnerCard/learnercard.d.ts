@@ -12,4 +12,8 @@ interface LearnerCardProps {
     overallRating: string;
     chatPermission?: boolean;
     developementDisability: string;
+    skillsToLearn?: Array<{
+        skill_name: string;
+        skill_id: string;
+    }>;
 }

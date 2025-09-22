@@ -30,6 +30,10 @@ interface VolunteerCardData {
     languages: string[];
     totalReviews: string;
     overallRating: string;
+    skillsToLearn?: Array<{
+        skill_name: string;
+        skill_id: string;
+    }>;
 }
 
 export default function LearnersPage() {
@@ -99,7 +103,6 @@ export default function LearnersPage() {
         const filters = [language_ids, subject_ids, country, skill_ids, start_date, start_time];
         return filters.filter((filter) => filter).length;
     }, [language_ids, subject_ids, country, skill_ids, start_date, start_time]);
-
     useEffect(() => {
         if (data?.items) {
             const formattedData: VolunteerCardData[] = data.items.map((volunteer: any) => ({
@@ -118,6 +121,7 @@ export default function LearnersPage() {
                 totalReviews: volunteer?.total_reviews,
                 overallRating: volunteer?.overall_rating,
                 chatPermission: volunteer?.chat_permission,
+                skillsToLearn: volunteer?.volunteer_skills,
             }));
             setVolunteerCardData(formattedData);
         }

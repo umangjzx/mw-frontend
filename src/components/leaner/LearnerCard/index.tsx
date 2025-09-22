@@ -25,8 +25,9 @@ const LearnerCard: React.FC<LearnerCardProps> = ({
     overallRating,
     chatPermission,
     developementDisability,
+    skillsToLearn,
 }) => {
-    const router = useRouter();
+    const router = useRouter();    
 
     const handleChatClick = async () => {
         GET_API(endpoints.chat.createChatForLearner(learnerId)).then((res: any) => {
@@ -36,7 +37,7 @@ const LearnerCard: React.FC<LearnerCardProps> = ({
     };
 
     return (
-        <div className="bg-white rounded-xl w-full shadow-sm h-fit p-4 flex flex-col gap-4">
+        <div className="bg-white rounded-xl w-full shadow-sm h-auto p-4 flex flex-col gap-4">
             {/* Profile Header */}
             <div onClick={() => onSeeMoreClick(learnerId)} className="flex items-center gap-4">
                 <div className="w-[36px] h-[36px] rounded-full relative cursor-pointer">
@@ -59,7 +60,7 @@ const LearnerCard: React.FC<LearnerCardProps> = ({
                 <div className="flex flex-col">
                     <p
                         onClick={() => onSeeMoreClick(learnerId)}
-                        className="text-base font-semibold lg:text-normal hover:underline cursor-pointer lg:font-medium"
+                        className="text-base font-semibold lg:text-normal hover:underline hover:text-primary cursor-pointer lg:font-medium"
                     >
                         {name}
                     </p>
@@ -100,6 +101,14 @@ const LearnerCard: React.FC<LearnerCardProps> = ({
             {languages && (
                 <div>
                     <CardChips label="Language" value={languages} />
+                </div>
+            )}
+            {skillsToLearn && skillsToLearn.length > 0 && (
+                <div>
+                    <CardChips 
+                        label="Skills to Learn" 
+                        value={skillsToLearn.map(skill => skill.skill_name).join(", ")} 
+                    />
                 </div>
             )}
             <Divider />
