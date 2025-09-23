@@ -181,9 +181,9 @@ const LearnerPersonalFields: FormField[] = [
     {
         parent: "learner_contact_details",
         id: "country",
-        label: "Country",
+        label: "Country of Residence",
         inputType: "select",
-        placeholder: "Select Country",
+        placeholder: "Select Country of Residence",
         options: nationalities,
         showSearch: true,
         gridCols: 1,

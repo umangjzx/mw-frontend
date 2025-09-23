@@ -35,7 +35,7 @@ export const ProfileDetails = ({ data }: { data: Volunteer }) => {
     const details = [
         { label: "First Name", value: data?.volunteer_first_name },
         { label: "Last Name", value: data?.volunteer_last_name },
-        { label: "Date of Birth", value: moment(data?.volunteer_birth_date, "DD-MM-YYYY").format("DD MMM YYYY") },
+        { label: "Date of Birth", value: moment(data?.volunteer_birth_date, "DD-MM-YYYY").format("DD-MMM-YYYY") },
         { label: "Gender", value: formatString(data?.volunteer_gender) },
         { label: "Languages Spoken", value: data?.volunteer_languages?.map((language) => language.language_name) },
         { label: "Skills", value: data?.volunteer_skills?.map((skill) => skill.skill_name) },
@@ -65,7 +65,7 @@ export const ProfileDetails = ({ data }: { data: Volunteer }) => {
 
 export const VolunteerContactDetails = ({ data }: { data: Volunteercontactdetails }) => {
     const details = [
-        { label: "Country", value: data?.country },
+        { label: "Country of Residence", value: data?.country },
         { label: "Zip Code", value: data?.zip_code },
         { label: "Timezone", value: data?.timezone },
         { label: "UTC Offset", value: data?.utc_offset },

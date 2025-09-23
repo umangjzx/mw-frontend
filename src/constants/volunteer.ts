@@ -207,9 +207,9 @@ export const ContactDetailsFields: FormField[] = [
     },
     {
         id: "country",
-        label: "Country",
+        label: "Country of Residence",
         inputType: "select",
-        placeholder: "Select Country",
+        placeholder: "Select Country of Residence",
         options: nationalities,
         showSearch: true,
         gridCols: 1,

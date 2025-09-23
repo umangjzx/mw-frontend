@@ -109,7 +109,7 @@ const MobileCalender: React.FC<CalendarProps> = ({ events = [], onDateSelect }) 
                     >
                         <p className="font-medium text-sm mb-4">
                             {eventsByDate[0]?.date &&
-                                moment(eventsByDate[0]?.date).format("DD MMM YYYY")}
+                                moment(eventsByDate[0]?.date).format("DD-MMM-YYYY")}
                         </p>
                         <div className="space-y-2">
                             {eventsByDate.map((event: any, i: number) => (

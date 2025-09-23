@@ -12,9 +12,9 @@ export const VolunteerFilterModalConstants = [
     {
         id: "country",
         name: "country",
-        label: "Select Nationality",
+        label: "Select Country of Residence",
         inputType: "select",
-        placeholder: "Select Nationality",
+        placeholder: "Select Country of Residence",
         options: nationalities,
         showSearch: true,
     },

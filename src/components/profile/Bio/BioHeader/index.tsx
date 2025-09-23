@@ -17,6 +17,7 @@ const BioHeader = ({ data }: any) => {
                     <div className="flex flex-col gap-2">
                         <p className="font-medium text-xl">{data?.full_name}</p>
                         <TagComponent text={role} className="text-xs py-1 px-2" />
+                        <p className="text-xs font-medium text-gray-light">{data?.timezone}</p>
                     </div>
                 </div>
                 <Link href={`/${role}/profile?mode=edit`}>

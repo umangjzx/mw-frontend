@@ -93,6 +93,7 @@ type DatePickerInputProps = BaseInputProps & {
     availableDays?: string[];
     availableDates?: string[];
     unavailableDates?: string[];
+    isLoading?: boolean;
 };
 
 type SessionDatePickerInputProps = BaseInputProps & {

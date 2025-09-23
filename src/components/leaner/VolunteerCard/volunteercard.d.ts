@@ -11,4 +11,8 @@ interface VolunteerCardProps {
     totalReviews: string;
     overallRating: string;
     chatPermission?: boolean;
+    skillsToLearn?: Array<{
+        skill_name: string;
+        skill_id: string;
+    }>;
 }
