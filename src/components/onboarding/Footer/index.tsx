@@ -80,8 +80,12 @@ const Footer = (props: Props) => {
                     </div>
 
                     <div className="flex-center flex-col gap-6">
-                        <Logo className="flex !flex-col" />
-                        <p className="text-gray-500 text-center text-sm">501c.3 | EIN:33-3734582</p>
+                        <div className="flex flex-col items-center gap-2">
+                            <Logo className="flex !flex-col" />
+                            <p className="text-gray-500 text-center text-sm">
+                                501c.3 | EIN:33-3734582
+                            </p>
+                        </div>
 
                         <div className="lg:hidden">{renderSocialLinks()}</div>
                         {/* Center - Terms of Use and Privacy Policy text */}
