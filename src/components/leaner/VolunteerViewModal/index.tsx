@@ -36,7 +36,10 @@ const ProfileHeader = ({
 }) => (
     <div className="flex items-center justify-between px-5">
         <div className="flex items-center gap-2">
-            <span onClick={onClose} className="cursor-pointer md:hidden border border-black rounded-full p-2">
+            <span
+                onClick={onClose}
+                className="cursor-pointer md:hidden border border-black rounded-full p-2"
+            >
                 <IoIosArrowBack className="text-lg" />
             </span>
             <p className="font-medium text-xl">Profile</p>
@@ -64,7 +67,7 @@ interface VolunteerData {
     volunteer_contact_details?: {
         country?: string;
         timezone?: string;
-    }
+    };
     volunteer_languages: Array<{ language_name: string; language_id: string }>;
     volunteer_subjects: Array<{ subject_name: string; subject_id: string }>;
     volunteer_skills: Array<{ skill_name: string; skill_id: string }>;
@@ -95,9 +98,14 @@ const ProfileInfo = ({
                 <p className="max-md:text-xl font-medium">
                     {`${volunteerData?.volunteer_first_name} ${volunteerData?.volunteer_last_name}`}
                 </p>
-                <TagComponent text="Volunteer" tagClassName="!bg-[#FFE9D4] !border-none px-2 max-md:hidden" />
-                <p className="text-xs font-medium text-gray-800">{volunteerData?.volunteer_contact_details?.timezone}</p>
-                
+                <TagComponent
+                    text="Volunteer"
+                    tagClassName="!bg-[#FFE9D4] !border-none px-2 max-md:hidden"
+                />
+                <p className="text-xs font-medium text-gray-800">
+                    {volunteerData?.volunteer_contact_details?.timezone}
+                </p>
+
                 <OverViewCard
                     title="Hours Volunteered"
                     value={volunteerData?.total_volunteered_hours || 0}
@@ -141,37 +149,47 @@ const TabButtons = ({
     isMobileScreen?: boolean;
 }) => (
     <div className="px-5">
-        {
-            isMobileScreen ?
-                <div className="flex gap-2 px-2">
-                    {["overview", "reviews"].map((tab: any, index) => (
-                        <button
-                            key={tab || index}
-                            type="button"
-                            onClick={() => handleTabChange(tab)}
-                            className="w-full"
+        {isMobileScreen ? (
+            <div className="flex gap-2 px-2">
+                {["overview", "reviews"].map((tab: any, index) => (
+                    <button
+                        key={tab || index}
+                        type="button"
+                        onClick={() => handleTabChange(tab)}
+                        className="w-full"
+                    >
+                        <p
+                            className={`text-base font-medium capitalize ${
+                                activeTab === tab ? "text-black" : "text-[#808080]"
+                            }`}
                         >
-                            <p className={`text-base font-medium capitalize ${activeTab === tab ? "text-black" : "text-[#808080]"}`}>{tab}</p>
-                            <div className={`!h-[4px] !w-full mt-1 rounded-t-xl ${activeTab === tab ? 'bg-[#FF9053]' : ''}`}></div>
-                        </button>
-                    ))}
-                </div>
-                :
-                <div className="flex items-center justify-between border-stroke border-2 rounded-full">
-                    {["overview", "reviews"].map((tab) => (
+                            {tab}
+                        </p>
                         <div
-                            key={tab}
-                            onClick={() => handleTabChange(tab)}
-                            className={`font-medium text-center w-[50%] rounded-full py-2.5 px-5 ${activeTab === tab
+                            className={`!h-[4px] !w-full mt-1 rounded-t-xl ${
+                                activeTab === tab ? "bg-[#FF9053]" : ""
+                            }`}
+                        ></div>
+                    </button>
+                ))}
+            </div>
+        ) : (
+            <div className="flex items-center justify-between border-stroke border-2 rounded-full">
+                {["overview", "reviews"].map((tab) => (
+                    <div
+                        key={tab}
+                        onClick={() => handleTabChange(tab)}
+                        className={`font-medium text-center w-[50%] rounded-full py-2.5 px-5 ${
+                            activeTab === tab
                                 ? "bg-[#dff5ff] border-primary border-2"
                                 : "border-2 border-transparent"
-                                } transition-all duration-200 cursor-pointer`}
-                        >
-                            {tab === "overview" ? "Overview" : `Reviews - ${rating} (${totalReviews})`}
-                        </div>
-                    ))}
-                </div>
-        }
+                        } transition-all duration-200 cursor-pointer`}
+                    >
+                        {tab === "overview" ? "Overview" : `Reviews - ${rating} (${totalReviews})`}
+                    </div>
+                ))}
+            </div>
+        )}
     </div>
 );
 
@@ -214,20 +232,21 @@ const OverviewContent = ({ volunteerData }: { volunteerData: VolunteerData }) =>
         <div className="flex flex-col gap-4">
             <div className="px-5 flex flex-col gap-1">
                 <div className="flex items-center justify-between">
-                    <p className="font-medium">Bio</p>
-                    {volunteerData?.volunteer_contact_details?.country
-                        &&
+                    <p className="text-sm text-gray-light font-normal">Bio</p>
+                    {volunteerData?.volunteer_contact_details?.country && (
                         <TagComponent
                             text={formatString(volunteerData?.volunteer_contact_details?.country)}
                             className="max-md:hidden text-xs py-1 font-medium px-2"
                             icon={<FaLocationDot />}
                         />
-                    }
+                    )}
                 </div>
-                <p className="text-sm text-gray-light font-normal">
-                    {volunteerData?.volunteer_description}
-                </p>
-                <div className={`md:hidden flex items-center justify-between my-3 ${volunteerData?.volunteer_contact_details?.country ? '' : 'hidden'}`}>
+                <p className="font-medium">{volunteerData?.volunteer_description}</p>
+                <div
+                    className={`md:hidden flex items-center justify-between my-3 ${
+                        volunteerData?.volunteer_contact_details?.country ? "" : "hidden"
+                    }`}
+                >
                     <p className="font-medium">Location</p>
                     <TagComponent
                         text={volunteerData?.volunteer_contact_details?.country || ""}
@@ -269,7 +288,9 @@ const ReviewsContent = ({ volunteerFeedback }: { volunteerFeedback: any }) => {
                     <div className="max-md:bg-white max-md:rounded-xl max-md:p-3">
                         <div className="flex justify-between">
                             <p className="text-base font-semibold md:hidden">Reviews</p>
-                            <p className="text-gray text-sm">Sort By: <span className="text-black">Recently added</span></p>
+                            <p className="text-gray text-sm">
+                                Sort By: <span className="text-black">Recently added</span>
+                            </p>
                         </div>
                         <div className="flex flex-col gap-5 divide-y">
                             {ratingCardData?.map((item: any, index: number) => (
@@ -356,62 +377,63 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
             borderRadius={isMobileScreen ? "0px" : "12px"}
             className="max-md:!w-full max-md:!max-w-full max-md:!m-0"
         >
-            {
-                isLoading ?
-                    <div className="h-full w-full flex-center min-h-[70vh]">
-                        <LottieLoader isLoading={true} />
-                    </div>
-                    :
-                    <div className="flex flex-col gap-0 md:gap-4 pt-4 md:py-4 h-full md:max-h-[90dvh]">
-                        <ProfileHeader
-                            text={text}
-                            onClose={onClose}
-                            onScheduleMeeting={handleScheduleMeeting}
-                        />
-                        <Divider className="max-md:hidden" />
-                        <ProfileInfo text={text} volunteerData={volunteerData} />
-                        <Divider className="max-md:hidden" />
-                        <TabButtons
-                            activeTab={activeTab}
-                            handleTabChange={handleTabChange}
-                            rating={rating}
-                            totalReviews={totalReviews}
-                            isMobileScreen={isMobileScreen}
-                        />
-                        <div className="relative max-md:h-full max-md:bg-background-input max-md:p-5 overflow-y-auto max-md:border-t">
-                            <div
-                                className={`transform transition-all duration-300 max-md:bg-white max-md:py-3 max-md:rounded-xl ${activeTab === "overview"
+            {isLoading ? (
+                <div className="h-full w-full flex-center min-h-[70vh]">
+                    <LottieLoader isLoading={true} />
+                </div>
+            ) : (
+                <div className="flex flex-col gap-0 md:gap-4 pt-4 md:py-4 h-full md:max-h-[90dvh]">
+                    <ProfileHeader
+                        text={text}
+                        onClose={onClose}
+                        onScheduleMeeting={handleScheduleMeeting}
+                    />
+                    <Divider className="max-md:hidden" />
+                    <ProfileInfo text={text} volunteerData={volunteerData} />
+                    <Divider className="max-md:hidden" />
+                    <TabButtons
+                        activeTab={activeTab}
+                        handleTabChange={handleTabChange}
+                        rating={rating}
+                        totalReviews={totalReviews}
+                        isMobileScreen={isMobileScreen}
+                    />
+                    <div className="relative max-md:h-full max-md:bg-background-input max-md:p-5 overflow-y-auto max-md:border-t">
+                        <div
+                            className={`transform transition-all duration-300 max-md:bg-white max-md:py-3 max-md:rounded-xl ${
+                                activeTab === "overview"
                                     ? "opacity-100 translate-x-0"
                                     : "opacity-0 -translate-x-8 absolute top-0 left-0 right-0"
-                                    }`}
-                            >
-                                {activeTab === "overview" && (
-                                    <OverviewContent volunteerData={volunteerData} />
-                                )}
-                            </div>
-                            <div
-                                className={`transform transition-all duration-300 ${activeTab === "reviews"
+                            }`}
+                        >
+                            {activeTab === "overview" && (
+                                <OverviewContent volunteerData={volunteerData} />
+                            )}
+                        </div>
+                        <div
+                            className={`transform transition-all duration-300 ${
+                                activeTab === "reviews"
                                     ? "opacity-100 translate-x-0"
                                     : "opacity-0 translate-x-8 absolute top-0 left-0 right-0"
-                                    }`}
-                            >
-                                {activeTab === "reviews" && (
-                                    <div>
-                                        {volunteerFeedback?.feedbacks.length > 0 ? (
-                                            <ReviewsContent volunteerFeedback={volunteerFeedback} />
-                                        ) : (
-                                            <div className="flex items-center justify-center h-full min-h-[300px]">
-                                                <p className="text-sm text-gray-light font-normal">
-                                                    No reviews yet
-                                                </p>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
+                            }`}
+                        >
+                            {activeTab === "reviews" && (
+                                <div>
+                                    {volunteerFeedback?.feedbacks.length > 0 ? (
+                                        <ReviewsContent volunteerFeedback={volunteerFeedback} />
+                                    ) : (
+                                        <div className="flex items-center justify-center h-full min-h-[300px]">
+                                            <p className="text-sm text-gray-light font-normal">
+                                                No reviews yet
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
-            }
+                </div>
+            )}
         </ViewModal>
     );
 };
