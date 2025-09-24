@@ -24,7 +24,7 @@ type FormTabsProps = {
     control: any;
     errors: any;
     trigger: (fields: any) => Promise<boolean>;
-    validateForm: () => void;
+    validateForm: () => Promise<boolean>;
     handleFillForm: () => void;
     onSubmit: () => void;
     setError: UseFormSetError<any>;
@@ -159,7 +159,7 @@ const FormTabs = ({
     }, [onboardingData, role, reset, setValue, getValues]);
 
     const handleValidationErrors = ({ success, errors }: { success: boolean; errors: any }) => {
-        if (!success) {
+        if (!success) {            
             Object.entries(errors)?.forEach(([key, value]: any) => {
                 if (key && value) setError(key, { message: value });
             });
@@ -414,6 +414,14 @@ const FormTabs = ({
         return false;
     };
 
+    const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        const isValid = await validateForm();
+        if (isValid) {
+            onSubmit();
+        }
+    };
+
     return (
         <form onSubmit={onSubmit} className="w-full pb-16">
             <div ref={tabButtonsRef} className="max-w-7xl mx-auto lg:px-8">
@@ -545,7 +553,7 @@ const FormTabs = ({
                                         </div>
                                         <Button
                                             htmlType="submit"
-                                            onClick={validateForm}
+                                            onClick={handleSubmit}
                                             loading={isLoading}
                                             disabled={isLoading}
                                             title="Submit Application"
