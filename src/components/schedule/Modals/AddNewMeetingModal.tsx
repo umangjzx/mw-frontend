@@ -342,6 +342,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
             isLoading={isPending}
             onCancel={onClose}
             modalWidth={isMobileScreen ? 600 : 400}
+            loading={fetchingVolunteers}
         >
             <div className="flex flex-col max-lg:gap-3 px-5 mt-7">
                 {LearnerScheduleModalConstants.map((field: any) => {
@@ -370,7 +371,9 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
                             availableDays={availableDaysForField}
                             availableDates={availableDatesForField}
                             unavailableDates={unavailableDatesForField}
-                            isLoading={field.name === "select_date" ? isLoadingAvailableDays : false}
+                            isLoading={
+                                field.name === "select_date" ? isLoadingAvailableDays : false
+                            }
                         />
                     );
                 })}

@@ -38,7 +38,7 @@ const FeedbackModal = ({
             day: "2-digit",
             month: "short",
             year: "numeric",
-        }),
+        }).replace(/ /g, "-"),
         Time: new Date().toLocaleTimeString("en-US", {
             hour: "numeric",
             minute: "numeric",
@@ -117,8 +117,8 @@ const FeedbackModal = ({
                 </div>
                 <Divider />
                 <div className="h-full p-4 flex flex-col gap-4 bg-background-input">
-                    <h6 className="text-xl font-medium">Please Fill the Feedback</h6>
-                    <DetailsSection data={feedBackEventDetails} />
+                    <h6 className="text-xl font-medium">Please Fill the Feedback dsvfsd</h6>
+                    {/* <DetailsSection data={feedBackEventDetails} /> */}
                     <div className="flex flex-col gap-4 mt-3">
                         {LearnerFeedbackFormConstants.map((field: any) => (
                             <Input
