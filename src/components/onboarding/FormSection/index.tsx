@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import { showToast } from "@/components/common/Toast";
-import { defaultLearnerData, defaultVolunteerData } from "./config";
+import { defaultLearnerData, defaultVolunteerData, validateVolunteerParentDetails } from "./config";
 import FormTabs from "./FormTabs";
 import { getCookie } from "@/utils/auth";
 import ModalLoader from "@/components/common/Loader/Modal";
@@ -75,8 +75,30 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
         form.setValue("cookie_consent_accepted", getCookie("cookieConsent") === "accepted");
     }, [form]);
 
-    const validateForm = () =>
-        isValid || showToast({ type: "error", message: "Fill required fields!" });
+    const validateForm = async () => {
+        // Trigger validation for all fields including consent checkboxes
+        const isFormValid = await trigger();
+        
+        if (!isFormValid) {
+            showToast({ type: "error", message: "Please fill in all required fields before submitting." });
+            return false;
+        }
+        
+        // Additional validation for volunteer parent details (consent checkbox)
+        if (isVolunteer) {
+            const volunteerValidation = validateVolunteerParentDetails(getValues());
+            if (!volunteerValidation.success) {
+                // Set errors for the fields that failed validation
+                Object.entries(volunteerValidation.errors).forEach(([key, value]) => {
+                    setError(key, { message: value });
+                });
+                showToast({ type: "error", message: "Please fill in all required fields before submitting." });
+                return false;
+            }
+        }
+        
+        return true;
+    };
 
     const handleFillForm = () => {
         Object.entries(isVolunteer ? defaultVolunteerData : defaultLearnerData).forEach(
