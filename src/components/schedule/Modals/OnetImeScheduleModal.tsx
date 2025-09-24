@@ -66,12 +66,18 @@ const OnetImeScheduleModal = ({
         }
     }, [availableDays]);
 
+    useEffect(() => {
+        if (slots.length === 0 && isOpen) {
+            addSlot();
+        }
+    }, [isOpen]);
+
     console.log(availableDays, "availableDays for date");
 
     const handleSubmit = () => {
-        // Check if all slots are empty
-        const allEmpty = slots.every((slot) => !slot.start_time || !slot.end_time);
-        if (allEmpty) {
+        // Filter out empty slots and check if there are any valid slots
+        const validSlots = slots.filter((slot) => slot.start_time && slot.end_time);
+        if (validSlots.length === 0) {
             showToast({
                 message: "Please select at least one valid slot before saving.",
                 type: "error",
@@ -86,10 +92,11 @@ const OnetImeScheduleModal = ({
             });
             return;
         }
-        slots.forEach((slot, idx) => {
+        validSlots.forEach((slot, idx) => {
             console.log(`Slot ${idx + 1}: Start - ${slot.start_time}, End - ${slot.end_time}`);
         });
-        const formattedData = slots.map((slot) => ({
+        
+        const formattedData = validSlots.map((slot) => ({
             date: moment(currentDate).format("DD-MM-YYYY"),
             volunteer_slot_id: generateTimeSlotId(slot.start_time, slot.end_time),
             start_time: slot.start_time,

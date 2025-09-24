@@ -7,7 +7,7 @@ import moment from "moment";
 const InfoItem = ({ label, value }: { label: string, value: string | string[] }) => {
     if (!value) return null;
 
-    const renderValue = (value: string | string[] | { value: string }) => {
+    const renderValue = (value: string | string[] | { value: string }, label: string) => {
         if (Array.isArray(value)) {
             return (
                 <div className="flex flex-wrap gap-1">
@@ -19,14 +19,16 @@ const InfoItem = ({ label, value }: { label: string, value: string | string[] })
                 </div>
             );
         }
-        return <p className="text-base font-medium break-words">{formatString(typeof value === "object" ? value?.value : value)}</p>;
+        const stringValue = typeof value === "object" ? value?.value : value;
+        const formattedValue = label === "Parent Email" ? stringValue?.toLowerCase() : formatString(stringValue);
+        return <p className="text-base font-medium break-words">{formattedValue}</p>;
     };
     
     const isFullWidth = (Array.isArray(value) && value.length > 3) || String(value).length > 40;
     return (
         <div className={`flex flex-col gap-1 ${isFullWidth ? "col-span-2" : ""}`}>
             <p className="text-sm font-normal text-gray-light">{label}</p>
-            {renderValue(value)}
+            {renderValue(value, label)}
         </div>
     )
 }
