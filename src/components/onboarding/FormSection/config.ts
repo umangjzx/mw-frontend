@@ -647,6 +647,7 @@ export const learnerFormSchema = z
     });
 
 const emailSchema = z.string().email("Invalid email address").optional();
+
 export function validateLearnerParentFields(data: any) {
     const errors: { [key: string]: string } = {};
     let isSuccess = true;
@@ -654,7 +655,17 @@ export function validateLearnerParentFields(data: any) {
     const enrolled_by = data?.enrolled_by;
     if (enrolled_by !== "parent") return { success: true, errors: {} };
 
-    (Object.keys(data?.parent_info || {}) as (keyof learnerParentSchemaType)[]).forEach((key) => {
+    // Define the fields that are actually present in the current UI form
+    const validatableFields = [
+        'parent_first_name',
+        'parent_last_name', 
+        'parent_email',
+        'parent_contact_number',
+        'relationship_to_learner'
+    ];
+
+    // Only validate fields that are present in the form UI
+    validatableFields.forEach((key) => {
         const field = data?.parent_info?.[key];
         if (!field || (typeof field === "string" && field.trim().length === 0)) {
             errors[`parent_info.${key}`] = `${key

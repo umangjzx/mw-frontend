@@ -39,6 +39,7 @@ const OnetImeScheduleModal = ({
     const [invalidSlots, setInvalidSlots] = useState<number[]>([]);
     const queryClient = useQueryClient();
     const [isAvailableDaysLoading, setIsAvailableDaysLoading] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     const getAvailableDaysForDate = async () => {
         console.log(currentDate, "currentDate");
@@ -95,7 +96,7 @@ const OnetImeScheduleModal = ({
         validSlots.forEach((slot, idx) => {
             console.log(`Slot ${idx + 1}: Start - ${slot.start_time}, End - ${slot.end_time}`);
         });
-        
+        setIsSaving(true);
         const formattedData = validSlots.map((slot) => ({
             date: moment(currentDate).format("DD-MM-YYYY"),
             volunteer_slot_id: generateTimeSlotId(slot.start_time, slot.end_time),
@@ -122,6 +123,9 @@ const OnetImeScheduleModal = ({
                     message: "Error creating slots",
                     type: "error",
                 });
+            })
+            .finally(() => {
+                setIsSaving(false);
             });
     };
 
@@ -279,7 +283,7 @@ const OnetImeScheduleModal = ({
             onClose={handleClose}
             isOpen={isOpen}
             onSave={handleSubmit}
-            isLoading={isPending}
+            isLoading={isPending || isSaving}
             onCancel={handleClose}
             modalWidth={isMobileScreen ? 600 : 400}
         >

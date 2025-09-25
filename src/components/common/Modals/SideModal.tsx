@@ -1,5 +1,5 @@
 import ModalCloseIcon from "@/assets/icons/FeedModalCloseIcon";
-import { Drawer } from "antd";
+import { Drawer, Spin } from "antd";
 import React, { useState } from "react";
 import Divider from "../Divider";
 import Button from "@/components/common/Button";
@@ -17,6 +17,7 @@ const SideModal: React.FC<SideModalProps> = ({
     isNeedButton = true,
     isLoading = false,
     modalWidth = 400,
+    loading = false,
 }) => {
     return (
         <div>
@@ -37,7 +38,13 @@ const SideModal: React.FC<SideModalProps> = ({
                         </span>
                     </div>
                     <Divider />
-                    <div className="flex-1 overflow-y-auto pb-2">{children}</div>
+                    {loading ? (
+                        <div className="flex flex-col h-full justify-center items-center">
+                            <Spin spinning={true} />
+                        </div>
+                    ) : (
+                        <div className="flex-1 overflow-y-auto pb-2">{children}</div>
+                    )}
                     {isNeedButton && (
                         <div className="mt-auto">
                             <Divider />

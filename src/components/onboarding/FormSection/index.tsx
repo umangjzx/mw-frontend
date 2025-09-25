@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import { showToast } from "@/components/common/Toast";
-import { defaultLearnerData, defaultVolunteerData } from "./config";
+import { defaultLearnerData, defaultVolunteerData, validateVolunteerParentDetails, validateLearnerParentFields } from "./config";
 import FormTabs from "./FormTabs";
 import { getCookie } from "@/utils/auth";
 import ModalLoader from "@/components/common/Loader/Modal";
@@ -32,6 +32,7 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
 
     const role = getCookie("role");
     const isVolunteer = role === "volunteer";
+    const isLearner = role === "learner";
     const userId = getCookie(isVolunteer ? "volunteer_id" : "learner_id") || "";
 
     const endpoint = isVolunteer
@@ -75,8 +76,55 @@ const FormSection = ({ schema, formData }: FormSectionProps) => {
         form.setValue("cookie_consent_accepted", getCookie("cookieConsent") === "accepted");
     }, [form]);
 
-    const validateForm = () =>
-        isValid || showToast({ type: "error", message: "Fill required fields!" });
+    const validateForm = async () => {
+        // First run custom validation for specific fields
+        let hasCustomValidationErrors = false;
+        
+        // Additional validation for volunteer parent details (consent checkbox)
+        if (isVolunteer) {
+            const volunteerValidation = validateVolunteerParentDetails(getValues());
+            if (!volunteerValidation.success) {
+                // Set errors for the fields that failed validation
+                Object.entries(volunteerValidation.errors).forEach(([key, value]) => {
+                    setError(key, { message: value });
+                });
+                hasCustomValidationErrors = true;
+            }
+        }
+        
+        // Additional validation for learner parent details (guardian info)
+        if (isLearner) {
+            const formValues = getValues();         
+            const learnerValidation = validateLearnerParentFields(formValues);
+            
+            if (!learnerValidation.success) {
+                // Set errors for the fields that failed validation
+                Object.entries(learnerValidation.errors).forEach(([key, value]) => {
+                    setTimeout(() => {
+                    showToast({ type: "error", message: "Guardian info is required for learners under 13" });
+                }, 1500);
+                    setError(key, { message: value });
+                });
+                hasCustomValidationErrors = true;
+            }
+        }
+        
+        // If custom validation failed, return false
+        if (hasCustomValidationErrors) {
+            showToast({ type: "error", message: "Please fill in all required fields before submitting." });
+            return false;
+        }
+        
+        // Then trigger validation for all fields including consent checkboxes
+        const isFormValid = await trigger();
+        
+        if (!isFormValid) {
+            showToast({ type: "error", message: "Please fill in all required fields before submitting." });
+            return false;
+        }
+        
+        return true;
+    };
 
     const handleFillForm = () => {
         Object.entries(isVolunteer ? defaultVolunteerData : defaultLearnerData).forEach(
