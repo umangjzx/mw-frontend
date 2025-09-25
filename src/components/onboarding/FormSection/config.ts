@@ -647,6 +647,7 @@ export const learnerFormSchema = z
     });
 
 const emailSchema = z.string().email("Invalid email address").optional();
+
 export function validateLearnerParentFields(data: any) {
     const errors: { [key: string]: string } = {};
     let isSuccess = true;
