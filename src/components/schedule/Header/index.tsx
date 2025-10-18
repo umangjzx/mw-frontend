@@ -12,13 +12,29 @@ import SideModal from "@/components/common/Modals/MobileSideModal";
 import Sidebar from "@/components/common/Sidebar";
 import { useState } from "react";
 import { VIEW_DEMO_LINK } from "@/definitions";
+import { endpoints } from "@/api/constants";
+import { GET_API } from "@/api/request";
+import { useQuery } from "@tanstack/react-query";
 
 type Props = {};
 
 const Header = (props: Props) => {
     const role = Cookies.get("role");
     const router = useRouter();
+    const volunteerId = Cookies.get("volunteer_id");
     const [isSideNavBarOpen, setIsSideNavBarOpen] = useState<boolean>(false);
+
+    const getUnreadCount = async () => {
+        const res: any = await GET_API(endpoints.session.getUnreadCount(volunteerId as string));
+        return res?.data;
+    };
+
+    const { data } = useQuery({
+        queryKey: ["unread-count"],
+        queryFn: getUnreadCount,
+    });
+
+    console.log(data?.unread_count, "unreadCount");
 
     const innerWidth = InnerWidth();
     const isMobileOrTabScreen = innerWidth < 1024;
@@ -36,8 +52,8 @@ const Header = (props: Props) => {
     };
 
     const handleViewDemo = () => {
-        if(typeof window !== 'undefined') {
-            window.open(VIEW_DEMO_LINK, '_blank');
+        if (typeof window !== "undefined") {
+            window.open(VIEW_DEMO_LINK, "_blank");
         }
     };
 
@@ -92,11 +108,18 @@ const Header = (props: Props) => {
                     ) : (
                         <div className="flex items-center gap-2">
                             {!isMobileOrTabScreen && (
-                                <Button
-                                    onClick={handleNotification}
-                                    icon={<NotificationIcon />}
-                                    customClassName="!bg-transparent font-semibold !text-black rounded-full !py-3 !px-3"
-                                />
+                                <div className="relative">
+                                    <Button
+                                        onClick={handleNotification}
+                                        icon={<NotificationIcon />}
+                                        customClassName="!bg-transparent font-semibold !text-black rounded-full !py-3 !px-3"
+                                    />
+                                    {data?.unread_count > 0 && (
+                                        <div className="absolute -top-2.5 -right-1.5 p-1 px-2 rounded-full flex items-center justify-center text-white text-xs font-medium bg-red-500">
+                                            {data?.unread_count}
+                                        </div>
+                                    )}
+                                </div>
                             )}
                             <Button
                                 onClick={handleMySchedule}

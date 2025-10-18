@@ -53,6 +53,8 @@ type EndpointProps = {
             status?: string
         ) => string;
         markAsCompleted: (id: string) => string;
+        getUnreadCount: (id: string) => string;
+        updateReadsNotifications: string;
     };
     volunteer_chat: {
         sendMessage: (id: string) => string;

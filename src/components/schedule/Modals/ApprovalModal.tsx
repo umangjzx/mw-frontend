@@ -2,8 +2,8 @@ import SideModal from "@/components/common/Modals/SideModal";
 import React, { useState, useEffect } from "react";
 import NotificationCard from "@/components/schedule/NotificationCard";
 import { NotificationCardSkeleton } from "@/components/schedule/NotificationCard";
-import { useQuery } from "@tanstack/react-query";
-import { GET_API } from "@/api/request";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { GET_API, POST_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import Cookies from "js-cookie";
 import moment from "moment";
@@ -24,7 +24,8 @@ type SessionsData = {
     volunteer_start_time: string;
     volunteer_end_time: string;
     volunteer_start_date: string;
-}
+    is_read?: boolean;
+};
 
 interface NotificationData {
     date: string;
@@ -34,6 +35,7 @@ interface NotificationData {
 const ApprovalModal: React.FC<ApprovalModalProps> = ({ isOpen, onClose }) => {
     const [notificationsData, setNotificationsData] = useState<NotificationData[]>([]);
     const volunteerId = Cookies.get("volunteer_id");
+    const queryClient = useQueryClient();
 
     const getNotifications = async () => {
         const response: any = await GET_API(
@@ -49,10 +51,43 @@ const ApprovalModal: React.FC<ApprovalModalProps> = ({ isOpen, onClose }) => {
         enabled: isOpen,
     });
 
+    const handleUpdateReadsNotifications = async () => {
+        // Flatten all sessions from all items and filter for unread ones
+        const unreadSessions = data?.items?.flatMap((item: any) => 
+            item?.sessions?.filter((session: any) => session?.is_read === false) || []
+        ) || [];
+
+        let payload = {
+            session_ids: unreadSessions.map((session: any) => session?.session_id),
+        };
+
+        if (unreadSessions && unreadSessions.length > 0) {
+            try {
+                await POST_API(
+                    endpoints.session.updateReadsNotifications,
+                    payload
+                );
+                queryClient.invalidateQueries({ queryKey: ["unread-count"] });
+            } catch (error) {
+                console.error("Error updating unread sessions:", error);
+            }
+        } 
+    };
+
     useEffect(() => {
         if (data) {
             const transformedData = data?.items || [];
             setNotificationsData(transformedData);
+            
+            // Debug: Log all sessions and their is_read status
+            data?.items?.forEach((item: any, index: number) => {
+                console.log(`Item ${index} (${item.date}):`, item.sessions?.map((session: any) => ({
+                    session_id: session.session_id,
+                    is_read: session.is_read
+                })));
+            });
+            
+            handleUpdateReadsNotifications();
         }
     }, [data]);
 
@@ -80,10 +115,12 @@ const ApprovalModal: React.FC<ApprovalModalProps> = ({ isOpen, onClose }) => {
                         <div>
                             <div className="relative inline-flex items-center justify-center w-full">
                                 <hr className="w-full h-px my-6 bg-gray-light border-0" />
-                                <span className="absolute -translate-x-1/2 left-1/2 px-3 font-semibold !text-sm !text-gray-light !bg-white">{moment(notification?.date).format("D MMM YYYY")}</span>
+                                <span className="absolute -translate-x-1/2 left-1/2 px-3 font-semibold !text-sm !text-gray-light !bg-white">
+                                    {moment(notification?.date).format("D MMM YYYY")}
+                                </span>
                             </div>
                             <div className="flex flex-col gap-3">
-                                {notification?.sessions?.map(session => (
+                                {notification?.sessions?.map((session) => (
                                     <NotificationCard key={session?.session_id} data={session} />
                                 ))}
                             </div>

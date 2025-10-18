@@ -29,6 +29,7 @@ interface NotificationCardProps {
         volunteer_start_time: string;
         volunteer_end_time: string;
         volunteer_start_date: string;
+        is_read?: boolean;
     };
 }
 
