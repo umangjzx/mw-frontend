@@ -11,7 +11,7 @@ import MonthYearPicker from "./MonthYearPicker";
 import SideModal from "@/components/common/Modals/MobileSideModal";
 import Sidebar from "@/components/common/Sidebar";
 import { useState } from "react";
-import { VIEW_DEMO_LINK } from "@/definitions";
+import { VIEW_DEMO_LINK, VIEW_DEMO_LINK_FOR_VOLUNTEER } from "@/definitions";
 import { endpoints } from "@/api/constants";
 import { GET_API } from "@/api/request";
 import { useQuery } from "@tanstack/react-query";
@@ -56,6 +56,12 @@ const Header = (props: Props) => {
             window.open(VIEW_DEMO_LINK, "_blank");
         }
     };
+
+    const handleViewDemoforvolunteer=()=>{
+        if(typeof window !== "undefined"){
+            window.open(VIEW_DEMO_LINK_FOR_VOLUNTEER, "_blank");
+        }
+    }
 
     return (
         <div className="w-full h-full p-2 px-3">
@@ -108,7 +114,12 @@ const Header = (props: Props) => {
                     ) : (
                         <div className="flex items-center gap-2">
                             {!isMobileOrTabScreen && (
-                                <div className="relative">
+                                <div className="relative gap-2 flex items-center">
+                                     <Button
+                                onClick={handleViewDemoforvolunteer}
+                                title="View Demo"
+                                customClassName="!bg-white max-lg:!text-sm !font-medium !text-black rounded-full lg:!p-3  !py-3 !px-3"
+                            />
                                     <Button
                                         onClick={handleNotification}
                                         icon={<NotificationIcon />}

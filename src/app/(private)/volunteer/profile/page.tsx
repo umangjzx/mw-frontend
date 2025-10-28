@@ -112,7 +112,7 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="h-full animate-fadeIn">
+        <div className="h-full animate-fadeIn ">
             <EditProfileModal
                 data={data}
                 isOpen={mode === "edit"}

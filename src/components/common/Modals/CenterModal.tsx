@@ -70,22 +70,35 @@ const CenterModal: React.FC<CenterModalProps> = ({
 
     return (
         <Modal
-            open={isOpen}
-            onCancel={onClose}
-            zIndex={zIndex}
-            width={width}
-            className={`custom-modal max-md:!w-screen md:!max-w-[95vw] max-md:!max-w-none max-md:!m-0 [&_.ant-modal-close]:!bg-transparent ${customClassName}`}
-            classNames={classNames}
-            closeIcon={hideCloseIcon ? null : <ModalCloseIcon className="active:scale-90 transition-all duration-200" />}
-            centered
-            height={height}
-            styles={{
-                body: {
-                    padding: 0,
-                    height: height,
-                },
-            }}
-        >
+    open={isOpen}
+    onCancel={() => {
+        console.log("Extra logic before close"); // ✅ optional debug
+
+        // 🔒 Check for unsaved changes — only if parent passed that info
+        // if ((window as any).isDirty) {
+            const confirmClose = window.confirm("You have unsaved changes. Are you sure you want to discard them?");
+            if (!confirmClose) return; // stop closing
+        // }
+
+        // ✅ Then safely call the parent’s close handler
+        onClose();
+    }}
+    zIndex={zIndex}
+    width={width}
+    className={`custom-modal max-md:!w-screen md:!max-w-[95vw] max-md:!max-w-none max-md:!m-0 [&_.ant-modal-close]:!bg-transparent ${customClassName}`}
+    classNames={classNames}
+    closeIcon={hideCloseIcon ? null : <ModalCloseIcon className="active:scale-90 transition-all duration-200" />}
+    centered
+    height={height}
+    styles={{
+        body: {
+            padding: 0,
+            height: height,
+        },
+    }}
+>
+
+        
             <div className={cn("flex flex-col w-full h-full max-h-[100vh] max-w-screen md:max-h-[95vh] md:max-w-[95vw]", rootClassName)}>
                 {header && <div className={cn("flex px-3 md:px-4 lg:px-6 py-3 md:py-4 lg:pt-5 border-b border-stroke flex-center", headerClassName)}>{header}</div>}
                 {/* Modal Content */}
