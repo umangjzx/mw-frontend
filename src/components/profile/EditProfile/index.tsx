@@ -43,7 +43,7 @@ const EditProfileModal = ({
     const {
         control,
         handleSubmit,
-        formState: { errors, isValid },
+        formState: { errors, isValid, isDirty },
         reset,
         trigger,
         setError,
@@ -84,9 +84,23 @@ const EditProfileModal = ({
         showToast({ message: "Please enter all details.", type: "error" });
     };
 
+    // Handle modal close with unsaved changes confirmation
+    const handleClose = () => {
+        if (isDirty) {
+            const confirmed = window.confirm(
+                "You have unsaved changes. Are you sure you want to close without saving?"
+            );
+            if (confirmed) {
+                onClose();
+            }
+        } else {
+            onClose();
+        }
+    };
+
     const buttonProps = {
         secondary: {
-            onClick: onClose,
+            onClick: handleClose,
             title: "Cancel",
             btnVariant: "secondary",
             customClassName: cn("!bg-transparent !text-black !rounded-xl sm:w-auto w-[72px]"),
@@ -103,7 +117,7 @@ const EditProfileModal = ({
     return (
         <CenterModal
             isOpen={isOpen}
-            onClose={onClose}
+            onClose={handleClose}
             title="Edit Profile"
             loading={isSubmitting}
             hideFooter={true}
@@ -114,7 +128,7 @@ const EditProfileModal = ({
                 <FeedHeader
                     title="Edit Profile"
                     mode="edit"
-                    onClose={onClose}
+                    onClose={handleClose}
                     onSave={handleSubmit(onSubmit, onError)}
                     isSubmitting={isSubmitting}
                     rootClassName="w-full !mb-0 sticky top-0 bg-white z-10 !p-0 !flex-row-reverse"

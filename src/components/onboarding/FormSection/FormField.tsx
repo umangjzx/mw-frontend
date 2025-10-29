@@ -143,6 +143,7 @@ export const FormField = ({
                         name={getFieldProperty(field, "name") as keyof FormData}
                         inputClassName={field.inputClassName}
                         options={field.options}
+                        disabled={field.disabled}
                     />
                 )}
             />

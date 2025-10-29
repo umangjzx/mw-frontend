@@ -25,6 +25,7 @@ interface CenterModalProps {
     hideCloseIcon?: boolean;
     loading?: boolean;
     zIndex?: number;
+    isDirty?: boolean; // For unsaved changes confirmation
 }
 
 interface ViewModalProps {
