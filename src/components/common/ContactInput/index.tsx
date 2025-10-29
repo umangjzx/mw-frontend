@@ -11,11 +11,15 @@ const ContactInput = (props: ContactInputProps) => {
     const [errorMsg, setErrorMsg] = useState("");
     const [maxNumberLength, setMaxNumberLength] = useState(10);
     const formData = props.value;
+    const { disabled = false } = props;
 
     // Use form error only
     const displayError = props.error;
 
     const handleChange = (value: any, name: string) => {
+        // Don't allow changes if disabled
+        if (disabled) return;
+        
         const updatedFormData = { ...formData, [name]: value } as any;
 
         if (name === "number") {
@@ -38,6 +42,12 @@ const ContactInput = (props: ContactInputProps) => {
     };
 
     const preventExcessInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        // Prevent all input if disabled
+        if (disabled) {
+            e.preventDefault();
+            return;
+        }
+        
         const currentValue = formData?.number?.toString() || "";
 
         if (["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Enter"].includes(e.key)) {
@@ -62,13 +72,13 @@ const ContactInput = (props: ContactInputProps) => {
                 <Select
                     name="country_code"
                     value={formData?.country_code }
-
                     onChange={(e) => handleChange(e, "country_code")}
                     options={mobileCountryCodes}
                     inputType="select"
                     placeholder="+91"
-                    className="!w-[35%] md:!w-[20%] mb-0 mt-0 !h-full"
+                    className="!w-[35%] md:!w-[20%] mb-0 mt-0 !h-full "
                     inputClassName="!w-[35%] md:!w-[20%] mt-0 p-0 !mb-0"
+                    disabled={disabled}
                 />
                 <Input
                     name="number"
@@ -78,6 +88,7 @@ const ContactInput = (props: ContactInputProps) => {
                     value={formData?.number || ""}
                     onChange={(e) => handleChange(e, "number")}
                     onKeyDown={preventExcessInput}
+                    disabled={disabled}
                 />
             </div>
             {/* {displayError && <p className="text-xs text-red-500 mt-1">{displayError}</p>} */}
