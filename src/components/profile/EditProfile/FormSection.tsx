@@ -10,6 +10,7 @@ import { calculateAge } from "@/utils/timeFunctions";
 import { ADULT_VOLUNTEER_AGE } from "@/constants/volunteer";
 import TagComponent from "@/components/common/Tag";
 import { getCookie } from "@/utils/auth";
+import { getLocalStorage, setLocalStorage } from "@/utils/localStorage";
 
 type FormTabsSectionProps = {
     formData: FormSectionConfig[];
@@ -23,6 +24,7 @@ type FormTabsSectionProps = {
     setValue: (name: string | any, value: any, options?: any) => void;
     isLoading: boolean;
     clearErrors: UseFormClearErrors<any>;
+    onFormSubmitted?: () => void; // Callback when form is successfully submitted
 };
 
 const FormTabsSection = ({
@@ -37,14 +39,21 @@ const FormTabsSection = ({
     onSubmit,
     isLoading,
     clearErrors,
+    onFormSubmitted,
 }: FormTabsSectionProps) => {
     const role = getCookie("role");
     const volunteer_birth_date = useWatch({ name: "volunteer_birth_date", control: control });
     const enrolled_by = useWatch({ name: "enrolled_by", control: control });
 
+    // Get saved active tab from localStorage, default to 0
+    const getSavedActiveTab = () => {
+        const savedTab = getLocalStorage(`editProfile_activeTab_${role}`);
+        return savedTab !== null ? parseInt(savedTab) : 0;
+    };
+
     // Form Tabs
-    const [activeTab, setActiveTab] = useState(0);
-    const [highestTab, setHighestTab] = useState(0);
+    const [activeTab, setActiveTab] = useState(getSavedActiveTab);
+    const [highestTab, setHighestTab] = useState(getSavedActiveTab);
     const tabButtonsRef = useRef<HTMLDivElement>(null);
 
     const handleValidationErrors = ({ success, errors }: { success: boolean; errors: any }) => {
@@ -106,6 +115,9 @@ const FormTabsSection = ({
         }
         setActiveTab(index);
         setHighestTab(Math.max(highestTab, index));
+        
+        // Save the active tab to localStorage
+        setLocalStorage(`editProfile_activeTab_${role}`, index.toString());
     };
 
     useEffect(() => {
@@ -115,6 +127,36 @@ const FormTabsSection = ({
     useEffect(() => {
         tabButtonsRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [activeTab]);
+
+    // Ensure saved tab is within valid bounds when component mounts
+    useEffect(() => {
+        const savedTab = getSavedActiveTab();
+        const maxTabIndex = formData.length - 1;
+        const validTab = Math.min(savedTab, maxTabIndex);
+        
+        if (validTab !== activeTab) {
+            setActiveTab(validTab);
+            setHighestTab(validTab);
+        }
+    }, [formData.length]);
+
+    // Handle form submission - reset tab to 0 after successful submit
+    const handleFormSubmit = async () => {
+        try {
+            await onSubmit();
+            // Reset tab to 0 after successful submission
+            setActiveTab(0);
+            setHighestTab(0);
+            setLocalStorage(`editProfile_activeTab_${role}`, "0");
+            // Call the callback if provided
+            if (onFormSubmitted) {
+                onFormSubmitted();
+            }
+        } catch (error) {
+            // If submission fails, don't reset the tab
+            console.error("Form submission failed:", error);
+        }
+    };
 
     const fields = ["consented_from_parent", "volunteer_parent_name", "volunteer_parent_email"];
     const volunteerAge = () => {
@@ -283,7 +325,7 @@ const FormTabsSection = ({
                                 {activeTab === formData.length - 1 ? (
                                     <>
                                         <Button
-                                            onClick={onSubmit}
+                                            onClick={handleFormSubmit}
                                             loading={isLoading}
                                             disabled={isLoading}
                                             title="Submit Application"

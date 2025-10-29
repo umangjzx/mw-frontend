@@ -71,18 +71,7 @@ const CenterModal: React.FC<CenterModalProps> = ({
     return (
         <Modal
     open={isOpen}
-    onCancel={() => {
-        console.log("Extra logic before close"); // ✅ optional debug
-
-        // 🔒 Check for unsaved changes — only if parent passed that info
-        // if ((window as any).isDirty) {
-            const confirmClose = window.confirm("You have unsaved changes. Are you sure you want to discard them?");
-            if (!confirmClose) return; // stop closing
-        // }
-
-        // ✅ Then safely call the parent’s close handler
-        onClose();
-    }}
+    onCancel={onClose}
     zIndex={zIndex}
     width={width}
     className={`custom-modal max-md:!w-screen md:!max-w-[95vw] max-md:!max-w-none max-md:!m-0 [&_.ant-modal-close]:!bg-transparent ${customClassName}`}
