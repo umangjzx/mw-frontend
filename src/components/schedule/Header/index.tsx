@@ -54,12 +54,14 @@ const Header = (props: Props) => {
     const handleViewDemo = () => {
         if (typeof window !== "undefined") {
             window.open(VIEW_DEMO_LINK, "_blank");
+            console.log(VIEW_DEMO_LINK);
         }
     };
 
     const handleViewDemoforvolunteer=()=>{
         if(typeof window !== "undefined"){
             window.open(VIEW_DEMO_LINK_FOR_VOLUNTEER, "_blank");
+            console.log(VIEW_DEMO_LINK_FOR_VOLUNTEER)
         }
     }
 
