@@ -231,7 +231,7 @@ const FormTabsSection = forwardRef(
                   className={`!text-sm md:!text-base py-1 px-3 border ${
                     activeTab === index
                       ? "bg-background border-primary"
-                      : "bg-white md:bg-background-input text-gray-dark border-gray-500 md:border-gray-dark"
+                      : "bg-white md:bg-background-input text-gray-dark border-gray-500 md:border-gray-dark "
                   }`}
                 />
               </button>

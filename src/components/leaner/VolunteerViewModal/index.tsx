@@ -228,6 +228,27 @@ const OverviewContent = ({ volunteerData }: { volunteerData: VolunteerData }) =>
         },
     ];
 
+    const renderAboutMeVideo = () => {
+        const anyData: any = volunteerData as any;
+        const videoSrc = anyData?.profile_video?.video_url || anyData?.profile_video?.url || anyData?.video_url || anyData?.url;
+        if (!videoSrc) return null;
+        return (
+            <div className="mt-3">
+                <p className="text-sm text-gray-light font-normal mb-2">About me</p>
+                <div className="w-full flex justify-start">
+                    <video
+                        src={videoSrc}
+                        controls
+                        preload="metadata"
+                        className="w-full max-w-2xl rounded-xl shadow-lg"
+                    >
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div className="flex flex-col gap-4">
             <div className="px-5 flex flex-col gap-1">
@@ -242,25 +263,7 @@ const OverviewContent = ({ volunteerData }: { volunteerData: VolunteerData }) =>
                     )}
                 </div>
                 <p className="font-medium">{volunteerData?.volunteer_description}</p>
-                <div className="mt-3">
-                    <p className="text-sm text-gray-light font-normal mb-2">About me</p>
-                </div>
-                {(() => {
-                    const anyData: any = volunteerData as any;
-                    const videoSrc = anyData?.profile_video?.video_url || anyData?.profile_video?.url || anyData?.video_url || anyData?.url;
-                    return videoSrc ? (
-                        <div className="w-full flex justify-start">
-                            <video
-                                src={videoSrc}
-                                controls
-                                preload="metadata"
-                                className="w-full max-w-2xl rounded-xl shadow-lg"
-                            >
-                                Your browser does not support the video tag.
-                            </video>
-                        </div>
-                    ) : null;
-                })()}
+                {renderAboutMeVideo()}
                 <div
                     className={`md:hidden flex items-center justify-between my-3 ${
                         volunteerData?.volunteer_contact_details?.country ? "" : "hidden"

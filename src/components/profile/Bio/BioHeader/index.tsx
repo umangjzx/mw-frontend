@@ -24,16 +24,6 @@ const BioHeader = ({ data }: any) => {
                     <EditProfileIcon />
                 </Link>
             </div>
-            {/* <div className="w-full flex justify-center my-6">
-            <video
-        src= "https://pub-44684860ea0e49a08e2dd7abd6c0708b.r2.dev/melody-wings/videos/f3d01c51-612c-4777-81d5-4bce130f5b73/d99891d2-240f-4738-9e3c-6d4a81da0cbd"
-        controls
-        preload="metadata"
-        className="w-full max-w-2xl rounded-xl shadow-lg"
-      >
-        Your browser does not support the video tag.
-      </video>
-    </div> */}
         </div>
     );
 };
