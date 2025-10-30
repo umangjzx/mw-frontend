@@ -101,7 +101,7 @@ export const VolunteerContactDetails = ({ data }: { data: Volunteercontactdetail
 
     return (
         <div>
-            <h5 className="text-xl font-semibold mb-3">Contact Details</h5>
+            <h5 className="text-xl font-semibold mb-3 ">Contact Details</h5>
             <div className="grid grid-cols-2 gap-3">
                 {details.map((detail) => (
                     <InfoItem key={detail.label} label={detail.label} value={detail.value} />
