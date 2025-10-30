@@ -26,6 +26,7 @@ const VolunteerProfileBio = ({ data }: any) => {
         country: contactDetail?.country,
         gender: data?.volunteer_gender,
         timezone: contactDetail?.timezone,
+        profile_video: data?.profile_video,
     };
 
     useEffect(() => {

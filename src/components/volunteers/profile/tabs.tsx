@@ -54,6 +54,24 @@ export const ProfileDetails = ({ data }: { data: Volunteer }) => {
     return (
         <div>
             <h5 className="text-xl font-semibold mb-3">Profile Details</h5>
+            {(() => {
+                const videoSrc = data?.profile_video?.video_url || (data as any)?.profile_video?.url || (data as any)?.video_url || (data as any)?.url;
+                return videoSrc ? (
+                    <div className="mb-5">
+                        <h5 className="text-xl font-semibold mb-3">About me</h5>
+                        <div className="w-full flex justify-start">
+                            <video
+                                src={videoSrc}
+                                controls
+                                preload="metadata"
+                                className="w-full max-w-2xl rounded-xl shadow-lg"
+                            >
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                    </div>
+                ) : null;
+            })()}
             <div className="grid grid-cols-2 gap-3">
 
                 {details.map((detail) => (

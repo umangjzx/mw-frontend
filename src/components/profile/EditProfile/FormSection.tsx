@@ -172,8 +172,7 @@ const FormTabsSection = forwardRef(
 
     const diableField = (field: any) =>
       (role === "learner" &&
-        ((enrolled_by === "parent" && field.id === "parent_email") ||
-          (enrolled_by === "self" &&
+        ((["self", "parent"].includes(enrolled_by) &&
             [
               "email",
               "learner_date_of_birth",

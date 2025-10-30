@@ -242,6 +242,25 @@ const OverviewContent = ({ volunteerData }: { volunteerData: VolunteerData }) =>
                     )}
                 </div>
                 <p className="font-medium">{volunteerData?.volunteer_description}</p>
+                <div className="mt-3">
+                    <p className="text-sm text-gray-light font-normal mb-2">About me</p>
+                </div>
+                {(() => {
+                    const anyData: any = volunteerData as any;
+                    const videoSrc = anyData?.profile_video?.video_url || anyData?.profile_video?.url || anyData?.video_url || anyData?.url;
+                    return videoSrc ? (
+                        <div className="w-full flex justify-start">
+                            <video
+                                src={videoSrc}
+                                controls
+                                preload="metadata"
+                                className="w-full max-w-2xl rounded-xl shadow-lg"
+                            >
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                    ) : null;
+                })()}
                 <div
                     className={`md:hidden flex items-center justify-between my-3 ${
                         volunteerData?.volunteer_contact_details?.country ? "" : "hidden"
