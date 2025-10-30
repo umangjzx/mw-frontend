@@ -26,6 +26,7 @@ const VolunteerProfileBio = ({ data }: any) => {
         country: contactDetail?.country,
         gender: data?.volunteer_gender,
         timezone: contactDetail?.timezone,
+        profile_video: data?.profile_video,
     };
 
     useEffect(() => {
@@ -44,7 +45,7 @@ const VolunteerProfileBio = ({ data }: any) => {
     };
 
     return (
-        <div className="bg-white rounded-3xl w-full flex flex-col gap-6 py-5 h-[83vh]">
+        <div className="bg-white rounded-3xl w-full flex flex-col gap-6 py-5 h-[83vh] ">
             <BioHeader data={profileHeader} />
             <div className="flex flex-wrap gap-2 px-4">
                 {tabs.map((tab) => (

@@ -28,6 +28,7 @@ const LearnerProfileBio = ({ data }: any) => {
         country: contactDetail?.country,
         gender: data?.learner_personal_info?.learner_gender,
         timezone: timezone,
+        profile_video: data?.profile_video,
     }
 
     useEffect(() => {

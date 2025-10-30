@@ -50,10 +50,31 @@ export const ProfileDetails = ({ data }: { data: Volunteer }) => {
         { label: "Parent Email", value: data?.volunteer_parent_email },
         { label: "Parent Name", value: data?.volunteer_parent_name },
     ].filter(detail => detail.value && Object.keys(detail.value).length);
+    const renderAboutMeVideo = () => {
+        const anyData: any = data as any;
+        const videoSrc = data?.profile_video?.video_url || anyData?.profile_video?.url || anyData?.video_url || anyData?.url;
+        if (!videoSrc) return null;
+        return (
+            <div className="mb-5">
+                <h5 className="text-xl font-semibold mb-3">About me</h5>
+                <div className="w-full flex justify-start">
+                    <video
+                        src={videoSrc}
+                        controls
+                        preload="metadata"
+                        className="w-full max-w-2xl rounded-xl shadow-lg"
+                    >
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+        );
+    };
 
     return (
         <div>
             <h5 className="text-xl font-semibold mb-3">Profile Details</h5>
+            {renderAboutMeVideo()}
             <div className="grid grid-cols-2 gap-3">
 
                 {details.map((detail) => (
@@ -80,7 +101,7 @@ export const VolunteerContactDetails = ({ data }: { data: Volunteercontactdetail
 
     return (
         <div>
-            <h5 className="text-xl font-semibold mb-3">Contact Details</h5>
+            <h5 className="text-xl font-semibold mb-3 ">Contact Details</h5>
             <div className="grid grid-cols-2 gap-3">
                 {details.map((detail) => (
                     <InfoItem key={detail.label} label={detail.label} value={detail.value} />
