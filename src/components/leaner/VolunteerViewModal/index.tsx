@@ -21,7 +21,7 @@ import { formatString } from "@/utils/stringFormats";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaLocationDot } from "react-icons/fa6";
 import { IoIosArrowBack } from "react-icons/io";
 
@@ -340,6 +340,8 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
     const innerWidth = InnerWidth();
     const isMobileScreen = innerWidth < 768;
 
+    const containerRef = useRef<HTMLDivElement | null>(null);
+
     const text = getLocalStorage("role");
     const [activeTab, setActiveTab] = useState("overview");
     const volunteerId = searchParams.get("volunteerId");
@@ -376,9 +378,33 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
         setActiveTab(tab);
     };
 
+    const stopAllVideos = () => {
+        const videos = containerRef.current?.querySelectorAll("video");
+        videos?.forEach((video) => {
+            try {
+                video.pause();
+                video.currentTime = 0;
+                video.removeAttribute("src");
+                video.load();
+            } catch (_) {}
+        });
+    };
+
+    const handleClose = () => {
+        stopAllVideos();
+        onClose();
+    };
+
+    useEffect(() => {
+        return () => {
+            // Ensure videos are stopped on unmount
+            stopAllVideos();
+        };
+    }, []);
+
     if (isError) {
         return (
-            <ViewModal modalOpen={isOpen} onClose={onClose} width={855}>
+            <ViewModal modalOpen={isOpen} onClose={handleClose} width={855}>
                 <div className="p-5">Error loading volunteer data</div>
             </ViewModal>
         );
@@ -393,7 +419,7 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
     return (
         <ViewModal
             modalOpen={isOpen}
-            onClose={onClose}
+            onClose={handleClose}
             width={855}
             height={isMobileScreen ? "100dvh" : ""}
             borderRadius={isMobileScreen ? "0px" : "12px"}
@@ -404,10 +430,10 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
                     <LottieLoader isLoading={true} />
                 </div>
             ) : (
-                <div className="flex flex-col gap-0 md:gap-4 pt-4 md:py-4 h-full md:max-h-[90dvh]">
+                <div ref={containerRef} className="flex flex-col gap-0 md:gap-4 pt-4 md:py-4 h-full md:max-h-[90dvh]">
                     <ProfileHeader
                         text={text}
-                        onClose={onClose}
+                        onClose={handleClose}
                         onScheduleMeeting={handleScheduleMeeting}
                     />
                     <Divider className="max-md:hidden" />

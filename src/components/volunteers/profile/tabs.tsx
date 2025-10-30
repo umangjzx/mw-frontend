@@ -3,6 +3,7 @@ import { MdEmail } from "react-icons/md";
 import { FaPhoneAlt } from "react-icons/fa";
 import { formatString } from "@/utils/stringFormats";
 import moment from "moment";
+import { useEffect, useRef } from "react";
 
 const InfoItem = ({ label, value }: { label: string, value: string | string[] }) => {
     if (!value) return null;
@@ -34,6 +35,38 @@ const InfoItem = ({ label, value }: { label: string, value: string | string[] })
 }
 
 export const ProfileDetails = ({ data }: { data: Volunteer }) => {
+    const videoRef = useRef<HTMLVideoElement | null>(null);
+    const videoContainerRef = useRef<HTMLDivElement | null>(null);
+
+    const stopVideo = () => {
+        const video = videoRef.current;
+        if (!video) return;
+        try {
+            video.pause();
+            video.currentTime = 0;
+        } catch (_) {}
+    };
+
+    useEffect(() => {
+        const handleDocumentClick = (event: MouseEvent) => {
+            const target = event.target as Node | null;
+            const isInside = videoContainerRef.current?.contains(target as Node);
+            if (!isInside) {
+                stopVideo();
+            }
+        };
+        const handleVisibility = () => {
+            if (document.hidden) stopVideo();
+        };
+
+        document.addEventListener("click", handleDocumentClick, true);
+        document.addEventListener("visibilitychange", handleVisibility);
+        return () => {
+            document.removeEventListener("click", handleDocumentClick, true);
+            document.removeEventListener("visibilitychange", handleVisibility);
+            stopVideo();
+        };
+    }, []);
     const details = [
         { label: "First Name", value: data?.volunteer_first_name },
         { label: "Last Name", value: data?.volunteer_last_name },
@@ -56,10 +89,11 @@ export const ProfileDetails = ({ data }: { data: Volunteer }) => {
         const videoSrc = data?.profile_video?.video_url || anyData?.profile_video?.url || anyData?.video_url || anyData?.url;
         if (!videoSrc) return null;
         return (
-            <div className="mb-5">
+            <div ref={videoContainerRef} className="mb-5">
                 <p className="text-sm text-gray-light font-normal mb-2">About me</p>
                 <div className="w-full flex justify-start">
                     <video
+                        ref={videoRef}
                         src={videoSrc}
                         controls
                         preload="metadata"
