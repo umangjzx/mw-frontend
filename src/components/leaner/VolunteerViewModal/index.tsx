@@ -240,7 +240,7 @@ const OverviewContent = ({ volunteerData }: { volunteerData: VolunteerData }) =>
                         src={videoSrc}
                         controls
                         preload="metadata"
-                        className="w-full rounded-xl shadow-lg h-[220px] md:h-[380px] object-cover"
+                        className="w-full max-w-md rounded-xl shadow-lg h-[180px] md:h-[240px] object-cover"
                     >
                         Your browser does not support the video tag.
                     </video>
