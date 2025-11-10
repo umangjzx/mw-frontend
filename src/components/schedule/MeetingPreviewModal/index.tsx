@@ -44,6 +44,19 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
     const { currentMonth } = useAppStore();
     const role = Cookies.get("role");
 
+    const markNotificationAsRead = async (sessionIds: (string | undefined)[]) => {
+        const validSessionIds = sessionIds.filter((id): id is string => Boolean(id));
+        if (!validSessionIds.length) return;
+        try {
+            await POST_API(endpoints.session.updateReadsNotifications, {
+                session_ids: validSessionIds,
+            });
+            queryClient.invalidateQueries({ queryKey: ["unread-count"] });
+        } catch (error) {
+            console.error("Error marking notifications as read: ", error);
+        }
+    };
+
     const handleNotificationStatus = async (status: string, sessionId: string) => {
         if (status === "accepted") {
             setLoadingAccept(true);
@@ -52,7 +65,10 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
         }
         return await PUT_API(endpoints.session.updateNotificationStatus(sessionId), {
             status: status,
-        }).then(() => {
+        }).then(async () => {
+            if (status === "accepted") {
+                await markNotificationAsRead([sessionId]);
+            }
             if (status === "accepted") {
                 showToast({ type: "success", message: "Invitation Accepted" });
             } else {
