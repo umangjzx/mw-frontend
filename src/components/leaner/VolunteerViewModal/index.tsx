@@ -21,7 +21,7 @@ import { formatString } from "@/utils/stringFormats";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaLocationDot } from "react-icons/fa6";
 import { IoIosArrowBack } from "react-icons/io";
 
@@ -228,6 +228,27 @@ const OverviewContent = ({ volunteerData }: { volunteerData: VolunteerData }) =>
         },
     ];
 
+    const renderAboutMeVideo = () => {
+        const anyData: any = volunteerData as any;
+        const videoSrc = anyData?.profile_video?.video_url || anyData?.profile_video?.url || anyData?.video_url || anyData?.url;
+        if (!videoSrc) return null;
+        return (
+            <div className="mt-3">
+                <p className="text-sm text-gray-light font-normal mb-2">About me</p>
+                <div className="w-full flex justify-start">
+                    <video
+                        src={videoSrc}
+                        controls
+                        preload="metadata"
+                        className="w-full rounded-xl shadow-lg h-[220px] md:h-[380px] object-cover"
+                    >
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div className="flex flex-col gap-4">
             <div className="px-5 flex flex-col gap-1">
@@ -242,6 +263,7 @@ const OverviewContent = ({ volunteerData }: { volunteerData: VolunteerData }) =>
                     )}
                 </div>
                 <p className="font-medium">{volunteerData?.volunteer_description}</p>
+                {renderAboutMeVideo()}
                 <div
                     className={`md:hidden flex items-center justify-between my-3 ${
                         volunteerData?.volunteer_contact_details?.country ? "" : "hidden"
@@ -318,6 +340,8 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
     const innerWidth = InnerWidth();
     const isMobileScreen = innerWidth < 768;
 
+    const containerRef = useRef<HTMLDivElement | null>(null);
+
     const text = getLocalStorage("role");
     const [activeTab, setActiveTab] = useState("overview");
     const volunteerId = searchParams.get("volunteerId");
@@ -354,9 +378,33 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
         setActiveTab(tab);
     };
 
+    const stopAllVideos = () => {
+        const videos = containerRef.current?.querySelectorAll("video");
+        videos?.forEach((video) => {
+            try {
+                video.pause();
+                video.currentTime = 0;
+                video.removeAttribute("src");
+                video.load();
+            } catch (_) {}
+        });
+    };
+
+    const handleClose = () => {
+        stopAllVideos();
+        onClose();
+    };
+
+    useEffect(() => {
+        return () => {
+            // Ensure videos are stopped on unmount
+            stopAllVideos();
+        };
+    }, []);
+
     if (isError) {
         return (
-            <ViewModal modalOpen={isOpen} onClose={onClose} width={855}>
+            <ViewModal modalOpen={isOpen} onClose={handleClose} width={855}>
                 <div className="p-5">Error loading volunteer data</div>
             </ViewModal>
         );
@@ -371,7 +419,7 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
     return (
         <ViewModal
             modalOpen={isOpen}
-            onClose={onClose}
+            onClose={handleClose}
             width={855}
             height={isMobileScreen ? "100dvh" : ""}
             borderRadius={isMobileScreen ? "0px" : "12px"}
@@ -382,10 +430,10 @@ const VolunteerViewModal: React.FC<VolunteerViewModalProps> = ({ isOpen, onClose
                     <LottieLoader isLoading={true} />
                 </div>
             ) : (
-                <div className="flex flex-col gap-0 md:gap-4 pt-4 md:py-4 h-full md:max-h-[90dvh]">
+                <div ref={containerRef} className="flex flex-col gap-0 md:gap-4 pt-4 md:py-4 h-full md:max-h-[90dvh]">
                     <ProfileHeader
                         text={text}
-                        onClose={onClose}
+                        onClose={handleClose}
                         onScheduleMeeting={handleScheduleMeeting}
                     />
                     <Divider className="max-md:hidden" />
