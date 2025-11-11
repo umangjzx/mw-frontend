@@ -97,7 +97,7 @@ export const ProfileDetails = ({ data }: { data: Volunteer }) => {
                         src={videoSrc}
                         controls
                         preload="metadata"
-                        className="w-full max-w-md rounded-xl shadow-lg"
+                        className="w-full max-w-2xl rounded-xl shadow-lg"
                     >
                         Your browser does not support the video tag.
                     </video>
