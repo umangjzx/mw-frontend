@@ -73,22 +73,30 @@ const Uploader = ({ maxFiles = 1, ...props }: UploadProps) => {
         if (!confirm("Are you sure?")) return null;
 
         if (type === "image/*") {
-            DELETE_API(
-                endpoints.media_uploader.deleteImage((imageId as string) || (image_id as string))
-            ).then(() => {
-                setImageId(null);
-            });
+            const idToDelete = (imageId as string) || (image_id as string) || props.value?.image_id;
+            if (idToDelete) {
+                DELETE_API(endpoints.media_uploader.deleteImage(idToDelete)).then(() => {
+                    setImageId(null);
+                });
+            }
         } else if (type === "video/*") {
-            DELETE_API(endpoints.media_uploader.deleteVideo(videoId as string)).then(() => {
-                setVideoId(null);
-            });
+            const idToDelete = (videoId as string) || props.value?.video_id;
+            if (idToDelete) {
+                DELETE_API(endpoints.media_uploader.deleteVideo(idToDelete)).then(() => {
+                    setVideoId(null);
+                });
+            }
         } else if (type === "application/*,image/*") {
-            DELETE_API(endpoints.media_uploader.deleteDocument(documentId as string)).then(() => {
-                setDocumentId(null);
-            });
+            const idToDelete = (documentId as string) || props.value?.document_id;
+            if (idToDelete) {
+                DELETE_API(endpoints.media_uploader.deleteDocument(idToDelete)).then(() => {
+                    setDocumentId(null);
+                });
+            }
         }
         if (maxFiles === 1) {
-            props.onChange(undefined);
+            // Set to null instead of undefined so the API receives null and can remove the video
+            props.onChange(null);
         } else {
             const updatedFiles = [...props.value];
             updatedFiles.splice(index, 1);
