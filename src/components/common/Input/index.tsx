@@ -146,6 +146,7 @@ export const Input: React.FC<InputProps> = (props) => {
                             `w-full text-sm p-2 rounded-md hover:bg-background-input bg-background-input`
                         )}
                         rows={props.rows ?? 4}
+                        autoSize={props.rows === 1 ? { minRows: 1, maxRows: 6 } : false}
                     />
                 );
 

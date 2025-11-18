@@ -180,7 +180,7 @@ const Messages = () => {
         setMessage(Array.isArray(value) ? value[0] : value);
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             handleSendMessage();
@@ -315,21 +315,26 @@ const Messages = () => {
                         isRefetching ? (
                             <div></div>
                         ) : (
-                            <div className="p-4 flex items-center gap-8 transition-all duration-300">
+                            <div className="p-4 flex items-end gap-8 transition-all duration-300">
                                 {chatPermission ? (
                                     <>
-                                        <Input
-                                            value={message}
-                                            inputType="text"
-                                            name="message"
-                                            inputClassName="!bg-[#f4f7fb] !rounded-lg gap-1 font-medium items-center w-full transition-all duration-300"
-                                            className="!bg-transparent w-full !mb-0"
-                                            onChange={handleMessageChange}
-                                            onKeyDown={handleKeyDown}
-                                            placeholder={"Type message here"}
-                                        />
+                                        <div className="flex-1 relative">
+                                            <div className="absolute bottom-0 left-0 right-0 w-full">
+                                                <Input
+                                                    value={message}
+                                                    inputType="textarea"
+                                                    name="message"
+                                                    inputClassName="!bg-[#f4f7fb] !rounded-lg gap-1 font-medium items-center w-full transition-all duration-300 !resize-none !pb-[2px]"
+                                                    className="!bg-transparent w-full !mb-0"
+                                                    onChange={handleMessageChange}
+                                                    onKeyDown={handleKeyDown}
+                                                    placeholder={"Type message here"}
+                                                    rows={1}
+                                                />
+                                            </div>
+                                        </div>
 
-                                        <div>
+                                        <div className="flex-shrink-0">
                                             <Button
                                                 disabled={
                                                     !message.trim() ||

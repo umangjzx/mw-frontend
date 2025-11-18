@@ -29,7 +29,7 @@ const EventCard = ({ title, time, onEventClick, className, status, style, start,
         <div
             onClick={onEventClick}
             className={cn(
-                "flex items-center p-[1px] justify-between w-full text-sm px-2 py-1 border",
+                "flex items-center p-[1px] justify-between w-full text-sm px-2 py-1 border cursor-pointer",
                 className,
                 currentStyle.bg
             )}
