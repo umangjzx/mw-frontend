@@ -63,15 +63,11 @@ const MessageCard = ({
                     <div>
                         {unreadMessages > 0 ? (
                             <p className="text-xs font-normal text-[#22c55e]">
-                                {time ? formatDateTime(time).formattedTime : ""}
+                                {moment.parseZone(date).format("h.mm a")}
                             </p>
-                        ) : (
+                        ) :(
                             <p className="text-xs text-[#4F4F4F]">
-                                {date === "0001-01-01T00:00:00"
-                                    ? ""
-                                    : date
-                                    ? moment(date).format("DD MMM, YYYY")
-                                    : ""}
+                                {moment.parseZone(date).format("DD MMM, YYYY")}
                             </p>
                         )}
                     </div>
