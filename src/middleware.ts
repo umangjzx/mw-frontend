@@ -4,6 +4,7 @@ import { isCookiesFound, isTokenValid } from "./utils/auth";
 
 const PROTECTED_ROUTES = ["/learner", "/volunteer"];
 const LANDING_PAGE_ROUTES = ["/login", "/about-us", "/privacy-policy", "/terms-and-conditions"];
+const ALWAYS_ACCESSIBLE_ROUTES = ["/privacy-policy", "/terms-and-conditions"];
 const EXCLUDED_PATHS = ["/favicon.ico", "/logo.png"];
 
 export default function middleware(req: NextRequest) {
@@ -39,6 +40,10 @@ export default function middleware(req: NextRequest) {
   }
 
   if (onboardedStatus === "verification_completed") {
+    // Allow access to privacy policy and terms and conditions even when logged in
+    if (ALWAYS_ACCESSIBLE_ROUTES.includes(pathname)) {
+      return NextResponse.next();
+    }
     if (LANDING_PAGE_ROUTES.includes(pathname) || !pathname.startsWith(`/${role}`) || PROTECTED_ROUTES.includes(pathname)) {
       return NextResponse.redirect(new URL(`/${role}/schedule`, origin));
     }
