@@ -132,7 +132,7 @@ export const endpoints: EndpointProps = {
         getMessagesForLearner: (learnerId: string) => `chat/messages/learner/${learnerId}`,
         getAllchatsOfVolunteer: (volunteerId: string) => `chat/all/volunteer/${volunteerId}`,
         getAllchatsOfLearner: (learnerId: string) => `chat/all/learner/${learnerId}`,
-        getIndividualChat: (chatId: string) => `chat/chat/${chatId}`,
+        getIndividualChat: (chatId: string, type: "learner" | "volunteer") => `chat/chat/${chatId}/${type}`,
         readMessage: `chat/message/read`,
         volunteerPermission: (id: string) => `volunteers/${id}/chat_permission`,
         learnerPermission: (id: string) => `learner/${id}/chat_permission`,

@@ -37,9 +37,8 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
                 >
                     <p className="break-words">{message}</p>
                     <div className="flex justify-end mt-2 items-center gap-2 font-normal text-gray-500">
-                        <span>{moment(date).format("DD MMM, YYYY")}</span>
-                        <span>•</span>
-                        <span>{timestamp}</span>
+                        <span>{moment.parseZone(date).format("DD MMM, YYYY h.mm a")}</span>
+                        
                     </div>
                 </div>
                 {isOwnMessage && userImage && (

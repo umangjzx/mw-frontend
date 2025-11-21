@@ -130,7 +130,7 @@ const Messages = () => {
     const getIndividualChat = async () => {
         setIsIndividualLoading(true);
         try {
-            const response = await GET_API(endpoints.chat.getIndividualChat(chatId as string));
+            const response = await GET_API(endpoints.chat.getIndividualChat(chatId as string, "volunteer"));
 
             if (response.data.length === 0) {
                 queryClient.invalidateQueries({ queryKey: ["chats"] });
@@ -278,7 +278,7 @@ const Messages = () => {
                                                 hour: "2-digit",
                                                 minute: "2-digit",
                                             })}
-                                            date={new Date(message.created_at).toLocaleDateString()}
+                                            date={message.created_at}
                                             isOwnMessage={message.sender_id === volunteerId}
                                             userImage={
                                                 message.sender_id === volunteerId

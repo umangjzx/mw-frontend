@@ -19,6 +19,7 @@ import LottieLoader from "@/components/common/Loader/Lottie";
 import VolunteerViewModal from "@/components/leaner/VolunteerViewModal";
 import AddNewMeetingModal from "@/components/schedule/Modals/AddNewMeetingModal";
 import { se } from "date-fns/locale";
+import moment from "moment";
 
 const ChatHeaderSkeleton = () => {
     return (
@@ -131,7 +132,7 @@ const Messages = () => {
     const getIndividualChat = async () => {
         setIsIndividualLoading(true);
         try {
-            const response = await GET_API(endpoints.chat.getIndividualChat(chatId as string));
+            const response = await GET_API(endpoints.chat.getIndividualChat(chatId as string, "learner"));
 
             if (response.data.length === 0) {
                 queryClient.invalidateQueries({ queryKey: ["chats"] });
@@ -235,6 +236,7 @@ const Messages = () => {
         setIndividualChat([]);
     }, [chatId, volunteerId]);
 
+
     useEffect(() => {
         if (messageId.length > 0) {
             postReadMessage();
@@ -299,7 +301,9 @@ const Messages = () => {
                                                 minute: "2-digit",
                                             }
                                         )}
-                                        date={new Date(message.created_at).toLocaleDateString()}
+                                    
+                                        
+                                        date={message.created_at}
                                         isOwnMessage={message.sender_id === learnerId}
                                         userImage={
                                             message.sender_id === learnerId
@@ -307,8 +311,10 @@ const Messages = () => {
                                                 : message.volunteer_profile_picture.image_url
                                         }
                                     />
+                                  
                                 ))
                             )}
+                             
                             <div ref={messagesEndRef} />
                         </div>
                         {(isIndividualLoading && !isSendMessageLoading && !individualChat.length) ||
