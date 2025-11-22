@@ -280,12 +280,12 @@ export const meetOurTeamCardData: MeetOurTeamProps[] = [
     {
         image: ChitraGanesan,
         name: "Chitra Ganesan",
-        role: "Co-founder & Executive Director"
+        role: "Co-founder"
     },
     {
         image: NithilaShanmugam,
         name: "Nithila Shanmugam",
-        role: "Co-founder/Vice President"
+        role: "Co-founder"
     },
     // {
     //     image: DummyProfile,
