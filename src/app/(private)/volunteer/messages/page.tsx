@@ -13,26 +13,11 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { GET_API, POST_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import Cookies from "js-cookie";
-import { Spin } from "antd";
 import VolunteerChatList from "@/components/messages/VolunteerChatList";
 import NoMessage from "@/components/messages/NoMessage";
 import LottieLoader from "@/components/common/Loader/Lottie";
-
-const ChatHeaderSkeleton = () => {
-    return (
-        <div className="flex items-center gap-4 border-b border-gray-200 p-4 animate-pulse">
-            <div className="w-11 h-11 rounded-full bg-gray-200" />
-            <div className="min-w-0 flex-1 flex flex-col gap-1">
-                <div className="flex items-center gap-2 justify-between">
-                    <div className="h-5 bg-gray-200 rounded w-32" />
-                </div>
-                <div className="flex items-center gap-4">
-                    <div className="h-4 bg-gray-200 rounded w-48" />
-                </div>
-            </div>
-        </div>
-    );
-};
+import { useAppStore } from "@/store/useAppStore";
+import moment from "moment-timezone";
 
 interface ChatMessage {
     message_id: string;
@@ -57,6 +42,7 @@ interface ChatMessage {
 
 const Messages = () => {
     const { setHeaderOptions } = useComponentStore();
+    const { volunteerDetails } = useAppStore();
     const pathname = usePathname();
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useQueryState("query");
@@ -72,13 +58,12 @@ const Messages = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [chatPermission, setChatPermission] = useState(true);
     const [isIndividualLoading, setIsIndividualLoading] = useState(false);
-    const [isSendMessageLoading, setIsSendMessageLoading] = useState(false);
     const queryClient = useQueryClient();
     const [messageId, setMessageId] = useState([]);
     const [noChats, setNoChats] = useState<boolean | null>(null);
-    console.log(isIndividualLoading, "isIndividualLoading");
     const [location, setLocation] = useState("");
     const [isRefetching, setIsRefetching] = useState(false);
+    const [pendingMessages, setPendingMessages] = useState<Map<string, ChatMessage>>(new Map());
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -137,16 +122,67 @@ const Messages = () => {
                 setIsRefetching(true);
             }
 
+            if (response.data.length > 0) {
             setRecieverName(response.data[0].learner_name);
             setRecieverImage(response.data[0].learner_profile_picture.image_url);
             setLocation(response.data[0].learner_country);
+            }
+
             // Only store message IDs for unread messages
             const unreadMessageIds = response.data
                 .filter((msg: ChatMessage) => !msg.read)
                 .map((msg: ChatMessage) => msg.message_id);
 
             setMessageId(unreadMessageIds);
-            setIndividualChat(response.data);
+            
+            // Merge server messages with pending optimistic messages
+            // Match optimistic messages with server messages by content to avoid duplicates
+            setIndividualChat((prev) => {
+                const serverMessages = response.data || [];
+                const serverMessageIds = new Set(serverMessages.map((msg: ChatMessage) => msg.message_id));
+                
+                // Track which optimistic messages were matched
+                const matchedTempIds = new Set<string>();
+                
+                // Filter out optimistic messages that have been matched with server messages
+                // Match by: same message content and created within last 10 seconds
+                const pendingOnly = prev.filter((msg) => {
+                    if (!msg.message_id.startsWith('temp-')) return false;
+                    if (serverMessageIds.has(msg.message_id)) {
+                        matchedTempIds.add(msg.message_id);
+                        return false;
+                    }
+                    
+                    // Check if a server message with same content exists (within 10 seconds)
+                    const msgTime = new Date(msg.created_at).getTime();
+                    const hasMatchingServerMessage = serverMessages.some((serverMsg: ChatMessage) => {
+                        const serverTime = new Date(serverMsg.created_at).getTime();
+                        const timeDiff = Math.abs(serverTime - msgTime);
+                        const sameContent = serverMsg.message?.trim().toLowerCase() === msg.message?.trim().toLowerCase();
+                        if (sameContent && timeDiff < 10000) {
+                            matchedTempIds.add(msg.message_id);
+                            return true;
+                        }
+                        return false;
+                    });
+                    
+                    return !hasMatchingServerMessage;
+                });
+                
+                // Clean up matched pending messages
+                if (matchedTempIds.size > 0) {
+                    setPendingMessages((prev) => {
+                        const newMap = new Map(prev);
+                        matchedTempIds.forEach((id) => newMap.delete(id));
+                        return newMap;
+                    });
+                }
+                
+                return [...serverMessages, ...pendingOnly].sort((a, b) => 
+                    new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                );
+            });
+            
             setIsIndividualLoading(false);
             return response.data;
         } catch (error) {
@@ -189,20 +225,129 @@ const Messages = () => {
     };
 
     const handleSendMessage = () => {
-        if (!message.trim()) return;
-        setIsSendMessageLoading(true);
-        let payload = {
-            message: message,
-            chat_id: chatId as string,
+        if (!message.trim() || !chatId || !volunteerId) return;
+        
+        const messageText = message.trim();
+        setMessage("");
+
+        // Get current user's profile data from existing messages
+        const currentUserMessage = individualChat.find(
+            (msg) => msg.sender_id === volunteerId
+        ) as any;
+
+        // Create optimistic message
+        const tempMessageId = `temp-${Date.now()}-${Math.random()}`;
+        
+        // Get volunteer's timezone and convert current time to that timezone instantly
+        const volunteerTimezone = volunteerDetails?.volunteer_contact_details?.timezone;
+        const volunteerUtcOffset = volunteerDetails?.volunteer_contact_details?.utc_offset;
+        let now: string;
+        
+        if (volunteerUtcOffset || volunteerTimezone) {
+            let offset: string | null = volunteerUtcOffset || null;
+            
+            // If no UTC offset available, try to extract it from timezone string
+            if (!offset && volunteerTimezone) {
+                const utcMatch = volunteerTimezone.match(/\(UTC([+-]\d{2}:\d{2})\)/);
+                offset = utcMatch ? utcMatch[1] : null;
+            }
+            
+            if (offset) {
+                // Convert current time to volunteer's timezone using UTC offset
+                // moment.utcOffset accepts offset in format like "+05:30" or "-09:00"
+                const nowInTimezone = moment().utcOffset(offset);
+                now = nowInTimezone.format(); // Returns ISO string with timezone offset (e.g., "2024-01-01T12:00:00+05:30")
+            } else {
+                // Fallback to UTC if offset cannot be determined
+                now = new Date().toISOString();
+            }
+        } else {
+            // Fallback to UTC if timezone not available
+            now = new Date().toISOString();
+        }
+        
+        const optimisticMessage: any = {
+            message_id: tempMessageId,
+            chat_id: chatId,
+            created_at: now,
+            created_by: volunteerId,
+            message: messageText,
+            read: false,
+            receiver_id: learnerId || "",
+            receiver_name: recieverName,
+            receiver_profile_picture: {
+                image_url: recieverImage || "",
+                image_id: "",
+            },
+            sender_id: volunteerId,
+            sender_name: currentUserMessage?.sender_name || "",
+            sender_profile_picture: currentUserMessage?.sender_profile_picture || {
+                image_url: "",
+                image_id: "",
+            },
+            // Add fields used in rendering
+            volunteer_profile_picture: currentUserMessage?.volunteer_profile_picture || currentUserMessage?.sender_profile_picture || {
+                image_url: "",
+                image_id: "",
+            },
+            learner_profile_picture: {
+                image_url: recieverImage || "",
+                image_id: "",
+            },
         };
+
+        // Add optimistic message to UI immediately
+        setIndividualChat((prev) => [...prev, optimisticMessage]);
+        setPendingMessages((prev) => new Map(prev).set(tempMessageId, optimisticMessage));
+
+        // Send API request in background
+        const payload = {
+            message: messageText,
+            chat_id: chatId,
+        };
+
         POST_API(endpoints.chat.sendMessageToLearner(learnerId as string), payload)
             .then((res: any) => {
-                setMessage("");
+                // Axios response structure: res.data contains the actual response from server
+                // Handle different possible response structures
+                const responseData = res?.data;
+                const messageData = responseData?.data || responseData;
+                
+                // Replace optimistic message with real message from server (with correct backend time)
+                if (messageData && messageData.message_id) {
+                    setIndividualChat((prev) => {
+                        const filtered = prev.filter((msg) => msg.message_id !== tempMessageId);
+                        // Sort by created_at to maintain chronological order
+                        const updated = [...filtered, messageData].sort((a, b) => 
+                            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                        );
+                        return updated;
+                    });
+                    // Remove from pending messages
+                    setPendingMessages((prev) => {
+                        const newMap = new Map(prev);
+                        newMap.delete(tempMessageId);
+                        return newMap;
+                    });
+                } else {
+                    // If response doesn't have message data, refetch chat to get the latest messages
+                    // This ensures we get the message with correct time from backend
+                    setTimeout(() => {
                 refetchIndividualChat();
-                setIsSendMessageLoading(false);
+                    }, 300);
+                }
             })
-            .finally(() => {
-                setIsSendMessageLoading(false);
+            .catch((error) => {
+                console.error("Failed to send message:", error);
+                // Remove optimistic message on error
+                setIndividualChat((prev) => prev.filter((msg) => msg.message_id !== tempMessageId));
+                setPendingMessages((prev) => {
+                    const newMap = new Map(prev);
+                    newMap.delete(tempMessageId);
+                    return newMap;
+                });
+                // Restore message text so user can retry
+                setMessage(messageText);
             });
     };
 
@@ -246,31 +391,21 @@ const Messages = () => {
                         messages={chats}
                         searchQuery={searchQuery}
                         onSearch={handleSearch}
-                        isIndividualChatLoading={isIndividualLoading || isLoading}
+                        isIndividualChatLoading={false}
                     />
                     <div className="w-full h-full flex-1 ">
-                        {(isIndividualLoading && !isSendMessageLoading && !individualChat.length) ||
-                        isRefetching ? (
-                            <ChatHeaderSkeleton />
-                        ) : (
-                            <div className="flex items-center gap-4 justify-between border-b border-gray-200">
-                                <ChatHeader
-                                    name={recieverName}
-                                    location={location}
-                                    image={recieverImage}
-                                />
-                            </div>
-                        )}
+                        <div className="flex items-center gap-4 justify-between border-b border-gray-200">
+                            <ChatHeader
+                                name={recieverName}
+                                location={location}
+                                image={recieverImage}
+                            />
+                        </div>
                         <div className="flex flex-col gap-4 p-4 h-[calc(100vh-16em)] overflow-y-auto">
-                            {isIndividualLoading ? (
-                                <div className="flex justify-center items-center h-full">
-                                    <Spin size="large" />
-                                </div>
-                            ) : (
-                                individualChat?.map((message: any, index: any) => {
+                            {individualChat?.map((message: any, index: any) => {
                                     return (
                                         <MessageBubble
-                                            key={message.chat_id}
+                                            key={message.message_id || `msg-${index}`}
                                             message={message.message}
                                             timestamp={new Date(
                                                 message.created_at
@@ -282,20 +417,15 @@ const Messages = () => {
                                             isOwnMessage={message.sender_id === volunteerId}
                                             userImage={
                                                 message.sender_id === volunteerId
-                                                    ? message.volunteer_profile_picture.image_url
-                                                    : message.learner_profile_picture.image_url
+                                                    ? message.volunteer_profile_picture?.image_url || message.sender_profile_picture?.image_url
+                                                    : message.learner_profile_picture?.image_url || message.receiver_profile_picture?.image_url
                                             }
                                         />
                                     );
-                                })
-                            )}
+                                })}
                             <div ref={messagesEndRef} />
                         </div>
-                        {(isIndividualLoading && !isSendMessageLoading && !individualChat.length) ||
-                        isRefetching ? (
-                            <div></div>
-                        ) : (
-                            <div className="p-4 flex items-end gap-8 transition-all duration-300">
+                        <div className="p-4 flex items-end gap-8 transition-all duration-300">
                                 {chatPermission ? (
                                     <>
                                         <div className="flex-1 relative">
@@ -316,7 +446,7 @@ const Messages = () => {
                                         <div className="flex-shrink-0">
                                             <Button
                                                 disabled={!message.trim() || !chatPermission}
-                                                loading={isSendMessageLoading}
+                                                loading={false}
                                                 onClick={handleSendMessage}
                                                 title="Send Message"
                                                 btnVariant="secondary"
@@ -329,8 +459,7 @@ const Messages = () => {
                                         {recieverName} has disabled chat for this conversation
                                     </p>
                                 )}
-                            </div>
-                        )}
+                        </div>
                     </div>
                 </div>
             )}

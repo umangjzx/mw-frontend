@@ -20,7 +20,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
         <div
             className={`w-full h-fit flex items-${
                 isOwnMessage ? "end" : "start"
-            } mt-5 flex-col gap-4 animate-fadeIn-messages`}
+            } mt-5 flex-col gap-4 `}
         >
             <div className="flex gap-2 transition-all duration-300 ease-in-out">
                 {!isOwnMessage && userImage && (
