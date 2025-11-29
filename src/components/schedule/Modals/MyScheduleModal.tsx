@@ -9,6 +9,9 @@ import dayjs from "dayjs";
 import AddSlotIcon from "@/assets/icons/AddSlotIcon";
 import { useSendData } from "@/hooks/useReactQuery";
 import { convertToUTC, generateTimeSlotId } from "@/utils/timeFunctions";
+import ChevronRightIcon from "@/assets/icons/ChevronRightIcon";
+import CheckIcon from "@/assets/icons/CheckIcon";
+import CustomRecurrenceModal from "@/components/schedule/Modals/CustomRecurrenceModal";
 
 import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -20,6 +23,9 @@ interface TimeSlot {
     start_time: string;
     end_time: string;
     volunteer_slot_id?: string;
+    slot_type?: "repeats_weekly" | "custom";
+    start_date?: string;
+    end_date?: string;
 }
 
 interface DaySchedule {
@@ -27,8 +33,14 @@ interface DaySchedule {
 }
 
 interface APITimeSlot {
+    volunteer_slot_id?: string;
     start_time: string;
     end_time: string;
+    slot_type?: "repeats_weekly" | "custom";
+    start_date?: string;
+    end_date?: string;
+    utc_start_time?: string;
+    utc_end_time?: string;
 }
 
 interface APIScheduleFormat {
@@ -54,32 +66,106 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
     const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
     const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const [deletedSlots, setDeletedSlots] = useState<DeletedSlot[]>([]);
+    const [expandedDays, setExpandedDays] = useState<{ [key: string]: boolean }>({});
+    const [repeatFrequency, setRepeatFrequency] = useState<{ [key: string]: { [slotIndex: number]: string } }>({});
+    const [openDropdowns, setOpenDropdowns] = useState<{ [key: string]: { [slotIndex: number]: boolean } }>({});
+    const [customRecurrenceModalOpen, setCustomRecurrenceModalOpen] = useState(false);
+    const [currentDayForCustom, setCurrentDayForCustom] = useState<string>("");
+    const [currentSlotIndexForCustom, setCurrentSlotIndexForCustom] = useState<number>(-1);
+    const [justSavedCustom, setJustSavedCustom] = useState(false);
+    const [customRecurrenceData, setCustomRecurrenceData] = useState<{
+        [key: string]: { [slotIndex: number]: { start_date: string; end_date: string | null } };
+    }>({});
     const queryClient = useQueryClient();
     const { volunteerUtcOffset } = useAppStore();
     
     useEffect(() => {
-        GET_API(endpoints.volunteer_slot.get).then((res: any) => {
-            const newSchedule = { ...schedule };
-            
-            // Initialize all days with empty arrays
-            days.forEach((day) => {
-                newSchedule[day] = [];
-            });
+        // Only fetch when modal is open
+        if (!isOpen) return;
+
+        // Reset state when modal opens to avoid stale data
+        setDeletedSlots([]);
+        setCustomRecurrenceData({});
+        setRepeatFrequency({});
+        
+        GET_API(endpoints.volunteer_slot.get)
+            .then((res: any) => {
+                // Initialize all days with empty arrays
+                const newSchedule: DaySchedule = {
+                    Sunday: [],
+                    Monday: [],
+                    Tuesday: [],
+                    Wednesday: [],
+                    Thursday: [],
+                    Friday: [],
+                    Saturday: [],
+                };
+
+                // Handle response: res.data should be an array of day objects
+                // Response format: [{ day: "Sunday", slots: [...], volunteer_id: "...", updated_at: "..." }, ...]
+                const slotsData = Array.isArray(res?.data) ? res.data : [];
+                
+                if (slotsData.length === 0) {
+                    setSchedule(newSchedule);
+                    return;
+                }
+                
+                // Initialize state objects to batch updates
+                const newCustomRecurrenceData: {
+                    [key: string]: { [slotIndex: number]: { start_date: string; end_date: string | null } };
+                } = {};
+                const newRepeatFrequency: { [key: string]: { [slotIndex: number]: string } } = {};
 
             // Populate the schedule with API data
-            res.data.forEach((dayData: any) => {
-                if (dayData.slots && dayData.slots.length > 0) {
-                    newSchedule[dayData.day] = dayData.slots.map((slot: any) => ({
+                slotsData.forEach((dayData: any) => {
+                    const dayName = dayData.day;
+                    if (dayName && dayData.slots && Array.isArray(dayData.slots)) {
+                        newSchedule[dayName] = dayData.slots.map((slot: any) => ({
                         volunteer_slot_id: slot.volunteer_slot_id,
                         start_time: slot.start_time,
                         end_time: slot.end_time,
-                    }));
-                }
-            });
+                            slot_type: slot.slot_type || "repeats_weekly",
+                            start_date: slot.start_date,
+                            end_date: slot.end_date,
+                        }));
+                        
+                        // Store custom recurrence data if slot_type is custom
+                        dayData.slots.forEach((slot: any, slotIndex: number) => {
+                            if (slot.slot_type === "custom" && slot.start_date) {
+                                // Initialize day object if it doesn't exist
+                                if (!newCustomRecurrenceData[dayName]) {
+                                    newCustomRecurrenceData[dayName] = {};
+                                }
+                                if (!newRepeatFrequency[dayName]) {
+                                    newRepeatFrequency[dayName] = {};
+                                }
+                                
+                                newCustomRecurrenceData[dayName][slotIndex] = {
+                                    start_date: slot.start_date,
+                                    end_date: slot.end_date || null,
+                                };
+                                newRepeatFrequency[dayName][slotIndex] = "custom";
+                            } else {
+                                // Initialize day object if it doesn't exist
+                                if (!newRepeatFrequency[dayName]) {
+                                    newRepeatFrequency[dayName] = {};
+                                }
+                                newRepeatFrequency[dayName][slotIndex] = slot.slot_type === "repeats_weekly" ? "weekly" : "weekly";
+                            }
+                        });
+                    }
+                });
 
-            setSchedule(newSchedule);
-        });
-    }, []);
+                // Batch all state updates together
+                setSchedule(newSchedule);
+                setCustomRecurrenceData(newCustomRecurrenceData);
+                setRepeatFrequency(newRepeatFrequency);
+            })
+            .catch((error: any) => {
+                showToast({ message: "Failed to load schedule", type: "error" });
+            });
+    }, [isOpen]);
+   
 
     // Add this useEffect to check for overlapping times whenever schedule changes
     useEffect(() => {
@@ -101,6 +187,27 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
 
         setErrors(newErrors);
     }, [schedule]);
+
+    // Close dropdowns when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+            if (!target.closest('.repeat-dropdown-container')) {
+                setOpenDropdowns({});
+            }
+        };
+
+        const hasOpenDropdown = Object.values(openDropdowns).some((dayDropdowns) => 
+            dayDropdowns && typeof dayDropdowns === 'object' && Object.values(dayDropdowns).some(Boolean)
+        );
+
+        if (hasOpenDropdown) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, [openDropdowns]);
 
     const isTimeOverlapping = (
         day: string,
@@ -152,7 +259,6 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             const temp = updatedSlot.start_time;
             updatedSlot.start_time = updatedSlot.end_time;
             updatedSlot.end_time = temp;
-            console.log("Swapped start_time and end_time due to invalid order");
         }
 
         setSchedule((prev) => ({
@@ -172,7 +278,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
     const addTimeSlot = (day: string) => {
         setSchedule((prev) => ({
             ...prev,
-            [day]: [...prev[day], { start_time: "", end_time: "" }],
+            [day]: [...prev[day], { start_time: "", end_time: "", slot_type: "repeats_weekly" }],
         }));
     };
 
@@ -189,6 +295,51 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                 });
             }
 
+            // Clean up custom recurrence data for this slot
+            setCustomRecurrenceData((prev) => {
+                const newData = { ...prev };
+                if (newData[day]?.[slotIndex]) {
+                    // Shift indices for slots after the removed one
+                    const updatedDayData: { [slotIndex: number]: { start_date: string; end_date: string | null } } = {};
+                    Object.keys(newData[day] || {}).forEach((key) => {
+                        const idx = parseInt(key);
+                        if (idx < slotIndex) {
+                            updatedDayData[idx] = newData[day][idx];
+                        } else if (idx > slotIndex) {
+                            updatedDayData[idx - 1] = newData[day][idx];
+                        }
+                    });
+                    if (Object.keys(updatedDayData).length === 0) {
+                        delete newData[day];
+                    } else {
+                        newData[day] = updatedDayData;
+                    }
+                }
+                return newData;
+            });
+
+            // Clean up repeat frequency data
+            setRepeatFrequency((prev) => {
+                const newFreq = { ...prev };
+                if (newFreq[day]) {
+                    const updatedDayFreq: { [slotIndex: number]: string } = {};
+                    Object.keys(newFreq[day] || {}).forEach((key) => {
+                        const idx = parseInt(key);
+                        if (idx < slotIndex) {
+                            updatedDayFreq[idx] = newFreq[day][idx];
+                        } else if (idx > slotIndex) {
+                            updatedDayFreq[idx - 1] = newFreq[day][idx];
+                        }
+                    });
+                    if (Object.keys(updatedDayFreq).length === 0) {
+                        delete newFreq[day];
+                    } else {
+                        newFreq[day] = updatedDayFreq;
+                    }
+                }
+                return newFreq;
+            });
+
             return {
                 ...prev,
                 [day]: prev[day].filter((_, index) => index !== slotIndex),
@@ -197,23 +348,37 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
     };
 
     const formatScheduleForAPI = (): APIScheduleFormat[] => {
-        console.log("formatScheduleForAPI schedule", schedule);
         return days.map((day) => ({
             day,
             slots: schedule[day]
                 .filter((slot) => slot.start_time && slot.end_time) // Only include filled slots
-                .map((slot) => {
-                    // const start_time = convertToUTC(volunteerUtcOffset, slot.start_time);
-                    // const end_time = convertToUTC(volunteerUtcOffset, slot.end_time);
-                    // console.log("formatScheduleForAPI", start_time,  end_time);
+                .map((slot, slotIndex) => {
+                    const frequencyValue = repeatFrequency[day]?.[slotIndex];
+                    const slotType: "repeats_weekly" | "custom" = 
+                        slot.slot_type || 
+                        (frequencyValue === "custom" ? "custom" : "repeats_weekly") ||
+                        "repeats_weekly";
+                    const isCustom = slotType === "custom";
+                    const customData = customRecurrenceData[day]?.[slotIndex];
                     
-                    return {
-                        volunteer_slot_id: generateTimeSlotId(slot.start_time, slot.end_time),
+                    const apiSlot: APITimeSlot = {
+                        volunteer_slot_id: slot.volunteer_slot_id || generateTimeSlotId(slot.start_time, slot.end_time),
                         start_time: slot.start_time,
                         end_time: slot.end_time,
+                        slot_type: slotType,
                         utc_start_time: convertToUTC(volunteerUtcOffset, slot.start_time),
                         utc_end_time: convertToUTC(volunteerUtcOffset, slot.end_time),
                     };
+                    
+                    // Add start_date and end_date only for custom recurrence
+                    if (isCustom && customData) {
+                        apiSlot.start_date = customData.start_date;
+                        if (customData.end_date) {
+                            apiSlot.end_date = customData.end_date;
+                        }
+                    }
+                    
+                    return apiSlot;
                 }),
         }));
     };
@@ -224,7 +389,6 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             deleted_slots: deletedSlots,
             slots: formattedData,
         };
-        console.log("formattedData schedule", formattedData);
         const res = await PUT_API(endpoints.volunteer_slot.update, payload);
         if (res?.status === 201) {
             showToast({ message: "Schedule updated successfully", type: "success" });
@@ -242,9 +406,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             onClose();
             queryClient.invalidateQueries({ queryKey: ["volunteer-events"] });
         },
-        error: (err) => {
-            console.log("Error: ", err);
-        },
+        error: () => {},
     });
 
     // Add this CSS class to style the TimePicker input
@@ -254,6 +416,142 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
     const hasErrors = () => {
         return Object.values(errors).some((dayErrors) => dayErrors.length > 0);
     };
+
+    const toggleDay = (day: string) => {
+        setExpandedDays((prev) => ({
+            ...prev,
+            [day]: !prev[day],
+        }));
+    };
+
+    const toggleRepeatDropdown = (day: string, slotIndex: number) => {
+        setOpenDropdowns((prev) => ({
+            ...prev,
+            [day]: {
+                ...prev[day],
+                [slotIndex]: !prev[day]?.[slotIndex],
+            },
+        }));
+    };
+
+    const handleRepeatFrequencyChange = (day: string, slotIndex: number, value: string) => {
+        if (value === "custom") {
+            // Immediately set repeatFrequency to "custom" so UI updates
+            setRepeatFrequency((prev) => ({
+                ...prev,
+                [day]: {
+                    ...prev[day],
+                    [slotIndex]: "custom",
+                },
+            }));
+            setCurrentDayForCustom(day);
+            setCurrentSlotIndexForCustom(slotIndex);
+            setCustomRecurrenceModalOpen(true);
+        } else {
+            setRepeatFrequency((prev) => ({
+                ...prev,
+                [day]: {
+                    ...prev[day],
+                    [slotIndex]: value,
+                },
+            }));
+            // Update schedule slot_type when changing to weekly
+            setSchedule((prev) => ({
+                ...prev,
+                [day]: prev[day].map((slot, index) =>
+                    index === slotIndex
+                        ? {
+                              ...slot,
+                              slot_type: "repeats_weekly",
+                              start_date: undefined,
+                              end_date: undefined,
+                          }
+                        : slot
+                ),
+            }));
+            // Remove custom recurrence data if switching away from custom
+            setCustomRecurrenceData((prev) => {
+                const newData = { ...prev };
+                if (newData[day]?.[slotIndex]) {
+                    delete newData[day][slotIndex];
+                    if (Object.keys(newData[day]).length === 0) {
+                        delete newData[day];
+                    }
+                }
+                return newData;
+            });
+        }
+        setOpenDropdowns((prev) => ({
+            ...prev,
+            [day]: {
+                ...prev[day],
+                [slotIndex]: false,
+            },
+        }));
+    };
+
+    const handleCustomRecurrenceSave = (data: {
+        repeatEvery: number;
+        repeatUnit: string;
+        startDate: dayjs.Dayjs | null;
+        endType: "never" | "date";
+        endDate: dayjs.Dayjs | null;
+    }) => {
+        if (!data.startDate) {
+            showToast({ message: "Please select a start date", type: "error" });
+            return;
+        }
+        
+        // Mark that we just saved to prevent revert on close
+        setJustSavedCustom(true);
+        
+        const startDateStr = data.startDate.format("YYYY-MM-DD");
+        const endDateStr = data.endType === "date" && data.endDate ? data.endDate.format("YYYY-MM-DD") : null;
+        
+        // Update all states immediately
+        setSchedule((prev) => ({
+            ...prev,
+            [currentDayForCustom]: prev[currentDayForCustom].map((slot, index) => {
+                if (index === currentSlotIndexForCustom) {
+                    const updatedSlot: TimeSlot = {
+                        ...slot,
+                        slot_type: "custom" as const,
+                        start_date: startDateStr,
+                        end_date: data.endType === "date" && data.endDate ? endDateStr || undefined : undefined,
+                    };
+                    return updatedSlot;
+                }
+                return slot;
+            }),
+        }));
+        
+        setRepeatFrequency((prev) => ({
+            ...prev,
+            [currentDayForCustom]: {
+                ...prev[currentDayForCustom],
+                [currentSlotIndexForCustom]: "custom",
+            },
+        }));
+        
+        // Store the custom recurrence dates
+        setCustomRecurrenceData((prev) => ({
+            ...prev,
+            [currentDayForCustom]: {
+                ...prev[currentDayForCustom],
+                [currentSlotIndexForCustom]: {
+                    start_date: startDateStr,
+                    end_date: endDateStr,
+                },
+            },
+        }));
+        
+        // Custom recurrence data saved
+    };
+
+    const repeatOptions = [
+        { label: "Repeats Weekly", value: "weekly" },
+        { label: "Custom", value: "custom" },
+    ];
 
     const TimePickerComponent = ({
         day,
@@ -331,81 +629,255 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                     </p>
                 </div>
                 <div>
-                    <div className="flex flex-col gap-10 mt-2">
-                        {days.map((day) => (
-                            <div key={day} className="flex flex-col gap-2">
-                                <div className="flex items-start justify-between gap-2 px-5">
-                                    <p className="font-semibold w-[2rem]">{day.slice(0, 3)}</p>
-                                    <div className="flex flex-col items-center gap-2 w-full px-1">
-                                        {schedule[day].length > 0 ? (
-                                            schedule[day].map((slot, slotIndex) => (
-                                                <div
-                                                    key={slotIndex}
-                                                    className="flex flex-col gap-2"
-                                                >
-                                                    <div
-                                                        key={slotIndex}
-                                                        className="flex gap-2 items-center"
-                                                    >
-                                                        <div>
-                                                            <TimePickerComponent
-                                                                day={day}
-                                                                slot={slot}
-                                                                slotIndex={slotIndex}
-                                                                type="start_time"
-                                                            />
-                                                        </div>
-                                                        <p className="text-sm font-medium">to</p>
-                                                        <div>
-                                                            <TimePickerComponent
-                                                                day={day}
-                                                                slot={slot}
-                                                                slotIndex={slotIndex}
-                                                                type="end_time"
-                                                            />
-                                                        </div>
-                                                        <span
-                                                            onClick={() =>
-                                                                removeTimeSlot(day, slotIndex)
-                                                            }
-                                                            className="text-red-500 hover:text-red-700 cursor-pointer"
-                                                        >
-                                                            <TrashIcon />
-                                                        </span>
-                                                    </div>
-                                                    {errors[day]?.map(
-                                                        (error, errorIndex) =>
-                                                            error.includes(
-                                                                `Time slot ${slotIndex + 1}`
-                                                            ) && (
-                                                                <p
-                                                                    key={errorIndex}
-                                                                    className="text-xs text-red-500"
-                                                                >
-                                                                    {error}
-                                                                </p>
-                                                            )
-                                                    )}
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <div className="text-sm text-gray-500 font-medium border border-stroke-light text-center rounded-xl px-3 py-1.5 w-[267px]">
-                                                No schedules
-                                            </div>
-                                        )}
-                                    </div>
-                                    <span
-                                        onClick={() => addTimeSlot(day)}
-                                        className="text-blue-500 mt-1.5 hover:text-blue-700 w-fit"
+                    <div className="flex flex-col gap-4 p-5 pt-0">
+                        {days.map((day) => {
+                            const isExpanded = expandedDays[day];
+                            return (
+                                <div key={day} className="flex flex-col gap-2 border border-gray-200 rounded-lg p-4">
+                                    <div 
+                                        className="flex items-center justify-between cursor-pointer"
+                                        onClick={() => toggleDay(day)}
                                     >
-                                        <AddSlotIcon />
-                                    </span>
+                                        <p className="font-semibold">{day}</p>
+                                        <ChevronRightIcon className={`transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                                    </div>
+                                    {isExpanded && (
+                                        <div className="flex items-start justify-between gap-2 pt-2">
+                                            <div className="flex flex-col items-center gap-2 w-full px-1">
+                                                {schedule[day].length > 0 ? (
+                                                    schedule[day].map((slot, slotIndex) => (
+                                                        <div
+                                                            key={slotIndex}
+                                                            className="flex flex-col gap-2"
+                                                        >
+                                                            <div
+                                                                key={slotIndex}
+                                                                className="flex gap-2 items-center"
+                                                            >
+                                                                <div>
+                                                                    <TimePickerComponent
+                                                                        day={day}
+                                                                        slot={slot}
+                                                                        slotIndex={slotIndex}
+                                                                        type="start_time"
+                                                                    />
+                                                                </div>
+                                                                <p className="text-sm font-medium">to</p>
+                                                                <div>
+                                                                    <TimePickerComponent
+                                                                        day={day}
+                                                                        slot={slot}
+                                                                        slotIndex={slotIndex}
+                                                                        type="end_time"
+                                                                    />
+                                                                </div>
+                                                                <span
+                                                                    onClick={() =>
+                                                                        removeTimeSlot(day, slotIndex)
+                                                                    }
+                                                                    className="text-red-500 hover:text-red-700 cursor-pointer"
+                                                                >
+                                                                    <TrashIcon />
+                                                                </span>
+                                                            </div>
+                                                            {errors[day]?.map(
+                                                                (error, errorIndex) =>
+                                                                    error.includes(
+                                                                        `Time slot ${slotIndex + 1}`
+                                                                    ) && (
+                                                                        <p
+                                                                            key={errorIndex}
+                                                                            className="text-xs text-red-500"
+                                                                        >
+                                                                            {error}
+                                                                        </p>
+                                                                    )
+                                                            )}
+                                                            <div className="relative pt-2 repeat-dropdown-container">
+                                                                <div
+                                                                    className="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-gray-50 cursor-pointer hover:border-gray-300 transition-colors"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        toggleRepeatDropdown(day, slotIndex);
+                                                                    }}
+                                                                >
+                                                                    <span className="text-sm font-medium text-gray-700">
+                                                                        {(() => {
+                                                                            const slot = schedule[day][slotIndex];
+                                                                            const freq = repeatFrequency[day]?.[slotIndex];
+                                                                            
+                                                                            // Prioritize schedule slot_type if it's custom, otherwise use repeatFrequency
+                                                                            if (slot?.slot_type === "custom") {
+                                                                                return "Custom";
+                                                                            } else if (freq) {
+                                                                                return repeatOptions.find(opt => opt.value === freq)?.label || "Repeats Weekly";
+                                                                            }
+                                                                            return "Repeats Weekly";
+                                                                        })()}
+                                                                    </span>
+                                                                    <svg
+                                                                        width="20"
+                                                                        height="20"
+                                                                        viewBox="0 0 20 20"
+                                                                        fill="none"
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        className={cn(
+                                                                            "transition-transform duration-200",
+                                                                            openDropdowns[day]?.[slotIndex] ? "rotate-90" : ""
+                                                                        )}
+                                                                    >
+                                                                        <path
+                                                                            d="M7.5 5L12.5 10L7.5 15"
+                                                                            stroke="#121212"
+                                                                            strokeWidth="2"
+                                                                            strokeLinecap="round"
+                                                                            strokeLinejoin="round"
+                                                                        />
+                                                                    </svg>
+                                                                </div>
+                                                                {openDropdowns[day]?.[slotIndex] && (
+                                                                    <div 
+                                                                        className="absolute top-full left-0 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-10"
+                                                                        onClick={(e) => e.stopPropagation()}
+                                                                    >
+                                                                        {repeatOptions.map((option) => (
+                                                                            <div
+                                                                                key={option.value}
+                                                                                className={cn(
+                                                                                    "flex items-center justify-between p-3 text-sm cursor-pointer transition-colors",
+                                                                                    repeatFrequency[day]?.[slotIndex] === option.value || (!repeatFrequency[day]?.[slotIndex] && option.value === "weekly")
+                                                                                        ? "bg-gray-50 text-gray-900 font-medium"
+                                                                                        : "text-gray-700 hover:bg-gray-50"
+                                                                                )}
+                                                                                onClick={() => handleRepeatFrequencyChange(day, slotIndex, option.value)}
+                                                                            >
+                                                                                <span>{option.label}</span>
+                                                                                {(repeatFrequency[day]?.[slotIndex] === option.value || (!repeatFrequency[day]?.[slotIndex] && option.value === "weekly")) && (
+                                                                                    <CheckIcon />
+                                                                                )}
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="text-sm text-gray-500 font-medium border border-stroke-light text-center rounded-xl px-3 py-1.5 w-[267px]">
+                                                        No Schedules
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <span
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    addTimeSlot(day);
+                                                }}
+                                                className="text-blue-500 mt-1.5 hover:text-blue-700 w-fit"
+                                            >
+                                                <AddSlotIcon />
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             </div>
+            <CustomRecurrenceModal
+                isOpen={customRecurrenceModalOpen}
+                initialData={
+                    currentDayForCustom && currentSlotIndexForCustom >= 0
+                        ? (() => {
+                              const customData = customRecurrenceData[currentDayForCustom]?.[currentSlotIndexForCustom];
+                              const slotData = schedule[currentDayForCustom]?.[currentSlotIndexForCustom];
+                              
+                              // Prefer customRecurrenceData, fallback to slotData
+                              if (customData) {
+                                  return {
+                                      start_date: customData.start_date,
+                                      end_date: customData.end_date,
+                                      repeatEvery: 2, // Default, can be enhanced if stored in backend
+                                  };
+                              } else if (slotData?.slot_type === "custom" && slotData.start_date) {
+                                  return {
+                                      start_date: slotData.start_date,
+                                      end_date: slotData.end_date,
+                                      repeatEvery: 2,
+                                  };
+                              }
+                              return undefined;
+                          })()
+                        : undefined
+                }
+                onClose={() => {
+                    // If user cancels without saving, revert to weekly if no custom data exists
+                    // But skip this if we just saved (justSavedCustom flag)
+                    const wasJustSaved = justSavedCustom;
+                    const day = currentDayForCustom;
+                    const slotIndex = currentSlotIndexForCustom;
+                    
+                    // Close modal first
+                    setCustomRecurrenceModalOpen(false);
+                    setCurrentDayForCustom("");
+                    setCurrentSlotIndexForCustom(-1);
+                    
+                    // Only check and revert if we didn't just save
+                    if (!wasJustSaved && day && slotIndex >= 0) {
+                        // Use setTimeout to check after state has potentially updated
+                        setTimeout(() => {
+                            setSchedule((prev) => {
+                                const slot = prev[day]?.[slotIndex];
+                                const hasCustomData = slot?.slot_type === "custom" && slot?.start_date;
+                                
+                                if (!hasCustomData) {
+                                    // Revert to weekly if no custom data was saved
+                                    return {
+                                        ...prev,
+                                        [day]: prev[day].map((s, index) =>
+                                            index === slotIndex
+                                                ? {
+                                                      ...s,
+                                                      slot_type: "repeats_weekly",
+                                                      start_date: undefined,
+                                                      end_date: undefined,
+                                                  }
+                                                : s
+                                        ),
+                                    };
+                                }
+                                return prev;
+                            });
+                            
+                            setRepeatFrequency((prev) => {
+                                const freq = prev[day]?.[slotIndex];
+                                // Only revert if it's not "custom"
+                                if (freq !== "custom") {
+                                    return {
+                                        ...prev,
+                                        [day]: {
+                                            ...prev[day],
+                                            [slotIndex]: "weekly",
+                                        },
+                                    };
+                                }
+                                return prev;
+                            });
+                        }, 0);
+                    }
+                    
+                    // Reset the flag after a delay to ensure state updates are processed
+                    if (wasJustSaved) {
+                        setTimeout(() => {
+                            setJustSavedCustom(false);
+                        }, 100);
+                    } else {
+                        setJustSavedCustom(false);
+                    }
+                }}
+                onSave={handleCustomRecurrenceSave}
+            />
         </SideModal>
     );
 };
