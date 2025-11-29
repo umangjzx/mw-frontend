@@ -42,3 +42,15 @@ type ApprovalModalProps = {
     isOpen: boolean;
     onClose: () => void;
 };
+
+type CustomRecurrenceModalProps = {
+    isOpen: boolean;
+    onClose: () => void;
+    onSave?: (data: {
+        repeatEvery: number;
+        repeatUnit: string;
+        startDate: any;
+        endType: "never" | "date";
+        endDate: any;
+    }) => void;
+};

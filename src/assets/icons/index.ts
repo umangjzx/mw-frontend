@@ -29,3 +29,6 @@ export { default as DeleteIcon } from "./DeleteIcon";
 export { default as EditIcon } from "./EditIcon";
 export { default as MessageIcon } from "./MessageIcon";
 export { default as SettingIcon } from "./SettingIcon";
+export { default as UpdownIcon } from "./UpdownIcon";
+export { default as ChevronRightIcon } from "./ChevronRightIcon";
+export { default as CheckIcon } from "./CheckIcon";
