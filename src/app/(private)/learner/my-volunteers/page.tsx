@@ -105,7 +105,7 @@ export default function VolunteerPage() {
         return response.data;
     };
 
-    const { data: volunteers, isLoading } = useQuery({
+    const { data: volunteers, isLoading, isFetching } = useQuery({
         queryKey: ["volunteers", pagination.page, pagination.size, debouncedQuery],
         queryFn: () => getAllVolunteers(pagination),
     });
@@ -186,7 +186,7 @@ export default function VolunteerPage() {
                 onClose={handleClose}
             />
             {isMobileScreen ? (
-                isLoading ? (
+                (isLoading || isFetching) && volunteerData.length === 0 ? (
                     <LottieLoader isLoading={true} />
                 ) : (
                     <div className="grid grid-cols-1">
@@ -204,7 +204,7 @@ export default function VolunteerPage() {
                     data={volunteerData}
                     handleMessageVolunteer={handleMessageVolunteer}
                     handleUploadTestimonial={handleUploadTestimonial}
-                    loading={isLoading}
+                    loading={isLoading || isFetching}
                     pagination={{
                         current: pagination.page,
                         pageSize: pagination.size,
