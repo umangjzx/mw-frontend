@@ -26,6 +26,7 @@ interface TimeSlot {
     slot_type?: "repeats_weekly" | "custom";
     start_date?: string;
     end_date?: string;
+    weekly_repeat_interval?: number;
 }
 
 interface DaySchedule {
@@ -39,6 +40,7 @@ interface APITimeSlot {
     slot_type?: "repeats_weekly" | "custom";
     start_date?: string;
     end_date?: string;
+    weekly_repeat_interval?: number;
     utc_start_time?: string;
     utc_end_time?: string;
 }
@@ -74,7 +76,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
     const [currentSlotIndexForCustom, setCurrentSlotIndexForCustom] = useState<number>(-1);
     const [justSavedCustom, setJustSavedCustom] = useState(false);
     const [customRecurrenceData, setCustomRecurrenceData] = useState<{
-        [key: string]: { [slotIndex: number]: { start_date: string; end_date: string | null } };
+        [key: string]: { [slotIndex: number]: { start_date: string; end_date: string | null; weekly_repeat_interval?: number } };
     }>({});
     const queryClient = useQueryClient();
     const { volunteerUtcOffset } = useAppStore();
@@ -112,7 +114,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                 
                 // Initialize state objects to batch updates
                 const newCustomRecurrenceData: {
-                    [key: string]: { [slotIndex: number]: { start_date: string; end_date: string | null } };
+                    [key: string]: { [slotIndex: number]: { start_date: string; end_date: string | null; weekly_repeat_interval?: number } };
                 } = {};
                 const newRepeatFrequency: { [key: string]: { [slotIndex: number]: string } } = {};
 
@@ -127,6 +129,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                             slot_type: slot.slot_type || "repeats_weekly",
                             start_date: slot.start_date,
                             end_date: slot.end_date,
+                            weekly_repeat_interval: slot.weekly_repeat_interval,
                         }));
                         
                         // Store custom recurrence data if slot_type is custom
@@ -143,6 +146,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                                 newCustomRecurrenceData[dayName][slotIndex] = {
                                     start_date: slot.start_date,
                                     end_date: slot.end_date || null,
+                                    weekly_repeat_interval: slot.weekly_repeat_interval,
                                 };
                                 newRepeatFrequency[dayName][slotIndex] = "custom";
                             } else {
@@ -300,7 +304,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                 const newData = { ...prev };
                 if (newData[day]?.[slotIndex]) {
                     // Shift indices for slots after the removed one
-                    const updatedDayData: { [slotIndex: number]: { start_date: string; end_date: string | null } } = {};
+                    const updatedDayData: { [slotIndex: number]: { start_date: string; end_date: string | null; weekly_repeat_interval?: number } } = {};
                     Object.keys(newData[day] || {}).forEach((key) => {
                         const idx = parseInt(key);
                         if (idx < slotIndex) {
@@ -370,12 +374,20 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                         utc_end_time: convertToUTC(volunteerUtcOffset, slot.end_time),
                     };
                     
-                    // Add start_date and end_date only for custom recurrence
+                    // Add start_date, end_date, and weekly_repeat_interval for custom recurrence
                     if (isCustom && customData) {
                         apiSlot.start_date = customData.start_date;
                         if (customData.end_date) {
                             apiSlot.end_date = customData.end_date;
                         }
+                        if (customData.weekly_repeat_interval) {
+                            apiSlot.weekly_repeat_interval = customData.weekly_repeat_interval;
+                        }
+                    }
+                    
+                    // Add weekly_repeat_interval for repeats_weekly slots (default to 1 if not specified)
+                    if (slotType === "repeats_weekly") {
+                        apiSlot.weekly_repeat_interval = slot.weekly_repeat_interval || 1;
                     }
                     
                     return apiSlot;
@@ -541,6 +553,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                 [currentSlotIndexForCustom]: {
                     start_date: startDateStr,
                     end_date: endDateStr,
+                    weekly_repeat_interval: data.repeatEvery,
                 },
             },
         }));
@@ -798,7 +811,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                                   return {
                                       start_date: customData.start_date,
                                       end_date: customData.end_date,
-                                      repeatEvery: 2, // Default, can be enhanced if stored in backend
+                                      repeatEvery: customData.weekly_repeat_interval || 0,
                                   };
                               } else if (slotData?.slot_type === "custom" && slotData.start_date) {
                                   return {

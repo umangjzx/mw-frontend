@@ -29,7 +29,7 @@ const CustomRecurrenceModal: React.FC<CustomRecurrenceModalProps> = ({
     onSave,
     initialData,
 }) => {
-    const [repeatEvery, setRepeatEvery] = useState<number>(initialData?.repeatEvery || 2);
+    const [repeatEvery, setRepeatEvery] = useState<number>(initialData?.repeatEvery ?? 0);
     const [startDate, setStartDate] = useState<Dayjs | null>(
         initialData?.start_date ? dayjs(initialData.start_date) : null
     );
@@ -43,7 +43,7 @@ const CustomRecurrenceModal: React.FC<CustomRecurrenceModalProps> = ({
     // Reset form when modal opens/closes or initialData changes
     useEffect(() => {
         if (isOpen) {
-            setRepeatEvery(initialData?.repeatEvery || 2);
+            setRepeatEvery(initialData?.repeatEvery ?? 0);
             setStartDate(initialData?.start_date ? dayjs(initialData.start_date) : null);
             setEndType(initialData?.end_date ? "date" : "never");
             setEndDate(initialData?.end_date ? dayjs(initialData.end_date) : null);
@@ -92,15 +92,21 @@ const CustomRecurrenceModal: React.FC<CustomRecurrenceModalProps> = ({
                     <div className="flex items-center gap-2">
                         <Input
                             type="text"
-                            min={1}
+                            min={0}
+                            max={6}
                             value={repeatEvery}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRepeatEvery(Number(e.target.value) || 1)}
-                            className="!w-[41px] !h-10 !rounded-xl !border !border-[#E0E0E0] !bg-[#F4F7FB] !text-sm !font-medium !text-center !px-4 !py-0 [&_input]:!text-center [&_input]:!h-full [&_input]:!bg-[#F4F7FB] [&_input]:!text-[#121212]"
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                const value = Number(e.target.value);
+                                if (!isNaN(value) && value >= 0 && value <= 6) {
+                                    setRepeatEvery(value);
+                                }
+                            }}
+                            className="!w-[41px] !h-10 !rounded-xl !border !border-[#E0E0E0] !bg-[#F4F7FB] !text-sm !font-medium !text-center  !py-0 [&_input]:!text-center [&_input]:!h-full [&_input]:!bg-[#F4F7FB] [&_input]:!text-[#121212]"
                         />
                         <div className="flex flex-col items-center justify-center h-10">
                         <button
                             type="button"
-                            onClick={() => setRepeatEvery((prev) => prev + 1)}
+                            onClick={() => setRepeatEvery((prev) => Math.min(6, prev + 1))}
                             className="p-0 border-0 bg-transparent hover:opacity-70 transition-opacity cursor-pointer flex items-center justify-center"
                             style={{ height: '12px', width: '20px' }}
                         >
@@ -110,7 +116,7 @@ const CustomRecurrenceModal: React.FC<CustomRecurrenceModalProps> = ({
                         </button>
                         <button
                             type="button"
-                            onClick={() => setRepeatEvery((prev) => Math.max(1, prev - 1))}
+                            onClick={() => setRepeatEvery((prev) => Math.max(0, prev - 1))}
                             className="p-0 border-0 bg-transparent hover:opacity-70 transition-opacity cursor-pointer flex items-center justify-center"
                             style={{ height: '12px', width: '20px' }}
                         >
