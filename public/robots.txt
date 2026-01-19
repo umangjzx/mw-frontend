@@ -12,4 +12,4 @@ Disallow: /onboarding/
 Disallow: /api/
 
 # Sitemap location
-Sitemap: https://melodywings.org/sitemap.xml
+Sitemap: https://www.melodywings.org/sitemap.xml
