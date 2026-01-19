@@ -110,7 +110,7 @@ export default function LearnersPage() {
         return response.data;
     };
 
-    const { data: learners, isLoading } = useQuery({
+    const { data: learners, isLoading, isFetching } = useQuery({
         queryKey: ["learners", pagination.page, pagination.size, debouncedQuery],
         queryFn: () => getAllLearners(pagination),
     });
@@ -189,7 +189,7 @@ export default function LearnersPage() {
                 onClose={handleClose}
             />
             {isMobileScreen ? (
-                isLoading ? (
+                (isLoading || isFetching) && learnerData.length === 0 ? (
                     <LottieLoader isLoading={true} />
                 ) : (
                     <div className="grid grid-cols-1">
@@ -207,7 +207,7 @@ export default function LearnersPage() {
                     data={learnerData}
                     handleMessageLearner={handleMessageLearner}
                     handleUploadTestimonial={handleUploadTestimonial}
-                    loading={isLoading}
+                    loading={isLoading || isFetching}
                     pagination={{
                         current: pagination.page,
                         pageSize: pagination.size,

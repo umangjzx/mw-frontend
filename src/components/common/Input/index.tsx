@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Input as AntInput, Checkbox, DatePicker as AntDatePicker, InputNumber, Spin } from "antd";
 import { cn } from "@/utils/merge-class";
 import { IoIosSearch } from "react-icons/io";
@@ -20,6 +20,146 @@ const isAvailableDay = (date: any, availableDays: string[]) => {
     if (!availableDays || !Array.isArray(availableDays)) return true;
     const dayName = dayjs(date).format("dddd");
     return availableDays.includes(dayName);
+};
+
+// Separate component for DatePicker to properly use hooks
+const DatePickerComponent: React.FC<{
+    value: Date | null;
+    onChange: (value: Date | null) => void;
+    onOpenChange?: (open: boolean) => void;
+    onPanelChange?: (value: any, mode: any) => void;
+    disabled?: boolean;
+    isLoading?: boolean;
+    availableDays?: string[];
+    availableDates?: string[];
+    unavailableDates?: string[];
+    inputClassName?: string;
+}> = ({
+    value,
+    onChange,
+    onOpenChange,
+    onPanelChange,
+    disabled,
+    isLoading,
+    availableDays,
+    availableDates,
+    unavailableDates,
+    inputClassName,
+}) => {
+    const today = dayjs().startOf("day");
+
+    const parseDate = (date: any) => {
+        if (!date) return null;
+        if (dayjs.isDayjs(date)) return date;
+        if (date instanceof Date) return dayjs(date);
+        if (typeof date === "string") {
+            const parsed = dayjs(date, "DD-MM-YYYY");
+            return parsed.isValid() ? parsed : null;
+        }
+        return null;
+    };
+
+    // State to track the displayed month (pickerValue) independently from selected value
+    const [pickerValue, setPickerValue] = useState<dayjs.Dayjs | null>(() => {
+        const parsed = parseDate(value);
+        return parsed || dayjs();
+    });
+
+    // Update pickerValue when value changes (e.g., when date is selected)
+    useEffect(() => {
+        const parsed = parseDate(value);
+        if (parsed) {
+            setPickerValue(parsed);
+        } else if (!value) {
+            // Reset to current month if value is cleared
+            setPickerValue(dayjs());
+        }
+    }, [value]);
+
+    return (
+        <div className="relative">
+            <AntDatePicker
+                value={parseDate(value)}
+                pickerValue={pickerValue || undefined}
+                onChange={(date) => {
+                    if (date && !Array.isArray(date)) {
+                        const dateObject = date.toDate();
+                        onChange(dateObject);
+                    } else if (!date) {
+                        onChange(null);
+                    }
+                }}
+                onOpenChange={(open) => {
+                    if (onOpenChange) {
+                        onOpenChange(open);
+                    }
+                }}
+                onPanelChange={(value, mode) => {
+                    // Update pickerValue when panel changes (month navigation)
+                    if (value) {
+                        setPickerValue(value);
+                    }
+                    // Always call onPanelChange when provided
+                    if (onPanelChange) {
+                        onPanelChange(value, mode);
+                    }
+                }}
+                format="DD-MMM-YYYY"
+                disabled={disabled}
+                renderExtraFooter={() => {
+                    if (isLoading) {
+                        return (
+                            <div
+                                style={{
+                                    position: "absolute",
+                                    top: "50%",
+                                    left: "40%",
+                                    transform: "translate(-50%, -50%)",
+                                    zIndex: 20,
+                                    pointerEvents: "none",
+                                }}
+                            >
+                                <Spin size="default" />
+                            </div>
+                        );
+                    }
+                    return null;
+                }}
+                disabledDate={(current) => {
+                    if (!current) return true;
+
+                    // Always disable dates before today
+                    if (current.isBefore(today, "day")) return true;
+
+                    const currentDay = current.format("dddd");
+                    const currentDate = current.format("YYYY-MM-DD");
+
+                    // Disable if in unavailableDates
+                    if (unavailableDates && unavailableDates.includes(currentDate)) return true;
+
+                    if (isLoading) return true;
+
+                    // Priority: If availableDates is provided, only enable dates explicitly in that array
+                    if (availableDates && availableDates.length > 0) {
+                        return !availableDates.includes(currentDate);
+                    }
+
+                    // If only availableDays is provided (and no availableDates), use day-based filtering
+                    if (availableDays && availableDays.length > 0) {
+                        return !availableDays.includes(currentDay);
+                    }
+
+                    // If no data provided yet, disable all dates
+                    return true;
+                }}
+                placeholder={isLoading ? "Loading available dates..." : "Click to select date"}
+                className={cn(
+                    "w-full text-sm p-2 rounded-lg border border-stroke focus:!border-stroke focus:!bg-background-input placeholder:text-sm hover:bg-background-input bg-background-input",
+                    inputClassName
+                )}
+            />
+        </div>
+    );
 };
 
 export const Input: React.FC<InputProps> = (props) => {
@@ -181,88 +321,19 @@ export const Input: React.FC<InputProps> = (props) => {
             case "async-select":
                 return <AsyncSelect {...props} />;
             case "datepicker":
-                let today = dayjs().startOf("day");
-
-                const parseDate = (date: any) => {
-                    if (!date) return null;
-                    // If it's already a Dayjs object, return it
-                    if (dayjs.isDayjs(date)) return date;
-                    // If it's a Date object, convert to Dayjs
-                    if (date instanceof Date) return dayjs(date);
-                    // If it's a string, try to parse it
-                    if (typeof date === "string") {
-                        const parsed = dayjs(date, "DD-MM-YYYY");
-                        return parsed.isValid() ? parsed : null;
-                    }
-                    return null;
-                };
-
                 return (
-                    <div className="relative">
-                        <AntDatePicker
-                            value={parseDate(props.value)}
-                            onChange={(date) => {
-                                if (date && !Array.isArray(date)) {
-                                    // Convert Dayjs to Date object as expected by the type
-                                    const dateObject = date.toDate();
-                                    props.onChange(dateObject);
-                                    console.log("date changed", date, "formatted as:", dateObject);
-                                }
-                            }}
-                            format="DD-MMM-YYYY"
-                            disabled={props.disabled || props.isLoading}
-                            disabledDate={(current) => {
-                                if (!current) return true;
-
-                                // Disable before today
-                                if (current.isBefore(today, "day")) return true;
-
-                                const currentDay = current.format("dddd");
-                                const currentDate = current.format("YYYY-MM-DD");
-
-                                // Disable if in unavailableDates
-                                if (
-                                    props.unavailableDates &&
-                                    props.unavailableDates.includes(currentDate)
-                                )
-                                    return true;
-
-                                // If both availableDays and availableDates are provided, enable if either matches
-                                if (props.availableDays && props.availableDates) {
-                                    if (
-                                        props.availableDays.includes(currentDay) ||
-                                        props.availableDates.includes(currentDate)
-                                    ) {
-                                        return false; // enabled
-                                    }
-                                    return true; // disabled
-                                }
-
-                                // If only availableDays is provided
-                                if (props.availableDays) {
-                                    return !props.availableDays.includes(currentDay);
-                                }
-
-                                // If only availableDates is provided
-                                if (props.availableDates) {
-                                    return !props.availableDates.includes(currentDate);
-                                }
-
-                                // Otherwise, enable all future dates
-                                return false;
-                            }}
-                            placeholder={props.isLoading ? "Loading available dates..." : "Click to select date"}
-                            className={cn(
-                                "w-full text-sm p-2 rounded-lg border border-stroke focus:!border-stroke focus:!bg-background-input placeholder:text-sm hover:bg-background-input bg-background-input",
-                                props.inputClassName
-                            )}
-                        />
-                        {props.isLoading && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 rounded-lg">
-                                <Spin size="small" />
-                            </div>
-                        )}
-                    </div>
+                    <DatePickerComponent
+                        value={props.value}
+                        onChange={props.onChange}
+                        onOpenChange={props.onOpenChange}
+                        onPanelChange={props.onPanelChange}
+                            disabled={props.disabled}
+                        isLoading={props.isLoading}
+                        availableDays={props.availableDays}
+                        availableDates={props.availableDates}
+                        unavailableDates={props.unavailableDates}
+                        inputClassName={props.inputClassName}
+                    />
                 );
 
             case "birthdatepicker":
