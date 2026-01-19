@@ -42,8 +42,6 @@ export const endpoints: EndpointProps = {
         availableSlots: (id: string, date: string) =>
             `volunteer_slots/available_slots/${id}/${date}`,
         availableDays: (id: string) => `volunteer_slots/available_days/${id}`,
-        availableDaysForMonth: (id: string, month: string) =>
-            `volunteer_slots/available_days/${id}/${month}`,
         getAllSlotsForMonth: (month: string) => `volunteer_slots/slots_and_sessions/${month}`,
         deleteParticularSlot: `volunteer_slots/add_unavailable_slots`,
         getAvailableDaysForDate: (date: string) => `volunteer_slots/get_slots_by_date/${date}`,

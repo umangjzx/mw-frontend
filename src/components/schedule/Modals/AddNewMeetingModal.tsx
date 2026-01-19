@@ -9,7 +9,7 @@ import {
 } from "@/constants/schedule";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import moment from "moment";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import AvailableSlots from "../AvailableSlots/AvailableSlots";
 import { useSearchParams } from "next/navigation";
 import { useSendData } from "@/hooks/useReactQuery";
@@ -67,9 +67,6 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
     const [volunteerUnavailableDates, setVolunteerUnavailableDates] = useState<string[]>([]);
     const [selectedVolunteerId, setSelectedVolunteerId] = useState<string>("");
     const [isLoadingAvailableDays, setIsLoadingAvailableDays] = useState(false);
-    const [currentMonth, setCurrentMonth] = useState<string>(moment().format("YYYY-MM"));
-    const [loadedMonth, setLoadedMonth] = useState<string | null>(null);
-    const currentRequestMonthRef = useRef<string | null>(null);
     const learnerId = Cookies.get("learner_id");
 
     const getVolunteers = async () => {
@@ -109,69 +106,45 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
         queryFn: () => (volunteerId ? getIndividualVolunteer() : getVolunteers()),
         enabled: isOpen,
     });
-    const getAvailableDaysForMonth = async (volunteerId: string, month: string) => {
-        // Mark this as the current request month
-        currentRequestMonthRef.current = month;
-        
+
+    const getAvailableDays = async () => {
         try {
             setIsLoadingAvailableDays(true);
-            // Clear previous month's data immediately when navigating to new month
-            setVolunteerAvailableDays([]);
-            setVolunteerAvailableDates([]);
-            setVolunteerUnavailableDates([]);
-            setLoadedMonth(null);
-
             const response = await GET_API(
-                endpoints.volunteer_slot.availableDaysForMonth(volunteerId, month)
+                endpoints.volunteer_slot.availableDays(formData.select_volunteer as string)
             );
+            console.log("Raw API Response:", response.data);
 
-            // Only update state if this is still the current request (ignore stale responses)
-            if (currentRequestMonthRef.current === month) {
-                // Make sure we're getting the array directly
-                const availableDays = Array.isArray(response.data)
-                    ? response.data
-                    : response.data?.available_days || [];
+            // Make sure we're getting the array directly
+            const availableDays = Array.isArray(response.data)
+                ? response.data
+                : response.data.available_days;
 
-                // Handle available and unavailable dates
-                const availableDates = response.data?.available_dates || [];
-                const unavailableDates = response.data?.unavailable_dates || [];
-                
-                setVolunteerAvailableDays(availableDays);
-                setVolunteerAvailableDates(availableDates);
-                setVolunteerUnavailableDates(unavailableDates);
-                setLoadedMonth(month);
-                setIsLoadingAvailableDays(false);
-            }
-        } catch (error: any) {
-            // Only handle error if this is still the current request
-            if (currentRequestMonthRef.current === month) {
-                console.error("Error fetching available days for month:", error);
-                setIsLoadingAvailableDays(false);
-            }
+            // Handle available and unavailable dates
+            const availableDates = response.data.available_dates || [];
+            const unavailableDates = response.data.unavailable_dates || [];
+
+            console.log("Processed Available Days:", availableDays);
+            console.log("Available Dates:", availableDates);
+            console.log("Unavailable Dates:", unavailableDates);
+
+            setVolunteerAvailableDays(availableDays);
+            setVolunteerAvailableDates(availableDates);
+            setVolunteerUnavailableDates(unavailableDates);
+            setIsLoadingAvailableDays(false);
+            return availableDays;
+        } catch (error) {
+            console.error("Error fetching available days:", error);
+            setIsLoadingAvailableDays(false);
+            return [];
         }
     };
 
-    const handleDatePickerOpen = (open: boolean) => {
-        if (open && formData.select_volunteer) {
-            const monthToFetch = formData.select_date
-                ? moment(formData.select_date).format("YYYY-MM")
-                : moment().format("YYYY-MM");
-            
-            setCurrentMonth(monthToFetch);
-            getAvailableDaysForMonth(formData.select_volunteer as string, monthToFetch);
-        }
-    };
-
-    const handlePanelChange = (value: any, mode?: any) => {
-        if (formData.select_volunteer && value) {
-            // Handle both dayjs objects and Date objects
-            const dateValue = value?.toDate ? value.toDate() : value;
-            const monthToFetch = moment(dateValue).format("YYYY-MM");
-            setCurrentMonth(monthToFetch);
-            getAvailableDaysForMonth(formData.select_volunteer as string, monthToFetch);
-        }
-    };
-
+    const { refetch: refetchAvailableDays } = useQuery({
+        queryKey: ["availableDays"],
+        queryFn: getAvailableDays,
+        enabled: !!selectedVolunteerId,
+    });
 
     const handleChange = async (name: string, value: any) => {
         const processedValue = name === "select_date" && !value ? null : value;
@@ -353,13 +326,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
                 select_date: "",
             }));
             setAvailableSlots([]);
-            // Clear previous month data when volunteer changes
-            setVolunteerAvailableDays([]);
-            setVolunteerAvailableDates([]);
-            setVolunteerUnavailableDates([]);
-            setLoadedMonth(null);
-            // Mark that no request is current (will ignore any pending responses)
-            currentRequestMonthRef.current = null;
+            refetchAvailableDays();
         }
     }, [formData.select_volunteer]);
 
@@ -379,14 +346,16 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
         >
             <div className="flex flex-col max-lg:gap-3 px-5 mt-7">
                 {LearnerScheduleModalConstants.map((field: any) => {
-                    // Only show available dates if they match the currently loaded month
-                    const isCurrentMonthLoaded = loadedMonth === currentMonth;
                     const availableDaysForField =
-                        field.name === "select_date" && isCurrentMonthLoaded ? volunteerAvailableDays : undefined;
+                        field.name === "select_date" ? volunteerAvailableDays : undefined;
                     const availableDatesForField =
-                        field.name === "select_date" && isCurrentMonthLoaded ? volunteerAvailableDates : undefined;
+                        field.name === "select_date" ? volunteerAvailableDates : undefined;
                     const unavailableDatesForField =
-                        field.name === "select_date" && isCurrentMonthLoaded ? volunteerUnavailableDates : undefined;
+                        field.name === "select_date" ? volunteerUnavailableDates : undefined;
+
+                    console.log(`Field ${field.name} availableDays:`, availableDaysForField);
+                    console.log(`Field ${field.name} availableDates:`, availableDatesForField);
+                    console.log(`Field ${field.name} unavailableDates:`, unavailableDatesForField);
 
                     if (field.name === "select_date" && selectedVolunteerId === "") return null;
 
@@ -404,12 +373,6 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
                             unavailableDates={unavailableDatesForField}
                             isLoading={
                                 field.name === "select_date" ? isLoadingAvailableDays : false
-                            }
-                            onOpenChange={
-                                field.name === "select_date" ? handleDatePickerOpen : undefined
-                            }
-                            onPanelChange={
-                                field.name === "select_date" ? handlePanelChange : undefined
                             }
                         />
                     );
