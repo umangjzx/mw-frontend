@@ -126,21 +126,23 @@ const Header = (props: Props) => {
                                         title="View Demo"
                                         customClassName="!bg-white max-lg:!text-sm !font-medium !text-black rounded-full lg:!p-3  !py-3 !px-3"
                                     />
+                                    <div className="relative">
+                                        <Button
+                                            onClick={handleNotification}
+                                            icon={<NotificationIcon />}
+                                            customClassName="!bg-transparent font-semibold !text-black rounded-full !py-3 !px-3"
+                                        />
+                                        {data?.unread_count > 0 && (
+                                            <div className="absolute -top-2.5 -right-1.5 p-1 px-2 rounded-full flex items-center justify-center text-white text-xs font-medium bg-red-500">
+                                                {data?.unread_count}
+                                            </div>
+                                        )}
+                                    </div>
                                     <Button
                                         onClick={handleAddEvent}
                                         title="Add New Event"
                                         customClassName="!bg-white max-lg:!text-sm !font-medium !text-black rounded-full lg:!p-3 !py-3 !px-3"
                                     />
-                                    <Button
-                                        onClick={handleNotification}
-                                        icon={<NotificationIcon />}
-                                        customClassName="!bg-transparent font-semibold !text-black rounded-full !py-3 !px-3"
-                                    />
-                                    {data?.unread_count > 0 && (
-                                        <div className="absolute -top-2.5 -right-1.5 p-1 px-2 rounded-full flex items-center justify-center text-white text-xs font-medium bg-red-500">
-                                            {data?.unread_count}
-                                        </div>
-                                    )}
                                 </div>
                             )}
                             <Button
