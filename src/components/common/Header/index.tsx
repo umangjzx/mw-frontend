@@ -31,6 +31,7 @@ const CommonHeader: React.FC = () => {
         titleIconClick,
         actionButtons = [],
         hideSearch,
+        centerButton,
     } = headerOptions || {};
 
     const isMobileOrTabScreen = InnerWidth() < 1024;
@@ -52,7 +53,7 @@ const CommonHeader: React.FC = () => {
 
     return (
         <div className="w-full h-full relative">
-            <div className="w-full h-auto lg:h-full p-2 px-3 flex items-center justify-between">
+            <div className="w-full h-auto lg:h-full p-2 px-3 flex items-center justify-between relative">
                 <div className="flex items-center gap-5">
                     <div className="flex capitalize items-center">
                         {showTitleButton || (
@@ -63,7 +64,7 @@ const CommonHeader: React.FC = () => {
                                 <SideMenuIcon height="22px" width="22px" />
                             </div>
                         )}
-                        {(showTitleButton || !isMobileOrTabScreen) && (
+                        {titleIcon && (showTitleButton || !isMobileOrTabScreen) && (
                             <Button
                                 icon={titleIcon}
                                 rootClassName={cn(
@@ -87,6 +88,18 @@ const CommonHeader: React.FC = () => {
                         />
                     )}
                 </div>
+                {/* Center Button */}
+                {centerButton?.showButton && !isMobileOrTabScreen && (
+                    <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center">
+                        <Button
+                            title={centerButton?.buttonTitle}
+                            onClick={centerButton?.buttonOnClick}
+                            rootClassName={centerButton?.buttonClassName}
+                            size="small"
+                            icon={centerButton?.buttonIcon}
+                        />
+                    </div>
+                )}
                 <div
                     className={cn(
                         actionButtonPlacement === "left" ? "flex-row-reverse" : "flex",
@@ -112,15 +125,17 @@ const CommonHeader: React.FC = () => {
                                 btnVariant="tertiary"
                             />
                         ) : (
-                            <Input
-                                value={searchQuery ?? ""}
-                                inputType="search"
-                                name="search"
-                                inputClassName="!bg-transparent !rounded-xl gap-1 items-center max-md:w-[180px]"
-                                className="!bg-transparent !w-fit !mb-0"
-                                onChange={handleSearch}
-                                placeholder={searchPlaceholder ?? "Search"}
-                            />
+                            <div className={pathname?.includes("/instant-sessions") ? "!pr-5" : ""}>
+                                <Input
+                                    value={searchQuery ?? ""}
+                                    inputType="search"
+                                    name="search"
+                                    inputClassName="!bg-transparent !rounded-full gap-1 items-center !w-[280px] !h-10 !pr-3"
+                                    className="!bg-transparent !w-fit !mb-0"
+                                    onChange={handleSearch}
+                                    placeholder={searchPlaceholder ?? "Search"}
+                                />
+                            </div>
                         ))}
                     {!isMobileOrTabScreen &&
                         actionButtons?.map((button: ActionButtons) => (

@@ -2,6 +2,7 @@
 
 import Calendar from "@/components/schedule/Calender";
 import MyScheduleModal from "@/components/schedule/Modals/MyScheduleModal";
+import NewEventModal from "@/components/schedule/Modals/NewEventModal";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ApprovalModal from "@/components/schedule/Modals/ApprovalModal";
@@ -24,6 +25,7 @@ export default function SchedulePage() {
     const [isOpenSchedule, setIsOpenSchedule] = useState(false);
     const [isOpenApproval, setIsOpenApproval] = useState(false);
     const [isOpenFeedback, setIsOpenFeedback] = useState(false);
+    const [isOpenNewEvent, setIsOpenNewEvent] = useState(false);
     const queryClient = useQueryClient();
     const router = useRouter();
     const isMobileOrTabScreen = InnerWidth() < 1024;
@@ -94,6 +96,7 @@ export default function SchedulePage() {
         setIsOpenSchedule(modal === "my_schedule");
         setIsOpenApproval(modal === "approval_notification");
         setIsOpenFeedback(modal === "feedback");
+        setIsOpenNewEvent(modal === "new_event");
     }, [modal]);
 
     return (
@@ -109,6 +112,7 @@ export default function SchedulePage() {
                     )}
                     <MyScheduleModal isOpen={isOpenSchedule} onClose={handleNavigate} />
                     <ApprovalModal isOpen={isOpenApproval} onClose={handleNavigate} />
+                    <NewEventModal isOpen={isOpenNewEvent} onClose={handleNavigate} />
                     <FeedbackModal
                         mode="create"
                         isOpen={isOpenFeedback}

@@ -96,6 +96,7 @@ type DatePickerInputProps = BaseInputProps & {
     isLoading?: boolean;
     onOpenChange?: (open: boolean) => void;
     onPanelChange?: (value: any, mode: any) => void;
+    format?: string;
 };
 
 type SessionDatePickerInputProps = BaseInputProps & {

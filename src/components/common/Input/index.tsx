@@ -34,6 +34,7 @@ const DatePickerComponent: React.FC<{
     availableDates?: string[];
     unavailableDates?: string[];
     inputClassName?: string;
+    format?: string;
 }> = ({
     value,
     onChange,
@@ -45,6 +46,7 @@ const DatePickerComponent: React.FC<{
     availableDates,
     unavailableDates,
     inputClassName,
+    format = "DD-MMM-YYYY",
 }) => {
     const today = dayjs().startOf("day");
 
@@ -104,7 +106,7 @@ const DatePickerComponent: React.FC<{
                         onPanelChange(value, mode);
                     }
                 }}
-                format="DD-MMM-YYYY"
+                format={format}
                 disabled={disabled}
                 renderExtraFooter={() => {
                     if (isLoading) {
@@ -333,6 +335,7 @@ export const Input: React.FC<InputProps> = (props) => {
                         availableDates={props.availableDates}
                         unavailableDates={props.unavailableDates}
                         inputClassName={props.inputClassName}
+                        format={props.format}
                     />
                 );
 

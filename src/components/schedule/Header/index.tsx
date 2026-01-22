@@ -43,6 +43,10 @@ const Header = (props: Props) => {
         router.push("/learner/schedule?modal=add_new_meeting");
     };
 
+    const handleAddEvent = () => {
+        router.push("/volunteer/schedule?modal=new_event");
+    };
+
     const handleMySchedule = () => {
         router.push("/volunteer/schedule?modal=my_schedule");
     };
@@ -117,11 +121,16 @@ const Header = (props: Props) => {
                         <div className="flex items-center gap-2">
                             {!isMobileOrTabScreen && (
                                 <div className="relative gap-2 flex items-center">
-                                     <Button
-                                onClick={handleViewDemoforvolunteer}
-                                title="View Demo"
-                                customClassName="!bg-white max-lg:!text-sm !font-medium !text-black rounded-full lg:!p-3  !py-3 !px-3"
-                            />
+                                    <Button
+                                        onClick={handleViewDemoforvolunteer}
+                                        title="View Demo"
+                                        customClassName="!bg-white max-lg:!text-sm !font-medium !text-black rounded-full lg:!p-3  !py-3 !px-3"
+                                    />
+                                    <Button
+                                        onClick={handleAddEvent}
+                                        title="Add New Event"
+                                        customClassName="!bg-white max-lg:!text-sm !font-medium !text-black rounded-full lg:!p-3 !py-3 !px-3"
+                                    />
                                     <Button
                                         onClick={handleNotification}
                                         icon={<NotificationIcon />}

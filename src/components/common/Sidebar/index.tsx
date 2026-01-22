@@ -12,6 +12,7 @@ import {
     VolunteerIcon,
     MessageIcon,
     SettingIcon,
+    InstantSessionIcon,
 } from "@/assets/icons";
 import Cookies from "js-cookie";
 import Link from "next/link";
@@ -24,6 +25,16 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
     const router = useRouter();
     const role = Cookies.get("role");
     const isMobileOrTabScreen = InnerWidth() < 1024;
+
+    // Instant Sessions - only for learners
+    const instantSessionsLink =
+        role === "learner"
+            ? {
+                  href: "/instant-sessions",
+                  text: "Instant Sessions",
+                  icon: <InstantSessionIcon />,
+              }
+            : null;
 
     const baseLinksData = [
         {
@@ -71,7 +82,11 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
     ];
 
     // Combine all links in the desired order
-    const linksData = [...baseLinksData, roleBasedLink, ...remainingLinks];
+    // For learners: Instant Sessions, My Schedule, Seek Volunteer, Resources, Community, Messages, Settings
+    // For volunteers: My Schedule, Learners, Resources, Community, Messages, Settings
+    const linksData = instantSessionsLink
+        ? [instantSessionsLink, ...baseLinksData, roleBasedLink, ...remainingLinks]
+        : [...baseLinksData, roleBasedLink, ...remainingLinks];
 
     const handleSignOut = () => {
         clearCookies();
