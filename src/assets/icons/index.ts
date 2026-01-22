@@ -32,3 +32,8 @@ export { default as SettingIcon } from "./SettingIcon";
 export { default as UpdownIcon } from "./UpdownIcon";
 export { default as ChevronRightIcon } from "./ChevronRightIcon";
 export { default as CheckIcon } from "./CheckIcon";
+export { default as InstantSessionIcon } from "./InstantSession";
+export { default as TimeIcon } from "./TimeIcon";
+export { default as HostedByIcon } from "./HostedByIcon";
+export { default as VerifyTickIcon } from "./VerifyTickIcon";
+export { default as TodayIcon } from "./TodayIcon";

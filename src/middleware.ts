@@ -89,7 +89,9 @@ export default function middleware(req: NextRequest) {
       return NextResponse.next();
     }
     if (LANDING_PAGE_ROUTES.includes(pathname) || !pathname.startsWith(`/${role}`) || PROTECTED_ROUTES.includes(pathname)) {
-      return NextResponse.redirect(new URL(`/${role}/schedule`, origin));
+      // Redirect learners to instant-sessions, volunteers to schedule
+      const defaultRoute = role === "learner" ? `/${role}/instant-sessions` : `/${role}/schedule`;
+      return NextResponse.redirect(new URL(defaultRoute, origin));
     }
   }
 
