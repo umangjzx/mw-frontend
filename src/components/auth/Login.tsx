@@ -57,7 +57,8 @@ const LoginPage = () => {
         } else if (data.onboarded_status === "partially_filled") {
             router.push("/onboarding");
         } else if (data.onboarded_status === "verification_completed") {
-            router.push(`/${role}/schedule`);
+            const defaultRoute = role === "learner" ? `/${role}/instant-sessions` : `/${role}/schedule`;
+            router.push(defaultRoute);
         }
     };
 

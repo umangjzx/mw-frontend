@@ -156,12 +156,13 @@ const SignUpAsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                 const { onboarded_status } = response;
                 console.log("response from signup", onboarded_status);
                 const role = getCookie("role");
+                const defaultRoute = role === "learner" ? `/${role}/instant-sessions` : `/${role}/schedule`;
                 const routes: Record<string, string> = {
                     details_pending: "/onboarding",
                     partially_filled: "/onboarding",
                     verification_pending: "/onboarding/verification",
                     verification_rejected: "/onboarding/verification",
-                    verification_completed: `/${role}/schedule`,
+                    verification_completed: defaultRoute,
                 };
                 if (routes[onboarded_status]) {
                     console.log("pushing to", routes[onboarded_status]);
