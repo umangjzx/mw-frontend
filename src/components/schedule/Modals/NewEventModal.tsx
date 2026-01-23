@@ -132,7 +132,7 @@ export default function NewEventModal({ isOpen, onClose, onSubmit }: NewEventMod
             customClassName="!rounded-3xl"
             rootClassName="!rounded-3xl overflow-hidden"
             headerClassName="!px-6 !py-5"
-            bodyClassName="!px-6 !py-6"
+            bodyClassName="!px-6 "
         >
             <div className="flex flex-col gap-2">
                 {/* Select Date */}
@@ -253,7 +253,7 @@ export default function NewEventModal({ isOpen, onClose, onSubmit }: NewEventMod
                         onChange={handleDescriptionChange}
                         placeholder="Enter description here"
                         labelClassName="!text-base !text-[#121212]"
-                        inputClassName="w-full !text-base !text-[#121212] placeholder:!text-[#808080] placeholder:!text-base"
+                        inputClassName="w-full !h-[100px] !text-base !text-[#121212] placeholder:!text-[#808080] placeholder:!text-base"
                         rows={4}
                     />
                 </div>
@@ -290,7 +290,7 @@ export default function NewEventModal({ isOpen, onClose, onSubmit }: NewEventMod
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-3 justify-end pt-5 mt-2 border-t border-stroke">
+                <div className="flex gap-3 justify-end pt-5 pb-2 border-t border-stroke">
                     <Button
                         title="Cancel"
                         onClick={handleCancel}
