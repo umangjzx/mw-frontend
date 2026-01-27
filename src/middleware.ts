@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { isCookiesFound, isTokenValid } from "./utils/auth";
 
 const PROTECTED_ROUTES = ["/learner", "/volunteer"];
-const LANDING_PAGE_ROUTES = ["/login", "/about-us", "/privacy-policy", "/terms-and-conditions"];
+const LANDING_PAGE_ROUTES = ["/", "/about-us", "/privacy-policy", "/terms-and-conditions"];
 const ALWAYS_ACCESSIBLE_ROUTES = ["/privacy-policy", "/terms-and-conditions"];
 const EXCLUDED_PATHS = ["/favicon.ico", "/logo.png"];
 
@@ -44,7 +44,7 @@ export default function middleware(req: NextRequest) {
 
   // Allow search engine bots to access public pages
   const isBot = isSearchEngineBot(userAgent);
-  const PUBLIC_ROUTES = ["/", "/login", "/about-us", "/privacy-policy", "/terms-and-conditions", "/robots.txt", "/sitemap.xml"];
+  const PUBLIC_ROUTES = ["/", "/about-us", "/privacy-policy", "/terms-and-conditions", "/robots.txt", "/sitemap.xml"];
 
   if (isBot && PUBLIC_ROUTES.includes(pathname)) {
     return NextResponse.next();
@@ -65,7 +65,7 @@ export default function middleware(req: NextRequest) {
     if (isBot && PUBLIC_ROUTES.includes(pathname)) {
       return NextResponse.next();
     }
-    if (!LANDING_PAGE_ROUTES.includes(pathname)) return NextResponse.redirect(new URL("/login", origin));
+    if (!LANDING_PAGE_ROUTES.includes(pathname)) return NextResponse.redirect(new URL("/", origin));
     return NextResponse.next();
   }
 
@@ -91,11 +91,6 @@ export default function middleware(req: NextRequest) {
     if (LANDING_PAGE_ROUTES.includes(pathname) || !pathname.startsWith(`/${role}`) || PROTECTED_ROUTES.includes(pathname)) {
       return NextResponse.redirect(new URL(`/${role}/schedule`, origin));
     }
-  }
-
-  // Redirect root path to login for non-bots (bots already handled above)
-  if (pathname === "/" && !isBot) {
-    return NextResponse.redirect(new URL("/login", origin));
   }
 
   return NextResponse.next();
