@@ -7,7 +7,7 @@ import useInnerWidth from "@/hooks/useInnerWidth";
 
 export default function DesktopVersionWrapper({ children }: { children: React.ReactNode }) {
     const [showDesktopVersionScreen, setShowDesktopVersionScreen] = useState(false);
-    const routes = ["/login", "/about-us", "/onboarding"];
+    const routes = ["/", "/about-us", "/onboarding"];
     const pathname = usePathname();
     const innerWidth = useInnerWidth();
 
