@@ -51,7 +51,7 @@ const Header = () => {
     return (
         <div className="w-full mx-auto bg-white shadow-md ">
             <div className="w-full mx-auto flex justify-between items-center 2xl:px-[4%] px-[5%] py-5 ">
-                <Link href="/login" className="cursor-pointer">
+                <Link href="/" className="cursor-pointer">
                     <Logo />
                 </Link>
                 {!hideNavigation && (

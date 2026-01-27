@@ -25,7 +25,7 @@ export default function VerificationPage() {
     const id = getCookie(currentId);
 
     useEffect(() => { if (typeof window !== "undefined") window.scrollTo({ top: 0 }) }, []);
-    useEffect(() => { if (!id) router.push("/login"); }, [id, router]);
+    useEffect(() => { if (!id) router.push("/"); }, [id, router]);
 
     const getOnboardingStatus = async () => {
         const { data } = await GET_API(endpoints.onboarding.getOnboardingStatus(id as string, role));

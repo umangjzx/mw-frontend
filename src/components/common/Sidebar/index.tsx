@@ -92,9 +92,9 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
         clearCookies();
 
         if (typeof window !== "undefined") {
-            window.location.href = "/login";
+            window.location.href = "/";
         } else {
-            router.replace("/login");
+            router.replace("/");
             router.refresh();
         }
     };
