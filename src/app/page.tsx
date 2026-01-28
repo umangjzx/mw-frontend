@@ -48,12 +48,12 @@ export default function Page() {
     return (
         <div className="w-full overflow-x-hidden bg-background-input relative">
             <Hero />
-            <div className="flex flex-col gap-20 lg:gap-[7rem] py-[7rem]">
+            {/* <div className="flex flex-col gap-20 lg:gap-[7rem] py-[7rem]">
                 <div className="reveal px-[9%]" id="about-us">
                     <WhyWeBuild />
                 </div>
                 <div className="reveal px-[9%]" id="our-impact">
-                    {/* <Impact /> */}
+                    <Impact />
                 </div>
                 <div className="flex flex-col lg:gap-20">
                     <div className="reveal lg:px-[9%]">
@@ -75,8 +75,8 @@ export default function Page() {
                 <div className="reveal px-[4%] lg:px-[9%]">
                     <Celebrate />
                 </div>
-            </div>
-            <Footer />
+            </div> */}
+            {/* <Footer /> */}
         </div>
     );
 }
