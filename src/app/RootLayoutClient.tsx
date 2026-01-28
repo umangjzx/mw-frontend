@@ -19,7 +19,7 @@ export default function RootLayoutClient({ children }: { children: React.ReactNo
         <Suspense
             fallback={
                 <div className="h-[100vh] w-[100vw] flex-center">
-                    {/* <LottieLoader isLoading={true} /> */}
+                    <LottieLoader isLoading={true} />
                 </div>
             }
         >
