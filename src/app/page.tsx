@@ -47,7 +47,7 @@ export default function Page() {
 
     return (
         <div className="w-full overflow-x-hidden bg-background-input relative">
-            {/* <Hero /> */}
+            <Hero />
             <div className="flex flex-col gap-20 lg:gap-[7rem] py-[7rem]">
                 <div className="reveal px-[9%]" id="about-us">
                     <WhyWeBuild />

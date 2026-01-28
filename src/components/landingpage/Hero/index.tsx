@@ -1,3 +1,5 @@
+"use client";
+
 import HeroBannerImg from "@/assets/images/HeroBannerImg.png";
 import HeroBannerMobileImg from "@/assets/images/HeroBannerMobileImg.png";
 import Image from "next/image";
@@ -17,7 +19,7 @@ const Hero = () => {
 
     return (
         <div className={`w-full h-full transition-opacity duration-1000 ease-in-out ${isVisible ? "opacity-100" : "opacity-0"}`}>
-            <Header />
+            {/* <Header /> */}
             <div className={`w-full md:h-[80vh] md:bg-white relative`}>
                 <div className="w-full !h-[300px] md:!h-full md:!relative">
                     <Image src={HeroBannerImg} alt="Students learning together with technology support" fill className="h-full object-cover object-top hidden md:block" />
