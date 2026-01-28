@@ -5,9 +5,15 @@ import HeroBannerMobileImg from "@/assets/images/HeroBannerMobileImg.png";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import LandingPageButton from "../components/Button";
-import Header from "../components/Header";
 import HeroBannerLogo from "@/assets/images/landingpage/hero-banner.png";
 import { useQueryState } from "nuqs";
+import dynamic from "next/dynamic";
+
+const Header = dynamic(
+    () => import("../components/Header").then((m) => m.default),
+    { ssr: false }
+  );
+  
 
 const Hero = () => {
     const [isVisible, setIsVisible] = useState(false);
