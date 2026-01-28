@@ -1,20 +1,20 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import QueryProvider from "@/providers/QueryWrapper";
 import { Suspense } from "react";
-import LottieLoader from "@/components/common/Loader/Lottie";
 import useAutoLogout from "@/hooks/useAutoLogout";
 import { useRouter } from "next/navigation";
 
-export default function RootLayoutClient({
-    children,
-}: Readonly<{
-    children: React.ReactNode;
-}>) {
+const LottieLoader = dynamic(
+    () => import("@/components/common/Loader/Lottie").then((m) => m.default),
+    { ssr: false }
+);
+
+export default function RootLayoutClient({ children }: { children: React.ReactNode }) {
     const router = useRouter();
-    // Hook to auto logout user if they are idle for 30 minutes
     useAutoLogout(router);
-    
+
     return (
         <Suspense
             fallback={
@@ -23,9 +23,7 @@ export default function RootLayoutClient({
                 </div>
             }
         >
-            <QueryProvider>
-                {children}
-            </QueryProvider>
+            <QueryProvider>{children}</QueryProvider>
         </Suspense>
     );
 }
