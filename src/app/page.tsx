@@ -16,34 +16,34 @@ import SkillsToLearn from "@/components/landingpage/SkillsToLearn";
 export default function Page() {
     const [_, setParamMode] = useQueryState("signup_as");
 
-    useEffect(() => {
-        setParamMode(null);
+    // useEffect(() => {
+    //     setParamMode(null);
 
-        let sr: any;
-        const setupScrollReveal = async () => {
-            if (typeof window !== "undefined") {
-                const ScrollReveal = (await import("scrollreveal")).default;
-                sr = ScrollReveal({
-                    origin: "bottom",
-                    distance: "3px",
-                    duration: 800,
-                    delay: 100,
-                    easing: "ease-out",
-                    reset: true,
-                    viewFactor: 0.1,
-                    viewOffset: { top: 0, right: 0, bottom: -100, left: 0 },
-                });
+    //     let sr: any;
+    //     const setupScrollReveal = async () => {
+    //         if (typeof window !== "undefined") {
+    //             const ScrollReveal = (await import("scrollreveal")).default;
+    //             sr = ScrollReveal({
+    //                 origin: "bottom",
+    //                 distance: "3px",
+    //                 duration: 800,
+    //                 delay: 100,
+    //                 easing: "ease-out",
+    //                 reset: true,
+    //                 viewFactor: 0.1,
+    //                 viewOffset: { top: 0, right: 0, bottom: -100, left: 0 },
+    //             });
 
-                sr.reveal(".reveal", { interval: 100 });
-            }
-        };
+    //             sr.reveal(".reveal", { interval: 100 });
+    //         }
+    //     };
 
-        setupScrollReveal();
+    //     setupScrollReveal();
 
-        return () => {
-            if (sr) sr.destroy();
-        };
-    }, []);
+    //     return () => {
+    //         if (sr) sr.destroy();
+    //     };
+    // }, []);
 
     return (
         <div className="w-full overflow-x-hidden bg-background-input relative">
@@ -53,7 +53,7 @@ export default function Page() {
                     <WhyWeBuild />
                 </div>
                 <div className="reveal px-[9%]" id="our-impact">
-                    <Impact />
+                    {/* <Impact /> */}
                 </div>
                 <div className="flex flex-col lg:gap-20">
                     <div className="reveal lg:px-[9%]">
