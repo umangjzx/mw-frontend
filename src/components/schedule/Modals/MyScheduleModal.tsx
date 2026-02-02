@@ -514,9 +514,6 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             return;
         }
         
-        // Mark that we just saved to prevent revert on close
-        setJustSavedCustom(true);
-        
         const startDateStr = data.startDate.format("YYYY-MM-DD");
         const endDateStr = data.endType === "date" && data.endDate ? data.endDate.format("YYYY-MM-DD") : null;
         
@@ -558,7 +555,17 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             },
         }));
         
-        // Custom recurrence data saved
+        // Close the modal directly here to avoid race conditions with async state updates
+        // Mark that we just saved so onClose won't revert the changes
+        setJustSavedCustom(true);
+        setCustomRecurrenceModalOpen(false);
+        setCurrentDayForCustom("");
+        setCurrentSlotIndexForCustom(-1);
+        
+        // Reset the flag after modal is fully closed
+        setTimeout(() => {
+            setJustSavedCustom(false);
+        }, 100);
     };
 
     const repeatOptions = [
@@ -706,7 +713,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                                                                         </p>
                                                                     )
                                                             )}
-                                                            {/* <div className="relative pt-2 repeat-dropdown-container">
+                                                            <div className="relative pt-2 repeat-dropdown-container">
                                                                 <div
                                                                     className="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-gray-50 cursor-pointer hover:border-gray-300 transition-colors"
                                                                     onClick={(e) => {
@@ -772,7 +779,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                                                                         ))}
                                                                     </div>
                                                                 )}
-                                                            </div> */}
+                                                            </div> 
                                                         </div>
                                                     ))
                                                 ) : (

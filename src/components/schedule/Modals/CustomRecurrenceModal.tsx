@@ -60,10 +60,8 @@ const CustomRecurrenceModal: React.FC<CustomRecurrenceModalProps> = ({
                 endDate: endType === "date" ? endDate : null,
             });
         }
-        // Close after a brief delay to allow state updates to process
-        setTimeout(() => {
-            onClose();
-        }, 10);
+        // Note: Modal closing is handled by the parent component in onSave
+        // to avoid race conditions with async state updates
     };
 
     return (
