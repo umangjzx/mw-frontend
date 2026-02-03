@@ -6,9 +6,13 @@ import CenterModal from "@/components/common/Modals/CenterModal";
 import TagComponent from "@/components/common/Tag";
 import Button from "@/components/common/Button";
 import ClaimConfirmationModal from "./ClaimConfirmationModal";
-import DummyProfileImg from "@/assets/images/dummy-profile.webp";
 import PersonImg from "@/assets/images/Person.png";
-import { TimeIcon ,HostedByIcon} from "@/assets/icons";
+import { TimeIcon, HostedByIcon } from "@/assets/icons";
+import { POST_API } from "@/api/request";
+import { endpoints } from "@/api/constants";
+import { showToast } from "@/components/common/Toast";
+import Cookies from "js-cookie";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface InstantSessionDetailModalProps {
     isOpen: boolean;
@@ -23,6 +27,10 @@ interface InstantSessionDetailModalProps {
         endTime: string;
         timezone: string;
         duration: string;
+        date?: string;
+        volunteer_id?: string;
+        start_time_24?: string;
+        end_time_24?: string;
         instructor: {
             name: string;
             profilePicture?: string;
@@ -39,6 +47,8 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
     onClaim,
     showNote = false,
 }) => {
+    const queryClient = useQueryClient();
+    const learnerId = Cookies.get("learner_id");
     const statusConfig = {
         available: {
             bg: "!bg-[#DCFCE7]",
@@ -54,17 +64,54 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
 
     const status = statusConfig[session.status] || statusConfig.available;
     const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+    const [isClaiming, setIsClaiming] = useState(false);
 
     const handleClaim = () => {
         setIsConfirmationModalOpen(true);
     };
 
-    const handleConfirmClaim = () => {
-        if (onClaim) {
-            onClaim();
+    const handleConfirmClaim = async (): Promise<boolean> => {
+        const volunteerId = session.volunteer_id;
+        const volunteerSlotId = session.id;
+        const sessionDate = session.date;
+        const startTime24 = session.start_time_24;
+        const endTime24 = session.end_time_24;
+
+        if (!volunteerId || !volunteerSlotId || !sessionDate || !learnerId) {
+            showToast({ message: "Missing session or learner details. Cannot claim.", type: "error" });
+            return false;
         }
-        setIsConfirmationModalOpen(false);
-        onClose();
+        if (!startTime24 || !endTime24) {
+            showToast({ message: "Missing session time. Cannot claim.", type: "error" });
+            return false;
+        }
+
+        setIsClaiming(true);
+        try {
+            const res = await POST_API(endpoints.session.claimInstantSession, {
+                volunteer_id: volunteerId,
+                volunteer_slot_id: volunteerSlotId,
+                session_date: sessionDate,
+                session_title: session.title,
+                session_description: session.description ?? "",
+                session_start_time: startTime24,
+                session_end_time: endTime24,
+                learner_id: learnerId,
+            });
+            if (res?.status === 200 || res?.status === 201) {
+                showToast({ message: "Session claimed successfully", type: "success" });
+                queryClient.invalidateQueries({ queryKey: ["learner-instant-sessions"] });
+                onClaim?.();
+                return true;
+            }
+            showToast({ message: "Failed to claim session", type: "error" });
+            return false;
+        } catch {
+            showToast({ message: "Failed to claim session", type: "error" });
+            return false;
+        } finally {
+            setIsClaiming(false);
+        }
     };
 
     const handleCloseConfirmation = () => {
@@ -112,13 +159,17 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
                 {/* Subject Tags */}
                 {session.tags && session.tags.length > 0 && (
                     <div className="flex flex-wrap gap-2">
-                        {session.tags.map((tag, index) => (
-                            <TagComponent
-                                key={index}
-                                text={tag}
-                                tagClassName="!bg-[#E0F2FE] !border-none !text-black !px-3 !py-1 !text-sm"
-                            />
-                        ))}
+                        {session.tags.map((tag, index) => {
+                            const label = typeof tag === "string" ? tag : (tag as any)?.skill_name ?? (tag as any)?.name ?? "";
+                            if (!label) return null;
+                            return (
+                                <TagComponent
+                                    key={index}
+                                    text={label}
+                                    tagClassName="!bg-[#E0F2FE] !border-none !text-black !px-3 !py-1 !text-sm"
+                                />
+                            );
+                        })}
                     </div>
                 )}
 
@@ -178,6 +229,7 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
             onClose={handleCloseConfirmation}
             onConfirm={handleConfirmClaim}
             session={session}
+            isClaiming={isClaiming}
         />
         </>
     );

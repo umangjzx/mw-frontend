@@ -8,11 +8,22 @@ import TagComponent from "@/components/common/Tag";
 import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+import { POST_API, GET_API } from "@/api/request";
+import { endpoints } from "@/api/constants";
+import { showToast } from "@/components/common/Toast";
+import { useQuery } from "@tanstack/react-query";
+
+interface Skill {
+    skill_id: string;
+    skill_name: string;
+}
 
 interface NewEventModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSubmit?: (data: NewEventData) => void;
+    /** When provided, used for the instant session. When omitted, slots for the selected date are fetched and the first slot is used. */
+    volunteer_slot_id?: string;
 }
 
 export interface NewEventData {
@@ -33,7 +44,23 @@ const durationOptions = [
     { label: "2 hours", value: "120" },
 ];
 
-export default function NewEventModal({ isOpen, onClose, onSubmit }: NewEventModalProps) {
+/** Request body for POST /api/v1/session/instant_session */
+interface InstantSessionPayload {
+    volunteer_slot_id: string;
+    date: string;
+    duration: number;
+    start_time: string;
+    title: string;
+    description: string;
+    tag_ids: string[];
+}
+
+export default function NewEventModal({
+    isOpen,
+    onClose,
+    onSubmit,
+    volunteer_slot_id: volunteerSlotIdProp,
+}: NewEventModalProps) {
     const [formData, setFormData] = useState<NewEventData>({
         select_date: new Date(),
         duration: "",
@@ -43,8 +70,21 @@ export default function NewEventModal({ isOpen, onClose, onSubmit }: NewEventMod
         tags: [],
     });
 
-    const [tagInput, setTagInput] = useState("");
+    const [selectedSkills, setSelectedSkills] = useState<Skill[]>([]);
+    const [skillSelectValue, setSkillSelectValue] = useState<string>("");
     const [selectedTime, setSelectedTime] = useState<dayjs.Dayjs | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { data: skillsData } = useQuery({
+        queryKey: ["common-skills"],
+        queryFn: async () => {
+            const res = await GET_API(endpoints.common("skills"));
+            return res?.data as Skill[];
+        },
+        enabled: isOpen,
+    });
+    const skills: Skill[] = Array.isArray(skillsData) ? skillsData : [];
+    const skillOptions = skills.map((s) => ({ label: s.skill_name, value: s.skill_id }));
 
     // Get today's date in YYYY-MM-DD format
     const getTodayDate = () => dayjs().format("YYYY-MM-DD");
@@ -72,43 +112,84 @@ export default function NewEventModal({ isOpen, onClose, onSubmit }: NewEventMod
         setFormData((prev) => ({ ...prev, description: value }));
     };
 
-    const handleAddTag = () => {
-        if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
-            setFormData((prev) => ({
-                ...prev,
-                tags: [...prev.tags, tagInput.trim()],
-            }));
-            setTagInput("");
+    const handleAddSkill = (skillId: string) => {
+        const skill = skills.find((s) => s.skill_id === skillId);
+        if (skill && !selectedSkills.some((s) => s.skill_id === skillId)) {
+            setSelectedSkills((prev) => [...prev, skill]);
+            setSkillSelectValue("");
         }
     };
 
-    const handleRemoveTag = (tagToRemove: string) => {
-        setFormData((prev) => ({
-            ...prev,
-            tags: prev.tags.filter((tag) => tag !== tagToRemove),
-        }));
+    const handleRemoveSkill = (skillId: string) => {
+        setSelectedSkills((prev) => prev.filter((s) => s.skill_id !== skillId));
     };
 
-    const handleSubmit = () => {
-        if (onSubmit) {
-            onSubmit(formData);
+    const handleSubmit = async () => {
+        if (!formData.duration || !formData.start_time || !formData.title?.trim()) {
+            showToast({ message: "Please fill in duration, start time and title", type: "error" });
+            return;
         }
-        // Reset form
-        setFormData({
-            select_date: new Date(),
-            duration: "",
-            start_time: "",
-            title: "",
-            description: "",
-            tags: [],
-        });
-        setSelectedTime(null);
-        setTagInput("");
-        onClose();
+        const dateStr = formData.select_date
+            ? dayjs(formData.select_date).format("YYYY-MM-DD")
+            : dayjs().format("YYYY-MM-DD");
+        let volunteer_slot_id = volunteerSlotIdProp;
+        if (!volunteer_slot_id) {
+            try {
+                const res = await GET_API(
+                    endpoints.volunteer_slot.getAvailableDaysForDate(dateStr)
+                );
+                const slots = res?.data?.slots ?? [];
+                volunteer_slot_id = slots[0]?.volunteer_slot_id;
+                if (!volunteer_slot_id) {
+                    showToast({
+                        message: "No volunteer slot found for this date. Add availability first.",
+                        type: "error",
+                    });
+                    return;
+                }
+            } catch {
+                showToast({ message: "Could not load slots for this date", type: "error" });
+                return;
+            }
+        }
+        const payload: InstantSessionPayload = {
+            volunteer_slot_id,
+            date: dateStr,
+            duration: Number(formData.duration) || 0,
+            start_time: formData.start_time,
+            title: formData.title.trim(),
+            description: formData.description?.trim() ?? "",
+            tag_ids: selectedSkills.map((s) => s.skill_id),
+        };
+        setIsSubmitting(true);
+        try {
+            const res = await POST_API(endpoints.session.createInstantSession, payload);
+            if (res?.status === 200 || res?.status === 201) {
+                showToast({ message: "Event created successfully", type: "success" });
+                onSubmit?.({ ...formData, tags: selectedSkills.map((s) => s.skill_name) });
+                setFormData({
+                    select_date: new Date(),
+                    duration: "",
+                    start_time: "",
+                    title: "",
+                    description: "",
+                    tags: [],
+                });
+                setSelectedSkills([]);
+                setSkillSelectValue("");
+                setSelectedTime(null);
+                onClose();
+            } else {
+                showToast({ message: "Failed to create event", type: "error" });
+            }
+        } catch {
+            showToast({ message: "Failed to create event", type: "error" });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleCancel = () => {
-        // Reset form
         setFormData({
             select_date: new Date(),
             duration: "",
@@ -117,8 +198,9 @@ export default function NewEventModal({ isOpen, onClose, onSubmit }: NewEventMod
             description: "",
             tags: [],
         });
+        setSelectedSkills([]);
+        setSkillSelectValue("");
         setSelectedTime(null);
-        setTagInput("");
         onClose();
     };
 
@@ -174,7 +256,9 @@ export default function NewEventModal({ isOpen, onClose, onSubmit }: NewEventMod
 
                     {/* Start Time */}
                     <div className="flex flex-col gap-2">
-                        <label className="text-base font-medium text-[#121212]">Start Time (IST)</label>
+                        <label className="text-base font-medium text-[#121212]">
+                            Start Time (IST)
+                        </label>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <TimePicker
                                 timeSteps={{ minutes: 15 }}
@@ -258,34 +342,33 @@ export default function NewEventModal({ isOpen, onClose, onSubmit }: NewEventMod
                     />
                 </div>
 
-                {/* Tags */}
-                <div className="flex flex-col ">
+                {/* Tags – search and select from skills, pass skill IDs as tag_ids on post */}
+                <div className="flex flex-col gap-2">
                     <label className="text-base font-medium text-[#121212]">Tags</label>
                     <div className="flex flex-wrap gap-2 mb-2">
-                        {formData.tags.map((tag, index) => (
+                        {selectedSkills.map((skill) => (
                             <TagComponent
-                                key={index}
-                                text={tag}
+                                key={skill.skill_id}
+                                text={skill.skill_name}
                                 isClose={true}
-                                onClose={() => handleRemoveTag(tag)}
+                                onClose={() => handleRemoveSkill(skill.skill_id)}
                             />
                         ))}
                     </div>
                     <Input
-                        name="tag_input"
-                        inputType="text"
-                        value={tagInput}
-                        onChange={(value: string | string[]) => {
-                            setTagInput(Array.isArray(value) ? value[0] : value);
+                        name="skill_select"
+                        inputType="select"
+                        placeholder="Search and select skills"
+                        value={skillSelectValue}
+                        onChange={(value: string | number) => {
+                            const id = String(value);
+                            handleAddSkill(id);
                         }}
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                                e.preventDefault();
-                                handleAddTag();
-                            }
-                        }}
-                        placeholder="Add tags here"
-                        inputClassName="w-full !h-12 placeholder:!text-[#808080] placeholder:!text-base"
+                        options={skillOptions.filter(
+                            (opt) => !selectedSkills.some((s) => s.skill_id === opt.value)
+                        )}
+                        showSearch={true}
+                        inputClassName="w-full !h-12 [&_.ant-select-selector]:!text-base"
                     />
                 </div>
 
@@ -297,8 +380,9 @@ export default function NewEventModal({ isOpen, onClose, onSubmit }: NewEventMod
                         customClassName="!bg-white !text-black !font-medium rounded-full !px-6 !py-2.5"
                     />
                     <Button
-                        title="Create Event"
+                        title={isSubmitting ? "Creating..." : "Create Event"}
                         onClick={handleSubmit}
+                        disabled={isSubmitting}
                         customClassName="!bg-black !text-white !font-medium rounded-full !px-6 !py-2.5"
                     />
                 </div>

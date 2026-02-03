@@ -59,13 +59,17 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, onClick }) => {
             {/* Tags */}
             {session.tags && session.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-3">
-                    {session.tags.map((tag, index) => (
-                        <TagComponent
-                            key={index}
-                            text={tag}
-                            tagClassName="!bg-[#E0F2FE] !border-none !text-black !px-3 !py-1 !text-sm"
-                        />
-                    ))}
+                    {session.tags.map((tag, index) => {
+                        const label = typeof tag === "string" ? tag : (tag as any)?.skill_name ?? (tag as any)?.name ?? "";
+                        if (!label) return null;
+                        return (
+                            <TagComponent
+                                key={index}
+                                text={label}
+                                tagClassName="!bg-[#E0F2FE] !border-none !text-black !px-3 !py-1 !text-sm"
+                            />
+                        );
+                    })}
                 </div>
             )}
 

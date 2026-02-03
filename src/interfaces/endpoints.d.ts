@@ -34,7 +34,7 @@ type EndpointProps = {
         update: string;
         get: string;
         availableSlots: (id: string, date: string) => string;
-        availableDays: (id: string , month: string) => string;
+        availableDays: (id: string, month: string) => string;
         getAllSlotsForMonth: (month: string) => string;
         deleteParticularSlot: string;
         getAvailableDaysForDate: (date: string) => string;
@@ -42,6 +42,10 @@ type EndpointProps = {
     };
     session: {
         bookSession: string;
+        createInstantSession: string;
+        claimInstantSession: string;
+        getVolunteerInstantSession: (volunteer_slot_id: string, date: string, volunteer_id: string) => string;
+        getLearnerInstantSession: (date: string, isAccepted?: boolean) => string;
         getLearnerSessions: (id: string) => string;
         cancelSession: (id: string) => string;
         getApprovalNotifications: (id: string) => string;
