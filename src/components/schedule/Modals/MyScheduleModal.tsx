@@ -23,10 +23,17 @@ interface TimeSlot {
     start_time: string;
     end_time: string;
     volunteer_slot_id?: string;
+    /** Stable id for UI state (repeat/custom). From API: volunteer_slot_id; new slots: generated client_id. */
+    client_id?: string;
     slot_type?: "repeats_weekly" | "custom";
     start_date?: string;
     end_date?: string;
     weekly_repeat_interval?: number;
+}
+
+/** Stable id for a slot so repeat/custom state stays correct when slots are reordered by time. */
+function getSlotId(slot: TimeSlot): string {
+    return slot.volunteer_slot_id ?? slot.client_id ?? "";
 }
 
 interface DaySchedule {
@@ -69,14 +76,14 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
     const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const [deletedSlots, setDeletedSlots] = useState<DeletedSlot[]>([]);
     const [expandedDays, setExpandedDays] = useState<{ [key: string]: boolean }>({});
-    const [repeatFrequency, setRepeatFrequency] = useState<{ [key: string]: { [slotIndex: number]: string } }>({});
-    const [openDropdowns, setOpenDropdowns] = useState<{ [key: string]: { [slotIndex: number]: boolean } }>({});
+    const [repeatFrequency, setRepeatFrequency] = useState<{ [day: string]: { [slotId: string]: string } }>({});
+    const [openDropdowns, setOpenDropdowns] = useState<{ [day: string]: { [slotId: string]: boolean } }>({});
     const [customRecurrenceModalOpen, setCustomRecurrenceModalOpen] = useState(false);
     const [currentDayForCustom, setCurrentDayForCustom] = useState<string>("");
-    const [currentSlotIndexForCustom, setCurrentSlotIndexForCustom] = useState<number>(-1);
+    const [currentSlotIdForCustom, setCurrentSlotIdForCustom] = useState<string>("");
     const [justSavedCustom, setJustSavedCustom] = useState(false);
     const [customRecurrenceData, setCustomRecurrenceData] = useState<{
-        [key: string]: { [slotIndex: number]: { start_date: string; end_date: string | null; weekly_repeat_interval?: number } };
+        [day: string]: { [slotId: string]: { start_date: string; end_date: string | null; weekly_repeat_interval?: number } };
     }>({});
     const queryClient = useQueryClient();
     const { volunteerUtcOffset } = useAppStore();
@@ -112,49 +119,45 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                     return;
                 }
                 
-                // Initialize state objects to batch updates
+                // Initialize state objects to batch updates (keyed by slot id so reordering doesn't swap repeat type)
                 const newCustomRecurrenceData: {
-                    [key: string]: { [slotIndex: number]: { start_date: string; end_date: string | null; weekly_repeat_interval?: number } };
+                    [day: string]: { [slotId: string]: { start_date: string; end_date: string | null; weekly_repeat_interval?: number } };
                 } = {};
-                const newRepeatFrequency: { [key: string]: { [slotIndex: number]: string } } = {};
+                const newRepeatFrequency: { [day: string]: { [slotId: string]: string } } = {};
 
             // Populate the schedule with API data
                 slotsData.forEach((dayData: any) => {
                     const dayName = dayData.day;
                     if (dayName && dayData.slots && Array.isArray(dayData.slots)) {
-                        newSchedule[dayName] = dayData.slots.map((slot: any) => ({
-                        volunteer_slot_id: slot.volunteer_slot_id,
-                        start_time: slot.start_time,
-                        end_time: slot.end_time,
-                            slot_type: slot.slot_type || "repeats_weekly",
-                            start_date: slot.start_date,
-                            end_date: slot.end_date,
-                            weekly_repeat_interval: slot.weekly_repeat_interval,
-                        }));
+                        newSchedule[dayName] = dayData.slots.map((slot: any, slotIndex: number) => {
+                            const slotId = slot.volunteer_slot_id ?? `load_${dayName}_${slotIndex}`;
+                            return {
+                                volunteer_slot_id: slot.volunteer_slot_id,
+                                client_id: slotId,
+                                start_time: slot.start_time,
+                                end_time: slot.end_time,
+                                slot_type: slot.slot_type || "repeats_weekly",
+                                start_date: slot.start_date,
+                                end_date: slot.end_date,
+                                weekly_repeat_interval: slot.weekly_repeat_interval,
+                            };
+                        });
                         
-                        // Store custom recurrence data if slot_type is custom
-                        dayData.slots.forEach((slot: any, slotIndex: number) => {
+                        // Store custom recurrence data keyed by slot id so reordering doesn't swap repeat type
+                        newSchedule[dayName].forEach((slot) => {
+                            const slotId = getSlotId(slot);
+                            if (!slotId) return;
+                            if (!newRepeatFrequency[dayName]) newRepeatFrequency[dayName] = {};
                             if (slot.slot_type === "custom" && slot.start_date) {
-                                // Initialize day object if it doesn't exist
-                                if (!newCustomRecurrenceData[dayName]) {
-                                    newCustomRecurrenceData[dayName] = {};
-                                }
-                                if (!newRepeatFrequency[dayName]) {
-                                    newRepeatFrequency[dayName] = {};
-                                }
-                                
-                                newCustomRecurrenceData[dayName][slotIndex] = {
+                                if (!newCustomRecurrenceData[dayName]) newCustomRecurrenceData[dayName] = {};
+                                newCustomRecurrenceData[dayName][slotId] = {
                                     start_date: slot.start_date,
-                                    end_date: slot.end_date || null,
+                                    end_date: slot.end_date ?? null,
                                     weekly_repeat_interval: slot.weekly_repeat_interval,
                                 };
-                                newRepeatFrequency[dayName][slotIndex] = "custom";
+                                newRepeatFrequency[dayName][slotId] = "custom";
                             } else {
-                                // Initialize day object if it doesn't exist
-                                if (!newRepeatFrequency[dayName]) {
-                                    newRepeatFrequency[dayName] = {};
-                                }
-                                newRepeatFrequency[dayName][slotIndex] = slot.slot_type === "repeats_weekly" ? "weekly" : "weekly";
+                                newRepeatFrequency[dayName][slotId] = "weekly";
                             }
                         });
                     }
@@ -280,70 +283,47 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
     };
 
     const addTimeSlot = (day: string) => {
+        const newClientId = `new_${Date.now()}_${Math.random().toString(36).slice(2)}`;
         setSchedule((prev) => ({
             ...prev,
-            [day]: [...prev[day], { start_time: "", end_time: "", slot_type: "repeats_weekly" }],
+            [day]: [...prev[day], { start_time: "", end_time: "", slot_type: "repeats_weekly", client_id: newClientId }],
+        }));
+        setRepeatFrequency((prev) => ({
+            ...prev,
+            [day]: { ...prev[day], [newClientId]: "weekly" },
         }));
     };
 
     const removeTimeSlot = (day: string, slotIndex: number) => {
         setSchedule((prev) => {
             const slotToRemove = prev[day][slotIndex];
+            const slotId = getSlotId(slotToRemove);
             if (slotToRemove.volunteer_slot_id) {
                 setDeletedSlots((prev) => {
-                    // Check if the ID already exists in the array to prevent duplicates
                     if (!prev.some((slot) => slot.volunteer_slot_id === slotToRemove.volunteer_slot_id)) {
                         return [...prev, { volunteer_slot_id: slotToRemove.volunteer_slot_id!, day }];
                     }
                     return prev;
                 });
             }
-
-            // Clean up custom recurrence data for this slot
-            setCustomRecurrenceData((prev) => {
-                const newData = { ...prev };
-                if (newData[day]?.[slotIndex]) {
-                    // Shift indices for slots after the removed one
-                    const updatedDayData: { [slotIndex: number]: { start_date: string; end_date: string | null; weekly_repeat_interval?: number } } = {};
-                    Object.keys(newData[day] || {}).forEach((key) => {
-                        const idx = parseInt(key);
-                        if (idx < slotIndex) {
-                            updatedDayData[idx] = newData[day][idx];
-                        } else if (idx > slotIndex) {
-                            updatedDayData[idx - 1] = newData[day][idx];
-                        }
-                    });
-                    if (Object.keys(updatedDayData).length === 0) {
-                        delete newData[day];
-                    } else {
-                        newData[day] = updatedDayData;
+            if (slotId) {
+                setCustomRecurrenceData((prev) => {
+                    const newData = { ...prev };
+                    if (newData[day]?.[slotId]) {
+                        delete newData[day][slotId];
+                        if (Object.keys(newData[day]).length === 0) delete newData[day];
                     }
-                }
-                return newData;
-            });
-
-            // Clean up repeat frequency data
-            setRepeatFrequency((prev) => {
-                const newFreq = { ...prev };
-                if (newFreq[day]) {
-                    const updatedDayFreq: { [slotIndex: number]: string } = {};
-                    Object.keys(newFreq[day] || {}).forEach((key) => {
-                        const idx = parseInt(key);
-                        if (idx < slotIndex) {
-                            updatedDayFreq[idx] = newFreq[day][idx];
-                        } else if (idx > slotIndex) {
-                            updatedDayFreq[idx - 1] = newFreq[day][idx];
-                        }
-                    });
-                    if (Object.keys(updatedDayFreq).length === 0) {
-                        delete newFreq[day];
-                    } else {
-                        newFreq[day] = updatedDayFreq;
+                    return newData;
+                });
+                setRepeatFrequency((prev) => {
+                    const newFreq = { ...prev };
+                    if (newFreq[day]?.[slotId]) {
+                        delete newFreq[day][slotId];
+                        if (Object.keys(newFreq[day]).length === 0) delete newFreq[day];
                     }
-                }
-                return newFreq;
-            });
-
+                    return newFreq;
+                });
+            }
             return {
                 ...prev,
                 [day]: prev[day].filter((_, index) => index !== slotIndex),
@@ -356,14 +336,15 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             day,
             slots: schedule[day]
                 .filter((slot) => slot.start_time && slot.end_time) // Only include filled slots
-                .map((slot, slotIndex) => {
-                    const frequencyValue = repeatFrequency[day]?.[slotIndex];
-                    const slotType: "repeats_weekly" | "custom" = 
-                        slot.slot_type || 
+                .map((slot) => {
+                    const slotId = getSlotId(slot);
+                    const frequencyValue = slotId ? repeatFrequency[day]?.[slotId] : undefined;
+                    const slotType: "repeats_weekly" | "custom" =
+                        slot.slot_type ||
                         (frequencyValue === "custom" ? "custom" : "repeats_weekly") ||
                         "repeats_weekly";
                     const isCustom = slotType === "custom";
-                    const customData = customRecurrenceData[day]?.[slotIndex];
+                    const customData = slotId ? customRecurrenceData[day]?.[slotId] : undefined;
                     
                     const apiSlot: APITimeSlot = {
                         volunteer_slot_id: slot.volunteer_slot_id || generateTimeSlotId(slot.start_time, slot.end_time),
@@ -436,69 +417,50 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
         }));
     };
 
-    const toggleRepeatDropdown = (day: string, slotIndex: number) => {
+    const toggleRepeatDropdown = (day: string, slotId: string) => {
         setOpenDropdowns((prev) => ({
             ...prev,
             [day]: {
                 ...prev[day],
-                [slotIndex]: !prev[day]?.[slotIndex],
+                [slotId]: !prev[day]?.[slotId],
             },
         }));
     };
 
-    const handleRepeatFrequencyChange = (day: string, slotIndex: number, value: string) => {
+    const handleRepeatFrequencyChange = (day: string, slotId: string, value: string) => {
         if (value === "custom") {
-            // Immediately set repeatFrequency to "custom" so UI updates
             setRepeatFrequency((prev) => ({
                 ...prev,
-                [day]: {
-                    ...prev[day],
-                    [slotIndex]: "custom",
-                },
+                [day]: { ...prev[day], [slotId]: "custom" },
             }));
             setCurrentDayForCustom(day);
-            setCurrentSlotIndexForCustom(slotIndex);
+            setCurrentSlotIdForCustom(slotId);
             setCustomRecurrenceModalOpen(true);
         } else {
             setRepeatFrequency((prev) => ({
                 ...prev,
-                [day]: {
-                    ...prev[day],
-                    [slotIndex]: value,
-                },
+                [day]: { ...prev[day], [slotId]: value },
             }));
-            // Update schedule slot_type when changing to weekly
             setSchedule((prev) => ({
                 ...prev,
-                [day]: prev[day].map((slot, index) =>
-                    index === slotIndex
-                        ? {
-                              ...slot,
-                              slot_type: "repeats_weekly",
-                              start_date: undefined,
-                              end_date: undefined,
-                          }
+                [day]: prev[day].map((slot) =>
+                    getSlotId(slot) === slotId
+                        ? { ...slot, slot_type: "repeats_weekly", start_date: undefined, end_date: undefined }
                         : slot
                 ),
             }));
-            // Remove custom recurrence data if switching away from custom
             setCustomRecurrenceData((prev) => {
                 const newData = { ...prev };
-                if (newData[day]?.[slotIndex]) {
-                    delete newData[day][slotIndex];
-                    if (Object.keys(newData[day]).length === 0) {
-                        delete newData[day];
-                    }
+                if (newData[day]?.[slotId]) {
+                    delete newData[day][slotId];
+                    if (Object.keys(newData[day]).length === 0) delete newData[day];
                 }
                 return newData;
             });
         }
         setOpenDropdowns((prev) => ({
             ...prev,
-            [day]: {
-                ...prev[day],
-                [slotIndex]: false,
-            },
+            [day]: { ...prev[day], [slotId]: false },
         }));
     };
 
@@ -520,34 +482,28 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
         // Update all states immediately
         setSchedule((prev) => ({
             ...prev,
-            [currentDayForCustom]: prev[currentDayForCustom].map((slot, index) => {
-                if (index === currentSlotIndexForCustom) {
-                    const updatedSlot: TimeSlot = {
-                        ...slot,
-                        slot_type: "custom" as const,
-                        start_date: startDateStr,
-                        end_date: data.endType === "date" && data.endDate ? endDateStr || undefined : undefined,
-                    };
-                    return updatedSlot;
-                }
-                return slot;
-            }),
+            [currentDayForCustom]: prev[currentDayForCustom].map((slot) =>
+                getSlotId(slot) === currentSlotIdForCustom
+                    ? {
+                          ...slot,
+                          slot_type: "custom" as const,
+                          start_date: startDateStr,
+                          end_date: data.endType === "date" && data.endDate ? endDateStr || undefined : undefined,
+                      }
+                    : slot
+            ),
         }));
         
         setRepeatFrequency((prev) => ({
             ...prev,
-            [currentDayForCustom]: {
-                ...prev[currentDayForCustom],
-                [currentSlotIndexForCustom]: "custom",
-            },
+            [currentDayForCustom]: { ...prev[currentDayForCustom], [currentSlotIdForCustom]: "custom" },
         }));
         
-        // Store the custom recurrence dates
         setCustomRecurrenceData((prev) => ({
             ...prev,
             [currentDayForCustom]: {
                 ...prev[currentDayForCustom],
-                [currentSlotIndexForCustom]: {
+                [currentSlotIdForCustom]: {
                     start_date: startDateStr,
                     end_date: endDateStr,
                     weekly_repeat_interval: data.repeatEvery,
@@ -555,12 +511,10 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             },
         }));
         
-        // Close the modal directly here to avoid race conditions with async state updates
-        // Mark that we just saved so onClose won't revert the changes
         setJustSavedCustom(true);
         setCustomRecurrenceModalOpen(false);
         setCurrentDayForCustom("");
-        setCurrentSlotIndexForCustom(-1);
+        setCurrentSlotIdForCustom("");
         
         // Reset the flag after modal is fully closed
         setTimeout(() => {
@@ -714,71 +668,71 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                                                                     )
                                                             )}
                                                             <div className="relative pt-2 repeat-dropdown-container">
-                                                                <div
-                                                                    className="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-gray-50 cursor-pointer hover:border-gray-300 transition-colors"
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        toggleRepeatDropdown(day, slotIndex);
-                                                                    }}
-                                                                >
-                                                                    <span className="text-sm font-medium text-gray-700">
-                                                                        {(() => {
-                                                                            const slot = schedule[day][slotIndex];
-                                                                            const freq = repeatFrequency[day]?.[slotIndex];
-                                                                            
-                                                                            // Prioritize schedule slot_type if it's custom, otherwise use repeatFrequency
-                                                                            if (slot?.slot_type === "custom") {
-                                                                                return "Custom";
-                                                                            } else if (freq) {
-                                                                                return repeatOptions.find(opt => opt.value === freq)?.label || "Repeats Weekly";
-                                                                            }
-                                                                            return "Repeats Weekly";
-                                                                        })()}
-                                                                    </span>
-                                                                    <svg
-                                                                        width="20"
-                                                                        height="20"
-                                                                        viewBox="0 0 20 20"
-                                                                        fill="none"
-                                                                        xmlns="http://www.w3.org/2000/svg"
-                                                                        className={cn(
-                                                                            "transition-transform duration-200",
-                                                                            openDropdowns[day]?.[slotIndex] ? "rotate-90" : ""
-                                                                        )}
-                                                                    >
-                                                                        <path
-                                                                            d="M7.5 5L12.5 10L7.5 15"
-                                                                            stroke="#121212"
-                                                                            strokeWidth="2"
-                                                                            strokeLinecap="round"
-                                                                            strokeLinejoin="round"
-                                                                        />
-                                                                    </svg>
-                                                                </div>
-                                                                {openDropdowns[day]?.[slotIndex] && (
-                                                                    <div 
-                                                                        className="absolute top-full left-0 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-10"
-                                                                        onClick={(e) => e.stopPropagation()}
-                                                                    >
-                                                                        {repeatOptions.map((option) => (
-                                                                            <div
-                                                                                key={option.value}
+                                                                {(() => {
+                                                                    const slotId = getSlotId(slot);
+                                                                    return (
+                                                                        <>
+                                                                        <div
+                                                                            className="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-gray-50 cursor-pointer hover:border-gray-300 transition-colors"
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                toggleRepeatDropdown(day, slotId);
+                                                                            }}
+                                                                        >
+                                                                            <span className="text-sm font-medium text-gray-700">
+                                                                                {slot?.slot_type === "custom"
+                                                                                    ? "Custom"
+                                                                                    : (repeatFrequency[day]?.[slotId]
+                                                                                        ? repeatOptions.find(opt => opt.value === repeatFrequency[day]?.[slotId])?.label
+                                                                                        : null) || "Repeats Weekly"}
+                                                                            </span>
+                                                                            <svg
+                                                                                width="20"
+                                                                                height="20"
+                                                                                viewBox="0 0 20 20"
+                                                                                fill="none"
+                                                                                xmlns="http://www.w3.org/2000/svg"
                                                                                 className={cn(
-                                                                                    "flex items-center justify-between p-3 text-sm cursor-pointer transition-colors",
-                                                                                    repeatFrequency[day]?.[slotIndex] === option.value || (!repeatFrequency[day]?.[slotIndex] && option.value === "weekly")
-                                                                                        ? "bg-gray-50 text-gray-900 font-medium"
-                                                                                        : "text-gray-700 hover:bg-gray-50"
+                                                                                    "transition-transform duration-200",
+                                                                                    openDropdowns[day]?.[slotId] ? "rotate-90" : ""
                                                                                 )}
-                                                                                onClick={() => handleRepeatFrequencyChange(day, slotIndex, option.value)}
                                                                             >
-                                                                                <span>{option.label}</span>
-                                                                                {(repeatFrequency[day]?.[slotIndex] === option.value || (!repeatFrequency[day]?.[slotIndex] && option.value === "weekly")) && (
-                                                                                    <CheckIcon />
-                                                                                )}
+                                                                                <path
+                                                                                    d="M7.5 5L12.5 10L7.5 15"
+                                                                                    stroke="#121212"
+                                                                                    strokeWidth="2"
+                                                                                    strokeLinecap="round"
+                                                                                    strokeLinejoin="round"
+                                                                                />
+                                                                            </svg>
+                                                                        </div>
+                                                                        {openDropdowns[day]?.[slotId] && (
+                                                                            <div 
+                                                                                className="absolute top-full left-0 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-10"
+                                                                                onClick={(e) => e.stopPropagation()}
+                                                                            >
+                                                                                {repeatOptions.map((option) => (
+                                                                                    <div
+                                                                                        key={option.value}
+                                                                                        className={cn(
+                                                                                            "flex items-center justify-between p-3 text-sm cursor-pointer transition-colors",
+                                                                                            repeatFrequency[day]?.[slotId] === option.value || (!repeatFrequency[day]?.[slotId] && option.value === "weekly")
+                                                                                                ? "bg-gray-50 text-gray-900 font-medium"
+                                                                                                : "text-gray-700 hover:bg-gray-50"
+                                                                                        )}
+                                                                                        onClick={() => handleRepeatFrequencyChange(day, slotId, option.value)}
+                                                                                    >
+                                                                                        <span>{option.label}</span>
+                                                                                        {(repeatFrequency[day]?.[slotId] === option.value || (!repeatFrequency[day]?.[slotId] && option.value === "weekly")) && (
+                                                                                            <CheckIcon />
+                                                                                        )}
+                                                                                    </div>
+                                                                                ))}
                                                                             </div>
-                                                                        ))}
-                                                                    </div>
-                                                                )}
+                                                                        )}
+                                                                        </>
+                                                                    );
+                                                                })()}
                                                             </div> 
                                                         </div>
                                                     ))
@@ -808,10 +762,10 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             <CustomRecurrenceModal
                 isOpen={customRecurrenceModalOpen}
                 initialData={
-                    currentDayForCustom && currentSlotIndexForCustom >= 0
+                    currentDayForCustom && currentSlotIdForCustom
                         ? (() => {
-                              const customData = customRecurrenceData[currentDayForCustom]?.[currentSlotIndexForCustom];
-                              const slotData = schedule[currentDayForCustom]?.[currentSlotIndexForCustom];
+                              const customData = customRecurrenceData[currentDayForCustom]?.[currentSlotIdForCustom];
+                              const slotData = schedule[currentDayForCustom]?.find((s) => getSlotId(s) === currentSlotIdForCustom);
                               
                               // Prefer customRecurrenceData, fallback to slotData
                               if (customData) {
@@ -832,55 +786,31 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                         : undefined
                 }
                 onClose={() => {
-                    // If user cancels without saving, revert to weekly if no custom data exists
-                    // But skip this if we just saved (justSavedCustom flag)
                     const wasJustSaved = justSavedCustom;
                     const day = currentDayForCustom;
-                    const slotIndex = currentSlotIndexForCustom;
+                    const slotId = currentSlotIdForCustom;
                     
-                    // Close modal first
                     setCustomRecurrenceModalOpen(false);
                     setCurrentDayForCustom("");
-                    setCurrentSlotIndexForCustom(-1);
+                    setCurrentSlotIdForCustom("");
                     
-                    // Only check and revert if we didn't just save
-                    if (!wasJustSaved && day && slotIndex >= 0) {
-                        // Use setTimeout to check after state has potentially updated
+                    if (!wasJustSaved && day && slotId) {
                         setTimeout(() => {
-                            setSchedule((prev) => {
-                                const slot = prev[day]?.[slotIndex];
-                                const hasCustomData = slot?.slot_type === "custom" && slot?.start_date;
-                                
-                                if (!hasCustomData) {
-                                    // Revert to weekly if no custom data was saved
-                                    return {
-                                        ...prev,
-                                        [day]: prev[day].map((s, index) =>
-                                            index === slotIndex
-                                                ? {
-                                                      ...s,
-                                                      slot_type: "repeats_weekly",
-                                                      start_date: undefined,
-                                                      end_date: undefined,
-                                                  }
-                                                : s
-                                        ),
-                                    };
-                                }
-                                return prev;
-                            });
-                            
+                            setSchedule((prev) => ({
+                                ...prev,
+                                [day]: prev[day].map((s) => {
+                                    if (getSlotId(s) !== slotId) return s;
+                                    const hasCustomData = s.slot_type === "custom" && s.start_date;
+                                    if (!hasCustomData) {
+                                        return { ...s, slot_type: "repeats_weekly", start_date: undefined, end_date: undefined };
+                                    }
+                                    return s;
+                                }),
+                            }));
                             setRepeatFrequency((prev) => {
-                                const freq = prev[day]?.[slotIndex];
-                                // Only revert if it's not "custom"
+                                const freq = prev[day]?.[slotId];
                                 if (freq !== "custom") {
-                                    return {
-                                        ...prev,
-                                        [day]: {
-                                            ...prev[day],
-                                            [slotIndex]: "weekly",
-                                        },
-                                    };
+                                    return { ...prev, [day]: { ...prev[day], [slotId]: "weekly" } };
                                 }
                                 return prev;
                             });

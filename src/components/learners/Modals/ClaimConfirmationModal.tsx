@@ -8,7 +8,8 @@ import ConfirmationSuccessfulModal from "./ConfirmationSuccessfulModal";
 interface ClaimConfirmationModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onConfirm: () => void;
+    onConfirm: () => void | Promise<boolean | void>;
+    isClaiming?: boolean;
     session: {
         id: string;
         title: string;
@@ -33,24 +34,24 @@ const ClaimConfirmationModal: React.FC<ClaimConfirmationModalProps> = ({
     onClose,
     onConfirm,
     session,
+    isClaiming = false,
 }) => {
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
-    const handleConfirm = () => {
-        console.log("Yes Confirm clicked, opening success modal");
-        setIsSuccessModalOpen(true);
-        // Don't call onConfirm yet - wait until success modal is shown
-        // The parent will handle the confirmation logic
+    const handleConfirm = async () => {
+        try {
+            const success = await onConfirm?.();
+            if (success === true) {
+                setIsSuccessModalOpen(true);
+            }
+        } catch {
+            // Parent shows toast on error
+        }
     };
 
     const handleCloseSuccess = () => {
-        console.log("Closing success modal");
         setIsSuccessModalOpen(false);
-        // Call onConfirm when success modal closes (user has seen the confirmation)
-        if (onConfirm) {
-            onConfirm();
-        }
-        onClose(); // Close the confirmation modal after success modal closes
+        onClose();
     };
 
     return (
@@ -75,10 +76,11 @@ const ClaimConfirmationModal: React.FC<ClaimConfirmationModalProps> = ({
                         onClick={onClose}
                     />
                     <Button
-                        title="Yes Confirm"
+                        title={isClaiming ? "Claiming..." : "Yes Confirm"}
                         btnVariant="secondary"
                         customClassName="flex-1"
                         onClick={handleConfirm}
+                        disabled={isClaiming}
                     />
                 </div>
             }

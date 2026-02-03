@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import CenterModal from "@/components/common/Modals/CenterModal";
 import Button from "@/components/common/Button";
 import { TimeIcon, HostedByIcon, VerifyTickIcon } from "@/assets/icons";
-import DummyProfileImg from "@/assets/images/dummy-profile.webp";
 import PersonImg from "@/assets/images/Person.png";
 
 interface ConfirmationSuccessfulModalProps {
@@ -37,10 +36,6 @@ const ConfirmationSuccessfulModal: React.FC<ConfirmationSuccessfulModalProps> = 
     onJoinMeeting,
 }) => {
     const [copied, setCopied] = useState(false);
-
-    useEffect(() => {
-        console.log("ConfirmationSuccessfulModal isOpen:", isOpen);
-    }, [isOpen]);
 
     const handleCopyLink = () => {
         if (session.meetingLink) {
@@ -145,7 +140,7 @@ const ConfirmationSuccessfulModal: React.FC<ConfirmationSuccessfulModalProps> = 
                             {/* Meeting Link - Directly below Join Button, no padding */}
                             <div className="w-[207px] mt-0">
                                 <span className="text-[12px] text-[#000000] font-medium">
-                                    {session.meetingLink || "meet.google.com/tes-qwe-tyu"}
+                                    {session.meetingLink || "—"}
                                 </span>
                             </div>
                         </div>
@@ -177,9 +172,7 @@ const ConfirmationSuccessfulModal: React.FC<ConfirmationSuccessfulModalProps> = 
                                 );
                             })
                         ) : (
-                            <span className="text-base text-[#121212] font-medium">
-                                sam@gmail.com (Host), johndoe12@gmail.com
-                            </span>
+                            <span className="text-sm text-[#4F4F4F]">—</span>
                         )}
                     </div>
                     {/* Partial Border Line - Below Guest Section */}

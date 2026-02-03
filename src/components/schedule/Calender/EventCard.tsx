@@ -1,7 +1,16 @@
 import { cn } from "@/utils/merge-class";
 import moment from "moment";
 
-const EventCard = ({ title, time, onEventClick, className, status, style, start, end }: EventCardProps) => {
+const EventCard = ({
+    title,
+    time,
+    onEventClick,
+    className,
+    status,
+    style,
+    start,
+    end,
+}: EventCardProps) => {
     const statusStyles = {
         accepted: {
             bg: "bg-[#DCFCE7] border-[#86EFAC] text-[#15803D]",

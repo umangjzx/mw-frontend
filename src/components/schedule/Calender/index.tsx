@@ -115,7 +115,7 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
         const startMoment = moment(eventInfo.event.start);
         const endMoment = moment(eventInfo.event.end);
         let startTime, endTime;
-        
+
         if (startMoment.isValid() && endMoment.isValid()) {
             startTime = startMoment.format("h:mm A");
             endTime = endMoment.format("h:mm A");
@@ -166,7 +166,7 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
     // Add a click handler to close the preview when clicking outside
     useEffect(() => {
         if (typeof window === "undefined") return; // SSR safety check
-        
+
         const handleClickOutside = (event: MouseEvent) => {
             if (showPreview) {
                 const modal = document.querySelector(".meeting-preview-modal");
@@ -235,26 +235,25 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
         }
     };
 
-    // Preprocess events to handle midnight crossing
-    const processedEvents = events?.map((event: any) => {
-        if (event.start && event.end) {
-            const startMoment = moment(event.start);
-            const endMoment = moment(event.end);
-            
-            // If end time is before start time on the same day, it's a midnight crossing event
-            if (startMoment.isValid() && endMoment.isValid() && endMoment.isBefore(startMoment)) {
-                // Adjust the end time to the next day
-                const adjustedEnd = endMoment.clone().add(1, 'day').toISOString();
-                return {
-                    ...event,
-                    end: adjustedEnd
-                };
+    // Preprocess events: fix midnight-crossing (end before start on same day)
+    const processedEvents =
+        events?.map((event: any) => {
+            if (event.start && event.end) {
+                const startMoment = moment(event.start);
+                const endMoment = moment(event.end);
+                if (
+                    startMoment.isValid() &&
+                    endMoment.isValid() &&
+                    endMoment.isBefore(startMoment)
+                ) {
+                    return {
+                        ...event,
+                        end: endMoment.clone().add(1, "day").toISOString(),
+                    };
+                }
             }
-        }
-        return event;
-    }) || [];
-
-    console.log(processedEvents, "processed events in calendar");
+            return event;
+        }) || [];
 
     return (
         <>
