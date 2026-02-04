@@ -41,7 +41,8 @@ export const endpoints: EndpointProps = {
         get: `volunteer_slots`,
         availableSlots: (id: string, date: string) =>
             `volunteer_slots/available_slots/${id}/${date}`,
-        availableDays: (id: string) => `volunteer_slots/available_days/${id}`,
+        availableDays: (id: string, month: string) =>
+            `volunteer_slots/available_days/${id}/${month}`,
         getAllSlotsForMonth: (month: string) => `volunteer_slots/slots_and_sessions/${month}`,
         deleteParticularSlot: `volunteer_slots/add_unavailable_slots`,
         getAvailableDaysForDate: (date: string) => `volunteer_slots/get_slots_by_date/${date}`,
@@ -49,6 +50,14 @@ export const endpoints: EndpointProps = {
     },
     session: {
         bookSession: "session",
+        createInstantSession: "session/instant_session",
+        claimInstantSession: "session/instant_session/claim",
+        /** GET instant session by slot (query: volunteer_slot_id, date YYYY-MM-DD, volunteer_id) */
+        getVolunteerInstantSession: (volunteer_slot_id: string, date: string, volunteer_id: string) =>
+            `session/volunteer/instant_session?volunteer_slot_id=${encodeURIComponent(volunteer_slot_id)}&date=${encodeURIComponent(date)}&volunteer_id=${encodeURIComponent(volunteer_id)}`,
+        /** GET learner instant sessions (query: date YYYY-MM-DD, is_accepted boolean) */
+        getLearnerInstantSession: (date: string, isAccepted?: boolean) =>
+            `session/learner/instant_session?date=${encodeURIComponent(date)}${isAccepted !== undefined ? `&is_accepted=${isAccepted}` : ""}`,
         getLearnerSessions: (id: string) => `session/learner/${id}`,
         cancelSession: (id: string) => `session/${id}`,
         getApprovalNotifications: (id: string) => `session/pending_invites/${id}`,
@@ -132,7 +141,8 @@ export const endpoints: EndpointProps = {
         getMessagesForLearner: (learnerId: string) => `chat/messages/learner/${learnerId}`,
         getAllchatsOfVolunteer: (volunteerId: string) => `chat/all/volunteer/${volunteerId}`,
         getAllchatsOfLearner: (learnerId: string) => `chat/all/learner/${learnerId}`,
-        getIndividualChat: (chatId: string, type: "learner" | "volunteer") => `chat/chat/${chatId}/${type}`,
+        getIndividualChat: (chatId: string, type: "learner" | "volunteer") =>
+            `chat/chat/${chatId}/${type}`,
         readMessage: `chat/message/read`,
         volunteerPermission: (id: string) => `volunteers/${id}/chat_permission`,
         learnerPermission: (id: string) => `learner/${id}/chat_permission`,

@@ -3,6 +3,8 @@ import { GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import Cookies from "js-cookie";
 
+type UserType = "volunteer" | "learner";
+
 interface EventResponse {
     session_title: string;
     session_date: string;
@@ -25,7 +27,7 @@ interface EventResponse {
     learner_start_date: string;
 }
 
-interface CalendarEvent {
+export interface CalendarEvent {
     title: string;
     date: string;
     start: string;
@@ -54,16 +56,19 @@ interface CalendarEvent {
     };
 }
 
+/**
+ * Single API call for calendar: volunteer uses slots_and_sessions for the month,
+ * learner uses session calendar events. No per-slot or repeated calls.
+ */
 export const getCalendarEvents = async (
     userId: string,
     userType: "volunteer" | "learner",
     currentMonth?: string
-) => {
+): Promise<CalendarEvent[]> => {
     const monthParam = currentMonth
         ? moment(currentMonth).format("YYYY-MM")
         : moment().format("YYYY-MM");
-
-    const role = Cookies.get("role");
+    const role = Cookies.get("role") as UserType | undefined;
 
     const endpoint =
         role === "volunteer"
@@ -71,109 +76,114 @@ export const getCalendarEvents = async (
             : endpoints.session.getCalendarEvents(userId, role as UserType, monthParam);
 
     const response = await GET_API(endpoint);
-
-    console.log(response.data, "response");
+    const data = response?.data;
 
     if (role === "volunteer") {
-        const events: CalendarEvent[] = [];
-
-        // Process each day's data
-        response?.data?.forEach((dayData: any) => {
-            // Process each slot in the day
-            dayData.slots?.forEach((slot: any) => {
-                if (slot.session_details) {
-                    // If there's a session, create an event with the session details
-                    events.push({
-                        title: slot.session_details.session_title,
-                        date: slot.session_details.volunteer_start_date,
-                        start: moment(
-                            `${slot.session_details.volunteer_start_date} ${slot.session_details.volunteer_start_time}`
-                        ).format(),
-                        end: moment(
-                            `${slot.session_details.volunteer_start_date} ${slot.session_details.volunteer_end_time}`
-                        ).format(),
-                        backgroundColor: "var(--success-light-color)",
-                        classNames: ["event-item", "rounded-md", "py-1", "my-0.5"],
-                        textColor: "var(--success-color)",
-                        borderColor: "var(--success-color)",
-                        status: slot.session_details.status,
-                        extendedProps: {
-                            description: slot.session_details.session_description,
-                            meetLink: slot.session_details.meet_link,
-                            sessionId: slot.session_details.session_id,
-                            volunteerId: slot.session_details.volunteer_id,
-                            volunteer_full_name: slot.session_details.volunteer_full_name,
-                            learner: {
-                                id: slot.session_details.learner_id,
-                                firstName: slot.session_details.learner_full_name,
-                                lastName: slot.session_details.learner_last_name,
-                                picture: slot.session_details.learner_picture,
-                            },
-                            feedBackCollectedFromLearner:
-                                slot.session_details.feedback_collected_from_learner,
-                            feedBackCollectedFromVolunteer:
-                                slot.session_details.feedback_collected_from_volunteer,
-                        },
-                    });
-                } else {
-                    // If there's no session but there's a slot, create a "no event" card
-                    // Only show for future dates
-                    const slotDate = moment(dayData.date);
-                    const currentDate = moment().startOf("day");
-
-                    if (slotDate.isSameOrAfter(currentDate)) {
-                        events.push({
-                            title: "No Event",
-                            date: dayData.date,
-                            start: moment(`${dayData.date} ${slot.start_time}`).format(),
-                            end: moment(`${dayData.date} ${slot.end_time}`).format(),
-                            backgroundColor: "var(--gray-100)",
-                            classNames: ["event-item", "rounded-md", "py-1", "my-0.5"],
-                            textColor: "var(--gray-500)",
-                            borderColor: "var(--gray-300)",
-                            status: "available",
-                            extendedProps: {
-                                volunteer_slot_id: slot.volunteer_slot_id,
-                                isAvailableSlot: true,
-                            },
-                        });
-                    }
-                }
-            });
-        });
-        console.log(events, "events from calender");
-        return events;
-    } else {
-        return (
-            response?.data?.items?.map((item: EventResponse) => ({
-                title: item.session_title,
-                date: item.learner_start_date,
-                start: moment(`${item.learner_start_date} ${item.learner_start_time}`).format(),
-                end: moment(`${item.learner_start_date} ${item.learner_end_time}`).format(),
-                backgroundColor: "var(--success-light-color)",
-                classNames: ["event-item", "rounded-md", "py-1", "my-0.5"],
-                textColor: "var(--success-color)",
-                borderColor: "var(--success-color)",
-                status: item.status,
-                extendedProps: {
-                    description: item.session_description,
-                    meetLink: item.meet_link,
-                    sessionId: item.session_id,
-                    volunteerId: item.volunteer_id,
-                    volunteer_full_name: item.volunteer_full_name,
-                    learner: {
-                        id: item.learner_id,
-                        firstName: item.learner_first_name,
-                        lastName: item.learner_last_name,
-                        picture: item.learner_picture,
-                    },
-                    feedBackCollectedFromLearner: item.feedback_collected_from_learner,
-                    feedBackCollectedFromVolunteer: item.feedback_collected_from_volunteer,
-                },
-            })) || []
-        );
+        return mapVolunteerSlotsToEvents(data);
     }
+    return mapLearnerSessionsToEvents(data);
 };
+
+/** One GET per slot when you need instant session details (e.g. modal). Do not call in a loop for calendar. */
+export const getVolunteerInstantSession = async (
+    volunteer_slot_id: string,
+    date: string,
+    volunteer_id: string
+) => {
+    const url = endpoints.session.getVolunteerInstantSession(volunteer_slot_id, date, volunteer_id);
+    return GET_API(url);
+};
+
+function mapVolunteerSlotsToEvents(data: any[] | undefined): CalendarEvent[] {
+    if (!Array.isArray(data)) return [];
+    const events: CalendarEvent[] = [];
+    const today = moment().startOf("day");
+
+    for (const dayData of data) {
+        const slots = dayData?.slots ?? [];
+        const dayDate = dayData?.date;
+
+        for (const slot of slots) {
+            if (slot.session_details) {
+                const sd = slot.session_details;
+                events.push({
+                    title: sd.session_title,
+                    date: sd.volunteer_start_date,
+                    start: moment(`${sd.volunteer_start_date} ${sd.volunteer_start_time}`).format(),
+                    end: moment(`${sd.volunteer_start_date} ${sd.volunteer_end_time}`).format(),
+                    backgroundColor: "var(--success-light-color)",
+                    classNames: ["event-item", "rounded-md", "py-1", "my-0.5"],
+                    textColor: "var(--success-color)",
+                    borderColor: "var(--success-color)",
+                    status: sd.status,
+                    extendedProps: {
+                        description: sd.session_description,
+                        meetLink: sd.meet_link,
+                        sessionId: sd.session_id,
+                        volunteerId: sd.volunteer_id,
+                        volunteer_full_name: sd.volunteer_full_name,
+                        learner: {
+                            id: sd.learner_id,
+                            firstName: sd.learner_full_name,
+                            lastName: sd.learner_last_name,
+                            picture: sd.learner_picture,
+                        },
+                        feedBackCollectedFromLearner: sd.feedback_collected_from_learner,
+                        feedBackCollectedFromVolunteer: sd.feedback_collected_from_volunteer,
+                    },
+                });
+            } else if (dayDate && moment(dayDate).isSameOrAfter(today)) {
+                events.push({
+                    title: "No Event",
+                    date: dayDate,
+                    start: moment(`${dayDate} ${slot.start_time}`).format(),
+                    end: moment(`${dayDate} ${slot.end_time}`).format(),
+                    backgroundColor: "var(--gray-100)",
+                    classNames: ["event-item", "rounded-md", "py-1", "my-0.5"],
+                    textColor: "var(--gray-500)",
+                    borderColor: "var(--gray-300)",
+                    status: "available",
+                    extendedProps: {
+                        volunteer_slot_id: slot.volunteer_slot_id,
+                        isAvailableSlot: true,
+                    },
+                });
+            }
+        }
+    }
+    return events;
+}
+
+function mapLearnerSessionsToEvents(data: any): CalendarEvent[] {
+    const items = data?.items;
+    if (!Array.isArray(items)) return [];
+    return items.map((item: EventResponse) => ({
+        title: item.session_title,
+        date: item.learner_start_date,
+        start: moment(`${item.learner_start_date} ${item.learner_start_time}`).format(),
+        end: moment(`${item.learner_start_date} ${item.learner_end_time}`).format(),
+        backgroundColor: "var(--success-light-color)",
+        classNames: ["event-item", "rounded-md", "py-1", "my-0.5"],
+        textColor: "var(--success-color)",
+        borderColor: "var(--success-color)",
+        status: item.status,
+        extendedProps: {
+            description: item.session_description,
+            meetLink: item.meet_link,
+            sessionId: item.session_id,
+            volunteerId: item.volunteer_id,
+            volunteer_full_name: item.volunteer_full_name,
+            learner: {
+                id: item.learner_id,
+                firstName: item.learner_first_name,
+                lastName: item.learner_last_name,
+                picture: item.learner_picture,
+            },
+            feedBackCollectedFromLearner: item.feedback_collected_from_learner,
+            feedBackCollectedFromVolunteer: item.feedback_collected_from_volunteer,
+        },
+    }));
+}
 
 export const getTime = (date: Date): string => {
     if (!date) return "";

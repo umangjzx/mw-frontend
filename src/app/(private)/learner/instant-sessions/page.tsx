@@ -6,9 +6,11 @@ import SessionCard from "@/components/learners/SessionCard";
 import { InstantSessionDetailModal } from "@/components/learners/Modals";
 import { useComponentStore } from "@/store/useComponenetStore";
 import { InstantSessionIcon, TodayIcon } from "@/assets/icons";
+import { GET_API } from "@/api/request";
+import { endpoints } from "@/api/constants";
+import { useQuery } from "@tanstack/react-query";
 
-// Example session data structure - replace with actual API call
-interface Session {
+export interface Session {
     id: string;
     title: string;
     status: "available" | "claimed";
@@ -18,144 +20,126 @@ interface Session {
     endTime: string;
     timezone: string;
     duration: string;
-    date: string; // YYYY-MM-DD format
-    startDateTime?: string; // For sorting claimed sessions
+    date: string;
+    startDateTime?: string;
+    /** For claim API: volunteer_id, start_time and end_time in 24h (HH:mm) */
+    volunteer_id?: string;
+    start_time_24?: string;
+    end_time_24?: string;
     instructor: {
         name: string;
         profilePicture?: string;
     };
 }
 
+/** Map API response item to Session (handles common field names) */
+function mapItemToSession(item: any, date: string): Session {
+    const id = item.session_id ?? item.volunteer_slot_id ?? item.id ?? "";
+    const title = item.title ?? item.session_title ?? "Session";
+    const desc = item.description ?? item.session_description ?? "";
+    const startTimeRaw = item.start_time ?? item.learner_start_time ?? item.startTime ?? "00:00";
+    const endTimeRaw = item.end_time ?? item.learner_end_time ?? item.endTime ?? "00:00";
+    const startTime = formatTime12h(startTimeRaw);
+    const endTime = formatTime12h(endTimeRaw);
+    const duration = item.duration ?? formatDuration(startTimeRaw, endTimeRaw);
+    const timezone = item.timezone ?? item.learner_timezone ?? "IST";
+    const instructorName =
+        item.volunteer_full_name ?? item.instructor?.name ?? item.volunteer_name ?? "Instructor";
+    const rawTags = Array.isArray(item.tags)
+        ? item.tags
+        : Array.isArray(item.skills)
+        ? item.skills
+        : item.skill
+        ? [item.skill]
+        : [];
+    const tags: string[] = rawTags
+        .map((t: any) =>
+            typeof t === "string"
+                ? t
+                : t?.skill_name ?? t?.name ?? (t?.skill_id != null ? String(t.skill_id) : "")
+        )
+        .filter(Boolean);
+    const isClaimed =
+        item.is_accepted === true || item.status === "claimed" || item.status === "accepted";
+    const startDateTime =
+        item.learner_start_date && item.learner_start_time
+            ? `${item.learner_start_date} ${item.learner_start_time}`
+            : `${date} ${startTimeRaw}`;
+
+    return {
+        id,
+        title,
+        status: isClaimed ? "claimed" : "available",
+        tags,
+        description: desc,
+        startTime,
+        endTime,
+        timezone,
+        duration,
+        date,
+        startDateTime,
+        volunteer_id: item.volunteer_id,
+        start_time_24: item.start_time ?? startTimeRaw,
+        end_time_24: item.end_time ?? endTimeRaw,
+        instructor: {
+            name: instructorName,
+            profilePicture: item.volunteer_picture ?? item.instructor?.profilePicture,
+        },
+    };
+}
+
+function formatTime12h(time: string): string {
+    if (!time) return "12:00 am";
+    const [h = 0, m = 0] = String(time).split(":").map(Number);
+    const period = h >= 12 ? "pm" : "am";
+    const hour = h % 12 || 12;
+    return `${hour}:${String(m).padStart(2, "0")} ${period}`;
+}
+
+function formatDuration(start: string, end: string): string {
+    const [sh, sm] = String(start).split(":").map(Number);
+    const [eh, em] = String(end).split(":").map(Number);
+    const mins = (eh - sh) * 60 + (em - sm);
+    if (mins >= 60) return `${Math.floor(mins / 60)} Hr`;
+    return `${mins} mins`;
+}
 
 export default function InstantSessionsPage() {
     const [selectedSession, setSelectedSession] = useState<Session | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { setHeaderOptions } = useComponentStore();
 
-    // Example data - replace with actual API call
-    const allSessions: Session[] = [
-        {
-            id: "1",
-            title: "Music Class - Guitar",
-            status: "available",
-            tags: ["Music", "Guitar"],
-            description:
-                "Hey everyone! 👋 I'm diving into the world of music and wanted to share some fundamentals I've been exploring. Whether you're new to music or looking to expand your skills, this session covers the basics and beyond.",
-            startTime: "12 pm",
-            endTime: "1 pm",
-            timezone: "PST",
-            duration: "1 Hr",
-            date: dayjs().format("YYYY-MM-DD"),
-            startDateTime: dayjs().hour(12).minute(0).format("YYYY-MM-DD HH:mm"),
-            instructor: {
-                name: "Vinoth Kumar",
-            },
-        },
-        {
-            id: "2",
-            title: "Music Class - Guitar",
-            status: "available",
-            tags: ["Music", "Guitar"],
-            description:
-                "Hey everyone! 👋 I'm diving into the world of music and wanted to share some fundamentals I've been exploring. Whether you're new to music or looking to expand your skills, this session covers the basics and beyond.",
-            startTime: "2 pm",
-            endTime: "3 pm",
-            timezone: "PST",
-            duration: "1 Hr",
-            date: dayjs().format("YYYY-MM-DD"),
-            startDateTime: dayjs().hour(14).minute(0).format("YYYY-MM-DD HH:mm"),
-            instructor: {
-                name: "Vinoth Kumar",
-            },
-        },
-        {
-            id: "3",
-            title: "Music Class - Guitar",
-            status: "available",
-            tags: ["Music", "Guitar"],
-            description:
-                "Hey everyone! 👋 I'm diving into the world of music and wanted to share some fundamentals I've been exploring. Whether you're new to music or looking to expand your skills, this session covers the basics and beyond.",
-            startTime: "4 pm",
-            endTime: "5 pm",
-            timezone: "PST",
-            duration: "1 Hr",
-            date: dayjs().format("YYYY-MM-DD"),
-            startDateTime: dayjs().hour(16).minute(0).format("YYYY-MM-DD HH:mm"),
-            instructor: {
-                name: "Vinoth Kumar",
-            },
-        },
-        {
-            id: "4",
-            title: "Music Class - Guitar",
-            status: "available",
-            tags: ["Music", "Guitar"],
-            description:
-                "Hey everyone! 👋 I'm diving into the world of music and wanted to share some fundamentals I've been exploring. Whether you're new to music or looking to expand your skills, this session covers the basics and beyond.",
-            startTime: "6 pm",
-            endTime: "7 pm",
-            timezone: "PST",
-            duration: "1 Hr",
-            date: dayjs().format("YYYY-MM-DD"),
-            startDateTime: dayjs().hour(18).minute(0).format("YYYY-MM-DD HH:mm"),
-            instructor: {
-                name: "Vinoth Kumar",
-            },
-        },
-        {
-            id: "5",
-            title: "Music Class - Guitar",
-            status: "claimed",
-            tags: ["Music", "Guitar"],
-            description:
-                "Hey everyone! 👋 I'm diving into the world of music and wanted to share some fundamentals I've been exploring. Whether you're new to music or looking to expand your skills, this session covers the basics and beyond.",
-            startTime: "10 am",
-            endTime: "11 am",
-            timezone: "PST",
-            duration: "1 Hr",
-            date: dayjs().format("YYYY-MM-DD"),
-            startDateTime: dayjs().hour(10).minute(0).format("YYYY-MM-DD HH:mm"),
-            instructor: {
-                name: "Vinoth Kumar",
-            },
-        },
-        {
-            id: "6",
-            title: "Music Class - Guitar",
-            status: "claimed",
-            tags: ["Music", "Guitar"],
-            description:
-                "Hey everyone! 👋 I'm diving into the world of music and wanted to share some fundamentals I've been exploring. Whether you're new to music or looking to expand your skills, this session covers the basics and beyond.",
-            startTime: "3 pm",
-            endTime: "4 pm",
-            timezone: "PST",
-            duration: "1 Hr",
-            date: dayjs().format("YYYY-MM-DD"),
-            startDateTime: dayjs().hour(15).minute(0).format("YYYY-MM-DD HH:mm"),
-            instructor: {
-                name: "Vinoth Kumar",
-            },
-        },
-    ];
+    const today = dayjs().format("YYYY-MM-DD");
 
-    // Filter and sort sessions
+    const {
+        data: apiData,
+        isLoading,
+        isError,
+    } = useQuery({
+        queryKey: ["learner-instant-sessions", today],
+        queryFn: async () => {
+            const res = await GET_API(endpoints.session.getLearnerInstantSession(today));
+            return res?.data;
+        },
+    });
+
+    const allSessions: Session[] = useMemo(() => {
+        if (!apiData) return [];
+        const raw = Array.isArray(apiData) ? apiData : apiData.items ?? apiData.sessions ?? [];
+        return raw.map((item: any) => mapItemToSession(item, today));
+    }, [apiData, today]);
+
     const { availableSessions, claimedSessions } = useMemo(() => {
-        const today = dayjs().format("YYYY-MM-DD");
-
-        const available = allSessions.filter((session) => session.status === "available");
+        const available = allSessions.filter((s) => s.status === "available");
         const claimed = allSessions
-            .filter((session) => session.status === "claimed" && session.date === today)
-            .sort((a, b) => {
-                // Sort by time in ascending order
-                if (a.startDateTime && b.startDateTime) {
-                    return dayjs(a.startDateTime).valueOf() - dayjs(b.startDateTime).valueOf();
-                }
-                return 0;
-            });
-
+            .filter((s) => s.status === "claimed" && s.date === today)
+            .sort((a, b) =>
+                a.startDateTime && b.startDateTime
+                    ? dayjs(a.startDateTime).valueOf() - dayjs(b.startDateTime).valueOf()
+                    : 0
+            );
         return { availableSessions: available, claimedSessions: claimed };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [allSessions, today]);
 
     const handleSessionClick = (session: Session) => {
         setSelectedSession(session);
@@ -168,7 +152,6 @@ export default function InstantSessionsPage() {
     };
 
     const handleClaim = () => {
-        // Handle claim logic here
         console.log("Claiming session:", selectedSession?.id);
     };
 
@@ -178,46 +161,61 @@ export default function InstantSessionsPage() {
             leftButton: {
                 buttonTitle: "Events",
                 buttonIcon: <InstantSessionIcon />,
-                buttonOnClick: () => {
-                    console.log("Events clicked");
-                },
+                buttonOnClick: () => {},
                 buttonClassName: "!text-black !border-none !font-medium !pr-5 !text-[20px]",
                 showButton: true,
             },
             centerButton: {
                 buttonTitle: "Today",
                 buttonIcon: <TodayIcon />,
-                buttonOnClick: () => {
-                    console.log("Today clicked");
-                },
-                buttonClassName: "!text-black !border !border-gray-300 !font-medium !bg-white !w-[108px] !h-10 !rounded-full",
+                buttonOnClick: () => {},
+                buttonClassName:
+                    "!text-black !border !border-gray-300 !font-medium !bg-white !w-[108px] !h-10 !rounded-full",
                 showButton: true,
             },
         });
     }, [setHeaderOptions]);
 
+    if (isLoading) {
+        return (
+            <div className="p-4 md:p-6 flex items-center justify-center min-h-[400px]">
+                <p className="text-gray-500 text-lg">Loading sessions...</p>
+            </div>
+        );
+    }
+
+    if (isError) {
+        return (
+            <div className="p-4 md:p-6 flex items-center justify-center min-h-[400px]">
+                <p className="text-gray-500 text-lg">Failed to load sessions. Please try again.</p>
+            </div>
+        );
+    }
+
     return (
         <div className="p-4 md:p-6">
-            {/* <h1 className="text-2xl font-bold mb-6">Instant Sessions</h1> */}
-
-            {/* Available Sessions Section */}
             {availableSessions.length > 0 && (
                 <div className="mb-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {availableSessions.map((session) => (
-                            <SessionCard key={session.id} session={session} onClick={() => handleSessionClick(session)} />
+                            <SessionCard
+                                key={session.id}
+                                session={session}
+                                onClick={() => handleSessionClick(session)}
+                            />
                         ))}
                     </div>
                 </div>
             )}
 
-            {/* Today's Claimed Sessions Section */}
             {claimedSessions.length > 0 && (
                 <>
                     <div className="flex items-center my-6">
-                        <div className="flex-1 border-t border-gray-200"></div>
-                        <span className="px-4 text-[20px] font-medium text-[#121212]">Today's claimed session</span>
-                        <div className="flex-1 border-t border-gray-200"></div>
+                        <div className="flex-1 border-t border-gray-200" />
+                        <span className="px-4 text-[20px] font-medium text-[#121212]">
+                            Today&apos;s claimed session
+                        </span>
+                        <div className="flex-1 border-t border-gray-200" />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {claimedSessions.map((session) => (
@@ -227,21 +225,23 @@ export default function InstantSessionsPage() {
                 </>
             )}
 
-            {/* Empty States */}
             {availableSessions.length === 0 && claimedSessions.length === 0 && (
                 <div className="flex items-center justify-center min-h-[400px]">
                     <p className="text-gray-500 text-lg">No sessions available at the moment.</p>
                 </div>
             )}
 
-            {/* Session Detail Modal */}
             {selectedSession && (
                 <InstantSessionDetailModal
                     isOpen={isModalOpen}
                     onClose={handleCloseModal}
                     session={selectedSession}
                     onClaim={handleClaim}
-                    showNote={claimedSessions.length > 0 && availableSessions.length > 0 && selectedSession.id === availableSessions[0].id}
+                    showNote={
+                        claimedSessions.length > 0 &&
+                        availableSessions.length > 0 &&
+                        selectedSession.id === availableSessions[0]?.id
+                    }
                 />
             )}
         </div>

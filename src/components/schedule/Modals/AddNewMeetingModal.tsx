@@ -110,8 +110,12 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
     const getAvailableDays = async () => {
         try {
             setIsLoadingAvailableDays(true);
+            const month = moment().format("YYYY-MM");
             const response = await GET_API(
-                endpoints.volunteer_slot.availableDays(formData.select_volunteer as string)
+                endpoints.volunteer_slot.availableDays(
+                    formData.select_volunteer as string,
+                    month
+                )
             );
             console.log("Raw API Response:", response.data);
 
@@ -385,6 +389,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
                     slotError={slotError}
                     fetchingSlots={fetchingSlots}
                 />
+           
                 {LearnerScheduleModalDescriptionConstants.map((field: any) => (
                     <Input
                         key={field.name}
