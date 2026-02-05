@@ -52,18 +52,23 @@ export const endpoints: EndpointProps = {
         bookSession: "session",
         createInstantSession: "session/instant_session",
         claimInstantSession: "session/instant_session/claim",
+        validateInstantSession: (session_date: string, session_start_time: string, session_end_time: string) =>
+            `session/instant_session/validate?session_date=${encodeURIComponent(session_date)}&session_start_time=${encodeURIComponent(session_start_time)}&session_end_time=${encodeURIComponent(session_end_time)}`,
         /** GET instant session by slot (query: volunteer_slot_id, date YYYY-MM-DD, volunteer_id) */
         getVolunteerInstantSession: (volunteer_slot_id: string, date: string, volunteer_id: string) =>
             `session/volunteer/instant_session?volunteer_slot_id=${encodeURIComponent(volunteer_slot_id)}&date=${encodeURIComponent(date)}&volunteer_id=${encodeURIComponent(volunteer_id)}`,
         /** GET learner instant sessions (query: date YYYY-MM-DD, is_accepted boolean) */
         getLearnerInstantSession: (date: string, isAccepted?: boolean) =>
             `session/learner/instant_session?date=${encodeURIComponent(date)}${isAccepted !== undefined ? `&is_accepted=${isAccepted}` : ""}`,
+        getLearnerInstantSessionDetail: (volunteer_slot_id: string) =>
+            `session/learner/instant_session/${volunteer_slot_id}`,
+        unclaimInstantSession: (volunteer_slot_id: string) =>
+            `session/instant_session/unclaim/${volunteer_slot_id}`,
         getLearnerSessions: (id: string) => `session/learner/${id}`,
         cancelSession: (id: string) => `session/${id}`,
         getApprovalNotifications: (id: string) => `session/pending_invites/${id}`,
         getCalendarEvents: (id: string, userType: UserType, month?: string, status?: string) =>
-            `session/${userType}/${id}${month ? `?month=${month}` : ""}${
-                status ? `?status=${status}` : ""
+            `session/${userType}/${id}${month ? `?month=${month}` : ""}${status ? `?status=${status}` : ""
             }`,
         updateNotificationStatus: (id: string) => `session/${id}`,
         markAsCompleted: (id: string) => `session/${id}/mark_as_completed`,
