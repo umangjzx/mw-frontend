@@ -360,14 +360,14 @@ export default function InstantSessionsPage() {
             )}
 
             {/* Confirmation Modal for Claimed Sessions */}
-            {isClaimedModalOpen && claimedSessionDetails && !isLoadingClaimedDetails && (
+            {/* {isClaimedModalOpen && claimedSessionDetails && !isLoadingClaimedDetails && (
                 <ConfirmationSuccessfulModal
                     isOpen={isClaimedModalOpen}
                     onClose={handleCloseClaimedModal}
                     session={claimedSessionDetails}
                     onCancelMeeting={handleCancelMeeting}
                 />
-            )}
+            )} */}
         </div>
     );
 }
