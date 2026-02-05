@@ -44,8 +44,11 @@ type EndpointProps = {
         bookSession: string;
         createInstantSession: string;
         claimInstantSession: string;
+        validateInstantSession: (session_date: string, session_start_time: string, session_end_time: string) => string;
         getVolunteerInstantSession: (volunteer_slot_id: string, date: string, volunteer_id: string) => string;
         getLearnerInstantSession: (date: string, isAccepted?: boolean) => string;
+        getLearnerInstantSessionDetail: (volunteer_slot_id: string) => string;
+        unclaimInstantSession: (volunteer_slot_id: string) => string;
         getLearnerSessions: (id: string) => string;
         cancelSession: (id: string) => string;
         getApprovalNotifications: (id: string) => string;

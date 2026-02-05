@@ -46,7 +46,9 @@ const ConfirmationSuccessfulModal: React.FC<ConfirmationSuccessfulModalProps> = 
     };
 
     const handleJoinMeeting = () => {
-        console.log("Join Meeting");
+        if (session.meetingLink) {
+            window.open(session.meetingLink, "_blank");
+        }
     };
 
     const handleCancelMeeting = () => {
@@ -111,8 +113,8 @@ const ConfirmationSuccessfulModal: React.FC<ConfirmationSuccessfulModalProps> = 
                         <div className="flex items-center gap-2">
                             <div className="relative w-8 h-8 rounded-full overflow-hidden">
                                 <Image
-                                    src={session.instructor.profilePicture && session.instructor.profilePicture !== "/dummy-profile.webp" 
-                                        ? session.instructor.profilePicture 
+                                    src={session.instructor.profilePicture && session.instructor.profilePicture !== "/dummy-profile.webp"
+                                        ? session.instructor.profilePicture
                                         : PersonImg}
                                     alt={session.instructor.name}
                                     fill
@@ -139,9 +141,18 @@ const ConfirmationSuccessfulModal: React.FC<ConfirmationSuccessfulModalProps> = 
                             />
                             {/* Meeting Link - Directly below Join Button, no padding */}
                             <div className="w-[207px] mt-0">
-                                <span className="text-[12px] text-[#000000] font-medium">
-                                    {session.meetingLink || "—"}
-                                </span>
+                                {session.meetingLink ? (
+                                    <a
+                                        href={session.meetingLink}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-[12px] text-[#000000] font-medium hover:underline break-words"
+                                    >
+                                        {session.meetingLink}
+                                    </a>
+                                ) : (
+                                    <span className="text-[12px] text-[#000000] font-medium">—</span>
+                                )}
                             </div>
                         </div>
                         {/* Copy Link Button - Right, at the end */}
