@@ -138,6 +138,7 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
             if (res?.status === 200 || res?.status === 201) {
                 showToast({ message: "Session claimed successfully", type: "success" });
                 queryClient.invalidateQueries({ queryKey: ["learner-instant-sessions"] });
+                queryClient.invalidateQueries({ queryKey: ["learner-accepted-instant-sessions"] });
                 onClaim?.();
                 return true;
             }
@@ -268,6 +269,7 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
                 onConfirm={handleConfirmClaim}
                 onUnclaim={() => {
                     queryClient.invalidateQueries({ queryKey: ["learner-instant-sessions"] });
+                    queryClient.invalidateQueries({ queryKey: ["learner-accepted-instant-sessions"] });
                     onClose();
                 }}
                 session={session}
