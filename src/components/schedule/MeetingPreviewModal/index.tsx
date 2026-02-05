@@ -252,9 +252,8 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
 
         return createPortal(
             <div
-                className={`meeting-preview-modal border border-stroke bg-white rounded-lg shadow-lg ${
-                    isVisible ? "modal-visible" : "modal-hidden"
-                }`}
+                className={`meeting-preview-modal border border-stroke bg-white rounded-lg shadow-lg ${isVisible ? "modal-visible" : "modal-hidden"
+                    }`}
                 style={{
                     ...style,
                     position: "fixed",
@@ -266,7 +265,7 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
                 <div className="flex flex-col gap-6 p-5">
                     <div className="flex justify-between gap-3">
                         <div className="flex flex-col gap-1">
-                            <p className="font-semibold text-xl text-black">No Events</p>
+                            <p className="font-semibold text-xl text-black">{title}</p>
                             <p className="text-gray-light font-medium text-sm">
                                 {`${startTime} - ${endTime}`}
                             </p>
@@ -300,9 +299,8 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
 
     return createPortal(
         <div
-            className={`meeting-preview-modal border border-stroke bg-white rounded-lg shadow-lg ${
-                isVisible ? "modal-visible" : "modal-hidden"
-            }`}
+            className={`meeting-preview-modal border border-stroke bg-white rounded-lg shadow-lg ${isVisible ? "modal-visible" : "modal-hidden"
+                }`}
             style={{
                 ...style,
                 position: "fixed",

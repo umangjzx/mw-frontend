@@ -134,7 +134,7 @@ function mapVolunteerSlotsToEvents(data: any[] | undefined): CalendarEvent[] {
                 });
             } else if (dayDate && moment(dayDate).isSameOrAfter(today)) {
                 events.push({
-                    title: "No Event",
+                    title: slot.title || "No Event",
                     date: dayDate,
                     start: moment(`${dayDate} ${slot.start_time}`).format(),
                     end: moment(`${dayDate} ${slot.end_time}`).format(),

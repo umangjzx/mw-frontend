@@ -60,6 +60,9 @@ export const endpoints: EndpointProps = {
         /** GET learner instant sessions (query: date YYYY-MM-DD, is_accepted boolean) */
         getLearnerInstantSession: (date: string, isAccepted?: boolean) =>
             `session/learner/instant_session?date=${encodeURIComponent(date)}${isAccepted !== undefined ? `&is_accepted=${isAccepted}` : ""}`,
+        /** GET accepted instant sessions by date (path: date YYYY-MM-DD) */
+        getAcceptedInstantSessionsByDate: (date: string) =>
+            `session/learner/instant_session/accepted/${encodeURIComponent(date)}`,
         getLearnerInstantSessionDetail: (volunteer_slot_id: string) =>
             `session/learner/instant_session/${volunteer_slot_id}`,
         unclaimInstantSession: (volunteer_slot_id: string) =>
