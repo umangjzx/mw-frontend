@@ -247,8 +247,8 @@ const OnetImeScheduleModal = ({
                                 clockType === "minutes"
                                     ? timeValue
                                     : tempTime
-                                    ? tempTime.minute()
-                                    : 0;
+                                        ? tempTime.minute()
+                                        : 0;
                             // @ts-ignore
                             const timeStr = dayjs().hour(hour).minute(minute).format("HH:mm");
                             return disabledTimes.includes(timeStr);
@@ -295,7 +295,7 @@ const OnetImeScheduleModal = ({
                 <div className="flex flex-col max-lg:gap-3 px-5 mt-7">
                     <Input
                         name="selected_date"
-                        onChange={() => {}}
+                        onChange={() => { }}
                         key={"selected_date"}
                         label="Select Date"
                         labelClassName="!text-[1rem] !font-medium"
@@ -313,14 +313,20 @@ const OnetImeScheduleModal = ({
                             <p className="text-gray-500 mt-1">No slots for this date.</p>
                         )}
                         {existingSlots.map((slot, idx) => (
-                            <div key={idx} className="flex items-center gap-2 mt-2 w-full">
-                                <div className="bg-gray-200 rounded-xl px-4 py-2 w-full text-center font-medium text-sm">
-                                    {dayjs(slot.start_time, "HH:mm").format("h:mm A")}
+                            <div
+                                key={idx}
+                                className="border border-gray-200 rounded-lg p-3 flex justify-between items-center mt-2 w-full"
+                            >
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-gray-500"></div>
+                                    <span className="text-sm font-medium text-[#121212]">
+                                        {slot.title || "No Event"}
+                                    </span>
                                 </div>
-                                <span>to</span>
-                                <div className="bg-gray-200 rounded-xl px-4 py-2 w-full text-center font-medium text-sm">
+                                <span className="text-sm text-gray-500 font-medium">
+                                    {dayjs(slot.start_time, "HH:mm").format("h:mm A")} -{" "}
                                     {dayjs(slot.end_time, "HH:mm").format("h:mm A")}
-                                </div>
+                                </span>
                             </div>
                         ))}
                     </div>

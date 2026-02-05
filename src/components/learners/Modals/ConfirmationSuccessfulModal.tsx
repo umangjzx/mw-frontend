@@ -23,6 +23,7 @@ interface ConfirmationSuccessfulModalProps {
         };
         meetingLink?: string;
         guests?: string[];
+        is_learner?: boolean;
     };
     onCancelMeeting?: () => void;
     onJoinMeeting?: () => void;
@@ -190,18 +191,22 @@ const ConfirmationSuccessfulModal: React.FC<ConfirmationSuccessfulModalProps> = 
                     <div className="absolute left-0 right-0 -bottom-4 border-t border-gray-200" style={{ left: '0px', right: '0px' }}></div>
                 </div>
 
-                {/* Full Border Line - Above Cancel Meeting Button */}
-                <div className="border-t border-gray-200 -mx-6 my-4"></div>
+                {/* Full Border Line - Above Cancel Meeting Button (only show if is_learner is true) */}
+                {session.is_learner && (
+                    <>
+                        <div className="border-t border-gray-200 -mx-6 my-4"></div>
 
-                {/* Footer Action - Cancel Meeting Button */}
-                <div className="flex justify-end">
-                    <Button
-                        title="Cancel Meeting"
-                        btnVariant="tertiary"
-                        customClassName="!h-10 !bg-white !text-red-600 !border !border-red-600 hover:!bg-red-50 !font-medium !rounded-full !px-6"
-                        onClick={handleCancelMeeting}
-                    />
-                </div>
+                        {/* Footer Action - Cancel Meeting Button */}
+                        <div className="flex justify-end">
+                            <Button
+                                title="Cancel Meeting"
+                                btnVariant="tertiary"
+                                customClassName="!h-10 !bg-white !text-red-600 !border !border-red-600 hover:!bg-red-50 !font-medium !rounded-full !px-6"
+                                onClick={handleCancelMeeting}
+                            />
+                        </div>
+                    </>
+                )}
             </div>
         </CenterModal>
     );
