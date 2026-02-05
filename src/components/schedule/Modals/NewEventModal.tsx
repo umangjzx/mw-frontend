@@ -72,7 +72,6 @@ export default function NewEventModal({
 
     const [selectedSkills, setSelectedSkills] = useState<Skill[]>([]);
     const [skillSelectValue, setSkillSelectValue] = useState<string>("");
-    const [selectedTime, setSelectedTime] = useState<dayjs.Dayjs | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const { data: skillsData } = useQuery({
@@ -97,11 +96,48 @@ export default function NewEventModal({
         setFormData((prev) => ({ ...prev, duration: String(value) }));
     };
 
+    // Fetch available slots for the selected date
+    const { data: slotsData } = useQuery({
+        queryKey: ["available-slots", dayjs(formData.select_date).format("YYYY-MM-DD")],
+        queryFn: async () => {
+            if (!formData.select_date) return [];
+            const dateStr = dayjs(formData.select_date).format("YYYY-MM-DD");
+            try {
+                const res = await GET_API(endpoints.volunteer_slot.getAvailableDaysForDate(dateStr));
+                return res?.data?.slots || [];
+            } catch (error) {
+                console.error("Error fetching slots:", error);
+                return [];
+            }
+        },
+        enabled: !!formData.select_date,
+    });
+
     const handleTimeChange = (time: dayjs.Dayjs | null) => {
-        setSelectedTime(time);
         if (time) {
             setFormData((prev) => ({ ...prev, start_time: time.format("HH:mm") }));
         }
+    };
+
+    const shouldDisableTime = (timeValue: dayjs.Dayjs, view: string) => {
+        if (!slotsData || !Array.isArray(slotsData)) return false;
+
+        if (view === "hours") {
+            const minutesToCheck = [0, 15, 30, 45];
+            const hour = timeValue.hour();
+            // Check if all 15-minute slots in this hour are booked
+            return minutesToCheck.every((minute) => {
+                const timeStr = timeValue.hour(hour).minute(minute).format("HH:mm");
+                return slotsData.some((slot: any) => {
+                    return timeStr >= slot.start_time && timeStr < slot.end_time;
+                });
+            });
+        }
+
+        const timeStr = timeValue.format("HH:mm");
+        return slotsData.some((slot: any) => {
+            return timeStr >= slot.start_time && timeStr < slot.end_time;
+        });
     };
 
     const handleTitleChange = (value: string | string[]) => {
@@ -134,23 +170,12 @@ export default function NewEventModal({
             : dayjs().format("YYYY-MM-DD");
         let volunteer_slot_id = volunteerSlotIdProp;
         if (!volunteer_slot_id) {
-            try {
-                const res = await GET_API(
-                    endpoints.volunteer_slot.getAvailableDaysForDate(dateStr)
-                );
-                const slots = res?.data?.slots ?? [];
-                volunteer_slot_id = slots[0]?.volunteer_slot_id;
-                if (!volunteer_slot_id) {
-                    showToast({
-                        message: "No volunteer slot found for this date. Add availability first.",
-                        type: "error",
-                    });
-                    return;
-                }
-            } catch {
-                showToast({ message: "Could not load slots for this date", type: "error" });
-                return;
-            }
+            // Generate a unique 64-character hex ID (SHA-256 format)
+            const array = new Uint8Array(32);
+            window.crypto.getRandomValues(array);
+            volunteer_slot_id = Array.from(array)
+                .map((b) => b.toString(16).padStart(2, "0"))
+                .join("");
         }
         const payload: InstantSessionPayload = {
             volunteer_slot_id,
@@ -173,11 +198,11 @@ export default function NewEventModal({
                     start_time: "",
                     title: "",
                     description: "",
-                    tags: [],
+                    tags: []
+
                 });
                 setSelectedSkills([]);
                 setSkillSelectValue("");
-                setSelectedTime(null);
                 onClose();
             } else {
                 showToast({ message: "Failed to create event", type: "error" });
@@ -200,7 +225,6 @@ export default function NewEventModal({
         });
         setSelectedSkills([]);
         setSkillSelectValue("");
-        setSelectedTime(null);
         onClose();
     };
 
@@ -263,8 +287,10 @@ export default function NewEventModal({
                             <TimePicker
                                 timeSteps={{ minutes: 15 }}
                                 format="h:mm A"
-                                value={selectedTime}
+                                value={formData.start_time ? dayjs(formData.start_time, "HH:mm") : null}
                                 onChange={handleTimeChange}
+                                shouldDisableTime={shouldDisableTime}
+                                closeOnSelect={false}
                                 slotProps={{
                                     textField: {
                                         placeholder: "Select Time",

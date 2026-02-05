@@ -42,16 +42,16 @@ function mapItemToSession(item: any, date: string): Session {
     const startTime = formatTime12h(startTimeRaw);
     const endTime = formatTime12h(endTimeRaw);
     const duration = item.duration ?? formatDuration(startTimeRaw, endTimeRaw);
-    const timezone = item.timezone ?? item.learner_timezone ?? "IST";
+    const timezone = item.volunteer_timezone?.split(" - ")[0] ?? item.learner_timezone?.split(" - ")[0] ?? "";
     const instructorName =
         item.volunteer_full_name ?? item.instructor?.name ?? item.volunteer_name ?? "Instructor";
     const rawTags = Array.isArray(item.tags)
         ? item.tags
         : Array.isArray(item.skills)
-        ? item.skills
-        : item.skill
-        ? [item.skill]
-        : [];
+            ? item.skills
+            : item.skill
+                ? [item.skill]
+                : [];
     const tags: string[] = rawTags
         .map((t: any) =>
             typeof t === "string"
@@ -83,7 +83,10 @@ function mapItemToSession(item: any, date: string): Session {
         end_time_24: item.end_time ?? endTimeRaw,
         instructor: {
             name: instructorName,
-            profilePicture: item.volunteer_picture ?? item.instructor?.profilePicture,
+            profilePicture:
+                item.volunteer_image?.image_url ??
+                item.volunteer_picture ??
+                item.instructor?.profilePicture,
         },
     };
 }
@@ -161,14 +164,14 @@ export default function InstantSessionsPage() {
             leftButton: {
                 buttonTitle: "Events",
                 buttonIcon: <InstantSessionIcon />,
-                buttonOnClick: () => {},
+                buttonOnClick: () => { },
                 buttonClassName: "!text-black !border-none !font-medium !pr-5 !text-[20px]",
                 showButton: true,
             },
             centerButton: {
                 buttonTitle: "Today",
                 buttonIcon: <TodayIcon />,
-                buttonOnClick: () => {},
+                buttonOnClick: () => { },
                 buttonClassName:
                     "!text-black !border !border-gray-300 !font-medium !bg-white !w-[108px] !h-10 !rounded-full",
                 showButton: true,
@@ -219,7 +222,7 @@ export default function InstantSessionsPage() {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {claimedSessions.map((session) => (
-                            <SessionCard key={session.id} session={session} onClick={() => {}} />
+                            <SessionCard key={session.id} session={session} onClick={() => { }} />
                         ))}
                     </div>
                 </>
