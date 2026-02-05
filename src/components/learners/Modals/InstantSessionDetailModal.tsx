@@ -92,15 +92,22 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
                     }
                 } catch (error) {
                     console.error("Validation check failed:", error);
+                    // On error, assume not valid to be safe
+                    setIsValidated(false);
                 } finally {
                     setIsCheckingValidation(false);
                 }
             };
             checkValidation();
         }
-    }, [isOpen, isConfirmationModalOpen]);
+    }, [isOpen, isConfirmationModalOpen, session.date, session.start_time_24, session.end_time_24]);
 
-    const displayNote = !isValidated || showNote;
+    // Logic clarification:
+    // is_valid: true  -> isValidated: true  -> Can claim, don't show validation note
+    // is_valid: false -> isValidated: false -> Cannot claim, show validation note
+    // Only show note when validation fails (isValidated = false)
+    // showNote prop is ignored - note only shows based on validation result
+    const displayNote = !isValidated;
     const isClaimDisabled = !isValidated || isCheckingValidation;
 
     const handleClaim = () => {
@@ -186,9 +193,9 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
                         <Button
                             title="Claim Now"
                             btnVariant="secondary"
-                            customClassName={`flex-1 ${displayNote ? "!bg-[#1E1E1E] !cursor-not-allowed !text-white" : ""}`}
+                            customClassName={`flex-1 ${isClaimDisabled ? "!bg-[#1E1E1E] !cursor-not-allowed !text-white" : ""}`}
                             onClick={handleClaim}
-                            disabled={displayNote || isCheckingValidation}
+                            disabled={isClaimDisabled}
                         />
                     </div>
                 }
