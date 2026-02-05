@@ -165,6 +165,10 @@ export default function NewEventModal({
             showToast({ message: "Please fill in duration, start time and title", type: "error" });
             return;
         }
+        if (selectedSkills.length === 0) {
+            showToast({ message: "Please add tags", type: "error" });
+            return;
+        }
         const dateStr = formData.select_date
             ? dayjs(formData.select_date).format("YYYY-MM-DD")
             : dayjs().format("YYYY-MM-DD");
