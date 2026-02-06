@@ -12,6 +12,7 @@ import { GET_API, DELETE_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { showToast } from "@/components/common/Toast";
+import LottieLoader from "@/components/common/Loader/Lottie";
 
 export interface Session {
     id: string;
@@ -117,6 +118,7 @@ export default function InstantSessionsPage() {
     const [isClaimedModalOpen, setIsClaimedModalOpen] = useState(false);
     const [claimedSessionDetails, setClaimedSessionDetails] = useState<any>(null);
     const [isLoadingClaimedDetails, setIsLoadingClaimedDetails] = useState(false);
+    const [isActionLoading, setIsActionLoading] = useState(false);
     const queryClient = useQueryClient();
     const { setHeaderOptions } = useComponentStore();
 
@@ -126,6 +128,7 @@ export default function InstantSessionsPage() {
     const {
         data: apiData,
         isLoading,
+        isFetching: isFetchingAvailable,
         isError,
     } = useQuery({
         queryKey: ["learner-instant-sessions", today],
@@ -139,6 +142,7 @@ export default function InstantSessionsPage() {
     const {
         data: claimedApiData,
         isLoading: isClaimedLoading,
+        isFetching: isFetchingClaimed,
         isError: isClaimedError,
     } = useQuery({
         queryKey: ["learner-accepted-instant-sessions", today],
@@ -147,6 +151,13 @@ export default function InstantSessionsPage() {
             return res?.data;
         },
     });
+
+    // Show loading when either API is still pending/fetching (initial load or refetch after claim/unclaim)
+    const isSessionsLoading =
+        isLoading ||
+        isClaimedLoading ||
+        isFetchingAvailable ||
+        isFetchingClaimed;
 
     const availableSessions: Session[] = useMemo(() => {
         if (!apiData) return [];
@@ -249,6 +260,7 @@ export default function InstantSessionsPage() {
     const handleCancelMeeting = async () => {
         if (!claimedSessionDetails?.id) return;
 
+        setIsActionLoading(true);
         try {
             const res = await DELETE_API(endpoints.session.unclaimInstantSession(claimedSessionDetails.id));
             if (res.status === 200 || res.status === 201) {
@@ -262,6 +274,8 @@ export default function InstantSessionsPage() {
         } catch (error) {
             console.error("Error unclaiming session:", error);
             showToast({ message: "Failed to unclaim session", type: "error" });
+        } finally {
+            setIsActionLoading(false);
         }
     };
 
@@ -286,10 +300,10 @@ export default function InstantSessionsPage() {
         });
     }, [setHeaderOptions]);
 
-    if (isLoading || isClaimedLoading) {
+    if (isSessionsLoading) {
         return (
-            <div className="p-4 md:p-6 flex items-center justify-center min-h-[400px]">
-                <p className="text-gray-500 text-lg">Loading sessions...</p>
+            <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-white/90">
+                <LottieLoader isLoading={true} />
             </div>
         );
     }
@@ -351,12 +365,20 @@ export default function InstantSessionsPage() {
                     onClose={handleCloseModal}
                     session={selectedSession}
                     onClaim={handleClaim}
+                    onClaimLoadingChange={setIsActionLoading}
                     showNote={
                         claimedSessions.length > 0 &&
                         availableSessions.length > 0 &&
                         selectedSession.id === availableSessions[0]?.id
                     }
                 />
+            )}
+
+            {/* Full-screen loader when claiming or unclaiming (card switching) */}
+            {isActionLoading && (
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white/90">
+                    <LottieLoader isLoading={true} />
+                </div>
             )}
 
             {/* Confirmation Modal for Claimed Sessions */}
