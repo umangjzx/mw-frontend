@@ -115,14 +115,14 @@ const DatePickerComponent: React.FC<{
                         ? (panelNode) => (
                               <div className="relative">
                                   {panelNode}
-                                  {/* Shimmer over left/right month arrows only; blocks clicks while loading */}
+                                  {/* Disable navigation arrows while loading */}
                                   <div
-                                      className="shimmer-loader absolute left-0 top-0 h-10 w-20 cursor-not-allowed rounded"
+                                      className="absolute left-0 top-0 h-10 w-20 cursor-not-allowed opacity-50 bg-white"
                                       style={{ zIndex: 10, pointerEvents: "auto" }}
                                       aria-hidden
                                   />
                                   <div
-                                      className="shimmer-loader absolute right-0 top-0 h-10 w-20 cursor-not-allowed rounded"
+                                      className="absolute right-0 top-0 h-10 w-20 cursor-not-allowed opacity-50 bg-white"
                                       style={{ zIndex: 10, pointerEvents: "auto" }}
                                       aria-hidden
                                   />
@@ -160,8 +160,6 @@ const DatePickerComponent: React.FC<{
 
                     // Disable if in unavailableDates
                     if (unavailableDates && unavailableDates.includes(currentDate)) return true;
-
-                    if (isLoading) return true;
 
                     // Priority: If availableDates is provided, only enable dates explicitly in that array
                     if (availableDates && availableDates.length > 0) {
