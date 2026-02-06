@@ -25,7 +25,7 @@ interface ConfirmationSuccessfulModalProps {
         guests?: string[];
         is_learner?: boolean;
     };
-    onCancelMeeting?: () => void;
+    onCancelMeeting?: () => void | Promise<void>;
     onJoinMeeting?: () => void;
 }
 
@@ -52,11 +52,12 @@ const ConfirmationSuccessfulModal: React.FC<ConfirmationSuccessfulModalProps> = 
         }
     };
 
-    const handleCancelMeeting = () => {
+    const handleCancelMeeting = async () => {
         if (onCancelMeeting) {
-            onCancelMeeting();
+            await onCancelMeeting();
         }
-        onClose();
+        // Don't close immediately - let the cancel handler close it after loader finishes
+        // onClose will be called by handleCancelSession after loader completes
     };
 
     return (

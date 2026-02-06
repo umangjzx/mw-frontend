@@ -130,6 +130,9 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
     const isClaimDisabled = !isValidated || isCheckingValidation;
 
     const handleClaim = () => {
+        // Reset any previous claiming state
+        setIsClaiming(false);
+        onClaimLoadingChange?.(false);
         setIsConfirmationModalOpen(true);
     };
 
@@ -153,6 +156,8 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
         }
 
         setIsClaiming(true);
+        onClaimLoadingChange?.(true);
+        let claimSuccess = false;
         try {
             const res = await POST_API(endpoints.session.claimInstantSession, {
                 volunteer_id: volunteerId,
@@ -165,9 +170,20 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
                 learner_id: learnerId,
             });
             if (res?.status === 200 || res?.status === 201) {
+                claimSuccess = true;
                 showToast({ message: "Session claimed successfully", type: "success" });
+                
+                // Invalidate queries first
                 queryClient.invalidateQueries({ queryKey: ["learner-instant-sessions"] });
                 queryClient.invalidateQueries({ queryKey: ["learner-accepted-instant-sessions"] });
+                
+                // Wait for queries to refetch (loader stays visible)
+                await Promise.all([
+                    queryClient.refetchQueries({ queryKey: ["learner-instant-sessions", sessionDate] }),
+                    queryClient.refetchQueries({ queryKey: ["learner-accepted-instant-sessions", sessionDate] }),
+                ]);
+                
+                // Don't hide loader here - let ClaimConfirmationModal hide it after fetching session details
                 onClaim?.();
                 return true;
             }
@@ -178,12 +194,19 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
             return false;
         } finally {
             setIsClaiming(false);
-            onClaimLoadingChange?.(false);
+            // Don't hide loader here if claim succeeded - let ClaimConfirmationModal hide it after fetching session details
+            // Only hide if claim failed
+            if (!claimSuccess) {
+                onClaimLoadingChange?.(false);
+            }
         }
     };
 
     const handleCloseConfirmation = () => {
         setIsConfirmationModalOpen(false);
+        // Always reset loading state when closing without confirming
+        setIsClaiming(false);
+        onClaimLoadingChange?.(false);
         onClose();
     };
 
@@ -216,39 +239,25 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
                             onClick={onClose}
                         />
                         <div className="relative flex-1 min-w-0">
-                            {isCheckingValidation ? (
-                                <div
-                                    className="shimmer-loader h-10 w-full cursor-not-allowed rounded-lg"
-                                    style={{ pointerEvents: "auto" }}
-                                    aria-hidden
-                                />
-                            ) : (
-                                <Button
-                                    title="Claim Now"
-                                    btnVariant="secondary"
-                                    customClassName={`w-full ${
-                                        isClaimDisabled
-                                            ? "!bg-[#1E1E1E] !cursor-not-allowed !text-white"
-                                            : ""
-                                    }`}
-                                    onClick={handleClaim}
-                                    disabled={isClaimDisabled}
-                                />
-                            )}
+                            <Button
+                                title="Claim Now"
+                                btnVariant="secondary"
+                                customClassName={`w-full ${
+                                    isClaimDisabled
+                                        ? "!bg-[#1E1E1E] !cursor-not-allowed !text-white"
+                                        : ""
+                                }`}
+                                onClick={handleClaim}
+                                disabled={isClaimDisabled}
+                                loading={isCheckingValidation}
+                            />
                         </div>
                     </div>
                 }
                 footerClassName="!px-6 !py-4 !border-0"
             >
                 <div className="relative flex flex-col gap-4">
-                    {/* Shimmer overlay when validating/fetching – blocks interaction */}
-                    {isCheckingValidation && (
-                        <div
-                            className="shimmer-loader absolute inset-0 z-10 cursor-not-allowed rounded-lg"
-                            style={{ pointerEvents: "auto" }}
-                            aria-hidden
-                        />
-                    )}
+                   
                     {/* Subject Tags */}
                     {session.tags && session.tags.length > 0 && (
                         <div className="flex flex-wrap gap-2">
@@ -342,6 +351,7 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
                 }}
                 session={session}
                 isClaiming={isClaiming}
+                onClaimLoadingChange={onClaimLoadingChange}
             />
         </>
     );

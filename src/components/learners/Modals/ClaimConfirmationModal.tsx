@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CenterModal from "@/components/common/Modals/CenterModal";
 import Button from "@/components/common/Button";
 import ConfirmationSuccessfulModal from "./ConfirmationSuccessfulModal";
@@ -8,6 +8,8 @@ import { GET_API, DELETE_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import moment from "moment";
 import { showToast } from "@/components/common/Toast";
+import { useQueryClient } from "@tanstack/react-query";
+import dayjs from "dayjs";
 
 interface ClaimConfirmationModalProps {
     isOpen: boolean;
@@ -15,6 +17,8 @@ interface ClaimConfirmationModalProps {
     onConfirm: () => void | Promise<boolean | void>;
     onUnclaim?: () => void;
     isClaiming?: boolean;
+    /** Called with true/false to control the full-screen loader */
+    onClaimLoadingChange?: (loading: boolean) => void;
     session: {
         id: string;
         title: string;
@@ -41,15 +45,31 @@ const ClaimConfirmationModal: React.FC<ClaimConfirmationModalProps> = ({
     onUnclaim,
     session,
     isClaiming = false,
+    onClaimLoadingChange,
 }) => {
+    const queryClient = useQueryClient();
+    const today = dayjs().format("YYYY-MM-DD");
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
     const [successSession, setSuccessSession] = useState<any>(session);
+    const [showConfirmation, setShowConfirmation] = useState(true);
+
+    // Reset confirmation state when modal opens
+    useEffect(() => {
+        if (isOpen) {
+            setShowConfirmation(true);
+            setIsSuccessModalOpen(false);
+        }
+    }, [isOpen]);
 
     const handleConfirm = async () => {
+        // Close confirmation modal immediately before showing loader
+        setShowConfirmation(false);
+        
         try {
             const success = await onConfirm?.();
             if (success === true) {
                 try {
+                    // Keep loader showing while fetching session details
                     // Fetch the latest session details
                     const response = await GET_API(endpoints.session.getLearnerInstantSessionDetail(session.id));
                     const apiData = response.data;
@@ -75,10 +95,18 @@ const ClaimConfirmationModal: React.FC<ClaimConfirmationModalProps> = ({
                     console.error("Failed to fetch session details:", error);
                     // Fallback to original session if fetch fails
                     setSuccessSession(session);
+                } finally {
+                    // Hide loader after session details are fetched (or failed)
+                    onClaimLoadingChange?.(false);
                 }
                 setIsSuccessModalOpen(true);
+            } else {
+                // Hide loader if claim failed
+                onClaimLoadingChange?.(false);
             }
         } catch {
+            // Hide loader on error
+            onClaimLoadingChange?.(false);
             // Parent shows toast on error
         }
     };
@@ -90,10 +118,25 @@ const ClaimConfirmationModal: React.FC<ClaimConfirmationModalProps> = ({
 
     const handleCancelSession = async () => {
         if (!successSession?.id) return;
+
+        // Show loader
+        onClaimLoadingChange?.(true);
+
         try {
             const res = await DELETE_API(endpoints.session.unclaimInstantSession(successSession.id));
             if (res.status === 200 || res.status === 201) {
                 showToast({ message: "Session unclaimed successfully", type: "success" });
+                
+                // Invalidate queries first
+                queryClient.invalidateQueries({ queryKey: ["learner-instant-sessions"] });
+                queryClient.invalidateQueries({ queryKey: ["learner-accepted-instant-sessions"] });
+                
+                // Wait for queries to refetch before hiding loader
+                await Promise.all([
+                    queryClient.refetchQueries({ queryKey: ["learner-instant-sessions", today] }),
+                    queryClient.refetchQueries({ queryKey: ["learner-accepted-instant-sessions", today] }),
+                ]);
+                
                 onUnclaim?.();
                 setIsSuccessModalOpen(false);
                 onClose();
@@ -103,12 +146,15 @@ const ClaimConfirmationModal: React.FC<ClaimConfirmationModalProps> = ({
         } catch (error) {
             console.error("Error unclaiming session:", error);
             showToast({ message: "Failed to unclaim session", type: "error" });
+        } finally {
+            // Hide loader after all API calls complete
+            onClaimLoadingChange?.(false);
         }
     };
 
     return (
         <>
-            {!isSuccessModalOpen && (
+            {!isSuccessModalOpen && showConfirmation && (
                 <CenterModal
                     isOpen={isOpen}
                     onClose={onClose}
