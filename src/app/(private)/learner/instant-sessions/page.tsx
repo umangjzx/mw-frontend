@@ -310,8 +310,8 @@ export default function InstantSessionsPage() {
 
     if (isLoading || isClaimedLoading) {
         return (
-            <div className="p-4 md:p-6 flex items-center justify-center min-h-[400px]">
-                <p className="text-gray-500 text-lg">Loading sessions...</p>
+            <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white">
+                <LottieLoader isLoading={true} />
             </div>
         );
     }
@@ -384,7 +384,7 @@ export default function InstantSessionsPage() {
 
             {/* Full-screen loader when claiming or unclaiming (card switching) */}
             {isActionLoading && (
-                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white/90">
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white">
                     <LottieLoader isLoading={true} />
                 </div>
             )}
