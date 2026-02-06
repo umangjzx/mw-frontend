@@ -12,6 +12,7 @@ import { GET_API, DELETE_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { showToast } from "@/components/common/Toast";
+import LottieLoader from "@/components/common/Loader/Lottie";
 
 export interface Session {
     id: string;
@@ -45,16 +46,17 @@ function mapItemToSession(item: any, date: string): Session {
     const startTime = formatTime12h(startTimeRaw);
     const endTime = formatTime12h(endTimeRaw);
     const duration = item.duration ?? formatDuration(startTimeRaw, endTimeRaw);
-    const timezone = item.volunteer_timezone?.split(" - ")[0] ?? item.learner_timezone?.split(" - ")[0] ?? "";
+    const timezone =
+        item.volunteer_timezone?.split(" - ")[0] ?? item.learner_timezone?.split(" - ")[0] ?? "";
     const instructorName =
         item.volunteer_full_name ?? item.instructor?.name ?? item.volunteer_name ?? "Instructor";
     const rawTags = Array.isArray(item.tags)
         ? item.tags
         : Array.isArray(item.skills)
-            ? item.skills
-            : item.skill
-                ? [item.skill]
-                : [];
+        ? item.skills
+        : item.skill
+        ? [item.skill]
+        : [];
     const tags: string[] = rawTags
         .map((t: any) =>
             typeof t === "string"
@@ -117,6 +119,7 @@ export default function InstantSessionsPage() {
     const [isClaimedModalOpen, setIsClaimedModalOpen] = useState(false);
     const [claimedSessionDetails, setClaimedSessionDetails] = useState<any>(null);
     const [isLoadingClaimedDetails, setIsLoadingClaimedDetails] = useState(false);
+    const [isActionLoading, setIsActionLoading] = useState(false);
     const queryClient = useQueryClient();
     const { setHeaderOptions } = useComponentStore();
 
@@ -191,7 +194,9 @@ export default function InstantSessionsPage() {
         setIsClaimedModalOpen(true);
 
         try {
-            const response = await GET_API(endpoints.session.getLearnerInstantSessionDetail(session.id));
+            const response = await GET_API(
+                endpoints.session.getLearnerInstantSessionDetail(session.id)
+            );
             const apiData = response.data;
 
             if (apiData) {
@@ -204,16 +209,20 @@ export default function InstantSessionsPage() {
                     endTime: apiData.end_time
                         ? moment(apiData.end_time, "HH:mm").format("h:mm a")
                         : session.endTime,
-                    timezone: (apiData.volunteer_timezone || session.timezone)?.split(" - ")[0] ?? session.timezone,
+                    timezone:
+                        (apiData.volunteer_timezone || session.timezone)?.split(" - ")[0] ??
+                        session.timezone,
                     duration: apiData.duration ? `${apiData.duration} Mins` : session.duration,
                     instructor: {
                         name: apiData.volunteer_name ?? session.instructor.name,
-                        profilePicture: apiData.volunteer_image?.image_url ?? session.instructor.profilePicture,
+                        profilePicture:
+                            apiData.volunteer_image?.image_url ?? session.instructor.profilePicture,
                     },
                     meetingLink: apiData.meet_link,
-                    guests: apiData.volunteer_email && apiData.learner_email
-                        ? [apiData.volunteer_email, apiData.learner_email]
-                        : [],
+                    guests:
+                        apiData.volunteer_email && apiData.learner_email
+                            ? [apiData.volunteer_email, apiData.learner_email]
+                            : [],
                     is_learner: apiData.is_learner ?? false,
                 };
                 setClaimedSessionDetails(formattedSession);
@@ -249,12 +258,23 @@ export default function InstantSessionsPage() {
     const handleCancelMeeting = async () => {
         if (!claimedSessionDetails?.id) return;
 
+        setIsActionLoading(true);
         try {
-            const res = await DELETE_API(endpoints.session.unclaimInstantSession(claimedSessionDetails.id));
+            const res = await DELETE_API(
+                endpoints.session.unclaimInstantSession(claimedSessionDetails.id)
+            );
             if (res.status === 200 || res.status === 201) {
                 showToast({ message: "Session unclaimed successfully", type: "success" });
-                queryClient.invalidateQueries({ queryKey: ["learner-instant-sessions"] });
-                queryClient.invalidateQueries({ queryKey: ["learner-accepted-instant-sessions"] });
+                
+                // Invalidate and refetch queries to update the UI immediately
+                // This ensures the cancelled session appears in available sessions
+                await queryClient.invalidateQueries({ queryKey: ["learner-instant-sessions"] });
+                await queryClient.invalidateQueries({ queryKey: ["learner-accepted-instant-sessions"] });
+                
+                // Refetch to ensure fresh data
+                await queryClient.refetchQueries({ queryKey: ["learner-instant-sessions", today] });
+                await queryClient.refetchQueries({ queryKey: ["learner-accepted-instant-sessions", today] });
+                
                 handleCloseClaimedModal();
             } else {
                 showToast({ message: "Failed to unclaim session", type: "error" });
@@ -262,6 +282,8 @@ export default function InstantSessionsPage() {
         } catch (error) {
             console.error("Error unclaiming session:", error);
             showToast({ message: "Failed to unclaim session", type: "error" });
+        } finally {
+            setIsActionLoading(false);
         }
     };
 
@@ -271,14 +293,14 @@ export default function InstantSessionsPage() {
             leftButton: {
                 buttonTitle: "Events",
                 buttonIcon: <InstantSessionIcon />,
-                buttonOnClick: () => { },
+                buttonOnClick: () => {},
                 buttonClassName: "!text-black !border-none !font-medium !pr-5 !text-[20px]",
                 showButton: true,
             },
             centerButton: {
                 buttonTitle: "Today",
                 buttonIcon: <TodayIcon />,
-                buttonOnClick: () => { },
+                buttonOnClick: () => {},
                 buttonClassName:
                     "!text-black !border !border-gray-300 !font-medium !bg-white !w-[108px] !h-10 !rounded-full",
                 showButton: true,
@@ -351,12 +373,20 @@ export default function InstantSessionsPage() {
                     onClose={handleCloseModal}
                     session={selectedSession}
                     onClaim={handleClaim}
+                    onClaimLoadingChange={setIsActionLoading}
                     showNote={
                         claimedSessions.length > 0 &&
                         availableSessions.length > 0 &&
                         selectedSession.id === availableSessions[0]?.id
                     }
                 />
+            )}
+
+            {/* Full-screen loader when claiming or unclaiming (card switching) */}
+            {isActionLoading && (
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white/90">
+                    <LottieLoader isLoading={true} />
+                </div>
             )}
 
             {/* Confirmation Modal for Claimed Sessions */}
