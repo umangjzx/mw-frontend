@@ -265,8 +265,16 @@ export default function InstantSessionsPage() {
             );
             if (res.status === 200 || res.status === 201) {
                 showToast({ message: "Session unclaimed successfully", type: "success" });
-                queryClient.invalidateQueries({ queryKey: ["learner-instant-sessions"] });
-                queryClient.invalidateQueries({ queryKey: ["learner-accepted-instant-sessions"] });
+                
+                // Invalidate and refetch queries to update the UI immediately
+                // This ensures the cancelled session appears in available sessions
+                await queryClient.invalidateQueries({ queryKey: ["learner-instant-sessions"] });
+                await queryClient.invalidateQueries({ queryKey: ["learner-accepted-instant-sessions"] });
+                
+                // Refetch to ensure fresh data
+                await queryClient.refetchQueries({ queryKey: ["learner-instant-sessions", today] });
+                await queryClient.refetchQueries({ queryKey: ["learner-accepted-instant-sessions", today] });
+                
                 handleCloseClaimedModal();
             } else {
                 showToast({ message: "Failed to unclaim session", type: "error" });

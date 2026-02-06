@@ -71,10 +71,21 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
     const [isValidated, setIsValidated] = useState<boolean>(true);
     const [isCheckingValidation, setIsCheckingValidation] = useState(false);
 
+    // Reset validation state when modal closes
+    useEffect(() => {
+        if (!isOpen) {
+            setIsValidated(true);
+            setIsCheckingValidation(false);
+        }
+    }, [isOpen]);
+
     useEffect(() => {
         if (isOpen && !isConfirmationModalOpen) {
             const checkValidation = async () => {
                 setIsCheckingValidation(true);
+                // Reset to default state before checking
+                setIsValidated(true);
+                
                 try {
                     const sessionDate = session.date || "";
                     const startTime = session.start_time_24 || "";
@@ -108,7 +119,7 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
             };
             checkValidation();
         }
-    }, [isOpen, isConfirmationModalOpen, session.date, session.start_time_24, session.end_time_24]);
+    }, [isOpen, isConfirmationModalOpen, session.date, session.start_time_24, session.end_time_24, session.id]);
 
     // Logic clarification:
     // is_valid: true  -> isValidated: true  -> Can claim, don't show validation note
