@@ -114,10 +114,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
             if (!selectedVolunteerId || !currentMonth) return [];
             setIsLoadingAvailableDays(true);
             const response = await GET_API(
-                endpoints.volunteer_slot.availableDays(
-                    selectedVolunteerId,
-                    currentMonth
-                )
+                endpoints.volunteer_slot.availableDays(selectedVolunteerId, currentMonth)
             );
             console.log("Raw API Response:", response.data);
 
@@ -351,21 +348,18 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
             } else {
                 monthToFetch = moment().format("YYYY-MM");
             }
-            
+
             // Update currentMonth if needed
             if (monthToFetch !== currentMonth) {
                 setCurrentMonth(monthToFetch);
             }
-            
+
             // Fetch available days for the displayed month
             // Use setTimeout to ensure state is updated, or fetch directly with the month
             try {
                 setIsLoadingAvailableDays(true);
                 const response = await GET_API(
-                    endpoints.volunteer_slot.availableDays(
-                        selectedVolunteerId,
-                        monthToFetch
-                    )
+                    endpoints.volunteer_slot.availableDays(selectedVolunteerId, monthToFetch)
                 );
                 console.log("Raw API Response:", response.data);
 
@@ -439,55 +433,97 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
                             onPanelChange={
                                 field.name === "select_date"
                                     ? async (value: any, mode: any) => {
+                                          // Prevent multiple requests when user clicks month/year arrows rapidly
+                                          if (isLoadingAvailableDays) return;
                                           // When panel changes (month navigation), fetch available days for the new month
                                           // value is a dayjs object representing the displayed month/year
                                           if (value && selectedVolunteerId) {
                                               // Extract month from the value - value is a dayjs object from Ant Design
                                               let newMonth: string;
-                                              
+
                                               // Handle dayjs object (from Ant Design DatePicker)
                                               if (dayjs.isDayjs(value)) {
                                                   newMonth = value.format("YYYY-MM");
-                                              } else if (value && typeof value.format === 'function') {
+                                              } else if (
+                                                  value &&
+                                                  typeof value.format === "function"
+                                              ) {
                                                   // If it has format method, it's likely dayjs
                                                   newMonth = value.format("YYYY-MM");
-                                              } else if (value && typeof value.toDate === 'function') {
+                                              } else if (
+                                                  value &&
+                                                  typeof value.toDate === "function"
+                                              ) {
                                                   // If it's a dayjs object with toDate method
-                                                  newMonth = dayjs(value.toDate()).format("YYYY-MM");
+                                                  newMonth = dayjs(value.toDate()).format(
+                                                      "YYYY-MM"
+                                                  );
                                               } else {
                                                   // Fallback - try to parse as dayjs or moment
                                                   const parsed = dayjs(value);
-                                                  newMonth = parsed.isValid() ? parsed.format("YYYY-MM") : moment(value).format("YYYY-MM");
+                                                  newMonth = parsed.isValid()
+                                                      ? parsed.format("YYYY-MM")
+                                                      : moment(value).format("YYYY-MM");
                                               }
-                                              
-                                              console.log("Panel changed - new month:", newMonth, "mode:", mode, "value type:", typeof value, "isDayjs:", dayjs.isDayjs(value));
-                                              
+
+                                              console.log(
+                                                  "Panel changed - new month:",
+                                                  newMonth,
+                                                  "mode:",
+                                                  mode,
+                                                  "value type:",
+                                                  typeof value,
+                                                  "isDayjs:",
+                                                  dayjs.isDayjs(value)
+                                              );
+
                                               // Always update and fetch, even if month appears the same (to handle edge cases)
                                               setCurrentMonth(newMonth);
-                                              
+
                                               // Directly fetch available days for the new month
                                               try {
                                                   setIsLoadingAvailableDays(true);
-                                                  console.log("Fetching available days for month:", newMonth, "volunteer:", selectedVolunteerId);
-                                                  const apiUrl = endpoints.volunteer_slot.availableDays(selectedVolunteerId, newMonth);
+                                                  console.log(
+                                                      "Fetching available days for month:",
+                                                      newMonth,
+                                                      "volunteer:",
+                                                      selectedVolunteerId
+                                                  );
+                                                  const apiUrl =
+                                                      endpoints.volunteer_slot.availableDays(
+                                                          selectedVolunteerId,
+                                                          newMonth
+                                                      );
                                                   console.log("API URL:", apiUrl);
-                                                  
+
                                                   const response = await GET_API(apiUrl);
-                                                  console.log("API Response for month", newMonth, ":", response.data);
+                                                  console.log(
+                                                      "API Response for month",
+                                                      newMonth,
+                                                      ":",
+                                                      response.data
+                                                  );
 
                                                   const availableDays = Array.isArray(response.data)
                                                       ? response.data
                                                       : response.data.available_days;
 
-                                                  const availableDates = response.data.available_dates || [];
-                                                  const unavailableDates = response.data.unavailable_dates || [];
+                                                  const availableDates =
+                                                      response.data.available_dates || [];
+                                                  const unavailableDates =
+                                                      response.data.unavailable_dates || [];
 
                                                   setVolunteerAvailableDays(availableDays);
                                                   setVolunteerAvailableDates(availableDates);
                                                   setVolunteerUnavailableDates(unavailableDates);
                                                   setIsLoadingAvailableDays(false);
                                               } catch (error) {
-                                                  console.error("Error fetching available days for month", newMonth, ":", error);
+                                                  console.error(
+                                                      "Error fetching available days for month",
+                                                      newMonth,
+                                                      ":",
+                                                      error
+                                                  );
                                                   setIsLoadingAvailableDays(false);
                                               }
                                           }
@@ -505,7 +541,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
                     slotError={slotError}
                     fetchingSlots={fetchingSlots}
                 />
-           
+
                 {LearnerScheduleModalDescriptionConstants.map((field: any) => (
                     <Input
                         key={field.name}

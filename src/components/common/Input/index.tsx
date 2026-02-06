@@ -97,6 +97,8 @@ const DatePickerComponent: React.FC<{
                     }
                 }}
                 onPanelChange={(value, mode) => {
+                    // Block month/year change while loading to prevent rapid requests
+                    if (isLoading) return;
                     // Update pickerValue when panel changes (month navigation)
                     if (value) {
                         setPickerValue(value);
@@ -108,6 +110,26 @@ const DatePickerComponent: React.FC<{
                 }}
                 format={format}
                 disabled={disabled}
+                panelRender={
+                    isLoading
+                        ? (panelNode) => (
+                              <div className="relative">
+                                  {panelNode}
+                                  {/* Shimmer over left/right month arrows only; blocks clicks while loading */}
+                                  <div
+                                      className="shimmer-loader absolute left-0 top-0 h-10 w-20 cursor-not-allowed rounded"
+                                      style={{ zIndex: 10, pointerEvents: "auto" }}
+                                      aria-hidden
+                                  />
+                                  <div
+                                      className="shimmer-loader absolute right-0 top-0 h-10 w-20 cursor-not-allowed rounded"
+                                      style={{ zIndex: 10, pointerEvents: "auto" }}
+                                      aria-hidden
+                                  />
+                              </div>
+                          )
+                        : undefined
+                }
                 renderExtraFooter={() => {
                     if (isLoading) {
                         return (
@@ -115,7 +137,7 @@ const DatePickerComponent: React.FC<{
                                 style={{
                                     position: "absolute",
                                     top: "50%",
-                                    left: "40%",
+                                    left: "50%",
                                     transform: "translate(-50%, -50%)",
                                     zIndex: 20,
                                     pointerEvents: "none",

@@ -37,6 +37,8 @@ interface InstantSessionDetailModalProps {
         };
     };
     onClaim?: () => void;
+    /** Called with true when claim API starts, false when it ends (for full-screen loader) */
+    onClaimLoadingChange?: (loading: boolean) => void;
     showNote?: boolean;
 }
 
@@ -45,6 +47,7 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
     onClose,
     session,
     onClaim,
+    onClaimLoadingChange,
     showNote = false,
 }) => {
     const queryClient = useQueryClient();
@@ -82,10 +85,15 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
                         return;
                     }
 
-                    const res: any = await GET_API(endpoints.session.validateInstantSession(sessionDate, startTime, endTime));
+                    const res: any = await GET_API(
+                        endpoints.session.validateInstantSession(sessionDate, startTime, endTime)
+                    );
 
                     // Support both is_valid and is_validate (image showed is_validate, text showed is_valid)
-                    const isValid = res?.data?.is_valid !== undefined ? res.data.is_valid : res.data?.is_validate;
+                    const isValid =
+                        res?.data?.is_valid !== undefined
+                            ? res.data.is_valid
+                            : res.data?.is_validate;
 
                     if (typeof isValid === "boolean") {
                         setIsValidated(isValid);
@@ -122,7 +130,10 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
         const endTime24 = session.end_time_24;
 
         if (!volunteerId || !volunteerSlotId || !sessionDate || !learnerId) {
-            showToast({ message: "Missing session or learner details. Cannot claim.", type: "error" });
+            showToast({
+                message: "Missing session or learner details. Cannot claim.",
+                type: "error",
+            });
             return false;
         }
         if (!startTime24 || !endTime24) {
@@ -156,6 +167,7 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
             return false;
         } finally {
             setIsClaiming(false);
+            onClaimLoadingChange?.(false);
         }
     };
 
@@ -173,7 +185,9 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
                 hideCloseIcon={true}
                 headerComponent={
                     <div className="flex items-start justify-between w-full">
-                        <h2 className="text-[20px] font-medium text-[#121212] flex-1 pr-2">{session.title}</h2>
+                        <h2 className="text-[20px] font-medium text-[#121212] flex-1 pr-2">
+                            {session.title}
+                        </h2>
                         <TagComponent
                             text={status.label}
                             tagClassName={`${status.bg} ${status.text} !border-none !px-3 !py-1 !text-sm !font-medium`}
@@ -190,23 +204,48 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
                             customClassName="!bg-white !text-black !border !border-gray-300 flex-1"
                             onClick={onClose}
                         />
-                        <Button
-                            title="Claim Now"
-                            btnVariant="secondary"
-                            customClassName={`flex-1 ${isClaimDisabled ? "!bg-[#1E1E1E] !cursor-not-allowed !text-white" : ""}`}
-                            onClick={handleClaim}
-                            disabled={isClaimDisabled}
-                        />
+                        <div className="relative flex-1 min-w-0">
+                            {isCheckingValidation ? (
+                                <div
+                                    className="shimmer-loader h-10 w-full cursor-not-allowed rounded-lg"
+                                    style={{ pointerEvents: "auto" }}
+                                    aria-hidden
+                                />
+                            ) : (
+                                <Button
+                                    title="Claim Now"
+                                    btnVariant="secondary"
+                                    customClassName={`w-full ${
+                                        isClaimDisabled
+                                            ? "!bg-[#1E1E1E] !cursor-not-allowed !text-white"
+                                            : ""
+                                    }`}
+                                    onClick={handleClaim}
+                                    disabled={isClaimDisabled}
+                                />
+                            )}
+                        </div>
                     </div>
                 }
                 footerClassName="!px-6 !py-4 !border-0"
             >
-                <div className="flex flex-col gap-4">
+                <div className="relative flex flex-col gap-4">
+                    {/* Shimmer overlay when validating/fetching – blocks interaction */}
+                    {isCheckingValidation && (
+                        <div
+                            className="shimmer-loader absolute inset-0 z-10 cursor-not-allowed rounded-lg"
+                            style={{ pointerEvents: "auto" }}
+                            aria-hidden
+                        />
+                    )}
                     {/* Subject Tags */}
                     {session.tags && session.tags.length > 0 && (
                         <div className="flex flex-wrap gap-2">
                             {session.tags.map((tag, index) => {
-                                const label = typeof tag === "string" ? tag : (tag as any)?.skill_name ?? (tag as any)?.name ?? "";
+                                const label =
+                                    typeof tag === "string"
+                                        ? tag
+                                        : (tag as any)?.skill_name ?? (tag as any)?.name ?? "";
                                 if (!label) return null;
                                 return (
                                     <TagComponent
@@ -231,7 +270,8 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
                             <span className="text-base font-medium text-[#4F4F4F]">Duration</span>
                         </div>
                         <span className="text-base font-medium text-[#121212]">
-                            {session.startTime} - {session.endTime} {session.timezone} ({session.duration})
+                            {session.startTime} - {session.endTime} {session.timezone} (
+                            {session.duration})
                         </span>
                     </div>
 
@@ -246,15 +286,20 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
                         <div className="flex items-center gap-2">
                             <div className="relative w-8 h-8 rounded-full overflow-hidden">
                                 <Image
-                                    src={session.instructor.profilePicture && session.instructor.profilePicture !== "/dummy-profile.webp"
-                                        ? session.instructor.profilePicture
-                                        : PersonImg}
+                                    src={
+                                        session.instructor.profilePicture &&
+                                        session.instructor.profilePicture !== "/dummy-profile.webp"
+                                            ? session.instructor.profilePicture
+                                            : PersonImg
+                                    }
                                     alt={session.instructor.name}
                                     fill
                                     className="object-cover"
                                 />
                             </div>
-                            <span className="text-base font-medium text-[#121212]">{session.instructor.name}</span>
+                            <span className="text-base font-medium text-[#121212]">
+                                {session.instructor.name}
+                            </span>
                         </div>
                     </div>
 
@@ -262,7 +307,10 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
                     {session.status === "available" && displayNote && (
                         <div className="bg-[#FEF9C3] rounded-lg p-4 mb-1">
                             <p className="text-sm text-[#A16207] leading-relaxed">
-                                <span className="font-semibold text-[#A16207] text-sm">Note:</span> You've already claimed one session. You can claim another starting 30 minutes before the session begins, if it hasn't been claimed by someone else.
+                                <span className="font-semibold text-[#A16207] text-sm">Note:</span>{" "}
+                                You've already claimed one session. You can claim another starting
+                                30 minutes before the session begins, if it hasn't been claimed by
+                                someone else.
                             </p>
                         </div>
                     )}
@@ -276,7 +324,9 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
                 onConfirm={handleConfirmClaim}
                 onUnclaim={() => {
                     queryClient.invalidateQueries({ queryKey: ["learner-instant-sessions"] });
-                    queryClient.invalidateQueries({ queryKey: ["learner-accepted-instant-sessions"] });
+                    queryClient.invalidateQueries({
+                        queryKey: ["learner-accepted-instant-sessions"],
+                    });
                     onClose();
                 }}
                 session={session}
