@@ -186,7 +186,7 @@ const ClaimConfirmationModal: React.FC<ClaimConfirmationModalProps> = ({
                 >
                     <div className="flex flex-col gap-4">
                         {/* Confirmation Message */}
-                        <p className="text-sm text-[#4F4F4F] leading-relaxed">
+                        <p className="text-sm text-[#4F4F4F] leading-relaxed ">
                             Please confirm if you want to claim the "<span className="text-[#121212]">{session.title}</span>" session hosted by <span className="text-[#121212]">{session.instructor.name}</span>, scheduled from <span className="text-[#121212]">{session.startTime} to {session.endTime}</span>.
                         </p>
 
