@@ -129,6 +129,7 @@ export default function InstantSessionsPage() {
     const {
         data: apiData,
         isLoading,
+        isFetching,
         isError,
     } = useQuery({
         queryKey: ["learner-instant-sessions", today],
@@ -136,12 +137,15 @@ export default function InstantSessionsPage() {
             const res = await GET_API(endpoints.session.getLearnerInstantSession(today));
             return res?.data;
         },
+        refetchOnMount: true,
+        refetchOnWindowFocus: false,
     });
 
     // Query for accepted/claimed sessions using the new API endpoint
     const {
         data: claimedApiData,
         isLoading: isClaimedLoading,
+        isFetching: isClaimedFetching,
         isError: isClaimedError,
     } = useQuery({
         queryKey: ["learner-accepted-instant-sessions", today],
@@ -149,6 +153,8 @@ export default function InstantSessionsPage() {
             const res = await GET_API(endpoints.session.getAcceptedInstantSessionsByDate(today));
             return res?.data;
         },
+        refetchOnMount: true,
+        refetchOnWindowFocus: false,
     });
 
     const availableSessions: Session[] = useMemo(() => {
@@ -308,13 +314,8 @@ export default function InstantSessionsPage() {
         });
     }, [setHeaderOptions]);
 
-    if (isLoading || isClaimedLoading) {
-        return (
-            <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white">
-                <LottieLoader isLoading={true} />
-            </div>
-        );
-    }
+    // Show loader when loading initially or fetching (when switching to page)
+    const isPageLoading = isLoading || isClaimedLoading || isFetching || isClaimedFetching;
 
     if (isError || isClaimedError) {
         return (
@@ -325,7 +326,12 @@ export default function InstantSessionsPage() {
     }
 
     return (
-        <div className="p-4 md:p-6">
+        <div className="relative p-4 md:p-6 min-h-full">
+            {isPageLoading && (
+                <div className="absolute inset-0 z-10 flex items-center justify-center bg-background-input">
+                    <LottieLoader isLoading={true} />
+                </div>
+            )}
             {availableSessions.length > 0 && (
                 <div className="mb-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -382,9 +388,9 @@ export default function InstantSessionsPage() {
                 />
             )}
 
-            {/* Full-screen loader when claiming or unclaiming (card switching) */}
+            {/* Loader when claiming or unclaiming (card switching) - only covers content area */}
             {isActionLoading && (
-                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white">
+                <div className="absolute inset-0 z-10 flex items-center justify-center bg-background-input">
                     <LottieLoader isLoading={true} />
                 </div>
             )}
