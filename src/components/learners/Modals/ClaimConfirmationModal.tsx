@@ -138,8 +138,8 @@ const ClaimConfirmationModal: React.FC<ClaimConfirmationModalProps> = ({
                 ]);
                 
                 onUnclaim?.();
+                // Modal already closed by ConfirmationSuccessfulModal, just ensure state is updated
                 setIsSuccessModalOpen(false);
-                onClose();
             } else {
                 showToast({ message: "Failed to unclaim session", type: "error" });
             }
