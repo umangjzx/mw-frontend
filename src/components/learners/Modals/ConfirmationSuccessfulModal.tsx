@@ -53,11 +53,12 @@ const ConfirmationSuccessfulModal: React.FC<ConfirmationSuccessfulModalProps> = 
     };
 
     const handleCancelMeeting = async () => {
+        // Close modal immediately when cancel is clicked
+        onClose();
+        // Then trigger the cancel meeting handler (which will show loader)
         if (onCancelMeeting) {
             await onCancelMeeting();
         }
-        // Don't close immediately - let the cancel handler close it after loader finishes
-        // onClose will be called by handleCancelSession after loader completes
     };
 
     return (
