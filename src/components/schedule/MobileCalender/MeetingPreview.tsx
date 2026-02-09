@@ -140,7 +140,7 @@ const MobileMeetingPreviewModal: React.FC<MobileMeetingPreviewModalProps> = ({
 
     const renderFooter = () => {
         const isFeedBackCompleted = (role === "volunteer" && feedBackCollectedFromVolunteer) || (role === "learner" && feedBackCollectedFromLearner)
-        
+
         const feedBackStatus = {
             label: isFeedBackCompleted ? "Feedback Submited" : "Meeting Completed",
             value: isFeedBackCompleted ? <p className="text-green-700 text-sm font-semibold">Meeting Completed</p> : <p onClick={handleFeedBack} className="text-sm underline text-primary">Complete Feedback</p>
@@ -151,16 +151,16 @@ const MobileMeetingPreviewModal: React.FC<MobileMeetingPreviewModalProps> = ({
             accepted: { label: "Status", value: <p className="text-green-700 text-sm">Accepted</p> },
             completed: feedBackStatus,
         };
-    
+
         const { label = "", value = "" } = statusMap[status as keyof typeof statusMap] || {};
-    
+
         return (
             <div className="flex justify-between !text-sm">
                 <p className="!text-sm">{label}</p>
                 {value}
             </div>
         );
-    };    
+    };
 
     return (
         <MobileSideModal isOpen={isOpen} onClose={onClose}>
@@ -209,7 +209,9 @@ const MobileMeetingPreviewModal: React.FC<MobileMeetingPreviewModalProps> = ({
                             <p className="text-black font-medium">
                                 {role === "learner"
                                     ? volunteer_full_name
-                                    : `${learner.firstName} ${learner.lastName}`}
+                                    : learner
+                                        ? `${learner.firstName ?? ""} ${learner.lastName ?? ""}`.trim() || "—"
+                                        : "—"}
                             </p>
                         </div>
                         <Divider />
@@ -226,7 +228,9 @@ const MobileMeetingPreviewModal: React.FC<MobileMeetingPreviewModalProps> = ({
                                     />
                                 ) : (
                                     <p className="text-[#DC2626] font-medium text-xs">
-                                        {`${learner.firstName} completed the meeting`}
+                                        {learner
+                                            ? `${[learner.firstName, learner.lastName].filter(Boolean).join(" ") || "Guest"} completed the meeting`
+                                            : "Meeting completed"}
                                     </p>
                                 )}
                             </div>
