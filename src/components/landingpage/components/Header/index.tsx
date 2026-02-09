@@ -4,7 +4,7 @@ import { SideMenuIcon } from "@/assets/icons";
 import Button from "@/components/common/Button";
 import Logo from "@/components/common/Logo";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SideNavBar from "@/components/landingpage/SideNavBar";
 import { IoMdClose } from "react-icons/io";
 import { useRouter, usePathname } from "next/navigation";
@@ -20,6 +20,11 @@ const Header = () => {
 
     const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
     const [isSideNavBarOpen, setIsSideNavBarOpen] = useState<boolean>(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const handleSideNavBar = () => {
         setIsSideNavBarOpen(!isSideNavBarOpen);
@@ -82,39 +87,43 @@ const Header = () => {
                     </>
                 )}
             </div>
-            <SideNavBar isOpen={isSideNavBarOpen} onClose={handleCloseSideNavBar}>
-                <div className="flex justify-between items-center px-4">
-                    <Link href="/" className="cursor-pointer">
-                        <Logo />
-                    </Link>
-                    <div onClick={handleSideNavBar} className="cursor-pointer">
-                        <IoMdClose className="text-[28px] mt-1 font-bold" />
-                    </div>
-                </div>
-                <div className="flex flex-col gap-10 justify-center items-center mt-16">
-                    {links.map((link, index) => (
-                        <div
-                            onClick={() => handleLinkClick(link.link)}
-                            key={index}
-                            className="underline font-medium hover:text-gray-600 transition-all duration-300 text-base"
-                        >
-                            {link.title}
+            {mounted && (
+                <>
+                    <SideNavBar isOpen={isSideNavBarOpen} onClose={handleCloseSideNavBar}>
+                        <div className="flex justify-between items-center px-4">
+                            <Link href="/" className="cursor-pointer">
+                                <Logo />
+                            </Link>
+                            <div onClick={handleSideNavBar} className="cursor-pointer">
+                                <IoMdClose className="text-[28px] mt-1 font-bold" />
+                            </div>
                         </div>
-                    ))}
-                    <div className="relative w-full flex-center">
-                        <Button
-                            title="Log In"
-                            className="!bg-black !px-3 !py-1 text-white hover:!bg-black hover:!text-white text-sm !rounded-lg min-w-[150px]"
-                            onClick={handleLoginModal}
-                        />
-                    </div>
-                </div>
-            </SideNavBar>
-            <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
-            <SignUpAsModal
-                isOpen={paramMode === "learner" || paramMode === "volunteer"}
-                onClose={() => setParamMode(null)}
-            />
+                        <div className="flex flex-col gap-10 justify-center items-center mt-16">
+                            {links.map((link, index) => (
+                                <div
+                                    onClick={() => handleLinkClick(link.link)}
+                                    key={index}
+                                    className="underline font-medium hover:text-gray-600 transition-all duration-300 text-base"
+                                >
+                                    {link.title}
+                                </div>
+                            ))}
+                            <div className="relative w-full flex-center">
+                                <Button
+                                    title="Log In"
+                                    className="!bg-black !px-3 !py-1 text-white hover:!bg-black hover:!text-white text-sm !rounded-lg min-w-[150px]"
+                                    onClick={handleLoginModal}
+                                />
+                            </div>
+                        </div>
+                    </SideNavBar>
+                    <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+                    <SignUpAsModal
+                        isOpen={paramMode === "learner" || paramMode === "volunteer"}
+                        onClose={() => setParamMode(null)}
+                    />
+                </>
+            )}
         </div>
     );
 };

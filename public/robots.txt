@@ -4,11 +4,5 @@ Allow: /about-us
 Allow: /privacy-policy
 Allow: /terms-and-conditions
 
-# Disallow private routes
-Disallow: /learner/
-Disallow: /volunteer/
-Disallow: /onboarding/
-Disallow: /api/
-
 # Sitemap location
 Sitemap: https://melodywings.org/sitemap.xml

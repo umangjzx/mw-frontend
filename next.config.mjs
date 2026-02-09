@@ -9,6 +9,21 @@ const nextConfig = {
         config.resolve.alias["@"] = path.resolve(__dirname, "src");
         return config;
     },
+    async redirects() {
+        return [
+            {
+                source: '/:path*',
+                has: [
+                    {
+                        type: 'host',
+                        value: 'www.melodywings.org',
+                    },
+                ],
+                destination: 'https://melodywings.org/:path*',
+                permanent: true,
+            },
+        ];
+    },
 };
 
 export default nextConfig;
