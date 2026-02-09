@@ -83,18 +83,19 @@ const CenterModal: React.FC<CenterModalProps> = ({
         body: {
             padding: 0,
             height: height,
+            maxHeight: height || "95vh",
         },
     }}
 >
 
         
-            <div className={cn("flex flex-col w-full h-full max-h-[100vh] max-w-screen md:max-h-[95vh] md:max-w-[95vw]", rootClassName)}>
-                {header && <div className={cn("flex px-3 md:px-4 lg:px-6 py-3 md:py-4 lg:pt-5 border-b border-stroke flex-center", headerClassName)}>{header}</div>}
+            <div className={cn("flex flex-col w-full h-full max-h-[100vh] max-w-screen md:max-h-[95vh] md:max-w-[95vw] overflow-hidden", rootClassName)}>
+                {header && <div className={cn("flex px-3 md:px-4 lg:px-6 py-3 md:py-4 lg:pt-5 border-b border-stroke flex-center flex-shrink-0", headerClassName)}>{header}</div>}
                 {/* Modal Content */}
-                <div className={`flex-1 px-3 md:px-4 lg:px-6 py-3 md:py-3 bg-white overflow-y-auto no-scrollbar md:max-h-[90vh] ${bodyClassName}`}>
+                <div className={`flex-1 min-h-0 px-3 md:px-4 lg:px-6 py-3 md:py-3 bg-white overflow-y-auto no-scrollbar ${bodyClassName}`}>
                     {children}
                 </div>
-                {hideFooter || footer && <div className={cn("flex px-3 md:px-4 lg:px-6 py-3 md:py-4 border-t border-stroke flex-center", footerClassName)}>{footer}</div>}
+                {hideFooter || footer && <div className={cn("flex px-3 md:px-4 lg:px-6 py-3 md:py-4 border-t border-stroke flex-center flex-shrink-0", footerClassName)}>{footer}</div>}
             </div>
         </Modal>
     );

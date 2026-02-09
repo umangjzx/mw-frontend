@@ -29,12 +29,13 @@ export const LoginModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =
                 setModalLoader(true);
                 const { onboarded_status } = response;
                 const role = getCookie("role");
+                const defaultRoute = role === "learner" ? `/${role}/instant-sessions` : `/${role}/schedule`;
                 const routes: Record<string, string> = {
                     details_pending: "/onboarding",
                     partially_filled: "/onboarding",
                     verification_pending: "/onboarding/verification",
                     verification_rejected: "/onboarding/verification",
-                    verification_completed: `/${role}/schedule`,
+                    verification_completed: defaultRoute,
                 };
 
                 if (routes[onboarded_status]) router.replace(routes[onboarded_status]);

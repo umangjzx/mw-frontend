@@ -9,6 +9,7 @@ import {
 } from "@/constants/schedule";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import moment from "moment";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import AvailableSlots from "../AvailableSlots/AvailableSlots";
 import { useSearchParams } from "next/navigation";
@@ -67,6 +68,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
     const [volunteerUnavailableDates, setVolunteerUnavailableDates] = useState<string[]>([]);
     const [selectedVolunteerId, setSelectedVolunteerId] = useState<string>("");
     const [isLoadingAvailableDays, setIsLoadingAvailableDays] = useState(false);
+    const [currentMonth, setCurrentMonth] = useState<string>(moment().format("YYYY-MM"));
     const learnerId = Cookies.get("learner_id");
 
     const getVolunteers = async () => {
@@ -109,9 +111,10 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
 
     const getAvailableDays = async () => {
         try {
+            if (!selectedVolunteerId || !currentMonth) return [];
             setIsLoadingAvailableDays(true);
             const response = await GET_API(
-                endpoints.volunteer_slot.availableDays(formData.select_volunteer as string)
+                endpoints.volunteer_slot.availableDays(selectedVolunteerId, currentMonth)
             );
             console.log("Raw API Response:", response.data);
 
@@ -141,9 +144,9 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
     };
 
     const { refetch: refetchAvailableDays } = useQuery({
-        queryKey: ["availableDays"],
+        queryKey: ["availableDays", selectedVolunteerId, currentMonth],
         queryFn: getAvailableDays,
-        enabled: !!selectedVolunteerId,
+        enabled: false, // Don't auto-fetch, only fetch when calendar opens
     });
 
     const handleChange = async (name: string, value: any) => {
@@ -326,9 +329,57 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
                 select_date: "",
             }));
             setAvailableSlots([]);
-            refetchAvailableDays();
+            // Reset to current month when volunteer changes
+            setCurrentMonth(moment().format("YYYY-MM"));
+            // Clear available days when volunteer changes (will be fetched when calendar opens)
+            setVolunteerAvailableDays([]);
+            setVolunteerAvailableDates([]);
+            setVolunteerUnavailableDates([]);
         }
     }, [formData.select_volunteer]);
+
+    // Handle calendar open/close
+    const handleDatePickerOpenChange = async (open: boolean) => {
+        if (open && selectedVolunteerId) {
+            // When calendar opens, determine the month to fetch
+            let monthToFetch = currentMonth;
+            if (formData.select_date) {
+                monthToFetch = moment(formData.select_date).format("YYYY-MM");
+            } else {
+                monthToFetch = moment().format("YYYY-MM");
+            }
+
+            // Update currentMonth if needed
+            if (monthToFetch !== currentMonth) {
+                setCurrentMonth(monthToFetch);
+            }
+
+            // Fetch available days for the displayed month
+            // Use setTimeout to ensure state is updated, or fetch directly with the month
+            try {
+                setIsLoadingAvailableDays(true);
+                const response = await GET_API(
+                    endpoints.volunteer_slot.availableDays(selectedVolunteerId, monthToFetch)
+                );
+                console.log("Raw API Response:", response.data);
+
+                const availableDays = Array.isArray(response.data)
+                    ? response.data
+                    : response.data.available_days;
+
+                const availableDates = response.data.available_dates || [];
+                const unavailableDates = response.data.unavailable_dates || [];
+
+                setVolunteerAvailableDays(availableDays);
+                setVolunteerAvailableDates(availableDates);
+                setVolunteerUnavailableDates(unavailableDates);
+                setIsLoadingAvailableDays(false);
+            } catch (error) {
+                console.error("Error fetching available days:", error);
+                setIsLoadingAvailableDays(false);
+            }
+        }
+    };
 
     const isMobileScreen = InnerWidth() < 768;
 
@@ -374,6 +425,111 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
                             isLoading={
                                 field.name === "select_date" ? isLoadingAvailableDays : false
                             }
+                            onOpenChange={
+                                field.name === "select_date"
+                                    ? handleDatePickerOpenChange
+                                    : undefined
+                            }
+                            onPanelChange={
+                                field.name === "select_date"
+                                    ? async (value: any, mode: any) => {
+                                          // Prevent multiple requests when user clicks month/year arrows rapidly
+                                          if (isLoadingAvailableDays) return;
+                                          // When panel changes (month navigation), fetch available days for the new month
+                                          // value is a dayjs object representing the displayed month/year
+                                          if (value && selectedVolunteerId) {
+                                              // Extract month from the value - value is a dayjs object from Ant Design
+                                              let newMonth: string;
+
+                                              // Handle dayjs object (from Ant Design DatePicker)
+                                              if (dayjs.isDayjs(value)) {
+                                                  newMonth = value.format("YYYY-MM");
+                                              } else if (
+                                                  value &&
+                                                  typeof value.format === "function"
+                                              ) {
+                                                  // If it has format method, it's likely dayjs
+                                                  newMonth = value.format("YYYY-MM");
+                                              } else if (
+                                                  value &&
+                                                  typeof value.toDate === "function"
+                                              ) {
+                                                  // If it's a dayjs object with toDate method
+                                                  newMonth = dayjs(value.toDate()).format(
+                                                      "YYYY-MM"
+                                                  );
+                                              } else {
+                                                  // Fallback - try to parse as dayjs or moment
+                                                  const parsed = dayjs(value);
+                                                  newMonth = parsed.isValid()
+                                                      ? parsed.format("YYYY-MM")
+                                                      : moment(value).format("YYYY-MM");
+                                              }
+
+                                              console.log(
+                                                  "Panel changed - new month:",
+                                                  newMonth,
+                                                  "mode:",
+                                                  mode,
+                                                  "value type:",
+                                                  typeof value,
+                                                  "isDayjs:",
+                                                  dayjs.isDayjs(value)
+                                              );
+
+                                              // Always update and fetch, even if month appears the same (to handle edge cases)
+                                              setCurrentMonth(newMonth);
+
+                                              // Directly fetch available days for the new month
+                                              try {
+                                                  setIsLoadingAvailableDays(true);
+                                                  console.log(
+                                                      "Fetching available days for month:",
+                                                      newMonth,
+                                                      "volunteer:",
+                                                      selectedVolunteerId
+                                                  );
+                                                  const apiUrl =
+                                                      endpoints.volunteer_slot.availableDays(
+                                                          selectedVolunteerId,
+                                                          newMonth
+                                                      );
+                                                  console.log("API URL:", apiUrl);
+
+                                                  const response = await GET_API(apiUrl);
+                                                  console.log(
+                                                      "API Response for month",
+                                                      newMonth,
+                                                      ":",
+                                                      response.data
+                                                  );
+
+                                                  const availableDays = Array.isArray(response.data)
+                                                      ? response.data
+                                                      : response.data.available_days;
+
+                                                  const availableDates =
+                                                      response.data.available_dates || [];
+                                                  const unavailableDates =
+                                                      response.data.unavailable_dates || [];
+
+                                                  setVolunteerAvailableDays(availableDays);
+                                                  setVolunteerAvailableDates(availableDates);
+                                                  setVolunteerUnavailableDates(unavailableDates);
+                                                  setIsLoadingAvailableDays(false);
+                                              } catch (error) {
+                                                  console.error(
+                                                      "Error fetching available days for month",
+                                                      newMonth,
+                                                      ":",
+                                                      error
+                                                  );
+                                                  setIsLoadingAvailableDays(false);
+                                              }
+                                          }
+                                      }
+                                    : undefined
+                            }
                         />
                     );
                 })}
@@ -385,6 +541,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
                     slotError={slotError}
                     fetchingSlots={fetchingSlots}
                 />
+
                 {LearnerScheduleModalDescriptionConstants.map((field: any) => (
                     <Input
                         key={field.name}

@@ -34,6 +34,7 @@ const DatePickerComponent: React.FC<{
     availableDates?: string[];
     unavailableDates?: string[];
     inputClassName?: string;
+    format?: string;
 }> = ({
     value,
     onChange,
@@ -45,6 +46,7 @@ const DatePickerComponent: React.FC<{
     availableDates,
     unavailableDates,
     inputClassName,
+    format = "DD-MMM-YYYY",
 }) => {
     const today = dayjs().startOf("day");
 
@@ -95,6 +97,8 @@ const DatePickerComponent: React.FC<{
                     }
                 }}
                 onPanelChange={(value, mode) => {
+                    // Block month/year change while loading to prevent rapid requests
+                    if (isLoading) return;
                     // Update pickerValue when panel changes (month navigation)
                     if (value) {
                         setPickerValue(value);
@@ -104,8 +108,28 @@ const DatePickerComponent: React.FC<{
                         onPanelChange(value, mode);
                     }
                 }}
-                format="DD-MMM-YYYY"
+                format={format}
                 disabled={disabled}
+                panelRender={
+                    isLoading
+                        ? (panelNode) => (
+                              <div className="relative">
+                                  {panelNode}
+                                  {/* Disable navigation arrows while loading */}
+                                  <div
+                                      className="absolute left-0 top-0 h-10 w-20 cursor-not-allowed opacity-50 bg-white"
+                                      style={{ zIndex: 10, pointerEvents: "auto" }}
+                                      aria-hidden
+                                  />
+                                  <div
+                                      className="absolute right-0 top-0 h-10 w-20 cursor-not-allowed opacity-50 bg-white"
+                                      style={{ zIndex: 10, pointerEvents: "auto" }}
+                                      aria-hidden
+                                  />
+                              </div>
+                          )
+                        : undefined
+                }
                 renderExtraFooter={() => {
                     if (isLoading) {
                         return (
@@ -113,7 +137,7 @@ const DatePickerComponent: React.FC<{
                                 style={{
                                     position: "absolute",
                                     top: "50%",
-                                    left: "40%",
+                                    left: "50%",
                                     transform: "translate(-50%, -50%)",
                                     zIndex: 20,
                                     pointerEvents: "none",
@@ -136,8 +160,6 @@ const DatePickerComponent: React.FC<{
 
                     // Disable if in unavailableDates
                     if (unavailableDates && unavailableDates.includes(currentDate)) return true;
-
-                    if (isLoading) return true;
 
                     // Priority: If availableDates is provided, only enable dates explicitly in that array
                     if (availableDates && availableDates.length > 0) {
@@ -333,6 +355,7 @@ export const Input: React.FC<InputProps> = (props) => {
                         availableDates={props.availableDates}
                         unavailableDates={props.unavailableDates}
                         inputClassName={props.inputClassName}
+                        format={props.format}
                     />
                 );
 

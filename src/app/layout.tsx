@@ -16,10 +16,10 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
     title: {
-        default: "MelodyWings - Connecting Learners with Volunteer Teachers",
+        default: "MelodyWings - limitless free learning",
         template: "%s | MelodyWings",
     },
-    description: "MelodyWings is a platform connecting learners with volunteer teachers. Join our community to learn new skills or share your knowledge as a volunteer.",
+    description: "MelodyWings is a heartfelt initiative created to provide free tutoring for students with disabilities and special needs by volunteers",
     keywords: ["learning", "education", "volunteer teaching", "online learning", "community", "skills", "tutoring"],
     authors: [{ name: "MelodyWings" }],
     creator: "MelodyWings",
@@ -35,18 +35,24 @@ export const metadata: Metadata = {
             "max-snippet": -1,
         },
     },
+    icons: {
+        icon: "/logo.png",
+        apple: "/logo.png",
+    },
     openGraph: {
         type: "website",
         locale: "en_US",
         url: "https://melodywings.org",
         siteName: "MelodyWings",
-        title: "MelodyWings - Connecting Learners with Volunteer Teachers",
-        description: "Join our community to learn new skills or share your knowledge as a volunteer teacher.",
+        title: "MelodyWings - limitless free learning",
+        description: "MelodyWings is a heartfelt initiative created to provide free tutoring for students with disabilities and special needs by volunteers",
+        images: ["/logo.png"],
     },
     twitter: {
         card: "summary_large_image",
-        title: "MelodyWings - Connecting Learners with Volunteer Teachers",
-        description: "Join our community to learn new skills or share your knowledge as a volunteer teacher.",
+        title: "MelodyWings - limitless free learning",
+        description: "MelodyWings is a heartfelt initiative created to provide free tutoring for students with disabilities and special needs by volunteers",
+        images: ["/logo.png"],
     },
     metadataBase: new URL("https://melodywings.org"),
     alternates: {

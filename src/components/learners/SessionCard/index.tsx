@@ -1,0 +1,111 @@
+"use client";
+
+import React from "react";
+import Image from "next/image";
+import TagComponent from "@/components/common/Tag";
+import { TimeIcon } from "@/assets/icons";
+import DummyProfileImg from "@/assets/images/dummy-profile.webp";
+import PersonImg from "@/assets/images/Person.png";
+
+interface SessionCardProps {
+    session: {
+        id: string;
+        title: string;
+        status: "available" | "claimed";
+        tags: string[];
+        description: string;
+        startTime: string;
+        endTime: string;
+        timezone: string;
+        duration: string;
+        instructor: {
+            name: string;
+            profilePicture?: string;
+        };
+    };
+    onClick: () => void;
+}
+
+const SessionCard: React.FC<SessionCardProps> = ({ session, onClick }) => {
+    const statusConfig = {
+        available: {
+            bg: "!bg-[#DCFCE7]",
+            text: "!text-[#16A34A]",
+            label: "Available",
+        },
+        claimed: {
+            bg: "!bg-[#DFF5FF]",
+            text: "!text-[#0096CC]",
+            label: "Claimed",
+        },
+    };
+
+    const status = statusConfig[session.status] || statusConfig.available;
+
+    return (
+        <div
+            onClick={onClick}
+            className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-shadow"
+        >
+            {/* Header: Title and Status */}
+            <div className="flex items-start justify-between mb-4">
+                <h2 className="text-[20px]] font-medium text-[#121212] flex-1 pr-2">{session.title}</h2>
+                <TagComponent
+                    text={status.label}
+                    tagClassName={`${status.bg} ${status.text} !border-none !px-3 !py-1 !text-sm !font-medium`}
+                />
+            </div>
+
+            {/* Tags */}
+            {session.tags && session.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                    {session.tags.map((tag, index) => {
+                        const label = typeof tag === "string" ? tag : (tag as any)?.skill_name ?? (tag as any)?.name ?? "";
+                        if (!label) return null;
+                        return (
+                            <TagComponent
+                                key={index}
+                                text={label}
+                                tagClassName="!bg-[#E0F2FE] !border-none !text-black !px-3 !py-1 !text-sm"
+                            />
+                        );
+                    })}
+                </div>
+            )}
+
+            {/* Description */}
+            <p className="text-sm text-gray-700 mb-2 line-clamp-2 leading-relaxed">{session.description}</p>
+
+            {/* Footer: Time and Instructor */}
+            <div className="flex items-center justify-between pt-3 ">
+                {/* Time Info */}
+                <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center pt-1! w-5 h-5 text-gray-600 flex-shrink-0">
+                        <TimeIcon />
+                        </div>
+                    
+                    <span className="text-[16px] font-medium text-black whitespace-nowrap">
+                        {session.startTime} - {session.endTime} {session.timezone} ({session.duration})
+                    </span>
+                </div>
+
+                {/* Instructor Info */}
+                <div className="flex items-center gap-2">
+                    <div className="relative w-8 h-8 rounded-full overflow-hidden">
+                        <Image
+                            src={session.instructor.profilePicture && session.instructor.profilePicture !== "/dummy-profile.webp" 
+                                ? session.instructor.profilePicture 
+                                : PersonImg}
+                            alt={session.instructor.name}
+                            fill
+                            className="object-cover"
+                        />
+                    </div>
+                    <span className="text-base font-medium text-[#121212]">{session.instructor.name}</span>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default SessionCard;
