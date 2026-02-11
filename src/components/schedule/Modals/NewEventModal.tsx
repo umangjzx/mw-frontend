@@ -313,7 +313,7 @@ export default function NewEventModal({
                         {/* Start Time */}
                         <div className="flex flex-col gap-2">
                             <label className="md:text-base text-[14px] font-regular text-[#121212]">
-                                Start Time (IST)
+                                Start Time 
                             </label>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <TimePicker
