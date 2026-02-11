@@ -10,6 +10,14 @@ interface CenterModalProps {
     minWidth?: number | string;
     height?: number | string;
     minHeight?: number | string;
+    /** Mobile-only width (px or CSS value e.g. "100%"). Applied below md breakpoint. */
+    mobileWidth?: number | string;
+    /** Mobile-only height (px or CSS value e.g. "100vh"). Applied below md breakpoint. */
+    mobileHeight?: number | string;
+    /** Mobile-only border radius (px). Applied below md breakpoint. */
+    mobileBorderRadius?: number;
+    /** Mobile-only border width (px). Applied below md breakpoint. */
+    mobileBorderWidth?: number;
     children: React.ReactNode;
     rootClassName?: string;
     bodyClassName?: string;
@@ -53,6 +61,7 @@ interface SideModalProps {
     isLoading?: boolean;
     modalWidth?: number | string;
     loading?: boolean;
+    hideHeaderDividerOnMobile?: boolean;
 }
 
 type ShowModalType = "view" | "edit" | "create" | null;

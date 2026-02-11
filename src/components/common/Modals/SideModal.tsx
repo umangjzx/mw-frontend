@@ -18,6 +18,7 @@ const SideModal: React.FC<SideModalProps> = ({
     isLoading = false,
     modalWidth = 400,
     loading = false,
+    hideHeaderDividerOnMobile = false,
 }) => {
     return (
         <div>
@@ -27,17 +28,19 @@ const SideModal: React.FC<SideModalProps> = ({
                 onClose={onClose}
                 open={isOpen}
                 width={modalWidth}
-                className="py-4 !px-0"
+                className=" bg-[#f4f7fb]"
                 bodyStyle={{ padding: 0 }}
             >
-                <div className="flex flex-col h-full">
-                    <div className="flex items-center justify-between gap-4 mb-3 px-5">
+                <div className="flex py-4 !px-0 flex-col h-full max-md:bg-[#f4f7fb]">
+                    <div className="flex items-center md:justify-between justify-start gap-4 mb-3 md:px-5">
                         <h3 className="text-xl font-medium">{title}</h3>
                         <span onClick={onClose} className="cursor-pointer">
                             <ModalCloseIcon />
                         </span>
                     </div>
-                    <Divider />
+                    <Divider
+                        className={hideHeaderDividerOnMobile ? "hidden md:block" : undefined}
+                    />
                     {loading ? (
                         <div className="flex flex-col h-full justify-center items-center">
                             <Spin spinning={true} />

@@ -18,6 +18,20 @@ import VolunteerViewModal from "@/components/leaner/VolunteerViewModal";
 import AddNewMeetingModal from "@/components/schedule/Modals/AddNewMeetingModal";
 import { useAppStore } from "@/store/useAppStore";
 import moment from "moment-timezone";
+import { SendIcon } from "@/assets/icons";  
+const MOBILE_BREAKPOINT = 768;
+
+function useIsMobile() {
+    const [isMobile, setIsMobile] = useState(false);
+    useEffect(() => {
+        const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+        const update = () => setIsMobile(mql.matches);
+        update();
+        mql.addEventListener("change", update);
+        return () => mql.removeEventListener("change", update);
+    }, []);
+    return isMobile;
+}
 
 interface ChatMessage {
     message_id: string;
@@ -45,10 +59,23 @@ const Messages = () => {
     const { learnerDetails } = useAppStore();
     const pathname = usePathname();
     const router = useRouter();
+    const isMobile = useIsMobile();
     const [searchQuery, setSearchQuery] = useQueryState("query");
     const [message, setMessage] = useState("");
     const learnerId = Cookies.get("learner_id");
-    const [chats, setChats] = useState([]);
+    interface LearnerChatItem {
+    chat_id: string;
+    volunteer_id: string;
+    learner_id: string;
+    volunteer_name: string;
+    volunteer_profile_picture: { image_url: string; image_id: string };
+    message: string;
+    created_at: string;
+    unread_messages_count: number;
+    chat_permission?: boolean;
+    volunteer_country?: string;
+}
+const [chats, setChats] = useState<LearnerChatItem[]>([]);
     const chatId = useSearchParams().get("chatId");
     const volunteerId = useSearchParams().get("volunteerId");
     const [individualChat, setIndividualChat] = useState<ChatMessage[]>([]);
@@ -95,12 +122,7 @@ const Messages = () => {
                     }
                 }
 
-                if (!chatId && !volunteerId && res.data.length > 0) {
-                    const firstChat = res.data[0];
-                    router.push(
-                        `/learner/messages?chatId=${firstChat.chat_id}&volunteerId=${firstChat.volunteer_id}`
-                    );
-                }
+                // Don't redirect here; desktop redirect is handled in useEffect so isMobile is current
             })
             .catch((err: any) => {
                 console.log(err);
@@ -386,6 +408,15 @@ const Messages = () => {
         }
     }, [messageId]);
 
+    // Desktop: auto-open first chat when none selected; mobile: show list first
+    useEffect(() => {
+        if (isMobile || !chats.length || chatId || volunteerId) return;
+        const firstChat = chats[0];
+        router.push(
+            `/learner/messages?chatId=${firstChat.chat_id}&volunteerId=${firstChat.volunteer_id}`
+        );
+    }, [isMobile, chats, chatId, volunteerId, router]);
+
     if (noChats === null) {
         return null;
     }
@@ -397,32 +428,47 @@ const Messages = () => {
             {noChats ? (
                 <NoMessage />
             ) : (
-                <div className="w-full h-full bg-white flex border border-gray-200 rounded-tl-[3rem] ">
-                    <ChatList
-                        messages={chats}
-                        searchQuery={searchQuery}
-                        onSearch={handleSearch}
-                        isIndividualChatLoading={false}
-                    />
-                    <div className="w-full h-full flex-1">
-                        <div className="flex items-center gap-4 justify-between border-b border-gray-200">
+                <div className="w-full h-full bg-white flex border border-gray-200 rounded-tl-[3rem] max-md:rounded-tl-none">
+                    {/* Mobile: show list when no chat selected */}
+                    <div className={`w-full h-full ${isMobile && chatId ? "hidden" : ""} md:!block md:max-w-[440px] md:shrink-0`}>
+                        <ChatList
+                            messages={chats}
+                            searchQuery={searchQuery}
+                            onSearch={handleSearch}
+                            isIndividualChatLoading={false}
+                        />
+                    </div>
+                    {/* Mobile: show conversation only when a chat is selected */}
+                    <div className={`w-full h-full flex-1 flex flex-col ${isMobile && !chatId ? "hidden" : ""}`}>
+                        <div className="flex pb-2 flex-col md:flex-row md:items-center md:gap-4 md:justify-between border-b border-gray-200">
                             <ChatHeader
                                 name={recieverName}
                                 location={location}
                                 image={recieverImage}
-                                onSeeMoreClick={() => {
-                                    // setVolunteerIdQuery(volunteerId);
-                                    // setIsOpen(true);
-                                }}
+                                onSeeMoreClick={() => {}}
+                                showBackButton={isMobile}
+                                onBack={() => router.push("/learner/messages")}
+                                action={
+                                    isMobile ? (
+                                        <Button
+                                            onClick={handleScheduleMeeting}
+                                            title="Schedule Meeting"
+                                            btnVariant="secondary"
+                                            className="!rounded-xl !text-[12px] !bg-black hover:!bg-black !text-white transition-all duration-300 !p-2"
+                                        />
+                                    ) : undefined
+                                }
                             />
-                            <Button
-                                onClick={handleScheduleMeeting}
-                                title="Schedule Meeting"
-                                btnVariant="secondary"
-                                className="!rounded-xl !text-sm !bg-black hover:!bg-black !text-white transition-all duration-300"
-                            />
+                            <div className="max-md:hidden">
+                                <Button
+                                    onClick={handleScheduleMeeting}
+                                    title="Schedule Meeting"
+                                    btnVariant="secondary"
+                                    className="!rounded-xl !text-sm !bg-black hover:!bg-black !text-white transition-all duration-300"
+                                />
+                            </div>
                         </div>
-                        <div className="flex flex-col gap-4 p-4 h-[calc(100vh-16em)] overflow-y-auto">
+                        <div className="flex flex-col md:gap-4 p-4 bg-[#f4f7fb] md:bg-white h-[calc(100vh-16em)] overflow-y-auto">
                             {individualChat?.map((message: any, index: any) => (
                                 <MessageBubble
                                     key={message.message_id || `msg-${index}`}
@@ -443,7 +489,6 @@ const Messages = () => {
                                     }
                                 />
                             ))}
-                             
                             <div ref={messagesEndRef} />
                         </div>
                         <div className="p-4 flex items-end gap-8 transition-all duration-300">
@@ -455,7 +500,7 @@ const Messages = () => {
                                                     value={message}
                                                     inputType="textarea"
                                                     name="message"
-                                                    inputClassName="!bg-[#f4f7fb] !rounded-lg gap-1 font-medium items-center w-full transition-all duration-300 !resize-none !pb-[2px]"
+                                                    inputClassName="!bg-[#f4f7fb] !rounded-lg gap-1 font-medium items-center !h-[38px] w-full transition-all duration-300 !resize-none !pb-[2px]"
                                                     className="!bg-transparent w-full !mb-0"
                                                     onChange={handleMessageChange}
                                                     onKeyDown={handleKeyDown}
@@ -470,10 +515,12 @@ const Messages = () => {
                                                 disabled={!message.trim() || !chatPermission}
                                                 loading={false}
                                                 onClick={handleSendMessage}
-                                                title="Send Message"
-                                                btnVariant="secondary"
-                                                className="!rounded-xl !text-sm !bg-black hover:!bg-black !text-white transition-all duration-300"
-                                            />
+                                                title={isMobile ? undefined : "Send Message"}
+                                             
+                                                className="!rounded-xl !text-sm !bg-[#1E1E1E] hover:!bg-black !text-white transition-all duration-300"
+                                            >
+                                                {isMobile ? <SendIcon /> : null}
+                                            </Button>
                                         </div>
                                     </>
                                 ) : (

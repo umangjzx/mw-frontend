@@ -26,11 +26,11 @@ interface ChatListProps {
 
 const ChatListSkeleton = () => {
     return (
-        <div className="animate-pulse w-[407px] shrink-0">
+        <div className="animate-pulse w-full max-w-[407px] shrink-0">
             {[1, 2, 3, 4, 5].map((item) => (
                 <div
                     key={item}
-                    className="flex  shrink-0 items-center gap-4 p-3 mb-2 bg-gray-100 rounded-lg"
+                    className="flex shrink-0 items-center gap-4 p-3 mb-2 bg-gray-100 rounded-lg"
                 >
                     <div className="w-12 h-12 rounded-full bg-gray-200" />
                     <div className="flex-1">
@@ -57,17 +57,15 @@ const ChatList: React.FC<ChatListProps> = ({
         );
     }, [messages, searchQuery]);
 
-    console.log(isIndividualChatLoading, "isIndividualChatLoading");
-
     return (
-        <div className="max-w-[440px] h-full shrink-0 rounded-tl-[3.1rem] p-4 border-r border-gray-200">
-            <div className="flex items-center justify-between rounded-tl-[3rem] py-2">
+        <div className="w-full max-w-[440px] h-full shrink-0 rounded-tl-[3.1rem] max-md:rounded-tl-none md:p-4 border-r border-gray-200">
+            <div className="md:flex hidden items-center justify-between rounded-tl-[3rem] max-md:rounded-tl-none py-2">
                 <p className="text-2xl font-medium">All Chats</p>
                 <p className="text-base text-gray-500 font-medium">
                     {filteredMessages.length} Chats
                 </p>
             </div>
-            <div className="py-4">
+            <div className="py-4 px-4 md:px-0">
                 <Input
                     value={searchQuery ?? ""}
                     inputType="search"
@@ -78,7 +76,7 @@ const ChatList: React.FC<ChatListProps> = ({
                     placeholder={"Search"}
                 />
             </div>
-            <div className="flex flex-col gap-2s">
+            <div className="flex flex-col gap-2">
                 {isLoading ? (
                     <ChatListSkeleton />
                 ) : (
