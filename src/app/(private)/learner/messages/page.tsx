@@ -18,7 +18,8 @@ import VolunteerViewModal from "@/components/leaner/VolunteerViewModal";
 import AddNewMeetingModal from "@/components/schedule/Modals/AddNewMeetingModal";
 import { useAppStore } from "@/store/useAppStore";
 import moment from "moment-timezone";
-import { SendIcon } from "@/assets/icons";  
+import { SendIcon } from "@/assets/icons";
+import LottieLoader from "@/components/common/Loader/Lottie";
 const MOBILE_BREAKPOINT = 768;
 
 function useIsMobile() {
@@ -64,18 +65,18 @@ const Messages = () => {
     const [message, setMessage] = useState("");
     const learnerId = Cookies.get("learner_id");
     interface LearnerChatItem {
-    chat_id: string;
-    volunteer_id: string;
-    learner_id: string;
-    volunteer_name: string;
-    volunteer_profile_picture: { image_url: string; image_id: string };
-    message: string;
-    created_at: string;
-    unread_messages_count: number;
-    chat_permission?: boolean;
-    volunteer_country?: string;
-}
-const [chats, setChats] = useState<LearnerChatItem[]>([]);
+        chat_id: string;
+        volunteer_id: string;
+        learner_id: string;
+        volunteer_name: string;
+        volunteer_profile_picture: { image_url: string; image_id: string };
+        message: string;
+        created_at: string;
+        unread_messages_count: number;
+        chat_permission?: boolean;
+        volunteer_country?: string;
+    }
+    const [chats, setChats] = useState<LearnerChatItem[]>([]);
     const chatId = useSearchParams().get("chatId");
     const volunteerId = useSearchParams().get("volunteerId");
     const [individualChat, setIndividualChat] = useState<ChatMessage[]>([]);
@@ -137,7 +138,9 @@ const [chats, setChats] = useState<LearnerChatItem[]>([]);
     const getIndividualChat = async () => {
         setIsIndividualLoading(true);
         try {
-            const response = await GET_API(endpoints.chat.getIndividualChat(chatId as string, "learner"));
+            const response = await GET_API(
+                endpoints.chat.getIndividualChat(chatId as string, "learner")
+            );
 
             if (response.data.length === 0) {
                 queryClient.invalidateQueries({ queryKey: ["chats"] });
@@ -145,9 +148,9 @@ const [chats, setChats] = useState<LearnerChatItem[]>([]);
             }
 
             if (response.data.length > 0) {
-            setRecieverName(response.data[0].volunteer_name);
-            setRecieverImage(response.data[0].volunteer_profile_picture.image_url);
-            setLocation(response.data[0].volunteer_country);
+                setRecieverName(response.data[0].volunteer_name);
+                setRecieverImage(response.data[0].volunteer_profile_picture.image_url);
+                setLocation(response.data[0].volunteer_country);
             }
 
             const unreadMessageIds = response.data
@@ -155,41 +158,47 @@ const [chats, setChats] = useState<LearnerChatItem[]>([]);
                 .map((msg: ChatMessage) => msg.message_id);
 
             setMessageId(unreadMessageIds);
-            
+
             // Merge server messages with pending optimistic messages
             // Match optimistic messages with server messages by content to avoid duplicates
             setIndividualChat((prev) => {
                 const serverMessages = response.data || [];
-                const serverMessageIds = new Set(serverMessages.map((msg: ChatMessage) => msg.message_id));
-                
+                const serverMessageIds = new Set(
+                    serverMessages.map((msg: ChatMessage) => msg.message_id)
+                );
+
                 // Track which optimistic messages were matched
                 const matchedTempIds = new Set<string>();
-                
+
                 // Filter out optimistic messages that have been matched with server messages
                 // Match by: same message content and created within last 10 seconds
                 const pendingOnly = prev.filter((msg) => {
-                    if (!msg.message_id.startsWith('temp-')) return false;
+                    if (!msg.message_id.startsWith("temp-")) return false;
                     if (serverMessageIds.has(msg.message_id)) {
                         matchedTempIds.add(msg.message_id);
                         return false;
                     }
-                    
+
                     // Check if a server message with same content exists (within 10 seconds)
                     const msgTime = new Date(msg.created_at).getTime();
-                    const hasMatchingServerMessage = serverMessages.some((serverMsg: ChatMessage) => {
-                        const serverTime = new Date(serverMsg.created_at).getTime();
-                        const timeDiff = Math.abs(serverTime - msgTime);
-                        const sameContent = serverMsg.message?.trim().toLowerCase() === msg.message?.trim().toLowerCase();
-                        if (sameContent && timeDiff < 10000) {
-                            matchedTempIds.add(msg.message_id);
-                            return true;
+                    const hasMatchingServerMessage = serverMessages.some(
+                        (serverMsg: ChatMessage) => {
+                            const serverTime = new Date(serverMsg.created_at).getTime();
+                            const timeDiff = Math.abs(serverTime - msgTime);
+                            const sameContent =
+                                serverMsg.message?.trim().toLowerCase() ===
+                                msg.message?.trim().toLowerCase();
+                            if (sameContent && timeDiff < 10000) {
+                                matchedTempIds.add(msg.message_id);
+                                return true;
+                            }
+                            return false;
                         }
-                        return false;
-                    });
-                    
+                    );
+
                     return !hasMatchingServerMessage;
                 });
-                
+
                 // Clean up matched pending messages
                 if (matchedTempIds.size > 0) {
                     setPendingMessages((prev) => {
@@ -198,12 +207,12 @@ const [chats, setChats] = useState<LearnerChatItem[]>([]);
                         return newMap;
                     });
                 }
-                
-                return [...serverMessages, ...pendingOnly].sort((a, b) => 
-                    new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+
+                return [...serverMessages, ...pendingOnly].sort(
+                    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
                 );
             });
-            
+
             setIsIndividualLoading(false);
             return response.data;
         } catch (error) {
@@ -246,32 +255,32 @@ const [chats, setChats] = useState<LearnerChatItem[]>([]);
 
     const handleSendMessage = () => {
         if (!message.trim() || !chatId || !learnerId) return;
-        
+
         const messageText = message.trim();
         setMessage("");
 
         // Get current user's profile data from existing messages
-        const currentUserMessage = individualChat.find(
-            (msg) => msg.sender_id === learnerId
-        ) as any;
+        const currentUserMessage = individualChat.find((msg) => msg.sender_id === learnerId) as any;
 
         // Create optimistic message
         const tempMessageId = `temp-${Date.now()}-${Math.random()}`;
-        
+
         // Get learner's timezone and convert current time to that timezone instantly
-        const learnerTimezone = learnerDetails?.learner_personal_info?.learner_contact_details?.timezone;
-        const learnerUtcOffset = learnerDetails?.learner_personal_info?.learner_contact_details?.utc_offset;
+        const learnerTimezone =
+            learnerDetails?.learner_personal_info?.learner_contact_details?.timezone;
+        const learnerUtcOffset =
+            learnerDetails?.learner_personal_info?.learner_contact_details?.utc_offset;
         let now: string;
-        
+
         if (learnerUtcOffset || learnerTimezone) {
             let offset: string | null = learnerUtcOffset || null;
-            
+
             // If no UTC offset available, try to extract it from timezone string
             if (!offset && learnerTimezone) {
                 const utcMatch = learnerTimezone.match(/\(UTC([+-]\d{2}:\d{2})\)/);
                 offset = utcMatch ? utcMatch[1] : null;
             }
-            
+
             if (offset) {
                 // Convert current time to learner's timezone using UTC offset
                 // moment.utcOffset accepts offset in format like "+05:30" or "-09:00"
@@ -285,7 +294,7 @@ const [chats, setChats] = useState<LearnerChatItem[]>([]);
             // Fallback to UTC if timezone not available
             now = new Date().toISOString();
         }
-        
+
         const optimisticMessage: any = {
             message_id: tempMessageId,
             chat_id: chatId,
@@ -306,10 +315,11 @@ const [chats, setChats] = useState<LearnerChatItem[]>([]);
                 image_id: "",
             },
             // Add fields used in rendering
-            learner_profile_picture: currentUserMessage?.learner_profile_picture || currentUserMessage?.sender_profile_picture || {
-                image_url: "",
-                image_id: "",
-            },
+            learner_profile_picture: currentUserMessage?.learner_profile_picture ||
+                currentUserMessage?.sender_profile_picture || {
+                    image_url: "",
+                    image_id: "",
+                },
             volunteer_profile_picture: {
                 image_url: recieverImage || "",
                 image_id: "",
@@ -332,14 +342,15 @@ const [chats, setChats] = useState<LearnerChatItem[]>([]);
                 // Handle different possible response structures
                 const responseData = res?.data;
                 const messageData = responseData?.data || responseData;
-                
+
                 // Replace optimistic message with real message from server (with correct backend time)
                 if (messageData && messageData.message_id) {
                     setIndividualChat((prev) => {
                         const filtered = prev.filter((msg) => msg.message_id !== tempMessageId);
                         // Sort by created_at to maintain chronological order
-                        const updated = [...filtered, messageData].sort((a, b) => 
-                            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                        const updated = [...filtered, messageData].sort(
+                            (a, b) =>
+                                new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
                         );
                         return updated;
                     });
@@ -353,7 +364,7 @@ const [chats, setChats] = useState<LearnerChatItem[]>([]);
                     // If response doesn't have message data, refetch chat to get the latest messages
                     // This ensures we get the message with correct time from backend
                     setTimeout(() => {
-                refetchIndividualChat();
+                        refetchIndividualChat();
                     }, 300);
                 }
             })
@@ -401,7 +412,6 @@ const [chats, setChats] = useState<LearnerChatItem[]>([]);
         setIndividualChat([]);
     }, [chatId, volunteerId]);
 
-
     useEffect(() => {
         if (messageId.length > 0) {
             postReadMessage();
@@ -430,7 +440,11 @@ const [chats, setChats] = useState<LearnerChatItem[]>([]);
             ) : (
                 <div className="w-full h-full bg-white flex border border-gray-200 rounded-tl-[3rem] max-md:rounded-tl-none">
                     {/* Mobile: show list when no chat selected */}
-                    <div className={`w-full h-full ${isMobile && chatId ? "hidden" : ""} md:!block md:max-w-[440px] md:shrink-0`}>
+                    <div
+                        className={`w-full h-full ${
+                            isMobile && chatId ? "hidden" : ""
+                        } md:!block md:max-w-[440px] md:shrink-0`}
+                    >
                         <ChatList
                             messages={chats}
                             searchQuery={searchQuery}
@@ -439,7 +453,11 @@ const [chats, setChats] = useState<LearnerChatItem[]>([]);
                         />
                     </div>
                     {/* Mobile: show conversation only when a chat is selected */}
-                    <div className={`w-full h-full flex-1 flex flex-col ${isMobile && !chatId ? "hidden" : ""}`}>
+                    <div
+                        className={`w-full h-full flex-1 flex flex-col ${
+                            isMobile && !chatId ? "hidden" : ""
+                        }`}
+                    >
                         <div className="flex pb-2 flex-col md:flex-row md:items-center md:gap-4 md:justify-between border-b border-gray-200">
                             <ChatHeader
                                 name={recieverName}
@@ -469,65 +487,71 @@ const [chats, setChats] = useState<LearnerChatItem[]>([]);
                             </div>
                         </div>
                         <div className="flex flex-col md:gap-4 p-4 bg-[#f4f7fb] md:bg-white h-[calc(100vh-16em)] overflow-y-auto">
+                            {isIndividualLoading ? (
+                                <div className="flex-1 flex items-center justify-center min-h-[200px]">
+                                    <LottieLoader isLoading={true} />
+                                </div>
+                            ) : (
+                                <>
                             {individualChat?.map((message: any, index: any) => (
                                 <MessageBubble
                                     key={message.message_id || `msg-${index}`}
                                     message={message.message}
-                                    timestamp={new Date(message.created_at).toLocaleTimeString(
-                                        [],
-                                        {
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                        }
-                                    )}
+                                    timestamp={new Date(message.created_at).toLocaleTimeString([], {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                    })}
                                     date={message.created_at}
                                     isOwnMessage={message.sender_id === learnerId}
                                     userImage={
                                         message.sender_id === learnerId
-                                            ? message.learner_profile_picture?.image_url || message.sender_profile_picture?.image_url
-                                            : message.volunteer_profile_picture?.image_url || message.receiver_profile_picture?.image_url
+                                            ? message.learner_profile_picture?.image_url ||
+                                              message.sender_profile_picture?.image_url
+                                            : message.volunteer_profile_picture?.image_url ||
+                                              message.receiver_profile_picture?.image_url
                                     }
                                 />
                             ))}
+                                </>
+                            )}
                             <div ref={messagesEndRef} />
                         </div>
                         <div className="p-4 flex items-end gap-8 transition-all duration-300">
-                                {chatPermission ? (
-                                    <>
-                                        <div className="flex-1 relative">
-                                            <div className="absolute bottom-0 left-0 right-0 w-full">
-                                                <Input
-                                                    value={message}
-                                                    inputType="textarea"
-                                                    name="message"
-                                                    inputClassName="!bg-[#f4f7fb] !rounded-lg gap-1 font-medium items-center !h-[38px] w-full transition-all duration-300 !resize-none !pb-[2px]"
-                                                    className="!bg-transparent w-full !mb-0"
-                                                    onChange={handleMessageChange}
-                                                    onKeyDown={handleKeyDown}
-                                                    placeholder={"Type message here"}
-                                                    rows={1}
-                                                />
-                                            </div>
+                            {chatPermission ? (
+                                <>
+                                    <div className="flex-1 relative">
+                                        <div className="absolute bottom-0 left-0 right-0 w-full">
+                                            <Input
+                                                value={message}
+                                                inputType="textarea"
+                                                name="message"
+                                                inputClassName="!bg-[#f4f7fb] !rounded-lg gap-1 font-medium items-center !h-[38px] w-full transition-all duration-300 !resize-none !pb-[2px]"
+                                                className="!bg-transparent w-full !mb-0"
+                                                onChange={handleMessageChange}
+                                                onKeyDown={handleKeyDown}
+                                                placeholder={"Type message here"}
+                                                rows={1}
+                                            />
                                         </div>
+                                    </div>
 
-                                        <div className="flex-shrink-0">
-                                            <Button
-                                                disabled={!message.trim() || !chatPermission}
-                                                loading={false}
-                                                onClick={handleSendMessage}
-                                                title={isMobile ? undefined : "Send Message"}
-                                             
-                                                className="!rounded-xl !text-sm !bg-[#1E1E1E] hover:!bg-black !text-white transition-all duration-300"
-                                            >
-                                                {isMobile ? <SendIcon /> : null}
-                                            </Button>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <p className="text-gray-600 text-sm text-center w-full font-medium">
-                                        {recieverName} has disabled chat for this conversation
-                                    </p>
-                                )}
+                                    <div className="flex-shrink-0">
+                                        <Button
+                                            disabled={!message.trim() || !chatPermission}
+                                            loading={false}
+                                            onClick={handleSendMessage}
+                                            title={isMobile ? undefined : "Send Message"}
+                                            className="!rounded-xl !text-sm !bg-[#1E1E1E] hover:!bg-black !text-white transition-all duration-300"
+                                        >
+                                            {isMobile ? <SendIcon /> : null}
+                                        </Button>
+                                    </div>
+                                </>
+                            ) : (
+                                <p className="text-gray-600 text-sm text-center w-full font-medium">
+                                    {recieverName} has disabled chat for this conversation
+                                </p>
+                            )}
                         </div>
                     </div>
                 </div>

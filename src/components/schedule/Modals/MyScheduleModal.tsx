@@ -645,6 +645,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             isLoading={isPending}
             modalWidth={430}
             hideHeaderDividerOnMobile
+            mobileBgGray
         >
             <div>
                 <div className="flex flex-col gap-1 px-5 py-4">

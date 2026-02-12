@@ -1,8 +1,9 @@
 import ModalCloseIcon from "@/assets/icons/FeedModalCloseIcon";
 import { Drawer, Spin } from "antd";
-import React, { useState } from "react";
+import React from "react";
 import Divider from "../Divider";
 import Button from "@/components/common/Button";
+import cn from "classnames";
 
 const SideModal: React.FC<SideModalProps> = ({
     children,
@@ -19,6 +20,7 @@ const SideModal: React.FC<SideModalProps> = ({
     modalWidth = 400,
     loading = false,
     hideHeaderDividerOnMobile = false,
+    mobileBgGray = false,
 }) => {
     return (
         <div>
@@ -28,15 +30,32 @@ const SideModal: React.FC<SideModalProps> = ({
                 onClose={onClose}
                 open={isOpen}
                 width={modalWidth}
-                className=" bg-[#f4f7fb]"
                 bodyStyle={{ padding: 0 }}
             >
-                <div className="flex py-4 !px-0 flex-col h-full max-md:bg-[#f4f7fb]">
-                    <div className="flex items-center md:justify-between justify-start gap-4 mb-3 md:px-5">
-                        <h3 className="text-xl font-medium">{title}</h3>
-                        <span onClick={onClose} className="cursor-pointer">
-                            <ModalCloseIcon />
-                        </span>
+                <div
+                    className={cn(
+                        "flex py-4 !px-0 flex-col h-full",
+                        mobileBgGray && "max-md:bg-[#f4f7fb]"
+                    )}
+                >
+                    <div
+                        className={cn(
+                            "flex items-center gap-4 mb-3 px-3 md:px-5",
+                            title ? "justify-between" : "justify-start"
+                        )}
+                    >
+                        {title ? (
+                            <>
+                                <h3 className="text-xl font-medium">{title}</h3>
+                                <span onClick={onClose} className="cursor-pointer">
+                                    <ModalCloseIcon />
+                                </span>
+                            </>
+                        ) : (
+                            <span onClick={onClose} className="cursor-pointer">
+                                <ModalCloseIcon />
+                            </span>
+                        )}
                     </div>
                     <Divider
                         className={hideHeaderDividerOnMobile ? "hidden md:block" : undefined}

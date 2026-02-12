@@ -62,6 +62,8 @@ interface SideModalProps {
     modalWidth?: number | string;
     loading?: boolean;
     hideHeaderDividerOnMobile?: boolean;
+    /** When true, applies gray background on mobile only (e.g. My Schedule modal). */
+    mobileBgGray?: boolean;
 }
 
 type ShowModalType = "view" | "edit" | "create" | null;
