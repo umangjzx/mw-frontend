@@ -12,6 +12,7 @@ import { POST_API, GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import { showToast } from "@/components/common/Toast";
 import { useQuery } from "@tanstack/react-query";
+import { useAppStore } from "@/store/useAppStore";
 
 /* Full-screen mobile modal: align wrap to top and make content fill viewport */
 const fullScreenMobileStyles = (
@@ -98,6 +99,13 @@ export default function NewEventModal({
     const [selectedSkills, setSelectedSkills] = useState<Skill[]>([]);
     const [skillSelectValue, setSkillSelectValue] = useState<string>("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { volunteerDetails } = useAppStore();
+    const timezoneRaw =
+        (volunteerDetails as { volunteer_contact_details?: { timezone?: string } })
+            ?.volunteer_contact_details?.timezone ?? "";
+    const volunteerTimezone =
+        timezoneRaw.includes("+05:30") || /IST|India/i.test(timezoneRaw) ? "IST" : "UTC";
 
     const { data: skillsData } = useQuery({
         queryKey: ["common-skills"],
@@ -284,7 +292,7 @@ export default function NewEventModal({
                             disabled={true}
                             format="DD MMMM YYYY"
                             labelClassName="!text-base !text-[#121212]"
-                            inputClassName="w-full !h-12 !bg-[#E0E0E0] !border-[#E0E0E0] hover:!bg-[#E0E0E0] hover:!border-[#E0E0E0] focus:!bg-[#E0E0E0] focus:!border-[#E0E0E0] [&_.ant-picker]:!bg-[#E0E0E0] [&_.ant-picker]:!border-[#E0E0E0] [&_.ant-picker-input>input]:!bg-[#E0E0E0] [&_.ant-picker-input>input]:!text-[#121212] [&_.ant-picker-input>input]:!text-base [&_.ant-picker-suffix]:!text-[#4F4F4F] [&_.ant-picker-suffix_svg]:!text-[#4F4F4F] [&_.ant-picker-suffix_svg]:!fill-[#4F4F4F] [&_.ant-picker-suffix_span]:!text-[#4F4F4F] [&_.ant-picker-suffix_span_svg]:!text-[#4F4F4F] [&_.ant-picker-suffix_span_svg]:!fill-[#4F4F4F]"
+                            inputClassName="w-full !h-12 md:!bg-white max-md:!bg-[#E0E0E0] md:!border-gray-200 max-md:!border-[#E0E0E0] md:hover:!bg-white max-md:hover:!bg-[#E0E0E0] md:hover:!border-gray-200 max-md:hover:!border-[#E0E0E0] md:focus:!bg-white max-md:focus:!bg-[#E0E0E0] md:focus:!border-gray-200 max-md:focus:!border-[#E0E0E0] md:[&_.ant-picker]:!bg-white md:[&_.ant-picker]:!border-gray-200 max-md:[&_.ant-picker]:!bg-[#E0E0E0] max-md:[&_.ant-picker]:!border-[#E0E0E0] md:[&_.ant-picker-input>input]:!bg-white max-md:[&_.ant-picker-input>input]:!bg-[#E0E0E0] [&_.ant-picker-input>input]:!text-[#121212] [&_.ant-picker-input>input]:!text-base [&_.ant-picker-suffix]:!text-[#4F4F4F] [&_.ant-picker-suffix_svg]:!text-[#4F4F4F] [&_.ant-picker-suffix_svg]:!fill-[#4F4F4F] [&_.ant-picker-suffix_span]:!text-[#4F4F4F] [&_.ant-picker-suffix_span_svg]:!text-[#4F4F4F] [&_.ant-picker-suffix_span_svg]:!fill-[#4F4F4F]"
                             availableDates={
                                 formData.select_date
                                     ? [dayjs(formData.select_date).format("YYYY-MM-DD")]
@@ -313,7 +321,7 @@ export default function NewEventModal({
                         {/* Start Time */}
                         <div className="flex flex-col gap-2">
                             <label className="md:text-base text-[14px] font-regular text-[#121212]">
-                                Start Time 
+                                Start Time{volunteerTimezone ? ` (${volunteerTimezone})` : ""}
                             </label>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <TimePicker
