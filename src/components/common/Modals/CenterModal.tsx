@@ -3,6 +3,7 @@ import { Modal, ModalProps } from "antd";
 import Button from "../Button";
 import { cn } from "@/utils/merge-class";
 import ModalCloseIcon from "@/assets/icons/ModalCloseIcon";
+import useInnerWidth from "@/hooks/useInnerWidth";
 
 const CenterModal: React.FC<CenterModalProps> = ({
     isOpen,
@@ -12,6 +13,10 @@ const CenterModal: React.FC<CenterModalProps> = ({
     titleColor = "#1a1a1a",
     width = 520,
     height,
+    mobileWidth,
+    mobileHeight,
+    mobileBorderRadius,
+    mobileBorderWidth,
     children,
     rootClassName = "",
     bodyClassName = "",
@@ -29,6 +34,17 @@ const CenterModal: React.FC<CenterModalProps> = ({
     headerClassName = "",
     footerClassName = "",
 }) => {
+    const innerWidth = useInnerWidth();
+    const isMobile = innerWidth > 0 && innerWidth < 768;
+    // Desktop: always use original width/height. Mobile: use mobile* overrides only when provided.
+    const effectiveWidth = isMobile && mobileWidth != null ? mobileWidth : width;
+    const effectiveHeight = isMobile && mobileHeight != null ? mobileHeight : height;
+    const mobileContentClass = cn(
+        mobileBorderRadius === 24 && "max-md:!rounded-[24px]",
+        mobileBorderWidth === 1 && "max-md:!border max-md:!border-gray-200"
+    );
+    const bodyHeight = isMobile && mobileHeight != null ? mobileHeight : height;
+    const bodyMaxHeight = isMobile && mobileHeight != null ? mobileHeight : height ?? "95vh";
     const defaultButtonStyles = {
         primaryActionProps: {
             title: primaryActionProps?.title,
@@ -65,7 +81,7 @@ const CenterModal: React.FC<CenterModalProps> = ({
     const classNames: ModalProps["classNames"] = {
         footer: "!hidden",
         mask: "!bg-[#00000099]",
-        content: "flex flex-col !rounded-none md:!rounded-2xl !p-0 !m-0",
+        content: cn("flex flex-col !rounded-none md:!rounded-2xl !p-0 !m-0", mobileContentClass),
     };
 
     return (
@@ -73,17 +89,21 @@ const CenterModal: React.FC<CenterModalProps> = ({
     open={isOpen}
     onCancel={onClose}
     zIndex={zIndex}
-    width={width}
-    className={`custom-modal max-md:!w-screen md:!max-w-[95vw] max-md:!max-w-none max-md:!m-0 [&_.ant-modal-close]:!bg-transparent ${customClassName}`}
+    width={effectiveWidth}
+    className={cn(
+        "custom-modal md:!max-w-[95vw] max-md:!max-w-none max-md:!m-0 [&_.ant-modal-close]:!bg-transparent",
+        mobileWidth == null && "max-md:!w-screen",
+        customClassName
+    )}
     classNames={classNames}
     closeIcon={hideCloseIcon ? null : <ModalCloseIcon className="active:scale-90 transition-all duration-200" />}
     centered
-    height={height}
+    height={effectiveHeight}
     styles={{
         body: {
             padding: 0,
-            height: height,
-            maxHeight: height || "95vh",
+            height: bodyHeight,
+            maxHeight: bodyMaxHeight,
         },
     }}
 >

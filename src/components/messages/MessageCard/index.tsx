@@ -50,7 +50,7 @@ const MessageCard = ({
     return (
         <div
             onClick={handleClick}
-            className={`flex w-[407px] items-center gap-4 border-b border-gray-200 p-4 hover:bg-[#f4f7fb] cursor-pointer transition-all duration-300 ${
+            className={`flex w-full max-w-[407px] items-center gap-4 border-b border-gray-200 p-4 hover:bg-[#f4f7fb] cursor-pointer transition-all duration-300 ${
                 chat_id === chatId ? "bg-[#f4f7fb]" : ""
             }`}
         >

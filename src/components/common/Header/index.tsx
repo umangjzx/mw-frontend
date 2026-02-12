@@ -64,19 +64,31 @@ const CommonHeader: React.FC = () => {
                                 <SideMenuIcon height="22px" width="22px" />
                             </div>
                         )}
-                        {titleIcon && (showTitleButton || !isMobileOrTabScreen) && (
+                        {isMobileOrTabScreen && leftButton?.showButton ? (
                             <Button
-                                icon={titleIcon}
-                                rootClassName={cn(
-                                    "flex items-center justify-center !w-10 !h-10 rounded-full hover:bg-gray-100",
-                                    titleIconClick
-                                        ? "cursor-pointer border-stroke mr-2"
-                                        : "!border-none"
-                                )}
-                                onClick={titleIconClick}
+                                title={leftButton?.buttonTitle}
+                                onClick={leftButton?.buttonOnClick}
+                                rootClassName={leftButton?.buttonClassName}
+                                size="small"
+                                icon={leftButton?.buttonIcon}
                             />
+                        ) : (
+                            <>
+                                {titleIcon && (showTitleButton || !isMobileOrTabScreen) && (
+                                    <Button
+                                        icon={titleIcon}
+                                        rootClassName={cn(
+                                            "flex items-center justify-center !w-10 !h-10 rounded-full hover:bg-gray-100",
+                                            titleIconClick
+                                                ? "cursor-pointer border-stroke mr-2"
+                                                : "!border-none"
+                                        )}
+                                        onClick={titleIconClick}
+                                    />
+                                )}
+                                <h3 className="text-lg font-medium">{formatString(title ?? "")}</h3>
+                            </>
                         )}
-                        <h3 className="text-lg font-medium">{formatString(title ?? "")}</h3>
                     </div>
                     {!isMobileOrTabScreen && leftButton?.showButton && (
                         <Button
@@ -117,7 +129,11 @@ const CommonHeader: React.FC = () => {
                         />
                     )}
                     {hideSearch ||
-                        (isMobileOrTabScreen ? (
+                        (isMobileOrTabScreen &&
+                        (leftButton?.showButton || centerButton?.showButton || actionButtons?.length > 0) ? (
+                            // Search moved to mobile row below when that row is shown
+                            null
+                        ) : isMobileOrTabScreen ? (
                             <Button
                                 icon={<IoIosSearch className="!text-xl" />}
                                 onClick={() => setIsSearchInputOpen(true)}
@@ -149,16 +165,18 @@ const CommonHeader: React.FC = () => {
                         ))}
                 </div>
             </div>
-            {(leftButton?.showButton || actionButtons?.length > 0) && (
-                <div className="lg:hidden w-full flex gap-2 px-3 pb-2">
-                    {leftButton?.showButton && (
-                        <Button
-                            title={leftButton?.buttonTitle}
-                            onClick={leftButton?.buttonOnClick}
-                            rootClassName={leftButton?.buttonClassName}
-                            size="small"
-                            icon={leftButton?.buttonIcon}
-                        />
+            {(leftButton?.showButton || centerButton?.showButton || actionButtons?.length > 0) && (
+                <div className="lg:hidden w-full flex gap-2 px-3 pb-2 items-center">
+                    {centerButton?.showButton && (
+                        <div className="flex-1 min-w-0">
+                            <Button
+                                title={centerButton?.buttonTitle}
+                                onClick={centerButton?.buttonOnClick}
+                                rootClassName={cn(centerButton?.buttonClassName, "!w-full")}
+                                size="small"
+                                icon={centerButton?.buttonIcon}
+                            />
+                        </div>
                     )}
                     {actionButtons?.map((button: ActionButtons) => (
                         <Button
@@ -169,6 +187,14 @@ const CommonHeader: React.FC = () => {
                             icon={button?.buttonIcon}
                         />
                     ))}
+                    {!hideSearch && (
+                        <Button
+                            icon={<IoIosSearch className="!text-xl" />}
+                            onClick={() => setIsSearchInputOpen(true)}
+                            customClassName="!rounded-full !p-2 !h-fit"
+                            btnVariant="tertiary"
+                        />
+                    )}
                 </div>
             )}
             {isMobileOrTabScreen && (

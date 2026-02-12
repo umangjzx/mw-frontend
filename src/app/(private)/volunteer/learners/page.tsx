@@ -86,9 +86,9 @@ export default function LearnersPage() {
         ],
         queryFn: async () => {
             const params: Record<string, string> = {
-                query: query || "",
-                page: page,
-                size: size,
+                query: query ?? "",
+                page: page ?? "1",
+                size: size ?? String(PAGINATION ?? 10),
             };
 
             // Only add parameters if they have values
@@ -267,10 +267,10 @@ export default function LearnersPage() {
                         {data && data.total > 0 && (
                             <div className="px-5 lg:px-10 pb-5">
                                 <Pagination
-                                    currentPage={parseInt(page)}
-                                    totalPages={Math.ceil(data.total / parseInt(size))}
+                                    currentPage={parseInt(page ?? "1", 10)}
+                                    totalPages={Math.ceil(data.total / parseInt(size ?? String(PAGINATION ?? 10), 10))}
                                     totalItems={data.total}
-                                    itemsPerPage={parseInt(size)}
+                                    itemsPerPage={parseInt(size ?? String(PAGINATION ?? 10), 10)}
                                     className="mt-4"
                                 />
                                 </div>

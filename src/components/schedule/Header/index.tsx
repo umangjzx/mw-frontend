@@ -71,30 +71,54 @@ const Header = (props: Props) => {
 
     return (
         <div className="w-full h-full p-2 px-3">
-            <div className="w-full h-full md:flex items-center justify-between">
+            <div className="w-full h-full flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-0">
+                {/* Row 1 (mobile): menu + title + View Demo + Bell. Desktop: same row, no View Demo here */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center">
                         <div
                             className="lg:hidden cursor-pointer"
                             onClick={() => setIsSideNavBarOpen(true)}
                         >
-                            <SideMenuIcon height="22px" width="22px" />
+                            <SideMenuIcon height="22px" width="22px"  />
                         </div>
                         <Button
                             onClick={() => {}}
-                            title="My Schedule"
-                            icon={isMobileOrTabScreen ? "" : <CalendarIcon />}
+                            title={isMobileOrTabScreen ? "Schedule" : "My Schedule"}
+                            icon={isMobileOrTabScreen ? undefined : <CalendarIcon />}
                             rootClassName="bg-transparent text-xl border-none font-medium shadow-none max-lg:!px-2"
                         />
                     </div>
-                    {role === "volunteer" && (
-                        <Button
-                            onClick={handleNotification}
-                            icon={<NotificationIcon height="21px" width="21px" />}
-                            customClassName="lg:hidden !border-none !bg-transparent font-semibold !text-black rounded-full !p-0"
-                        />
-                    )}
+                    {/* Mobile: View Demo + Bell (volunteer) in top row */}
+                    <div className="flex items-center gap-2 max-lg:flex lg:hidden">
+                        {role === "learner" && (
+                            <Button
+                                onClick={handleViewDemo}
+                                title="View Demo"
+                                customClassName="!bg-transparent !text-sm !font-medium !text-orange-500 hover:!text-orange-600 !border-none !shadow-none underline"
+                            />
+                        )}
+                        {role === "volunteer" && (
+                            <>
+                                <Button
+                                    onClick={handleViewDemoforvolunteer}
+                                    title="View Demo"
+                                    customClassName="!bg-transparent !text-sm !font-medium !text-orange-500 hover:!text-orange-600 !border-none !shadow-none underline"
+                                />
+                                <div className="relative">
+                                    <Button
+                                        onClick={handleNotification}
+                                        icon={<NotificationIcon height="21px" width="21px" />}
+                                        customClassName="!border-none !bg-transparent font-semibold !text-black rounded-full !p-0"
+                                    />
+                                    {data?.unread_count > 0 && (
+                                        <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-black" aria-hidden />
+                                    )}
+                                </div>
+                            </>
+                        )}
+                    </div>
                 </div>
+                {/* Desktop: MonthYearSlider */}
                 <div className="max-lg:hidden flex items-center gap-4">
                     <MonthYearSlider
                         onChange={(date) => {
@@ -102,19 +126,31 @@ const Header = (props: Props) => {
                         }}
                     />
                 </div>
-                <div className="flex items-center gap-2 max-lg:mt-1">
-                    {isMobileOrTabScreen && <MonthYearPicker />}
+                {/* Row 2 (mobile): date picker + search. Row 3 (mobile): action buttons. Desktop: single row */}
+                <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-2 lg:mt-0">
+                    {isMobileOrTabScreen && (
+                        <div className="flex items-center gap-2">
+                            <div className="flex-1 min-w-0">
+                                <MonthYearPicker />
+                            </div>
+                            <Button
+                                onClick={() => {}}
+                                icon={<IoIosSearch size={22} className="text-black" />}
+                                customClassName="!bg-white !rounded-full !border !border-gray-200 !p-2.5 !min-w-0"
+                            />
+                        </div>
+                    )}
                     {role === "learner" ? (
                         <div className="flex items-center gap-2">
                             <Button
                                 onClick={handleViewDemo}
                                 title="View Demo"
-                                customClassName="!bg-white max-lg:!text-sm !font-medium !text-black rounded-full p-1 lg:!p-3"
+                                customClassName="max-lg:hidden !bg-white max-lg:!text-sm !font-medium !text-black rounded-full p-1 lg:!p-3"
                             />
                             <Button
                                 onClick={handleAddMeeting}
                                 title="Add New Meeting"
-                                customClassName="!bg-black max-lg:!text-sm !font-medium !text-white rounded-full p-1 lg:!p-3"
+                                customClassName="!bg-black max-lg:!text-sm !font-medium !text-white rounded-full p-1 lg:!p-3 max-lg:flex-1 lg:flex-initial"
                             />
                         </div>
                     ) : (
@@ -145,11 +181,19 @@ const Header = (props: Props) => {
                                     />
                                 </div>
                             )}
+                             {isMobileOrTabScreen && (
+                                <Button
+                                    onClick={handleAddEvent}
+                                    title="Add New Event"
+                                    customClassName="!bg-white  !text-[16px]  lg:!text-sm !font-medium !text-black rounded-full !py-2 max-lg:flex-1"
+                                />
+                            )}
                             <Button
                                 onClick={handleMySchedule}
-                                title="Schedule my availability"
-                                customClassName="!bg-transparent font-medium !text-black rounded-full !py-3 !px-3"
+                                title={isMobileOrTabScreen ? "My Schedule" : "Schedule my availability"}
+                                customClassName="!bg-white !border !border-gray-200 !text-[16px] lg:!text-sm !font-medium !text-black rounded-full !py-2 lg:!py-3 lg:!px-3 max-lg:flex-1"
                             />
+                           
                         </div>
                     )}
                 </div>

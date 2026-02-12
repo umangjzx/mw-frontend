@@ -247,8 +247,8 @@ const OnetImeScheduleModal = ({
                                 clockType === "minutes"
                                     ? timeValue
                                     : tempTime
-                                        ? tempTime.minute()
-                                        : 0;
+                                    ? tempTime.minute()
+                                    : 0;
                             // @ts-ignore
                             const timeStr = dayjs().hour(hour).minute(minute).format("HH:mm");
                             return disabledTimes.includes(timeStr);
@@ -257,7 +257,16 @@ const OnetImeScheduleModal = ({
                     }}
                     slotProps={{
                         textField: {
-                            sx: error ? { border: "2px solid #ef4444", borderRadius: "12px" } : {},
+                            sx: {
+                                ...(error
+                                    ? { border: "2px solid #ef4444", borderRadius: "12px" }
+                                    : {}),
+                                "@media (max-width: 767px)": {
+                                    "& .MuiOutlinedInput-root": {
+                                        backgroundColor: "#F4F7FB",
+                                    },
+                                },
+                            },
                         },
                     }}
                 />
@@ -295,7 +304,7 @@ const OnetImeScheduleModal = ({
                 <div className="flex flex-col max-lg:gap-3 px-5 mt-7">
                     <Input
                         name="selected_date"
-                        onChange={() => { }}
+                        onChange={() => {}}
                         key={"selected_date"}
                         label="Select Date"
                         labelClassName="!text-[1rem] !font-medium"
@@ -305,6 +314,7 @@ const OnetImeScheduleModal = ({
                         required={true}
                         disabled={true}
                         error={""}
+                        inputClassName="md:!bg-white !bg-[#E0E0E0] hover:!bg-[#E0E0E0] focus:!bg-[#E0E0E0] max-md:!text-[#4F4F4F] max-md:placeholder:!text-[#4F4F4F]"
                     />
 
                     <div className="border-b border-gray-200 pb-6">
@@ -315,15 +325,26 @@ const OnetImeScheduleModal = ({
                         {existingSlots.map((slot, idx) => (
                             <div
                                 key={idx}
-                                className="border border-gray-200 rounded-lg p-3 flex justify-between items-center mt-2 w-full"
+                                className="md:border border-gray-200 rounded-lg  flex flex-col md:flex-row md:justify-between md:items-center gap-2 md:gap-0 mt-2 w-full"
                             >
-                                <div className="flex items-center gap-2">
+                                {/* Mobile: start/time pills + "to" */}
+                                <div className="flex items-center gap-2 w-full md:hidden">
+                                    <span className="rounded-lg bg-[#E0E0E0] w-full px-3 py-2 text-sm font-medium text-[#121212]">
+                                        {dayjs(slot.start_time, "HH:mm").format("h:mm A")}
+                                    </span>
+                                    <span className="text-sm text-gray-500">to</span>
+                                    <span className="rounded-lg bg-[#E0E0E0] px-3 w-full py-2 text-sm font-medium text-[#121212]">
+                                        {dayjs(slot.end_time, "HH:mm").format("h:mm A")}
+                                    </span>
+                                </div>
+                                {/* Desktop: title + time range */}
+                                <div className="hidden md:flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-gray-500"></div>
                                     <span className="text-sm font-medium text-[#121212]">
                                         {slot.title || "No Event"}
                                     </span>
                                 </div>
-                                <span className="text-sm text-gray-500 font-medium">
+                                <span className="hidden md:inline text-sm text-gray-500 font-medium">
                                     {dayjs(slot.start_time, "HH:mm").format("h:mm A")} -{" "}
                                     {dayjs(slot.end_time, "HH:mm").format("h:mm A")}
                                 </span>

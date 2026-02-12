@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { Drawer } from "antd";
 import CenterModal from "@/components/common/Modals/CenterModal";
 import TagComponent from "@/components/common/Tag";
 import Button from "@/components/common/Button";
@@ -13,6 +14,8 @@ import { endpoints } from "@/api/constants";
 import { showToast } from "@/components/common/Toast";
 import Cookies from "js-cookie";
 import { useQueryClient } from "@tanstack/react-query";
+import useInnerWidth from "@/hooks/useInnerWidth";
+import { cn } from "@/utils/merge-class";
 
 interface InstantSessionDetailModalProps {
     isOpen: boolean;
@@ -210,132 +213,171 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
         onClose();
     };
 
+    const innerWidth = useInnerWidth();
+    const isMobile = innerWidth > 0 && innerWidth < 768;
+
+    const headerContent = (
+        <div className="flex items-start justify-between w-full">
+            <h2 className="text-[20px] font-medium text-[#121212] flex-1 pr-2">{session.title}</h2>
+            <TagComponent
+                text={status.label}
+                tagClassName={`${status.bg} ${status.text} !border-none !px-3 !py-1 !text-sm !font-medium`}
+            />
+        </div>
+    );
+
+    const footerContent = (
+        <div className="w-full flex gap-3 pb-2">
+            <Button
+                title="Close"
+                btnVariant="tertiary"
+                customClassName="!bg-white !text-black !border !border-gray-300 flex-1"
+                onClick={onClose}
+            />
+            <div className="relative flex-1 min-w-0">
+                <Button
+                    title="Claim Now"
+                    btnVariant="secondary"
+                    customClassName={`w-full ${
+                        isClaimDisabled
+                            ? "!bg-[#1E1E1E] !cursor-not-allowed !text-white"
+                            : ""
+                    }`}
+                    onClick={handleClaim}
+                    disabled={isClaimDisabled}
+                    loading={isCheckingValidation}
+                />
+            </div>
+        </div>
+    );
+
+    const modalBodyContent = (
+        <div className="relative flex flex-col gap-4">
+            {session.tags && session.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                    {session.tags.map((tag, index) => {
+                        const label =
+                            typeof tag === "string"
+                                ? tag
+                                : (tag as any)?.skill_name ?? (tag as any)?.name ?? "";
+                        if (!label) return null;
+                        return (
+                            <TagComponent
+                                key={index}
+                                text={label}
+                                tagClassName="!bg-[#E0F2FE] !border-none !text-black !px-3 !py-1 !text-sm"
+                            />
+                        );
+                    })}
+                </div>
+            )}
+            <p className="text-sm text-black leading-relaxed">{session.description}</p>
+            <div className="flex items-center justify-between py-1">
+                <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center pb-1! w-5 h-5 text-gray-600 flex-shrink-0">
+                        <TimeIcon className="w-5 h-5" />
+                    </div>
+                    <span className="text-base font-medium text-[#4F4F4F]">Duration</span>
+                </div>
+                <span className="text-base font-medium text-[#121212]">
+                    {session.startTime} - {session.endTime} {session.timezone} ({session.duration})
+                </span>
+            </div>
+            <div className="flex items-center justify-between pb-3">
+                <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center w-5 h-5 text-gray-600 flex-shrink-0">
+                        <HostedByIcon />
+                    </div>
+                    <span className="text-base font-medium text-[#4F4F4F]">Hosted By</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <div className="relative w-8 h-8 rounded-full overflow-hidden">
+                        <Image
+                            src={
+                                session.instructor.profilePicture &&
+                                session.instructor.profilePicture !== "/dummy-profile.webp"
+                                    ? session.instructor.profilePicture
+                                    : PersonImg
+                            }
+                            alt={session.instructor.name}
+                            fill
+                            className="object-cover"
+                        />
+                    </div>
+                    <span className="text-base font-medium text-[#121212]">
+                        {session.instructor.name}
+                    </span>
+                </div>
+            </div>
+            {session.status === "available" && displayNote && (
+                <div className="bg-[#FEF9C3] rounded-lg p-4 mb-1">
+                    <p className="text-sm text-[#A16207] leading-relaxed">
+                        <span className="font-semibold text-[#A16207] text-sm">Note:</span> You've
+                        already claimed one session. You can claim another starting 30 minutes before
+                        the session begins, if it hasn't been claimed by someone else.
+                    </p>
+                </div>
+            )}
+        </div>
+    );
+
+    const modalOpen = isOpen && !isConfirmationModalOpen;
+
     return (
         <>
-            <CenterModal
-                isOpen={isOpen && !isConfirmationModalOpen}
-                onClose={onClose}
-                width={600}
-                hideCloseIcon={true}
-                headerComponent={
-                    <div className="flex items-start justify-between w-full">
-                        <h2 className="text-[20px] font-medium text-[#121212] flex-1 pr-2">
-                            {session.title}
-                        </h2>
-                        <TagComponent
-                            text={status.label}
-                            tagClassName={`${status.bg} ${status.text} !border-none !px-3 !py-1 !text-sm !font-medium`}
-                        />
-                    </div>
-                }
-                headerClassName="!px-6 !py-5 !border-0"
-                bodyClassName="!px-6 !py-1"
-                footerComponent={
-                    <div className="w-full flex gap-3 pb-2">
-                        <Button
-                            title="Close"
-                            btnVariant="tertiary"
-                            customClassName="!bg-white !text-black !border !border-gray-300 flex-1"
-                            onClick={onClose}
-                        />
-                        <div className="relative flex-1 min-w-0">
-                            <Button
-                                title="Claim Now"
-                                btnVariant="secondary"
-                                customClassName={`w-full ${
-                                    isClaimDisabled
-                                        ? "!bg-[#1E1E1E] !cursor-not-allowed !text-white"
-                                        : ""
-                                }`}
-                                onClick={handleClaim}
-                                disabled={isClaimDisabled}
-                                loading={isCheckingValidation}
-                            />
-                        </div>
-                    </div>
-                }
-                footerClassName="!px-6 !py-4 !border-0"
-            >
-                <div className="relative flex flex-col gap-4">
-                   
-                    {/* Subject Tags */}
-                    {session.tags && session.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-2">
-                            {session.tags.map((tag, index) => {
-                                const label =
-                                    typeof tag === "string"
-                                        ? tag
-                                        : (tag as any)?.skill_name ?? (tag as any)?.name ?? "";
-                                if (!label) return null;
-                                return (
-                                    <TagComponent
-                                        key={index}
-                                        text={label}
-                                        tagClassName="!bg-[#E0F2FE] !border-none !text-black !px-3 !py-1 !text-sm"
-                                    />
-                                );
-                            })}
-                        </div>
+            {isMobile ? (
+                <Drawer
+                    open={modalOpen}
+                    onClose={onClose}
+                    placement="bottom"
+                    height={500}
+                    closable={false}
+                    className={cn(
+                        "instant-session-drawer",
+                        "[&_.ant-drawer-content-wrapper]:!rounded-t-2xl [&_.ant-drawer-content-wrapper]:!overflow-hidden",
+                        "[&_.ant-drawer-content]:!rounded-t-2xl [&_.ant-drawer-content]:!overflow-hidden",
+                        "[&_.ant-drawer-body]:!rounded-t-2xl"
                     )}
-
-                    {/* Description */}
-                    <p className="text-sm text-black leading-relaxed">{session.description}</p>
-
-                    {/* Duration Section */}
-                    <div className="flex items-center justify-between py-1">
-                        <div className="flex items-center gap-2">
-                            <div className="flex items-center justify-center pb-1! w-5 h-5 text-gray-600 flex-shrink-0">
-                                <TimeIcon className="w-5 h-5" />
-                            </div>
-                            <span className="text-base font-medium text-[#4F4F4F]">Duration</span>
+                    styles={{
+                        wrapper: { borderRadius: "16px 16px 0 0", overflow: "hidden" },
+                        content: { borderRadius: "16px 16px 0 0", overflow: "hidden" },
+                        body: {
+                            padding: 0,
+                            display: "flex",
+                            flexDirection: "column",
+                            height: "100%",
+                            overflow: "hidden",
+                            borderRadius: "16px 16px 0 0",
+                        },
+                    }}
+                >
+                    <div className="flex flex-col h-full overflow-hidden rounded-t-2xl">
+                        <div className="flex-shrink-0 px-6 pt-5 pb-4 border-b border-stroke">
+                            {headerContent}
                         </div>
-                        <span className="text-base font-medium text-[#121212]">
-                            {session.startTime} - {session.endTime} {session.timezone} (
-                            {session.duration})
-                        </span>
-                    </div>
-
-                    {/* Hosted By Section */}
-                    <div className="flex items-center justify-between pb-3">
-                        <div className="flex items-center gap-2">
-                            <div className="flex items-center justify-center w-5 h-5 text-gray-600 flex-shrink-0">
-                                <HostedByIcon />
-                            </div>
-                            <span className="text-base font-medium text-[#4F4F4F]">Hosted By</span>
+                        <div className="flex-1 min-h-0 overflow-y-auto px-6 py-4">
+                            {modalBodyContent}
                         </div>
-                        <div className="flex items-center gap-2">
-                            <div className="relative w-8 h-8 rounded-full overflow-hidden">
-                                <Image
-                                    src={
-                                        session.instructor.profilePicture &&
-                                        session.instructor.profilePicture !== "/dummy-profile.webp"
-                                            ? session.instructor.profilePicture
-                                            : PersonImg
-                                    }
-                                    alt={session.instructor.name}
-                                    fill
-                                    className="object-cover"
-                                />
-                            </div>
-                            <span className="text-base font-medium text-[#121212]">
-                                {session.instructor.name}
-                            </span>
+                        <div className="flex-shrink-0 px-6 py-4 border-t border-stroke bg-white">
+                            {footerContent}
                         </div>
                     </div>
-
-                    {/* Note Section - Show only for the first available session when user has claimed a session */}
-                    {session.status === "available" && displayNote && (
-                        <div className="bg-[#FEF9C3] rounded-lg p-4 mb-1">
-                            <p className="text-sm text-[#A16207] leading-relaxed">
-                                <span className="font-semibold text-[#A16207] text-sm">Note:</span>{" "}
-                                You've already claimed one session. You can claim another starting
-                                30 minutes before the session begins, if it hasn't been claimed by
-                                someone else.
-                            </p>
-                        </div>
-                    )}
-                </div>
-            </CenterModal>
+                </Drawer>
+            ) : (
+                <CenterModal
+                    isOpen={modalOpen}
+                    onClose={onClose}
+                    width={600}
+                    hideCloseIcon={true}
+                    headerComponent={headerContent}
+                    headerClassName="!px-6 !py-5 !border-0"
+                    bodyClassName="!px-6 !py-1"
+                    footerComponent={footerContent}
+                    footerClassName="!px-6 !py-4 !border-0"
+                >
+                    {modalBodyContent}
+                </CenterModal>
+            )}
 
             {/* Confirmation Modal */}
             <ClaimConfirmationModal
