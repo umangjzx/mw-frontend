@@ -37,7 +37,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
                 <div
                     className={`${
                         isOwnMessage
-                            ? "bg-[#f4f7fb] border border-gray-200 text-white shadow-sm md:bg-[#f4f7fb] text-[#121212]"
+                            ? "bg-[#e6e6e6] border border-gray-200 text-white shadow-sm md:bg-[#f4f7fb] text-[#121212]"
                             : "bg-white border border-gray-200 text-[#121212] md:border md:border-gray-200"
                     } max-w-[450px] rounded-xl rounded-br-md md:rounded-lg px-3 py-3 md:px-2 md:py-4 transition-all duration-300 ease-in-out hover:shadow-sm min-w-0`}
                 >
@@ -47,10 +47,10 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
                             isOwnMessage ? "text-[#4F4F4F] md:text-gray-500" : "text-[#4F4F4F] md:text-gray-500"
                         }`}
                     >
-                        <span className="md:hidden">{moment.parseZone(date).format("DD MMM, YYYY")}</span>
+                        <span className="md:hidden">{moment.parseZone(date).format("Do MMM")}</span>
                         <span className="md:hidden font-black">•</span>
-                        <span className="md:hidden">{moment.parseZone(date).format("h.mm a")}</span>
-                        <span className="hidden md:inline">{moment.parseZone(date).format("DD MMM, YYYY h.mm a")}</span>
+                        <span className="md:hidden">{moment.parseZone(date).format("h:mm a")}</span>
+                        <span className="hidden md:inline">{moment.parseZone(date).format("Do MMM • h:mm a")}</span>
                     </div>
                 </div>
                 {isOwnMessage && userImage && (

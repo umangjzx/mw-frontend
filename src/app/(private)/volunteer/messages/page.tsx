@@ -123,13 +123,7 @@ const Messages = () => {
                         setLocation(matchingChat.learner_country);
                     }
                 }
-
-                if (!chatId && !learnerId && res.data.length > 0) {
-                    const firstChat = res.data[0];
-                    router.push(
-                        `/volunteer/messages?chatId=${firstChat.chat_id}&learnerId=${firstChat.learner_id}`
-                    );
-                }
+                // Do not redirect here; desktop auto-open is handled in useEffect (mobile stays on list)
             })
             .catch((err: any) => {
                 console.log(err);
