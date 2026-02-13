@@ -116,7 +116,7 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
                         <Logo />
                     </Link>
                 )}
-                <div className="flex flex-col items-center gap-3 w-full mt-[3rem] md:mt-[4rem]">
+                <div className="flex flex-col items-center gap-3 w-full mt-[1rem] md:mt-[4rem]">
                     <Avatar />
                     <Divider className="max-md:!w-full" />
                 </div>

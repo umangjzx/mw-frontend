@@ -467,23 +467,23 @@ const Messages = () => {
                                 onSeeMoreClick={() => {}}
                                 showBackButton={isMobile}
                                 onBack={() => router.push("/learner/messages")}
-                                action={
-                                    isMobile ? (
-                                        <Button
-                                            onClick={handleScheduleMeeting}
-                                            title="Schedule Meeting"
-                                            btnVariant="secondary"
-                                            className="!rounded-xl !text-[12px] !bg-black hover:!bg-black !text-white transition-all duration-300 !p-2"
-                                        />
-                                    ) : undefined
-                                }
+                                // action={
+                                //     isMobile ? (
+                                //         <Button
+                                //             onClick={handleScheduleMeeting}
+                                //             title="Schedule Meeting"
+                                //             btnVariant="secondary"
+                                //             className="!rounded-xl !text-[12px] !bg-black hover:!bg-black !text-white transition-all duration-300 !p-2"
+                                //         />
+                                //     ) : undefined
+                                // }
                             />
-                            <div className="max-md:hidden">
+                            <div className="w-full  md:w-fit pb-4 md:pb-0 px-3">
                                 <Button
                                     onClick={handleScheduleMeeting}
                                     title="Schedule Meeting"
                                     btnVariant="secondary"
-                                    className="!rounded-xl !text-sm !bg-black hover:!bg-black !text-white transition-all duration-300"
+                                    className="!rounded-xl !w-full md:w-fit  !text-sm !bg-black hover:!bg-black !text-white transition-all duration-300"
                                 />
                             </div>
                         </div>
@@ -520,7 +520,7 @@ const Messages = () => {
                             )}
                             <div ref={messagesEndRef} />
                         </div>
-                        <div className="p-4 flex items-end gap-8 transition-all duration-300">
+                        <div className="p-4 flex items-end gap-2 md:gap-8 transition-all duration-300">
                             {chatPermission ? (
                                 <>
                                     <div className="flex-1 relative">
