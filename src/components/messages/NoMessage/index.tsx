@@ -24,7 +24,7 @@ const NoMessage = () => {
         }
     };
     return (
-        <div className="w-full h-full mt-[-5rem] flex flex-col md:gap-4 gap-[20px]  bg-white items-center justify-center animate-fadeIn">
+        <div className="w-full border-[0.5px] md:border-none border-t-gray-400 h-full min-h-0 flex flex-col md:gap-4 gap-[20px] bg-white items-center justify-center animate-fadeIn">
             <div className="w-[319px] h-[259px] relative flex items-center justify-center">
                 <Image src={Nomessage} alt="No Message" fill />
             </div>

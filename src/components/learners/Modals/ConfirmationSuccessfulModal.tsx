@@ -5,6 +5,7 @@ import Image from "next/image";
 import CenterModal from "@/components/common/Modals/CenterModal";
 import Button from "@/components/common/Button";
 import { TimeIcon, HostedByIcon, VerifyTickIcon } from "@/assets/icons";
+import ModalCloseIcon from "@/assets/icons/ModalCloseIcon";
 import PersonImg from "@/assets/images/Person.png";
 import useInnerWidth from "@/hooks/useInnerWidth";
 
@@ -204,16 +205,33 @@ const ConfirmationSuccessfulModal: React.FC<ConfirmationSuccessfulModalProps> = 
             mobileWidth={isMobile ? innerWidth : undefined}
             mobileHeight={isMobile ? mobileFullScreenHeight : undefined}
             zIndex={2000}
-            hideCloseIcon={false}
+            hideCloseIcon={isMobile}
             headerComponent={
-                <div className="flex items-center justify-between w-full">
-                    <div className="flex items-center gap-2">
-                        <div className=" flex items-center">
-                            <VerifyTickIcon className="md:w-6 md:h-6 w-[26px] h-[26px]" />
+                isMobile ? (
+                    <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center gap-2">
+                            <VerifyTickIcon className="w-[26px] h-[26px]" />
+                            <h2 className="text-[20px] font-medium text-[#121212]">Confirmation Successfull</h2>
                         </div>
-                        <h2 className="text-[20px] font-medium text-[#121212]">Confirmation Successfull</h2>
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="flex-shrink-0 p-1 rounded-full hover:bg-gray-100 active:scale-90 transition-all inline-flex items-center justify-center"
+                            aria-label="Close"
+                        >
+                            <ModalCloseIcon className="w-[32px] h-[32px]" />
+                        </button>
                     </div>
-                </div>
+                ) : (
+                    <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center gap-2">
+                            <div className="flex items-center">
+                                <VerifyTickIcon className="md:w-6 md:h-6 w-[26px] h-[26px]" />
+                            </div>
+                            <h2 className="text-[20px] font-medium text-[#121212]">Confirmation Successfull</h2>
+                        </div>
+                    </div>
+                )
             }
             headerClassName="!px-6 !py-5 !border-0 !justify-between relative"
             bodyClassName="!px-6 !pt-6 !pb-6 relative max-md:!flex max-md:!flex-col max-md:!overflow-hidden max-md:!min-h-0 max-md:!p-0"

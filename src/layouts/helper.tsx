@@ -1,5 +1,6 @@
 import {
     CommunityIcon,
+    InstantSessionIcon,
     LearnerIcon,
     ResourceIcon,
     VolunteerIcon,
@@ -31,6 +32,8 @@ export const getHeaderIcon = (pathname: string) => {
             return <MessageIcon />;
         case "settings":
             return <SettingIcon />;
+        case "instant-sessions":
+            return <InstantSessionIcon />;
         default:
             return null;
     }

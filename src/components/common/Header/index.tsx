@@ -8,11 +8,12 @@ import { FeedModalCloseIcon, SideMenuIcon } from "@/assets/icons";
 import SideModal from "@/components/common/Modals/MobileSideModal";
 import Sidebar from "@/components/common/Sidebar";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { IoIosSearch } from "react-icons/io";
 
 const CommonHeader: React.FC = () => {
     const pathname = usePathname();
+    const searchParams = useSearchParams();
     const { headerOptions } = useComponentStore();
     const [searchQuery, setSearchQuery] = useQueryState("query");
     const {
@@ -32,9 +33,16 @@ const CommonHeader: React.FC = () => {
         actionButtons = [],
         hideSearch,
         centerButton,
+        hideHeader,
     } = headerOptions || {};
 
     const isMobileOrTabScreen = InnerWidth() < 1024;
+    const isMobile = InnerWidth() < 768;
+    const isMessagesChatPage =
+        (pathname?.includes("/volunteer/messages") || pathname?.includes("/learner/messages")) &&
+        searchParams?.get("chatId");
+    const hideHeaderOnMobile = isMobile && isMessagesChatPage;
+
     const [isSideNavBarOpen, setIsSideNavBarOpen] = useState<boolean>(false);
     const [isSearchInputOpen, setIsSearchInputOpen] = useState<boolean>(false);
 
@@ -51,6 +59,8 @@ const CommonHeader: React.FC = () => {
         setIsSearchInputOpen(false);
     };
 
+    if (hideHeader || hideHeaderOnMobile) return null;
+
     return (
         <div className="w-full h-full relative">
             <div className="w-full h-[64px] lg:h-full p-2 px-3 flex items-center justify-between relative">
@@ -64,7 +74,7 @@ const CommonHeader: React.FC = () => {
                                 <SideMenuIcon height="22px" width="22px" />
                             </div>
                         )}
-                        {isMobileOrTabScreen && leftButton?.showButton ? (
+                        {isMobileOrTabScreen && leftButton?.showButton && !pathname?.includes("/instant-sessions") ? (
                             <Button
                                 title={leftButton?.buttonTitle}
                                 onClick={leftButton?.buttonOnClick}
@@ -74,7 +84,9 @@ const CommonHeader: React.FC = () => {
                             />
                         ) : (
                             <>
-                                {titleIcon && (showTitleButton || !isMobileOrTabScreen) && (
+                                {titleIcon &&
+                                    (showTitleButton || !isMobileOrTabScreen) &&
+                                    (!pathname?.includes("/instant-sessions") || isMobileOrTabScreen) && (
                                     <Button
                                         icon={titleIcon}
                                         rootClassName={cn(
@@ -86,7 +98,13 @@ const CommonHeader: React.FC = () => {
                                         onClick={titleIconClick}
                                     />
                                 )}
-                                <h3 className="md:text-lg text-[20px] font-medium">{formatString(title ?? "")}</h3>
+                                <h3 className="md:text-lg text-[20px] font-medium">
+                                    {formatString(
+                                        (!pathname?.includes("/instant-sessions") || isMobileOrTabScreen)
+                                            ? (title ?? "")
+                                            : ""
+                                    )}
+                                </h3>
                             </>
                         )}
                     </div>
@@ -130,10 +148,9 @@ const CommonHeader: React.FC = () => {
                     )}
                     {hideSearch ||
                         (isMobileOrTabScreen &&
-                        (leftButton?.showButton || centerButton?.showButton || actionButtons?.length > 0) ? (
-                            // Search moved to mobile row below when that row is shown
-                            null
-                        ) : isMobileOrTabScreen ? (
+                        (leftButton?.showButton ||
+                            centerButton?.showButton ||
+                            actionButtons?.length > 0) ? null : isMobileOrTabScreen ? ( // Search moved to mobile row below when that row is shown
                             <Button
                                 icon={<IoIosSearch className="!text-xl" />}
                                 onClick={() => setIsSearchInputOpen(true)}

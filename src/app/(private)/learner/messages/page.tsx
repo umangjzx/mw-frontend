@@ -405,8 +405,9 @@ const Messages = () => {
             title: "Messages",
             titleIcon: getHeaderIcon(pathname),
             hideSearch: true,
+            hideHeader: isMobile && !!chatId,
         });
-    }, [setHeaderOptions]);
+    }, [setHeaderOptions, pathname, isMobile, chatId]);
 
     useEffect(() => {
         setIndividualChat([]);
@@ -458,7 +459,7 @@ const Messages = () => {
                             isMobile && !chatId ? "hidden" : ""
                         }`}
                     >
-                        <div className="flex pb-2 flex-col md:flex-row md:items-center md:gap-4 md:justify-between border-b border-gray-200">
+                        <div className="flex md:pb-2 flex-col md:flex-row md:items-center md:gap-4 md:justify-between border-b border-gray-200">
                             <ChatHeader
                                 name={recieverName}
                                 location={location}
@@ -493,25 +494,28 @@ const Messages = () => {
                                 </div>
                             ) : (
                                 <>
-                            {individualChat?.map((message: any, index: any) => (
-                                <MessageBubble
-                                    key={message.message_id || `msg-${index}`}
-                                    message={message.message}
-                                    timestamp={new Date(message.created_at).toLocaleTimeString([], {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                    })}
-                                    date={message.created_at}
-                                    isOwnMessage={message.sender_id === learnerId}
-                                    userImage={
-                                        message.sender_id === learnerId
-                                            ? message.learner_profile_picture?.image_url ||
-                                              message.sender_profile_picture?.image_url
-                                            : message.volunteer_profile_picture?.image_url ||
-                                              message.receiver_profile_picture?.image_url
-                                    }
-                                />
-                            ))}
+                                    {individualChat?.map((message: any, index: any) => (
+                                        <MessageBubble
+                                            key={message.message_id || `msg-${index}`}
+                                            message={message.message}
+                                            timestamp={new Date(
+                                                message.created_at
+                                            ).toLocaleTimeString([], {
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                            })}
+                                            date={message.created_at}
+                                            isOwnMessage={message.sender_id === learnerId}
+                                            userImage={
+                                                message.sender_id === learnerId
+                                                    ? message.learner_profile_picture?.image_url ||
+                                                      message.sender_profile_picture?.image_url
+                                                    : message.volunteer_profile_picture
+                                                          ?.image_url ||
+                                                      message.receiver_profile_picture?.image_url
+                                            }
+                                        />
+                                    ))}
                                 </>
                             )}
                             <div ref={messagesEndRef} />

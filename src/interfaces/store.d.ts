@@ -24,6 +24,7 @@ type HeaderOptions = {
     actionButtons?: ActionButtons[];
     titleIconClick?: () => void;
     centerButton?: ActionButtons;
+    hideHeader?: boolean;
 } | null;
 
 type UseVolunteerProps = {

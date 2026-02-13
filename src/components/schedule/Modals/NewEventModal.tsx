@@ -106,8 +106,8 @@ export default function NewEventModal({
     const timezoneRaw =
         (volunteerDetails as { volunteer_contact_details?: { timezone?: string } })
             ?.volunteer_contact_details?.timezone ?? "";
-    const volunteerTimezone =
-        timezoneRaw.includes("+05:30") || /IST|India/i.test(timezoneRaw) ? "IST" : "UTC";
+
+    const volunteerTimezone = timezoneRaw.includes(" - ") ? timezoneRaw.split(" - ")[0]?.trim() ?? timezoneRaw : timezoneRaw;
 
     const { data: skillsData } = useQuery({
         queryKey: ["common-skills"],
@@ -479,7 +479,7 @@ export default function NewEventModal({
                         />
                     </div>
                 </div>
-                <div className="flex md:hidden gap-3 justify-end pt-5 pb-2 mt-[6rem] border-t border-stroke">
+                <div className="flex md:hidden gap-3 justify-end pt-5  border-t border-stroke">
                         <Button
                             title="Cancel"
                             onClick={handleCancel}
