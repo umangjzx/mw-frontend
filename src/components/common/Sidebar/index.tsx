@@ -100,7 +100,7 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
     };
 
     return (
-        <div className="bg-white w-full h-full lg:h-screen flex flex-col items-center justify-between p-6 overflow-y-auto">
+        <div className="bg-white w-full h-full lg:h-screen flex flex-col items-center justify-between p-4 md:p-6 overflow-y-auto">
             <div className="w-full">
                 {isMobileOrTabScreen ? (
                     <div className="shrink-0 flex items-center justify-between">
@@ -116,11 +116,11 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
                         <Logo />
                     </Link>
                 )}
-                <div className="flex flex-col items-center gap-3 w-full mt-[1rem] md:mt-[4rem]">
+                <div className="flex flex-col items-center gap-3 w-full  md:mt-[4rem]">
                     <Avatar />
                     <Divider className="max-md:!w-full" />
                 </div>
-                <div className="flex flex-col items-center gap-8 md:gap-5 lg:gap-[2.2rem] w-full mt-[2rem]">
+                <div className="flex flex-col items-center gap-6 md:gap-5 lg:gap-[2.2rem] w-full mt-[1rem] md:mt-[2rem]">
                     {linksData.map((link) => (
                         <SectionCard key={link.href} {...link} />
                     ))}
