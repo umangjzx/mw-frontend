@@ -53,7 +53,7 @@ const CommonHeader: React.FC = () => {
 
     return (
         <div className="w-full h-full relative">
-            <div className="w-full h-auto lg:h-full p-2 px-3 flex items-center justify-between relative">
+            <div className="w-full h-[64px] lg:h-full p-2 px-3 flex items-center justify-between relative">
                 <div className="flex items-center gap-5">
                     <div className="flex capitalize items-center">
                         {showTitleButton || (
@@ -86,7 +86,7 @@ const CommonHeader: React.FC = () => {
                                         onClick={titleIconClick}
                                     />
                                 )}
-                                <h3 className="text-lg font-medium">{formatString(title ?? "")}</h3>
+                                <h3 className="md:text-lg text-[20px] font-medium">{formatString(title ?? "")}</h3>
                             </>
                         )}
                     </div>

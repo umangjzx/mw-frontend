@@ -350,7 +350,7 @@ export default function InstantSessionsPage() {
                 <>
                     <div className="flex items-center my-6">
                         <div className="flex-1 border-t border-gray-200" />
-                        <span className="px-4 text-[20px] font-medium text-[#121212]">
+                        <span className="px-4    md:text-[20px] text-[16px] font-medium text-[#121212]">
                             Today&apos;s claimed session
                         </span>
                         <div className="flex-1 border-t border-gray-200" />

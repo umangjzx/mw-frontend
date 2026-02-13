@@ -191,7 +191,7 @@ export default function LearnersPage() {
             actionButtonPlacement: "right",
             title: "Learners",
             titleIcon: getHeaderIcon(pathname),
-          
+
             actionButtons: [
                 {
                     buttonTitle: isMobileScreen
@@ -203,7 +203,7 @@ export default function LearnersPage() {
                     buttonPlacement: "right",
                     showButton: true,
                 },
-               {
+                {
                     buttonTitle: `Filters (${appliedFiltersCount})`,
                     buttonOnClick: () => setIsFilterOpen(true),
                     buttonIcon: <RiFilter3Line className="text-lg" />,
@@ -215,7 +215,6 @@ export default function LearnersPage() {
             ],
         });
     }, [pathname, setHeaderOptions, appliedFiltersCount]);
-    
 
     return (
         <div className="h-full animate-fadeIn">
@@ -254,25 +253,30 @@ export default function LearnersPage() {
                         </div>
                     ) : (
                         <div className="flex flex-col w-full justify-between min-h-[calc(100vh-100px)]">
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full h-auto p-5 py-7 lg:p-10">
-                            {learnerCardData.map((learner) => (
-                                <LearnerCard
-                                    key={learner.learnerId}
-                                    onSeeMoreClick={handleSeeMoreClick}
-                                    {...learner}
-                                />
-                            ))}
-                        </div>
-                        {data && data.total > 0 && (
-                            <div className="px-5 lg:px-10 pb-5">
-                                <Pagination
-                                    currentPage={parseInt(page ?? "1", 10)}
-                                    totalPages={Math.ceil(data.total / parseInt(size ?? String(PAGINATION ?? 10), 10))}
-                                    totalItems={data.total}
-                                    itemsPerPage={parseInt(size ?? String(PAGINATION ?? 10), 10)}
-                                    className="mt-4"
-                                />
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full h-auto p-5 py-7 lg:p-10">
+                                {learnerCardData.map((learner) => (
+                                    <LearnerCard
+                                        key={learner.learnerId}
+                                        onSeeMoreClick={handleSeeMoreClick}
+                                        {...learner}
+                                    />
+                                ))}
+                            </div>
+                            {data && data.total > 0 && (
+                                <div className="px-5 lg:px-10 pb-5">
+                                    <Pagination
+                                        currentPage={parseInt(page ?? "1", 10)}
+                                        totalPages={Math.ceil(
+                                            data.total /
+                                                parseInt(size ?? String(PAGINATION ?? 10), 10)
+                                        )}
+                                        totalItems={data.total}
+                                        itemsPerPage={parseInt(
+                                            size ?? String(PAGINATION ?? 10),
+                                            10
+                                        )}
+                                        className="mt-4"
+                                    />
                                 </div>
                             )}
                         </div>

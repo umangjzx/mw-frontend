@@ -65,10 +65,15 @@ const MessageCard = ({
                             <p className="text-xs font-normal text-[#22c55e]">
                                 {moment.parseZone(date).format("h.mm a")}
                             </p>
-                        ) :(
-                            <p className="text-xs text-[#4F4F4F]">
-                                {moment.parseZone(date).format("DD MMM, YYYY")}
-                            </p>
+                        ) : (
+                            <>
+                                <p className="text-xs text-[#4F4F4F] max-md:block md:hidden">
+                                    {moment.parseZone(date).format("DD/MM/YYYY")}
+                                </p>
+                                <p className="text-xs text-[#4F4F4F] hidden md:block">
+                                    {moment.parseZone(date).format("DD MMM, YYYY")}
+                                </p>
+                            </>
                         )}
                     </div>
                 </div>

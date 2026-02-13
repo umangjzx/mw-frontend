@@ -13,6 +13,8 @@ import { endpoints } from "@/api/constants";
 import { showToast } from "@/components/common/Toast";
 import { useQuery } from "@tanstack/react-query";
 import { useAppStore } from "@/store/useAppStore";
+import useInnerWidth from "@/hooks/useInnerWidth";
+import ModalCloseIcon from "@/assets/icons/ModalCloseIcon";
 
 /* Full-screen mobile modal: align wrap to top and make content fill viewport */
 const fullScreenMobileStyles = (
@@ -266,11 +268,29 @@ export default function NewEventModal({
         onClose();
     };
 
+    const innerWidth = useInnerWidth();
+    const isMobile = innerWidth > 0 && innerWidth < 768;
+    const mobileHeader = (
+        <div className="flex items-center gap-3 w-full">
+            <button
+                type="button"
+                onClick={handleCancel}
+                className="flex items-center justify-center rounded-full p-0 border-0 bg-transparent active:scale-90 transition-all duration-200 cursor-pointer"
+                aria-label="Close"
+            >
+                <ModalCloseIcon className="active:scale-90 transition-all duration-200" />
+            </button>
+            <p className="text-[20px] font-medium text-[#1a1a1a]">New Event</p>
+        </div>
+    );
+
     return (
         <>
             {fullScreenMobileStyles}
             <CenterModal
                 title="New Event"
+                headerComponent={isMobile ? mobileHeader : undefined}
+                hideCloseIcon={isMobile}
                 isOpen={isOpen}
                 onClose={handleCancel}
                 width={620}
@@ -278,9 +298,9 @@ export default function NewEventModal({
                 customClassName="new-event-modal-fullscreen-mobile !rounded-3xl max-md:!w-screen max-md:!min-h-[100dvh] max-md:!h-[100dvh] max-md:!max-h-[100dvh] max-md:!top-0 max-md:!rounded-none max-md:!m-0"
                 rootClassName="!rounded-3xl overflow-hidden max-md:!min-h-full max-md:!h-full"
                 headerClassName="!px-6 !py-5"
-                bodyClassName="!px-6 "
+                bodyClassName="md:!px-6 !p-[20px]"
             >
-                <div className="flex flex-col gap-2 ">
+                <div className="flex flex-col gap-2 max-md:gap-4">
                     {/* Select Date */}
                     <div className="flex flex-col gap-2">
                         <Input
@@ -302,7 +322,7 @@ export default function NewEventModal({
                     </div>
 
                     {/* Duration and Start Time Row */}
-                    <div className="grid md:grid-cols-2 gap-5">
+                    <div className="grid md:grid-cols-2 gap-[16px] md:gap-5">
                         {/* Duration */}
                         <div className="flex flex-col gap-2">
                             <Input
@@ -414,8 +434,10 @@ export default function NewEventModal({
 
                     {/* Tags – search and select from skills, pass skill IDs as tag_ids on post */}
                     <div className="flex flex-col md:gap-2">
-                        <label className="md:text-base text-[14px] font-regular text-[#121212]">Tags</label>
-                        <div className="flex flex-wrap gap-2 mb-2">
+                        <label className="md:text-base text-[14px] font-regular text-[#121212]">
+                            Tags
+                        </label>
+                        <div className="flex flex-wrap gap-2 mb-2 md:mb-0">
                             {selectedSkills.map((skill) => (
                                 <TagComponent
                                     key={skill.skill_id}
@@ -443,7 +465,7 @@ export default function NewEventModal({
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex gap-3 justify-end pt-5 pb-2 border-t border-stroke">
+                    <div className="hidden md:flex gap-3 justify-end pt-5 pb-2 border-t border-stroke">
                         <Button
                             title="Cancel"
                             onClick={handleCancel}
@@ -457,6 +479,19 @@ export default function NewEventModal({
                         />
                     </div>
                 </div>
+                <div className="flex md:hidden gap-3 justify-end pt-5 pb-2 mt-[6rem] border-t border-stroke">
+                        <Button
+                            title="Cancel"
+                            onClick={handleCancel}
+                            customClassName="!bg-white !text-black !font-medium rounded-full !px-6 !py-2.5"
+                        />
+                        <Button
+                            title={isSubmitting ? "Creating..." : "Create Event"}
+                            onClick={handleSubmit}
+                            disabled={isSubmitting}
+                            customClassName="!bg-black !text-white !font-medium rounded-full !px-6 !py-2.5"
+                        />
+                    </div>
             </CenterModal>
         </>
     );
