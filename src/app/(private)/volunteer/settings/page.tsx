@@ -46,7 +46,7 @@ const Settings = () => {
 
     return (
         <div className="w-full h-full bg-white flex border border-gray-200 md:rounded-tl-[3rem] animate-fadeIn">
-                <div className="md:p-10 p-4 flex bg-[#f4f7fb] md:bg-transparent flex-col md:gap-8 gap-4 w-full">
+            <div className="md:p-10 p-4 flex bg-[#f4f7fb] md:bg-transparent flex-col md:gap-8 gap-4 w-full">
                 <p className="md:text-2xl text-[16px] font-medium">Message Permission Settings</p>
                 <div className="flex bg-white p-3 md:p-0 rounded-[12px] md:bg-transparent justify-between gap-2 items-center w-full">
                     <div className="flex flex-col gap-2">

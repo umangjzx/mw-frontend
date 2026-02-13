@@ -39,7 +39,7 @@ const MainLayout: FC<PropsWithChildren> = ({ children }) => {
                 )}
                 <div
                     className={cn(
-                        "flex-grow overflow-hidden bg-background-input",
+                        "flex-grow overflow-y-auto bg-background-input",
                         isProfile ? "" : "lg:rounded-tl-[50px]"
                     )}
                 >

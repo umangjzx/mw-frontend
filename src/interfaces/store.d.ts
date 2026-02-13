@@ -5,7 +5,7 @@ type ActionButtons = {
     buttonClassName?: string;
     showButton?: boolean;
     buttonPlacement?: "left" | "right";
-}
+};
 
 type HeaderOptions = {
     actionButtonTitle?: string;

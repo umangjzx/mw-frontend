@@ -498,7 +498,7 @@ const Messages = () => {
                                 </>
                             )}
                         </div>
-                        <div className="p-4 flex items-end gap-8 transition-all duration-300">
+                        <div className="p-4 flex items-end gap-2 md:gap-8 transition-all duration-300">
                             {chatPermission ? (
                                 <>
                                     <div className="flex-1 relative">

@@ -102,7 +102,7 @@ const Header = (props: Props) => {
                                 <Button
                                     onClick={handleViewDemoforvolunteer}
                                     title="View Demo"
-                                    customClassName="!bg-transparent !text-sm !font-medium !text-[#33D0FD] md:!text-orange-500 hover:!text-orange-600 !border-none !shadow-none underline"
+                                    customClassName="!bg-transparent !text-sm !font-medium !text-orange-500 hover:!text-orange-600 !border-none !shadow-none underline"
                                 />
                                 <div className="relative">
                                     <Button
