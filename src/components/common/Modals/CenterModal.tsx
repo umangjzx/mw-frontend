@@ -111,8 +111,8 @@ const CenterModal: React.FC<CenterModalProps> = ({
             classNames={classNames}
             closeIcon={
                 isDefaultHeader ? null : hideCloseIcon ? null : (
-                    // <ModalCloseIcon className="active:scale-80 transition-all duration-200" />
-                    <p>x</p>
+                    <ModalCloseIcon className="active:scale-80 transition-all duration-200" />
+                 
                 )
             }
             centered

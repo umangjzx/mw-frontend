@@ -116,11 +116,11 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
                         <Logo />
                     </Link>
                 )}
-                <div className="flex flex-col items-center gap-3 w-full mt-[4rem]">
+                <div className="flex flex-col items-center gap-3 w-full mt-[3rem] md:mt-[4rem]">
                     <Avatar />
                     <Divider className="max-md:!w-full" />
                 </div>
-                <div className="flex flex-col items-center gap-5 lg:gap-[2.2rem] w-full mt-[2rem]">
+                <div className="flex flex-col items-center gap-8 md:gap-5 lg:gap-[2.2rem] w-full mt-[2rem]">
                     {linksData.map((link) => (
                         <SectionCard key={link.href} {...link} />
                     ))}

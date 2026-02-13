@@ -44,7 +44,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
             <div className="min-w-0 flex-1 flex flex-col md:gap-1 gap-[8px]">
                 <div className="flex items-center gap-2 justify-between">
                     <p className="md:text-base text-[20px] font-medium transition-colors duration-300 truncate">{name}</p>
-                    {action}
+                    {/* {action} */}
                 </div>
                 <div className="flex items-center gap-4">
                     <p className="md:text-sm text-[14px] font-normal text-gray-500 transition-colors duration-300">
