@@ -60,7 +60,7 @@ const LearnerCard: React.FC<LearnerCardProps> = ({
                 <div className="flex flex-col">
                     <p
                         onClick={() => onSeeMoreClick(learnerId)}
-                        className="text-base font-semibold lg:text-normal hover:underline hover:text-primary cursor-pointer lg:font-medium"
+                        className="text-base font-semibold lg:text-normal underline text-primary cursor-pointer lg:font-medium"
                     >
                         {name}
                     </p>
