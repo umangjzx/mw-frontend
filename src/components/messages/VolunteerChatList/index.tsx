@@ -58,14 +58,14 @@ const ChatList: React.FC<ChatListProps> = ({
     }, [messages, searchQuery]);
 
     return (
-        <div className="max-w-[440px] h-full shrink-0 rounded-tl-[3.1rem] p-4 border-r border-gray-200">
-            <div className="flex items-center justify-between rounded-tl-[3rem] py-2">
+        <div className="max-w-[440px] h-full shrink-0 rounded-tl-[3.1rem] md:p-4 border-r border-gray-200">
+            <div className="hidden md:flex items-center justify-between rounded-tl-[3rem] py-2">
                 <p className="text-2xl font-medium">All Chats</p>
                 <p className="text-base text-gray-500 font-medium">
                     {filteredMessages.length} Chats
                 </p>
             </div>
-            <div className="py-4">
+            <div className="py-4 px-4 md:px-0">
                 <Input
                     value={searchQuery ?? ""}
                     inputType="search"
@@ -73,7 +73,7 @@ const ChatList: React.FC<ChatListProps> = ({
                     inputClassName="!bg-transparent !rounded-3xl gap-1 font-medium items-center w-full"
                     className="!bg-transparent w-full !mb-0"
                     onChange={onSearch}
-                    placeholder={"Search by name"}
+                    placeholder={"Search"}
                 />
             </div>
             <div className="flex flex-col gap-2s">

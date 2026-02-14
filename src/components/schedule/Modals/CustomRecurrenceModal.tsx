@@ -71,6 +71,10 @@ const CustomRecurrenceModal: React.FC<CustomRecurrenceModalProps> = ({
             title="Custom Recurrence"
             width={643}
             customClassName="!rounded-3xl"
+            mobileWidth={353}
+            mobileHeight={537}
+            mobileBorderRadius={24}
+            mobileBorderWidth={1}
             primaryActionProps={{
                 onClick: handleSave,
                 title: "Save",
@@ -83,7 +87,7 @@ const CustomRecurrenceModal: React.FC<CustomRecurrenceModalProps> = ({
                 customClassName: "!bg-white !text-black !border !border-gray-300 !rounded-xl w-[100px] h-[40px]",
             }}
         >
-            <div className="flex flex-col gap-6 px-2 py-6">
+            <div className="flex flex-col gap-6 max-md:px-2 max-md:py-6 md:px-6 md:py-6">
                 {/* Repeats Every Section */}
                 <div className="flex items-center gap-3">
                     <label className="text-base font-medium text-black whitespace-nowrap w-[114px] pt-[3px] h-6 leading-none tracking-normal align-middle">Repeats Every</label>

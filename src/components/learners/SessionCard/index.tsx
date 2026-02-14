@@ -45,14 +45,14 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, onClick }) => {
     return (
         <div
             onClick={onClick}
-            className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-shadow"
+            className="bg-white rounded-xl  p-[12px] md:p-6 shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-shadow"
         >
             {/* Header: Title and Status */}
-            <div className="flex items-start justify-between mb-4">
-                <h2 className="text-[20px]] font-medium text-[#121212] flex-1 pr-2">{session.title}</h2>
+            <div className="flex items-center justify-between mb-4">
+                <h2 className="text-[20px] font-medium text-[#121212] flex-1 pr-2">{session.title}</h2>
                 <TagComponent
                     text={status.label}
-                    tagClassName={`${status.bg} ${status.text} !border-none !px-3 !py-1 !text-sm !font-medium`}
+                    tagClassName={`${status.bg} ${status.text} !border-none !px-3 !py-1 md:!text-sm !text-[12px] !font-medium`}
                 />
             </div>
 
@@ -74,10 +74,10 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, onClick }) => {
             )}
 
             {/* Description */}
-            <p className="text-sm text-gray-700 mb-2 line-clamp-2 leading-relaxed">{session.description}</p>
+            <p className="md:text-sm text-[14px] text-gray-700 mb-2 line-clamp-2 leading-relaxed">{session.description}</p>
 
             {/* Footer: Time and Instructor */}
-            <div className="flex items-center justify-between pt-3 ">
+            <div className="flex md:flex-row flex-col gap-2 md:items-center justify-between pt-3 ">
                 {/* Time Info */}
                 <div className="flex items-center gap-2">
                     <div className="flex items-center justify-center pt-1! w-5 h-5 text-gray-600 flex-shrink-0">

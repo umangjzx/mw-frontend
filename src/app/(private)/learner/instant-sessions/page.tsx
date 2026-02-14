@@ -7,6 +7,8 @@ import SessionCard from "@/components/learners/SessionCard";
 import { InstantSessionDetailModal } from "@/components/learners/Modals";
 import ConfirmationSuccessfulModal from "@/components/learners/Modals/ConfirmationSuccessfulModal";
 import { useComponentStore } from "@/store/useComponenetStore";
+import { getHeaderIcon } from "@/layouts/helper";
+import { usePathname } from "next/navigation";
 import { InstantSessionIcon, TodayIcon } from "@/assets/icons";
 import { GET_API, DELETE_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
@@ -122,6 +124,7 @@ export default function InstantSessionsPage() {
     const [isActionLoading, setIsActionLoading] = useState(false);
     const queryClient = useQueryClient();
     const { setHeaderOptions } = useComponentStore();
+    const pathname = usePathname();
 
     const today = dayjs().format("YYYY-MM-DD");
 
@@ -271,16 +274,20 @@ export default function InstantSessionsPage() {
             );
             if (res.status === 200 || res.status === 201) {
                 showToast({ message: "Session unclaimed successfully", type: "success" });
-                
+
                 // Invalidate and refetch queries to update the UI immediately
                 // This ensures the cancelled session appears in available sessions
                 await queryClient.invalidateQueries({ queryKey: ["learner-instant-sessions"] });
-                await queryClient.invalidateQueries({ queryKey: ["learner-accepted-instant-sessions"] });
-                
+                await queryClient.invalidateQueries({
+                    queryKey: ["learner-accepted-instant-sessions"],
+                });
+
                 // Refetch to ensure fresh data
                 await queryClient.refetchQueries({ queryKey: ["learner-instant-sessions", today] });
-                await queryClient.refetchQueries({ queryKey: ["learner-accepted-instant-sessions", today] });
-                
+                await queryClient.refetchQueries({
+                    queryKey: ["learner-accepted-instant-sessions", today],
+                });
+
                 handleCloseClaimedModal();
             } else {
                 showToast({ message: "Failed to unclaim session", type: "error" });
@@ -295,6 +302,8 @@ export default function InstantSessionsPage() {
 
     useEffect(() => {
         setHeaderOptions({
+            title: "Instant Sessions",
+            titleIcon: getHeaderIcon(pathname),
             searchPlaceholder: "Search",
             leftButton: {
                 buttonTitle: "Events",
@@ -312,7 +321,7 @@ export default function InstantSessionsPage() {
                 showButton: true,
             },
         });
-    }, [setHeaderOptions]);
+    }, [setHeaderOptions, pathname]);
 
     // Show loader when loading initially or fetching (when switching to page)
     const isPageLoading = isLoading || isClaimedLoading || isFetching || isClaimedFetching;
@@ -350,7 +359,7 @@ export default function InstantSessionsPage() {
                 <>
                     <div className="flex items-center my-6">
                         <div className="flex-1 border-t border-gray-200" />
-                        <span className="px-4 text-[20px] font-medium text-[#121212]">
+                        <span className="px-4    md:text-[20px] text-[16px] font-medium text-[#121212]">
                             Today&apos;s claimed session
                         </span>
                         <div className="flex-1 border-t border-gray-200" />

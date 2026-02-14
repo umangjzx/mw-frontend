@@ -12,6 +12,34 @@ import { POST_API, GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import { showToast } from "@/components/common/Toast";
 import { useQuery } from "@tanstack/react-query";
+import { useAppStore } from "@/store/useAppStore";
+import useInnerWidth from "@/hooks/useInnerWidth";
+import ModalCloseIcon from "@/assets/icons/ModalCloseIcon";
+
+/* Full-screen mobile modal: align wrap to top and make content fill viewport */
+const fullScreenMobileStyles = (
+    <style
+        dangerouslySetInnerHTML={{
+            __html: `
+            @media (max-width: 767px) {
+                .ant-modal-wrap:has(.new-event-modal-fullscreen-mobile) {
+                    align-items: flex-start !important;
+                }
+                .new-event-modal-fullscreen-mobile.ant-modal {
+                    max-width: 100vw !important;
+                    top: 0 !important;
+                    padding: 0 !important;
+                }
+                .new-event-modal-fullscreen-mobile .ant-modal-content {
+                    height: 100dvh !important;
+                    max-height: 100dvh !important;
+                    border-radius: 0 !important;
+                }
+            }
+        `,
+        }}
+    />
+);
 
 interface Skill {
     skill_id: string;
@@ -74,6 +102,13 @@ export default function NewEventModal({
     const [skillSelectValue, setSkillSelectValue] = useState<string>("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const { volunteerDetails } = useAppStore();
+    const timezoneRaw =
+        (volunteerDetails as { volunteer_contact_details?: { timezone?: string } })
+            ?.volunteer_contact_details?.timezone ?? "";
+
+    const volunteerTimezone = timezoneRaw.includes(" - ") ? timezoneRaw.split(" - ")[0]?.trim() ?? timezoneRaw : timezoneRaw;
+
     const { data: skillsData } = useQuery({
         queryKey: ["common-skills"],
         queryFn: async () => {
@@ -103,7 +138,9 @@ export default function NewEventModal({
             if (!formData.select_date) return [];
             const dateStr = dayjs(formData.select_date).format("YYYY-MM-DD");
             try {
-                const res = await GET_API(endpoints.volunteer_slot.getAvailableDaysForDate(dateStr));
+                const res = await GET_API(
+                    endpoints.volunteer_slot.getAvailableDaysForDate(dateStr)
+                );
                 return res?.data?.slots || [];
             } catch (error) {
                 console.error("Error fetching slots:", error);
@@ -202,8 +239,7 @@ export default function NewEventModal({
                     start_time: "",
                     title: "",
                     description: "",
-                    tags: []
-
+                    tags: [],
                 });
                 setSelectedSkills([]);
                 setSkillSelectValue("");
@@ -232,191 +268,231 @@ export default function NewEventModal({
         onClose();
     };
 
-    return (
-        <CenterModal
-            title="New Event"
-            isOpen={isOpen}
-            onClose={handleCancel}
-            width={620}
-            hideFooter={true}
-            customClassName="!rounded-3xl"
-            rootClassName="!rounded-3xl overflow-hidden"
-            headerClassName="!px-6 !py-5"
-            bodyClassName="!px-6 "
-        >
-            <div className="flex flex-col gap-2">
-                {/* Select Date */}
-                <div className="flex flex-col gap-2">
-                    <Input
-                        name="select_date"
-                        label="Select Date"
-                        inputType="datepicker"
-                        value={formData.select_date}
-                        onChange={handleDateChange}
-                        disabled={true}
-                        format="DD MMMM YYYY"
-                        labelClassName="!text-base !text-[#121212]"
-                        inputClassName="w-full !h-12 !bg-[#E0E0E0] !border-[#E0E0E0] hover:!bg-[#E0E0E0] hover:!border-[#E0E0E0] focus:!bg-[#E0E0E0] focus:!border-[#E0E0E0] [&_.ant-picker]:!bg-[#E0E0E0] [&_.ant-picker]:!border-[#E0E0E0] [&_.ant-picker-input>input]:!bg-[#E0E0E0] [&_.ant-picker-input>input]:!text-[#121212] [&_.ant-picker-input>input]:!text-base [&_.ant-picker-suffix]:!text-[#4F4F4F] [&_.ant-picker-suffix_svg]:!text-[#4F4F4F] [&_.ant-picker-suffix_svg]:!fill-[#4F4F4F] [&_.ant-picker-suffix_span]:!text-[#4F4F4F] [&_.ant-picker-suffix_span_svg]:!text-[#4F4F4F] [&_.ant-picker-suffix_span_svg]:!fill-[#4F4F4F]"
-                        availableDates={
-                            formData.select_date
-                                ? [dayjs(formData.select_date).format("YYYY-MM-DD")]
-                                : [getTodayDate()]
-                        }
-                    />
-                </div>
+    const innerWidth = useInnerWidth();
+    const isMobile = innerWidth > 0 && innerWidth < 768;
+    const mobileHeader = (
+        <div className="flex items-center gap-3 w-full">
+            <button
+                type="button"
+                onClick={handleCancel}
+                className="flex items-center justify-center rounded-full p-0 border-0 bg-transparent active:scale-90 transition-all duration-200 cursor-pointer"
+                aria-label="Close"
+            >
+                <ModalCloseIcon className="active:scale-90 transition-all duration-200" />
+            </button>
+            <p className="text-[20px] font-medium text-[#1a1a1a]">New Event</p>
+        </div>
+    );
 
-                {/* Duration and Start Time Row */}
-                <div className="grid grid-cols-2 gap-5">
-                    {/* Duration */}
+    return (
+        <>
+            {fullScreenMobileStyles}
+            <CenterModal
+                title="New Event"
+                headerComponent={isMobile ? mobileHeader : undefined}
+                hideCloseIcon={isMobile}
+                isOpen={isOpen}
+                onClose={handleCancel}
+                width={620}
+                hideFooter={true}
+                customClassName="new-event-modal-fullscreen-mobile !rounded-3xl max-md:!w-screen max-md:!min-h-[100dvh] max-md:!h-[100dvh] max-md:!max-h-[100dvh] max-md:!top-0 max-md:!rounded-none max-md:!m-0"
+                rootClassName="!rounded-3xl overflow-hidden max-md:!min-h-full max-md:!h-full"
+                headerClassName="!px-6 !py-5"
+                bodyClassName="md:!px-6 !p-[20px]"
+            >
+                <div className="flex flex-col gap-2 max-md:gap-4">
+                    {/* Select Date */}
                     <div className="flex flex-col gap-2">
                         <Input
-                            name="duration"
-                            label="Duration"
-                            inputType="select"
-                            value={formData.duration}
-                            onChange={handleDurationChange}
-                            options={durationOptions}
-                            placeholder="Select Duration"
+                            name="select_date"
+                            label="Select Date"
+                            inputType="datepicker"
+                            value={formData.select_date}
+                            onChange={handleDateChange}
+                            disabled={true}
+                            format="DD MMMM YYYY"
                             labelClassName="!text-base !text-[#121212]"
-                            inputClassName="w-full !h-12 [&_.ant-select-selector]:!text-base [&_.ant-select-selector]:!text-[#121212] [&_.ant-select-selection-placeholder]:!text-[#808080] [&_.ant-select-selection-placeholder]:!text-base [&_.ant-select-selection-placeholder]:!font-normal [&.ant-select-single.ant-select-show-arrow .ant-select-selection-placeholder]:!text-[#808080] [&.ant-select-single.ant-select-show-arrow .ant-select-selection-placeholder]:!text-base [&.ant-select-single.ant-select-show-arrow .ant-select-selection-placeholder]:!font-normal"
+                            inputClassName="w-full !h-12 md:!bg-white max-md:!bg-[#E0E0E0] md:!border-gray-200 max-md:!border-[#E0E0E0] md:hover:!bg-white max-md:hover:!bg-[#E0E0E0] md:hover:!border-gray-200 max-md:hover:!border-[#E0E0E0] md:focus:!bg-white max-md:focus:!bg-[#E0E0E0] md:focus:!border-gray-200 max-md:focus:!border-[#E0E0E0] md:[&_.ant-picker]:!bg-white md:[&_.ant-picker]:!border-gray-200 max-md:[&_.ant-picker]:!bg-[#E0E0E0] max-md:[&_.ant-picker]:!border-[#E0E0E0] md:[&_.ant-picker-input>input]:!bg-white max-md:[&_.ant-picker-input>input]:!bg-[#E0E0E0] [&_.ant-picker-input>input]:!text-[#121212] [&_.ant-picker-input>input]:!text-base [&_.ant-picker-suffix]:!text-[#4F4F4F] [&_.ant-picker-suffix_svg]:!text-[#4F4F4F] [&_.ant-picker-suffix_svg]:!fill-[#4F4F4F] [&_.ant-picker-suffix_span]:!text-[#4F4F4F] [&_.ant-picker-suffix_span_svg]:!text-[#4F4F4F] [&_.ant-picker-suffix_span_svg]:!fill-[#4F4F4F]"
+                            availableDates={
+                                formData.select_date
+                                    ? [dayjs(formData.select_date).format("YYYY-MM-DD")]
+                                    : [getTodayDate()]
+                            }
                         />
                     </div>
 
-                    {/* Start Time */}
-                    <div className="flex flex-col gap-2">
-                        <label className="text-base font-medium text-[#121212]">
-                            Start Time (IST)
-                        </label>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <TimePicker
-                                timeSteps={{ minutes: 15 }}
-                                format="h:mm A"
-                                value={formData.start_time ? dayjs(formData.start_time, "HH:mm") : null}
-                                onChange={handleTimeChange}
-                                shouldDisableTime={shouldDisableTime}
-                                closeOnSelect={false}
-                                slotProps={{
-                                    textField: {
-                                        placeholder: "Select Time",
-                                        sx: {
-                                            width: "100%",
-                                            "& .MuiOutlinedInput-root": {
-                                                borderRadius: "6px",
-                                                fontSize: "14px",
-                                                height: "48px",
-                                                backgroundColor: "#f4f7fb",
-                                                "& fieldset": {
-                                                    border: "1px solid #e0e0e0",
-                                                },
-                                                "&:hover": {
+                    {/* Duration and Start Time Row */}
+                    <div className="grid md:grid-cols-2 gap-[16px] md:gap-5">
+                        {/* Duration */}
+                        <div className="flex flex-col gap-2">
+                            <Input
+                                name="duration"
+                                label="Duration"
+                                inputType="select"
+                                value={formData.duration}
+                                onChange={handleDurationChange}
+                                options={durationOptions}
+                                placeholder="Select Duration"
+                                labelClassName="!text-base !text-[#121212]"
+                                inputClassName="w-full !h-12 [&_.ant-select-selector]:!text-base [&_.ant-select-selector]:!text-[#121212] [&_.ant-select-selection-placeholder]:!text-[#808080] [&_.ant-select-selection-placeholder]:!text-base [&_.ant-select-selection-placeholder]:!font-normal [&.ant-select-single.ant-select-show-arrow .ant-select-selection-placeholder]:!text-[#808080] [&.ant-select-single.ant-select-show-arrow .ant-select-selection-placeholder]:!text-base [&.ant-select-single.ant-select-show-arrow .ant-select-selection-placeholder]:!font-normal"
+                            />
+                        </div>
+
+                        {/* Start Time */}
+                        <div className="flex flex-col gap-2">
+                            <label className="md:text-base text-[14px] font-regular text-[#121212]">
+                                Start Time{volunteerTimezone ? ` (${volunteerTimezone})` : ""}
+                            </label>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <TimePicker
+                                    timeSteps={{ minutes: 15 }}
+                                    format="h:mm A"
+                                    value={
+                                        formData.start_time
+                                            ? dayjs(formData.start_time, "HH:mm")
+                                            : null
+                                    }
+                                    onChange={handleTimeChange}
+                                    shouldDisableTime={shouldDisableTime}
+                                    closeOnSelect={false}
+                                    slotProps={{
+                                        textField: {
+                                            placeholder: "Select Time",
+                                            sx: {
+                                                width: "100%",
+                                                "& .MuiOutlinedInput-root": {
+                                                    borderRadius: "6px",
+                                                    fontSize: "14px",
+                                                    height: "48px",
                                                     backgroundColor: "#f4f7fb",
                                                     "& fieldset": {
                                                         border: "1px solid #e0e0e0",
                                                     },
-                                                },
-                                                "&.Mui-focused": {
-                                                    backgroundColor: "#f4f7fb",
-                                                    "& fieldset": {
-                                                        border: "1px solid #e0e0e0",
+                                                    "&:hover": {
+                                                        backgroundColor: "#f4f7fb",
+                                                        "& fieldset": {
+                                                            border: "1px solid #e0e0e0",
+                                                        },
+                                                    },
+                                                    "&.Mui-focused": {
+                                                        backgroundColor: "#f4f7fb",
+                                                        "& fieldset": {
+                                                            border: "1px solid #e0e0e0",
+                                                        },
                                                     },
                                                 },
-                                            },
-                                            "& .MuiInputBase-input": {
-                                                padding: "4px 11px",
-                                                fontSize: "14px",
-                                                color: "#1a1a1a",
-                                                height: "48px",
-                                                display: "flex",
-                                                alignItems: "center",
-                                            },
-                                            "& .MuiInputBase-input::placeholder": {
-                                                color: "#808080",
-                                                opacity: 1,
-                                                fontSize: "16px",
-                                                fontWeight: 400,
+                                                "& .MuiInputBase-input": {
+                                                    padding: "4px 11px",
+                                                    fontSize: "14px",
+                                                    color: "#1a1a1a",
+                                                    height: "48px",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                },
+                                                "& .MuiInputBase-input::placeholder": {
+                                                    color: "#808080",
+                                                    opacity: 1,
+                                                    fontSize: "16px",
+                                                    fontWeight: 400,
+                                                },
                                             },
                                         },
-                                    },
-                                }}
-                            />
-                        </LocalizationProvider>
+                                    }}
+                                />
+                            </LocalizationProvider>
+                        </div>
+                    </div>
+
+                    {/* Title */}
+                    <div className="flex flex-col gap-2">
+                        <Input
+                            name="title"
+                            label="Title"
+                            inputType="text"
+                            value={formData.title}
+                            onChange={handleTitleChange}
+                            placeholder="Enter title here"
+                            labelClassName="!text-base !text-[#121212]"
+                            inputClassName="w-full !h-12 !text-base !text-[#121212] placeholder:!text-[#808080] placeholder:!text-base"
+                        />
+                    </div>
+
+                    {/* Description */}
+                    <div className="flex flex-col gap-2">
+                        <Input
+                            name="description"
+                            label="Description (Optional)"
+                            inputType="textarea"
+                            value={formData.description}
+                            onChange={handleDescriptionChange}
+                            placeholder="Enter description here"
+                            labelClassName="!text-base !text-[#121212]"
+                            inputClassName="w-full !h-[100px] !text-base !text-[#121212] placeholder:!text-[#808080] placeholder:!text-base"
+                            rows={4}
+                        />
+                    </div>
+
+                    {/* Tags – search and select from skills, pass skill IDs as tag_ids on post */}
+                    <div className="flex flex-col md:gap-2">
+                        <label className="md:text-base text-[14px] font-regular text-[#121212]">
+                            Tags
+                        </label>
+                        <div className="flex flex-wrap gap-2 mb-2 md:mb-0">
+                            {selectedSkills.map((skill) => (
+                                <TagComponent
+                                    key={skill.skill_id}
+                                    text={skill.skill_name}
+                                    isClose={true}
+                                    onClose={() => handleRemoveSkill(skill.skill_id)}
+                                />
+                            ))}
+                        </div>
+                        <Input
+                            name="skill_select"
+                            inputType="select"
+                            placeholder="Search and select skills"
+                            value={skillSelectValue}
+                            onChange={(value: string | number) => {
+                                const id = String(value);
+                                handleAddSkill(id);
+                            }}
+                            options={skillOptions.filter(
+                                (opt) => !selectedSkills.some((s) => s.skill_id === opt.value)
+                            )}
+                            showSearch={true}
+                            inputClassName="w-full !h-12 [&_.ant-select-selector]:!text-base"
+                        />
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="hidden md:flex gap-3 justify-end pt-5 pb-2 border-t border-stroke">
+                        <Button
+                            title="Cancel"
+                            onClick={handleCancel}
+                            customClassName="!bg-white !text-black !font-medium rounded-full !px-6 !py-2.5"
+                        />
+                        <Button
+                            title={isSubmitting ? "Creating..." : "Create Event"}
+                            onClick={handleSubmit}
+                            disabled={isSubmitting}
+                            customClassName="!bg-black !text-white !font-medium rounded-full !px-6 !py-2.5"
+                        />
                     </div>
                 </div>
-
-                {/* Title */}
-                <div className="flex flex-col gap-2">
-                    <Input
-                        name="title"
-                        label="Title"
-                        inputType="text"
-                        value={formData.title}
-                        onChange={handleTitleChange}
-                        placeholder="Enter title here"
-                        labelClassName="!text-base !text-[#121212]"
-                        inputClassName="w-full !h-12 !text-base !text-[#121212] placeholder:!text-[#808080] placeholder:!text-base"
-                    />
-                </div>
-
-                {/* Description */}
-                <div className="flex flex-col gap-2">
-                    <Input
-                        name="description"
-                        label="Description (Optional)"
-                        inputType="textarea"
-                        value={formData.description}
-                        onChange={handleDescriptionChange}
-                        placeholder="Enter description here"
-                        labelClassName="!text-base !text-[#121212]"
-                        inputClassName="w-full !h-[100px] !text-base !text-[#121212] placeholder:!text-[#808080] placeholder:!text-base"
-                        rows={4}
-                    />
-                </div>
-
-                {/* Tags – search and select from skills, pass skill IDs as tag_ids on post */}
-                <div className="flex flex-col gap-2">
-                    <label className="text-base font-medium text-[#121212]">Tags</label>
-                    <div className="flex flex-wrap gap-2 mb-2">
-                        {selectedSkills.map((skill) => (
-                            <TagComponent
-                                key={skill.skill_id}
-                                text={skill.skill_name}
-                                isClose={true}
-                                onClose={() => handleRemoveSkill(skill.skill_id)}
-                            />
-                        ))}
+                <div className="flex md:hidden gap-3 justify-end pt-5  border-t border-stroke">
+                        <Button
+                            title="Cancel"
+                            onClick={handleCancel}
+                            customClassName="!bg-white !text-black !font-medium rounded-full !px-6 !py-2.5"
+                        />
+                        <Button
+                            title={isSubmitting ? "Creating..." : "Create Event"}
+                            onClick={handleSubmit}
+                            disabled={isSubmitting}
+                            customClassName="!bg-black !text-white !font-medium rounded-full !px-6 !py-2.5"
+                        />
                     </div>
-                    <Input
-                        name="skill_select"
-                        inputType="select"
-                        placeholder="Search and select skills"
-                        value={skillSelectValue}
-                        onChange={(value: string | number) => {
-                            const id = String(value);
-                            handleAddSkill(id);
-                        }}
-                        options={skillOptions.filter(
-                            (opt) => !selectedSkills.some((s) => s.skill_id === opt.value)
-                        )}
-                        showSearch={true}
-                        inputClassName="w-full !h-12 [&_.ant-select-selector]:!text-base"
-                    />
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-3 justify-end pt-5 pb-2 border-t border-stroke">
-                    <Button
-                        title="Cancel"
-                        onClick={handleCancel}
-                        customClassName="!bg-white !text-black !font-medium rounded-full !px-6 !py-2.5"
-                    />
-                    <Button
-                        title={isSubmitting ? "Creating..." : "Create Event"}
-                        onClick={handleSubmit}
-                        disabled={isSubmitting}
-                        customClassName="!bg-black !text-white !font-medium rounded-full !px-6 !py-2.5"
-                    />
-                </div>
-            </div>
-        </CenterModal>
+            </CenterModal>
+        </>
     );
 }

@@ -53,7 +53,7 @@ const MonthYearPicker: React.FC = () => {
       <Button
         onClick={() => setOpen(true)}
         btnVariant="tertiary"
-        customClassName="text-sm font-medium rounded-full shadow-none flex items-center !px-3 !py-0"
+        customClassName="text-sm font-medium rounded-full w-full shadow-none flex items-center !px-3 !py-0"
       >
         <CalendarIcon width="15" height="15" />
         {selectedDate.format("MMM YYYY")}

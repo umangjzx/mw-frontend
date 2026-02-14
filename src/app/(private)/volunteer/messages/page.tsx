@@ -18,6 +18,34 @@ import NoMessage from "@/components/messages/NoMessage";
 import LottieLoader from "@/components/common/Loader/Lottie";
 import { useAppStore } from "@/store/useAppStore";
 import moment from "moment-timezone";
+import { SendIcon } from "@/assets/icons";
+
+const MOBILE_BREAKPOINT = 768;
+
+function useIsMobile() {
+    const [isMobile, setIsMobile] = useState(false);
+    useEffect(() => {
+        const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+        const update = () => setIsMobile(mql.matches);
+        update();
+        mql.addEventListener("change", update);
+        return () => mql.removeEventListener("change", update);
+    }, []);
+    return isMobile;
+}
+
+interface VolunteerChatItem {
+    chat_id: string;
+    volunteer_id: string;
+    learner_id: string;
+    learner_name: string;
+    learner_profile_picture: { image_url: string; image_id: string };
+    learner_country?: string;
+    chat_permission?: boolean;
+    message: string;
+    created_at: string;
+    unread_messages_count: number;
+}
 
 interface ChatMessage {
     message_id: string;
@@ -45,10 +73,11 @@ const Messages = () => {
     const { volunteerDetails } = useAppStore();
     const pathname = usePathname();
     const router = useRouter();
+    const isMobile = useIsMobile();
     const [searchQuery, setSearchQuery] = useQueryState("query");
     const [message, setMessage] = useState("");
     const volunteerId = Cookies.get("volunteer_id");
-    const [chats, setChats] = useState([]);
+    const [chats, setChats] = useState<VolunteerChatItem[]>([]);
     const chatId = useSearchParams().get("chatId");
     const learnerId = useSearchParams().get("learnerId");
     const [individualChat, setIndividualChat] = useState<ChatMessage[]>([]);
@@ -94,13 +123,7 @@ const Messages = () => {
                         setLocation(matchingChat.learner_country);
                     }
                 }
-
-                if (!chatId && !learnerId && res.data.length > 0) {
-                    const firstChat = res.data[0];
-                    router.push(
-                        `/volunteer/messages?chatId=${firstChat.chat_id}&learnerId=${firstChat.learner_id}`
-                    );
-                }
+                // Do not redirect here; desktop auto-open is handled in useEffect (mobile stays on list)
             })
             .catch((err: any) => {
                 console.log(err);
@@ -115,7 +138,9 @@ const Messages = () => {
     const getIndividualChat = async () => {
         setIsIndividualLoading(true);
         try {
-            const response = await GET_API(endpoints.chat.getIndividualChat(chatId as string, "volunteer"));
+            const response = await GET_API(
+                endpoints.chat.getIndividualChat(chatId as string, "volunteer")
+            );
 
             if (response.data.length === 0) {
                 queryClient.invalidateQueries({ queryKey: ["chats"] });
@@ -123,9 +148,9 @@ const Messages = () => {
             }
 
             if (response.data.length > 0) {
-            setRecieverName(response.data[0].learner_name);
-            setRecieverImage(response.data[0].learner_profile_picture.image_url);
-            setLocation(response.data[0].learner_country);
+                setRecieverName(response.data[0].learner_name);
+                setRecieverImage(response.data[0].learner_profile_picture.image_url);
+                setLocation(response.data[0].learner_country);
             }
 
             // Only store message IDs for unread messages
@@ -134,41 +159,47 @@ const Messages = () => {
                 .map((msg: ChatMessage) => msg.message_id);
 
             setMessageId(unreadMessageIds);
-            
+
             // Merge server messages with pending optimistic messages
             // Match optimistic messages with server messages by content to avoid duplicates
             setIndividualChat((prev) => {
                 const serverMessages = response.data || [];
-                const serverMessageIds = new Set(serverMessages.map((msg: ChatMessage) => msg.message_id));
-                
+                const serverMessageIds = new Set(
+                    serverMessages.map((msg: ChatMessage) => msg.message_id)
+                );
+
                 // Track which optimistic messages were matched
                 const matchedTempIds = new Set<string>();
-                
+
                 // Filter out optimistic messages that have been matched with server messages
                 // Match by: same message content and created within last 10 seconds
                 const pendingOnly = prev.filter((msg) => {
-                    if (!msg.message_id.startsWith('temp-')) return false;
+                    if (!msg.message_id.startsWith("temp-")) return false;
                     if (serverMessageIds.has(msg.message_id)) {
                         matchedTempIds.add(msg.message_id);
                         return false;
                     }
-                    
+
                     // Check if a server message with same content exists (within 10 seconds)
                     const msgTime = new Date(msg.created_at).getTime();
-                    const hasMatchingServerMessage = serverMessages.some((serverMsg: ChatMessage) => {
-                        const serverTime = new Date(serverMsg.created_at).getTime();
-                        const timeDiff = Math.abs(serverTime - msgTime);
-                        const sameContent = serverMsg.message?.trim().toLowerCase() === msg.message?.trim().toLowerCase();
-                        if (sameContent && timeDiff < 10000) {
-                            matchedTempIds.add(msg.message_id);
-                            return true;
+                    const hasMatchingServerMessage = serverMessages.some(
+                        (serverMsg: ChatMessage) => {
+                            const serverTime = new Date(serverMsg.created_at).getTime();
+                            const timeDiff = Math.abs(serverTime - msgTime);
+                            const sameContent =
+                                serverMsg.message?.trim().toLowerCase() ===
+                                msg.message?.trim().toLowerCase();
+                            if (sameContent && timeDiff < 10000) {
+                                matchedTempIds.add(msg.message_id);
+                                return true;
+                            }
+                            return false;
                         }
-                        return false;
-                    });
-                    
+                    );
+
                     return !hasMatchingServerMessage;
                 });
-                
+
                 // Clean up matched pending messages
                 if (matchedTempIds.size > 0) {
                     setPendingMessages((prev) => {
@@ -177,12 +208,12 @@ const Messages = () => {
                         return newMap;
                     });
                 }
-                
-                return [...serverMessages, ...pendingOnly].sort((a, b) => 
-                    new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+
+                return [...serverMessages, ...pendingOnly].sort(
+                    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
                 );
             });
-            
+
             setIsIndividualLoading(false);
             return response.data;
         } catch (error) {
@@ -226,7 +257,7 @@ const Messages = () => {
 
     const handleSendMessage = () => {
         if (!message.trim() || !chatId || !volunteerId) return;
-        
+
         const messageText = message.trim();
         setMessage("");
 
@@ -237,21 +268,21 @@ const Messages = () => {
 
         // Create optimistic message
         const tempMessageId = `temp-${Date.now()}-${Math.random()}`;
-        
+
         // Get volunteer's timezone and convert current time to that timezone instantly
         const volunteerTimezone = volunteerDetails?.volunteer_contact_details?.timezone;
         const volunteerUtcOffset = volunteerDetails?.volunteer_contact_details?.utc_offset;
         let now: string;
-        
+
         if (volunteerUtcOffset || volunteerTimezone) {
             let offset: string | null = volunteerUtcOffset || null;
-            
+
             // If no UTC offset available, try to extract it from timezone string
             if (!offset && volunteerTimezone) {
                 const utcMatch = volunteerTimezone.match(/\(UTC([+-]\d{2}:\d{2})\)/);
                 offset = utcMatch ? utcMatch[1] : null;
             }
-            
+
             if (offset) {
                 // Convert current time to volunteer's timezone using UTC offset
                 // moment.utcOffset accepts offset in format like "+05:30" or "-09:00"
@@ -265,7 +296,7 @@ const Messages = () => {
             // Fallback to UTC if timezone not available
             now = new Date().toISOString();
         }
-        
+
         const optimisticMessage: any = {
             message_id: tempMessageId,
             chat_id: chatId,
@@ -286,10 +317,11 @@ const Messages = () => {
                 image_id: "",
             },
             // Add fields used in rendering
-            volunteer_profile_picture: currentUserMessage?.volunteer_profile_picture || currentUserMessage?.sender_profile_picture || {
-                image_url: "",
-                image_id: "",
-            },
+            volunteer_profile_picture: currentUserMessage?.volunteer_profile_picture ||
+                currentUserMessage?.sender_profile_picture || {
+                    image_url: "",
+                    image_id: "",
+                },
             learner_profile_picture: {
                 image_url: recieverImage || "",
                 image_id: "",
@@ -312,14 +344,15 @@ const Messages = () => {
                 // Handle different possible response structures
                 const responseData = res?.data;
                 const messageData = responseData?.data || responseData;
-                
+
                 // Replace optimistic message with real message from server (with correct backend time)
                 if (messageData && messageData.message_id) {
                     setIndividualChat((prev) => {
                         const filtered = prev.filter((msg) => msg.message_id !== tempMessageId);
                         // Sort by created_at to maintain chronological order
-                        const updated = [...filtered, messageData].sort((a, b) => 
-                            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                        const updated = [...filtered, messageData].sort(
+                            (a, b) =>
+                                new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
                         );
                         return updated;
                     });
@@ -333,7 +366,7 @@ const Messages = () => {
                     // If response doesn't have message data, refetch chat to get the latest messages
                     // This ensures we get the message with correct time from backend
                     setTimeout(() => {
-                refetchIndividualChat();
+                        refetchIndividualChat();
                     }, 300);
                 }
             })
@@ -364,8 +397,9 @@ const Messages = () => {
             title: "Messages",
             titleIcon: getHeaderIcon(pathname),
             hideSearch: true,
+            hideHeader: isMobile && !!chatId,
         });
-    }, [setHeaderOptions]);
+    }, [setHeaderOptions, pathname, isMobile, chatId]);
 
     useEffect(() => {
         setIndividualChat([]);
@@ -377,6 +411,15 @@ const Messages = () => {
         }
     }, [messageId]);
 
+    // Desktop: auto-open first chat when none selected; mobile: show list first
+    useEffect(() => {
+        if (isMobile || !chats.length || chatId || learnerId) return;
+        const firstChat = chats[0];
+        router.push(
+            `/volunteer/messages?chatId=${firstChat.chat_id}&learnerId=${firstChat.learner_id}`
+        );
+    }, [isMobile, chats, chatId, learnerId, router]);
+
     if (noChats === null) {
         return <LottieLoader isLoading={true} />;
     }
@@ -386,24 +429,44 @@ const Messages = () => {
             {noChats ? (
                 <NoMessage />
             ) : (
-                <div className="w-full h-full bg-white flex border border-gray-200 rounded-tl-[3rem] animate-fadeIn">
-                    <VolunteerChatList
-                        messages={chats}
-                        searchQuery={searchQuery}
-                        onSearch={handleSearch}
-                        isIndividualChatLoading={false}
-                    />
-                    <div className="w-full h-full flex-1 ">
-                        <div className="flex items-center gap-4 justify-between border-b border-gray-200">
+                <div className="w-full h-full bg-white flex border border-gray-200 rounded-tl-[3rem] max-md:rounded-tl-none animate-fadeIn">
+                    {/* Mobile: show list when no chat selected */}
+                    <div
+                        className={`w-full h-full ${
+                            isMobile && chatId ? "hidden" : ""
+                        } md:!block md:max-w-[440px] md:shrink-0`}
+                    >
+                        <VolunteerChatList
+                            messages={chats}
+                            searchQuery={searchQuery}
+                            onSearch={handleSearch}
+                            isIndividualChatLoading={false}
+                        />
+                    </div>
+                    {/* Mobile: show conversation only when a chat is selected */}
+                    <div
+                        className={`w-full h-full flex-1 flex flex-col ${
+                            isMobile && !chatId ? "hidden" : ""
+                        }`}
+                    >
+                        <div className="flex md:pb-2 flex-col md:flex-row md:items-center md:gap-4 md:justify-between border-b border-gray-200">
                             <ChatHeader
                                 name={recieverName}
                                 location={location}
                                 image={recieverImage}
+                                onSeeMoreClick={() => {}}
+                                showBackButton={isMobile}
+                                onBack={() => router.push("/volunteer/messages")}
                             />
                         </div>
-                        <div className="flex flex-col gap-4 p-4 h-[calc(100vh-16em)] overflow-y-auto">
-                            {individualChat?.map((message: any, index: any) => {
-                                    return (
+                        <div className="flex flex-col md:gap-4 p-4 bg-[#f4f7fb] md:bg-white h-[calc(100vh-16em)] overflow-y-auto">
+                            {isIndividualLoading ? (
+                                <div className="flex-1 flex items-center justify-center min-h-[200px]">
+                                    <LottieLoader isLoading={true} />
+                                </div>
+                            ) : (
+                                <>
+                                    {individualChat?.map((message: any, index: any) => (
                                         <MessageBubble
                                             key={message.message_id || `msg-${index}`}
                                             message={message.message}
@@ -417,48 +480,54 @@ const Messages = () => {
                                             isOwnMessage={message.sender_id === volunteerId}
                                             userImage={
                                                 message.sender_id === volunteerId
-                                                    ? message.volunteer_profile_picture?.image_url || message.sender_profile_picture?.image_url
-                                                    : message.learner_profile_picture?.image_url || message.receiver_profile_picture?.image_url
+                                                    ? message.volunteer_profile_picture
+                                                          ?.image_url ||
+                                                      message.sender_profile_picture?.image_url
+                                                    : message.learner_profile_picture?.image_url ||
+                                                      message.receiver_profile_picture?.image_url
                                             }
                                         />
-                                    );
-                                })}
-                            <div ref={messagesEndRef} />
+                                    ))}
+                                    <div ref={messagesEndRef} />
+                                </>
+                            )}
                         </div>
-                        <div className="p-4 flex items-end gap-8 transition-all duration-300">
-                                {chatPermission ? (
-                                    <>
-                                        <div className="flex-1 relative">
-                                            <div className="absolute bottom-0 left-0 right-0 w-full">
-                                                <Input
-                                                    value={message}
-                                                    inputType="textarea"
-                                                    name="message"
-                                                    inputClassName="!bg-[#f4f7fb] !rounded-lg gap-1 font-medium items-center w-full transition-all duration-300 !resize-none !pb-[2px]"
-                                                    className="!bg-transparent w-full !mb-0"
-                                                    onChange={handleMessageChange}
-                                                    onKeyDown={handleKeyDown}
-                                                    placeholder={"Type message here"}
-                                                    rows={1}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="flex-shrink-0">
-                                            <Button
-                                                disabled={!message.trim() || !chatPermission}
-                                                loading={false}
-                                                onClick={handleSendMessage}
-                                                title="Send Message"
-                                                btnVariant="secondary"
-                                                className="!rounded-xl !text-sm !bg-black hover:!bg-black !text-white transition-all duration-300"
+                        <div className="p-4 flex items-end gap-2 md:gap-8 transition-all duration-300">
+                            {chatPermission ? (
+                                <>
+                                    <div className="flex-1 relative">
+                                        <div className="absolute bottom-0 left-0 right-0 w-full">
+                                            <Input
+                                                value={message}
+                                                inputType="textarea"
+                                                name="message"
+                                                inputClassName="!bg-[#f4f7fb] !rounded-lg gap-1 font-medium items-center !h-[38px] w-full transition-all duration-300 !resize-none !pb-[2px]"
+                                                className="!bg-transparent w-full !mb-0"
+                                                onChange={handleMessageChange}
+                                                onKeyDown={handleKeyDown}
+                                                placeholder={"Type message here"}
+                                                rows={1}
                                             />
                                         </div>
-                                    </>
-                                ) : (
-                                    <p className="text-gray-600 text-sm text-center w-full font-medium">
-                                        {recieverName} has disabled chat for this conversation
-                                    </p>
-                                )}
+                                    </div>
+                                    <div className="flex-shrink-0">
+                                        <Button
+                                            disabled={!message.trim() || !chatPermission}
+                                            loading={false}
+                                            onClick={handleSendMessage}
+                                            title={isMobile ? undefined : "Send Message"}
+                                            btnVariant="secondary"
+                                            className="!rounded-xl !text-sm !bg-black hover:!bg-black !text-white transition-all duration-300"
+                                        >
+                                            {isMobile ? <SendIcon /> : null}
+                                        </Button>
+                                    </div>
+                                </>
+                            ) : (
+                                <p className="text-gray-600 text-sm text-center w-full font-medium">
+                                    {recieverName} has disabled chat for this conversation
+                                </p>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -50,7 +50,7 @@ const MessageCard = ({
     return (
         <div
             onClick={handleClick}
-            className={`flex w-[407px] items-center gap-4 border-b border-gray-200 p-4 hover:bg-[#f4f7fb] cursor-pointer transition-all duration-300 ${
+            className={`flex w-full max-w-[407px] items-center gap-4 border-b border-gray-200 p-4 hover:bg-[#f4f7fb] cursor-pointer transition-all duration-300 ${
                 chat_id === chatId ? "bg-[#f4f7fb]" : ""
             }`}
         >
@@ -65,10 +65,15 @@ const MessageCard = ({
                             <p className="text-xs font-normal text-[#22c55e]">
                                 {moment.parseZone(date).format("h.mm a")}
                             </p>
-                        ) :(
-                            <p className="text-xs text-[#4F4F4F]">
-                                {moment.parseZone(date).format("DD MMM, YYYY")}
-                            </p>
+                        ) : (
+                            <>
+                                <p className="text-xs text-[#4F4F4F] max-md:block md:hidden">
+                                    {moment.parseZone(date).format("DD/MM/YYYY")}
+                                </p>
+                                <p className="text-xs text-[#4F4F4F] hidden md:block">
+                                    {moment.parseZone(date).format("DD MMM, YYYY")}
+                                </p>
+                            </>
                         )}
                     </div>
                 </div>

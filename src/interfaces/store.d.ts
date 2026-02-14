@@ -5,7 +5,7 @@ type ActionButtons = {
     buttonClassName?: string;
     showButton?: boolean;
     buttonPlacement?: "left" | "right";
-}
+};
 
 type HeaderOptions = {
     actionButtonTitle?: string;
@@ -24,6 +24,7 @@ type HeaderOptions = {
     actionButtons?: ActionButtons[];
     titleIconClick?: () => void;
     centerButton?: ActionButtons;
+    hideHeader?: boolean;
 } | null;
 
 type UseVolunteerProps = {

@@ -36,7 +36,11 @@ export const metadata: Metadata = {
         },
     },
     icons: {
-        icon: "/logo.png",
+        icon: [
+            { url: "/favicon.ico", sizes: "any" },
+            { url: "/logo.png", type: "image/png", sizes: "32x32" },
+        ],
+        shortcut: "/favicon.ico",
         apple: "/logo.png",
     },
     openGraph: {
@@ -71,6 +75,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <head>
+                <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="any" />
                 <Script
                     src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ANALYTICS_ID}`}
                     strategy="afterInteractive"
