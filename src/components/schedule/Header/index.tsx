@@ -184,7 +184,7 @@ const Header = (props: Props) => {
                              {isMobileOrTabScreen && (
                                 <Button
                                     onClick={handleAddEvent}
-                                    title="Add New Event"
+                                    title="Add New Instant Session"
                                     customClassName="!bg-white  !text-[16px]  lg:!text-sm !font-medium !text-black rounded-full !py-2 max-lg:flex-1"
                                 />
                             )}
