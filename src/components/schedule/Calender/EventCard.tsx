@@ -1,5 +1,6 @@
 import { cn } from "@/utils/merge-class";
 import moment from "moment";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 const EventCard = ({
     title,
@@ -11,6 +12,8 @@ const EventCard = ({
     start,
     end,
 }: EventCardProps) => {
+    const isDesktop = useMediaQuery("(min-width: 1024px)");
+    
     const statusStyles = {
         accepted: {
             bg: "bg-[#DCFCE7] border-[#86EFAC] text-[#15803D]",
@@ -38,16 +41,18 @@ const EventCard = ({
         <div
             onClick={onEventClick}
             className={cn(
-                "flex items-center p-[1px] justify-between w-full text-sm px-2 py-1 border cursor-pointer",
+                "flex items-center justify-between w-full text-sm px-2 py-1 border cursor-pointer overflow-hidden event-card-container",
                 className,
                 currentStyle.bg
             )}
         >
-            <div className="flex items-center gap-2 truncate overflow-hidden">
-                <span className={`w-2 h-2 rounded-full ${currentStyle.dot}`} />
+            <div className="flex items-center gap-2 truncate overflow-hidden min-w-0 flex-1 event-title-section">
+                {isDesktop && (
+                    <span className={`w-2 h-2 rounded-full flex-shrink-0 event-dot ${currentStyle.dot}`} />
+                )}
                 <span className="font-normal capitalize !text-sm truncate">{title}</span>
             </div>
-            <span className="text-xs">{time || `${startTime} - ${endTime}`}</span>
+            <span className="text-xs whitespace-nowrap flex-shrink-0 event-time-section">{time || `${startTime} - ${endTime}`}</span>
         </div>
     );
 };

@@ -52,6 +52,50 @@
     opacity: 0 !important;
 }
 
+/* Increase event card width and ensure proper spacing */
+.fc .fc-daygrid-event {
+    margin: 2px 4px !important;
+    width: calc(100% - 8px) !important;
+}
+
+.fc .fc-daygrid-event .fc-event-main {
+    width: 100% !important;
+    overflow: hidden !important;
+}
+
+/* Ensure event content layout */
+.fc .fc-daygrid-event .fc-event-main > div {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    overflow: hidden !important;
+}
+
+/* Desktop/Laptop: Show title and time (original format) */
+.event-card-container {
+    justify-content: space-between !important;
+}
+
+/* Responsive: On mobile and tablets, hide title and dot, show only time (centered) */
+@media (max-width: 1200px) {
+    .fc .fc-daygrid-event {
+        margin: 2px 2px !important;
+        width: calc(100% - 4px) !important;
+    }
+    
+    .event-card-container {
+        justify-content: center !important;
+    }
+    
+    .event-title-section {
+        display: none !important;
+    }
+
+    .event-time-section {
+        text-align: center !important;
+    }
+}
+
 .calendar-container {
     position: relative;
 }
