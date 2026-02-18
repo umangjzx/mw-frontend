@@ -185,13 +185,13 @@ const Header = (props: Props) => {
                                 <Button
                                     onClick={handleAddEvent}
                                     title="Add New Instant Session"
-                                    customClassName="!bg-white  !text-[16px]  lg:!text-sm !font-medium !text-black rounded-full !py-2 max-lg:flex-1"
+                                    customClassName="!bg-white  !text-[14px]  lg:!text-sm !font-medium !text-black rounded-full !py-2 max-lg:flex-1"
                                 />
                             )}
                             <Button
                                 onClick={handleMySchedule}
-                                title={isMobileOrTabScreen ? "My Schedule" : "Schedule my availability"}
-                                customClassName="!bg-white !border !border-gray-200 !text-[16px] lg:!text-sm !font-medium !text-black rounded-full !py-2 lg:!py-3 lg:!px-3 max-lg:flex-1"
+                                title={ "My Schedule" }
+                                customClassName="!bg-white !border !border-gray-200 !text-[14px] lg:!text-sm !font-medium !text-black rounded-full !py-2 lg:!py-3 lg:!px-3 max-lg:flex-1"
                             />
                            
                         </div>

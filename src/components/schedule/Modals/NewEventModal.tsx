@@ -137,6 +137,98 @@ export default function NewEventModal({
     const skills: Skill[] = Array.isArray(skillsData) ? skillsData : [];
     const skillOptions = skills.map((s) => ({ label: s.skill_name, value: s.skill_id }));
 
+    // Check if it's PM today to disable AM option
+    const isPMToday = (() => {
+        if (!formData.select_date) return false;
+        const selectedDateStr = dayjs(formData.select_date).format("YYYY-MM-DD");
+        
+        // Use moment for timezone calculation
+        let currentTimeInTimezone: moment.Moment;
+        if (volunteerUtcOffsetValue) {
+            currentTimeInTimezone = moment().utcOffset(volunteerUtcOffsetValue);
+        } else {
+            currentTimeInTimezone = moment();
+        }
+        
+        const currentDateStr = currentTimeInTimezone.format("YYYY-MM-DD");
+        const currentMeridiem = currentTimeInTimezone.format("A");
+        
+        return selectedDateStr === currentDateStr && currentMeridiem === "PM";
+    })();
+
+    // Use DOM manipulation to hide/disable AM option when it's PM
+    useEffect(() => {
+        if (!isPMToday || !isOpen) return;
+
+        const disableAMOption = () => {
+            // Try multiple selectors to find AM option in MUI TimePicker
+            const selectors = [
+                '.MuiMultiSectionDigitalClockSection-item[data-value="AM"]',
+                '.MuiMultiSectionDigitalClockSection-item:has-text("AM")',
+                '[role="option"][aria-label*="AM"]',
+                '.MuiPickersClock-meridiemText[data-value="AM"]',
+                'button[aria-label*="AM"]',
+                'div[role="option"]:has-text("AM")'
+            ];
+
+            selectors.forEach(selector => {
+                try {
+                    const elements = document.querySelectorAll(selector);
+                    elements.forEach((el: any) => {
+                        const text = el?.textContent?.trim() || el?.innerText?.trim() || '';
+                        const ariaLabel = el?.getAttribute('aria-label') || '';
+                        const dataValue = el?.getAttribute('data-value') || '';
+                        
+                        if (text === 'AM' || ariaLabel.includes('AM') || dataValue === 'AM') {
+                            // Hide and disable the AM option
+                            (el as HTMLElement).style.display = 'none';
+                            (el as HTMLElement).style.visibility = 'hidden';
+                            (el as HTMLElement).style.pointerEvents = 'none';
+                            (el as HTMLElement).style.opacity = '0';
+                            (el as HTMLElement).setAttribute('disabled', 'true');
+                            (el as HTMLElement).setAttribute('aria-disabled', 'true');
+                        }
+                    });
+                } catch (e) {
+                    // Ignore selector errors
+                }
+            });
+
+            // Also try to find by text content more broadly - ONLY target AM, never PM
+            const allElements = document.querySelectorAll('.MuiMultiSectionDigitalClockSection-item, [role="option"], button');
+            allElements.forEach((el: any) => {
+                const text = el?.textContent?.trim() || el?.innerText?.trim() || '';
+                // ONLY disable AM, make sure we never touch PM
+                if (text === 'AM' && text !== 'PM') {
+                    (el as HTMLElement).style.display = 'none';
+                    (el as HTMLElement).style.visibility = 'hidden';
+                    (el as HTMLElement).style.pointerEvents = 'none';
+                    (el as HTMLElement).style.opacity = '0';
+                    (el as HTMLElement).setAttribute('disabled', 'true');
+                    (el as HTMLElement).setAttribute('aria-disabled', 'true');
+                }
+            });
+        };
+
+        // Run immediately and set up observer for when picker opens
+        const timer = setTimeout(disableAMOption, 100);
+        const observer = new MutationObserver(() => {
+            disableAMOption();
+        });
+        
+        observer.observe(document.body, { 
+            childList: true, 
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['class', 'style']
+        });
+
+        return () => {
+            clearTimeout(timer);
+            observer.disconnect();
+        };
+    }, [isPMToday, isOpen, formData.select_date]);
+
     // Get today's date in YYYY-MM-DD format
     const getTodayDate = () => dayjs().format("YYYY-MM-DD");
 
@@ -173,7 +265,7 @@ export default function NewEventModal({
         }
     };
 
-    const shouldDisableTime = (timeValue: dayjs.Dayjs, view: string) => {
+    const shouldDisableTime = (timeValue: dayjs.Dayjs, clockType: string | any) => {
         if (!formData.select_date) return false;
 
         const selectedDate = dayjs(formData.select_date);
@@ -193,6 +285,7 @@ export default function NewEventModal({
         const currentTimeStr = currentTimeInTimezone.format("HH:mm");
         const currentHour = parseInt(currentTimeStr.split(":")[0]);
         const currentMinute = parseInt(currentTimeStr.split(":")[1]);
+        const currentMeridiem = currentTimeInTimezone.format("A"); // "AM" or "PM"
 
         // If selected date is in the past, disable all times
         if (selectedDateStr < currentDateStr) {
@@ -207,9 +300,39 @@ export default function NewEventModal({
             });
         };
 
+        // Handle AM/PM (meridiem) selection - disable AM if currently PM (only for today)
+        // This works the same way as hours/minutes disabling - if it's PM, all AM times are in the past
+        if (selectedDateStr === currentDateStr && currentMeridiem === "PM") {
+            const selectedMeridiem = timeValue.format("A");
+            const selectedHour24 = timeValue.hour();
+            const selectedHour12 = parseInt(timeValue.format("h")); // 1-12 format
+            
+            
+            // If we're selecting AM and it's currently PM, disable AM (same logic as disabling past hours/minutes)
+            // Check multiple ways to catch meridiem selection
+            if (selectedMeridiem === "AM") {
+                return true; // Disable AM when it's PM - all AM times are in the past
+            }
+            
+            // Also check by hour: if hour is 1-11 with AM meridiem, disable when it's PM
+            // Hour 12 with AM is midnight (12:00 AM), also disable when it's PM
+            // IMPORTANT: Only disable if meridiem is AM, never disable PM
+            if (clockType === "hours" && selectedMeridiem === "AM") {
+                // If hour is in AM range (1-11) or hour 12 with AM, disable when it's PM
+                if (selectedHour12 >= 1 && selectedHour12 <= 11) {
+                    console.log("Disabling AM hour because it's PM");
+                    return true;
+                }
+                if (selectedHour12 === 12 && selectedMeridiem === "AM") {
+                    console.log("Disabling 12 AM (midnight) because it's PM");
+                    return true;
+                }
+            }
+        }
+
         // If selected date is today, check if time is in the past
         if (selectedDateStr === currentDateStr) {
-            if (view === "hours") {
+            if (clockType === "hours") {
                 const hour = timeValue.hour();
                 // If hour is in the past, disable it
                 if (hour < currentHour) {
@@ -246,7 +369,7 @@ export default function NewEventModal({
         }
 
         // For future dates, only check if slots are booked
-        if (view === "hours") {
+        if (clockType === "hours") {
             const minutesToCheck = [0, 15, 30, 45];
             const hour = timeValue.hour();
             // Check if all 15-minute slots in this hour are booked
@@ -366,7 +489,7 @@ export default function NewEventModal({
             >
                 <ModalCloseIcon className="active:scale-90 transition-all duration-200" />
             </button>
-            <p className="text-[20px] font-medium text-[#1a1a1a]">New Event</p>
+            <p className="text-[20px] font-medium text-[#1a1a1a]">New Instant Session</p>
         </div>
     );
 
@@ -440,6 +563,33 @@ export default function NewEventModal({
                                     }
                                     onChange={handleTimeChange}
                                     shouldDisableTime={shouldDisableTime}
+                                    minTime={(() => {
+                                        // If selected date is today and it's PM, set minTime to 12:00 PM to disable AM
+                                        if (!formData.select_date) return undefined;
+                                        
+                                        const selectedDateStr = dayjs(formData.select_date).format("YYYY-MM-DD");
+                                        
+                                        // Use moment for timezone calculation
+                                        let currentTimeInTimezone: moment.Moment;
+                                        if (volunteerUtcOffsetValue) {
+                                            currentTimeInTimezone = moment().utcOffset(volunteerUtcOffsetValue);
+                                        } else {
+                                            currentTimeInTimezone = moment();
+                                        }
+                                        
+                                        const currentDateStr = currentTimeInTimezone.format("YYYY-MM-DD");
+                                        const currentMeridiem = currentTimeInTimezone.format("A");
+                                       
+                                        
+                                        if (selectedDateStr === currentDateStr && currentMeridiem === "PM") {
+                                            // Set minTime to 12:00 PM (noon) to disable all AM times
+                                            const minTime = dayjs("12:00", "HH:mm");
+                                            
+                                            return minTime;
+                                        }
+                                        
+                                        return undefined;
+                                    })()}
                                     closeOnSelect={false}
                                     slotProps={{
                                         textField: {
