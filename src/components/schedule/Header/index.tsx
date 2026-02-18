@@ -176,7 +176,7 @@ const Header = (props: Props) => {
                                     </div>
                                     <Button
                                         onClick={handleAddEvent}
-                                        title="Add New Event"
+                                        title="Add New Instant Session"
                                         customClassName="!bg-white max-lg:!text-sm !font-medium !text-black rounded-full lg:!p-3 !py-3 !px-3"
                                     />
                                 </div>

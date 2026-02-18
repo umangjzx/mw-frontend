@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CenterModal from "@/components/common/Modals/CenterModal";
 import { Input } from "@/components/common/Input";
 import Button from "@/components/common/Button";
@@ -8,6 +8,7 @@ import TagComponent from "@/components/common/Tag";
 import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+import moment from "moment-timezone";
 import { POST_API, GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import { showToast } from "@/components/common/Toast";
@@ -15,6 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAppStore } from "@/store/useAppStore";
 import useInnerWidth from "@/hooks/useInnerWidth";
 import ModalCloseIcon from "@/assets/icons/ModalCloseIcon";
+import { extractTimezoneOffset } from "@/utils/timeFunctions";
 
 /* Full-screen mobile modal: align wrap to top and make content fill viewport */
 const fullScreenMobileStyles = (
@@ -99,15 +101,30 @@ export default function NewEventModal({
     });
 
     const [selectedSkills, setSelectedSkills] = useState<Skill[]>([]);
-    const [skillSelectValue, setSkillSelectValue] = useState<string>("");
+    const [skillSelectValue, setSkillSelectValue] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { volunteerDetails } = useAppStore();
+    // Reset tags input field when modal opens
+    useEffect(() => {
+        if (isOpen) {
+            setSkillSelectValue(null);
+            setSelectedSkills([]);
+        }
+    }, [isOpen]);
+
+    const { volunteerDetails, volunteerUtcOffset } = useAppStore();
     const timezoneRaw =
-        (volunteerDetails as { volunteer_contact_details?: { timezone?: string } })
+        (volunteerDetails as { volunteer_contact_details?: { timezone?: string; utc_offset?: string } })
             ?.volunteer_contact_details?.timezone ?? "";
 
     const volunteerTimezone = timezoneRaw.includes(" - ") ? timezoneRaw.split(" - ")[0]?.trim() ?? timezoneRaw : timezoneRaw;
+    
+    // Get UTC offset from volunteerDetails or store, with fallback to extracting from timezone string
+    const volunteerUtcOffsetValue = 
+        (volunteerDetails as { volunteer_contact_details?: { utc_offset?: string } })
+            ?.volunteer_contact_details?.utc_offset || 
+        volunteerUtcOffset || 
+        (timezoneRaw ? extractTimezoneOffset(timezoneRaw) : null);
 
     const { data: skillsData } = useQuery({
         queryKey: ["common-skills"],
@@ -157,24 +174,91 @@ export default function NewEventModal({
     };
 
     const shouldDisableTime = (timeValue: dayjs.Dayjs, view: string) => {
-        if (!slotsData || !Array.isArray(slotsData)) return false;
+        if (!formData.select_date) return false;
 
+        const selectedDate = dayjs(formData.select_date);
+        const selectedDateStr = selectedDate.format("YYYY-MM-DD");
+        
+        // Get current time in volunteer's timezone
+        let currentTimeInTimezone: moment.Moment;
+        if (volunteerUtcOffsetValue) {
+            // Use UTC offset to get current time in volunteer's timezone
+            currentTimeInTimezone = moment().utcOffset(volunteerUtcOffsetValue);
+        } else {
+            // Fallback to local time if no offset available
+            currentTimeInTimezone = moment();
+        }
+
+        const currentDateStr = currentTimeInTimezone.format("YYYY-MM-DD");
+        const currentTimeStr = currentTimeInTimezone.format("HH:mm");
+        const currentHour = parseInt(currentTimeStr.split(":")[0]);
+        const currentMinute = parseInt(currentTimeStr.split(":")[1]);
+
+        // If selected date is in the past, disable all times
+        if (selectedDateStr < currentDateStr) {
+            return true;
+        }
+
+        // Helper function to check if a time slot is booked
+        const isTimeSlotBooked = (timeStr: string): boolean => {
+            if (!slotsData || !Array.isArray(slotsData)) return false;
+            return slotsData.some((slot: any) => {
+                return timeStr >= slot.start_time && timeStr < slot.end_time;
+            });
+        };
+
+        // If selected date is today, check if time is in the past
+        if (selectedDateStr === currentDateStr) {
+            if (view === "hours") {
+                const hour = timeValue.hour();
+                // If hour is in the past, disable it
+                if (hour < currentHour) {
+                    return true;
+                }
+                // If hour is current hour, check if all 15-minute slots are unavailable (past or booked)
+                if (hour === currentHour) {
+                    const minutesToCheck = [0, 15, 30, 45];
+                    // Disable hour if all 15-minute intervals are either past or booked
+                    return minutesToCheck.every((minute) => {
+                        if (minute < currentMinute) {
+                            return true; // Past time
+                        }
+                        const timeStr = timeValue.hour(hour).minute(minute).format("HH:mm");
+                        return isTimeSlotBooked(timeStr);
+                    });
+                }
+                // For future hours today, check if all slots in the hour are booked
+                const minutesToCheck = [0, 15, 30, 45];
+                return minutesToCheck.every((minute) => {
+                    const timeStr = timeValue.hour(hour).minute(minute).format("HH:mm");
+                    return isTimeSlotBooked(timeStr);
+                });
+            } else {
+                // For minutes view on today
+                const timeStr = timeValue.format("HH:mm");
+                // Check if time is in the past
+                if (timeStr < currentTimeStr) {
+                    return true;
+                }
+                // Check if slot is booked
+                return isTimeSlotBooked(timeStr);
+            }
+        }
+
+        // For future dates, only check if slots are booked
         if (view === "hours") {
             const minutesToCheck = [0, 15, 30, 45];
             const hour = timeValue.hour();
             // Check if all 15-minute slots in this hour are booked
             return minutesToCheck.every((minute) => {
                 const timeStr = timeValue.hour(hour).minute(minute).format("HH:mm");
-                return slotsData.some((slot: any) => {
-                    return timeStr >= slot.start_time && timeStr < slot.end_time;
-                });
+                return isTimeSlotBooked(timeStr);
             });
         }
 
+        // For minutes view on future dates
         const timeStr = timeValue.format("HH:mm");
-        return slotsData.some((slot: any) => {
-            return timeStr >= slot.start_time && timeStr < slot.end_time;
-        });
+        return isTimeSlotBooked(timeStr);
     };
 
     const handleTitleChange = (value: string | string[]) => {
@@ -189,12 +273,14 @@ export default function NewEventModal({
         const skill = skills.find((s) => s.skill_id === skillId);
         if (skill && !selectedSkills.some((s) => s.skill_id === skillId)) {
             setSelectedSkills((prev) => [...prev, skill]);
-            setSkillSelectValue("");
+            setSkillSelectValue(null);
         }
     };
 
     const handleRemoveSkill = (skillId: string) => {
         setSelectedSkills((prev) => prev.filter((s) => s.skill_id !== skillId));
+        // Clear the input field to ensure the removed tag can be selected again
+        setSkillSelectValue(null);
     };
 
     const handleSubmit = async () => {
@@ -242,7 +328,7 @@ export default function NewEventModal({
                     tags: [],
                 });
                 setSelectedSkills([]);
-                setSkillSelectValue("");
+                setSkillSelectValue(null);
                 onClose();
             } else {
                 showToast({ message: "Failed to create event", type: "error" });
@@ -264,7 +350,7 @@ export default function NewEventModal({
             tags: [],
         });
         setSelectedSkills([]);
-        setSkillSelectValue("");
+        setSkillSelectValue(null);
         onClose();
     };
 
@@ -288,7 +374,7 @@ export default function NewEventModal({
         <>
             {fullScreenMobileStyles}
             <CenterModal
-                title="New Event"
+                title="New Instant Session"
                 headerComponent={isMobile ? mobileHeader : undefined}
                 hideCloseIcon={isMobile}
                 isOpen={isOpen}
@@ -448,16 +534,17 @@ export default function NewEventModal({
                             ))}
                         </div>
                         <Input
+                            key={`skill-select-${selectedSkills.length}`}
                             name="skill_select"
                             inputType="select"
                             placeholder="Search and select skills"
-                            value={skillSelectValue}
+                            value={skillSelectValue ?? ""}
                             onChange={(value: string | number) => {
                                 const id = String(value);
                                 handleAddSkill(id);
                             }}
                             options={skillOptions.filter(
-                                (opt) => !selectedSkills.some((s) => s.skill_id === opt.value)
+                                (opt) => !selectedSkills.some((s) => s.skill_id === opt.value || String(s.skill_id) === String(opt.value))
                             )}
                             showSearch={true}
                             inputClassName="w-full !h-12 [&_.ant-select-selector]:!text-base"
