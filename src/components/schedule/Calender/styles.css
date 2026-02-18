@@ -71,13 +71,23 @@
     overflow: hidden !important;
 }
 
-/* Desktop/Laptop: Show title and time (original format) */
-.event-card-container {
-    justify-content: space-between !important;
+/* Mobile (< 768px): Show dot, title, and time */
+@media (max-width: 767px) {
+    .event-card-container {
+        justify-content: space-between !important;
+    }
+    
+    .event-title-section {
+        display: flex !important;
+    }
+    
+    .event-dot {
+        display: block !important;
+    }
 }
 
-/* Responsive: On mobile and tablets, hide title and dot, show only time (centered) */
-@media (max-width: 1200px) {
+/* Tablet (768px - 1199px): Hide dot and title, show only time (centered) */
+@media (min-width: 768px) and (max-width: 1199px) {
     .fc .fc-daygrid-event {
         margin: 2px 2px !important;
         width: calc(100% - 4px) !important;
@@ -87,12 +97,34 @@
         justify-content: center !important;
     }
     
+    /* Hide title section (includes dot and title) on tablet */
     .event-title-section {
+        display: none !important;
+    }
+    
+    /* Explicitly hide dot on tablet */
+    .event-dot {
         display: none !important;
     }
 
     .event-time-section {
         text-align: center !important;
+        width: 100% !important;
+    }
+}
+
+/* Desktop (≥ 1200px): Show dot, title, and time */
+@media (min-width: 1200px) {
+    .event-card-container {
+        justify-content: space-between !important;
+    }
+    
+    .event-title-section {
+        display: flex !important;
+    }
+    
+    .event-dot {
+        display: block !important;
     }
 }
 

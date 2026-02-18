@@ -12,7 +12,12 @@ const EventCard = ({
     start,
     end,
 }: EventCardProps) => {
-    const isDesktop = useMediaQuery("(min-width: 1024px)");
+    const isMobile = useMediaQuery("(max-width: 767px)");
+    const isTablet = useMediaQuery("(min-width: 768px) and (max-width: 1199px)");
+    const isDesktop = useMediaQuery("(min-width: 1200px)");
+    
+    // Show dot and title on mobile and desktop, hide on tablet
+    const showDotAndTitle = isMobile || isDesktop;
     
     const statusStyles = {
         accepted: {
@@ -41,18 +46,23 @@ const EventCard = ({
         <div
             onClick={onEventClick}
             className={cn(
-                "flex items-center justify-between w-full text-sm px-2 py-1 border cursor-pointer overflow-hidden event-card-container",
+                "flex items-center w-full text-sm px-2 py-1 border cursor-pointer overflow-hidden event-card-container",
+                showDotAndTitle ? "justify-between" : "justify-center",
                 className,
                 currentStyle.bg
             )}
         >
-            <div className="flex items-center gap-2 truncate overflow-hidden min-w-0 flex-1 event-title-section">
-                {isDesktop && (
-                    <span className={`w-2 h-2 rounded-full flex-shrink-0 event-dot ${currentStyle.dot}`} />
-                )}
-                <span className="font-normal capitalize !text-sm truncate">{title}</span>
-            </div>
-            <span className="text-xs whitespace-nowrap flex-shrink-0 event-time-section">{time || `${startTime} - ${endTime}`}</span>
+            {showDotAndTitle ? (
+                <>
+                    <div className="flex items-center gap-2 truncate overflow-hidden min-w-0 flex-1 event-title-section">
+                        <span className={`w-2 h-2 rounded-full flex-shrink-0 event-dot ${currentStyle.dot}`} />
+                        <span className="font-normal capitalize !text-sm truncate">{title}</span>
+                    </div>
+                    <span className="text-xs whitespace-nowrap flex-shrink-0 event-time-section">{time || `${startTime} - ${endTime}`}</span>
+                </>
+            ) : (
+                <span className="text-xs whitespace-nowrap flex-shrink-0 event-time-section">{time || `${startTime} - ${endTime}`}</span>
+            )}
         </div>
     );
 };
