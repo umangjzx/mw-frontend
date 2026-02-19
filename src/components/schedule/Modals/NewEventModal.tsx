@@ -415,9 +415,37 @@ export default function NewEventModal({
             showToast({ message: "Please add tags", type: "error" });
             return;
         }
+        
+        // Validate that the selected time is not in the past
         const dateStr = formData.select_date
             ? dayjs(formData.select_date).format("YYYY-MM-DD")
             : dayjs().format("YYYY-MM-DD");
+        
+        // Get current time in volunteer's timezone using moment
+        let currentTimeInTimezone: moment.Moment;
+        if (volunteerUtcOffsetValue) {
+            currentTimeInTimezone = moment().utcOffset(volunteerUtcOffsetValue);
+        } else {
+            currentTimeInTimezone = moment();
+        }
+        
+        const currentDateStr = currentTimeInTimezone.format("YYYY-MM-DD");
+        const currentTimeStr = currentTimeInTimezone.format("HH:mm");
+        
+        // Check if selected date is in the past
+        if (dateStr < currentDateStr) {
+            showToast({ message: "Cannot create session for a past date", type: "error" });
+            return;
+        }
+        
+        // Check if selected time is in the past (only for today)
+        if (dateStr === currentDateStr) {
+            const selectedTimeStr = formData.start_time;
+            if (selectedTimeStr < currentTimeStr) {
+                showToast({ message: "Cannot create session for a past time", type: "error" });
+                return;
+            }
+        }
         let volunteer_slot_id = volunteerSlotIdProp;
         if (!volunteer_slot_id) {
             // Generate a unique 64-character hex ID (SHA-256 format)
