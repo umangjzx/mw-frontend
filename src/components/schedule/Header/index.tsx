@@ -191,7 +191,7 @@ const Header = (props: Props) => {
                             <Button
                                 onClick={handleMySchedule}
                                 title={ "My Schedule" }
-                                customClassName="!bg-white !border !border-gray-200 !text-[14px] lg:!text-sm !font-medium !text-black rounded-full !py-2 lg:!py-3 lg:!px-3 max-lg:flex-1"
+                                customClassName="!bg-white !border !border-gray-200 !text-[14px] lg:!text-[16px] !font-medium !text-black rounded-full !py-2 lg:!py-3 lg:!px-3 max-lg:flex-1"
                             />
                            
                         </div>
