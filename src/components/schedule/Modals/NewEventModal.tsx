@@ -103,6 +103,10 @@ export default function NewEventModal({
     const [selectedSkills, setSelectedSkills] = useState<Skill[]>([]);
     const [skillSelectValue, setSkillSelectValue] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    // Temporary time state for mobile time picker dialog
+    const [tempTime, setTempTime] = useState<dayjs.Dayjs | null>(null);
+    // Track the original tempTime when picker opens, so we can reset on cancel
+    const [originalTempTime, setOriginalTempTime] = useState<dayjs.Dayjs | null>(null);
 
     // Reset tags input field when modal opens
     useEffect(() => {
@@ -125,6 +129,15 @@ export default function NewEventModal({
             ?.volunteer_contact_details?.utc_offset || 
         volunteerUtcOffset || 
         (timezoneRaw ? extractTimezoneOffset(timezoneRaw) : null);
+
+    // Sync tempTime with formData.start_time (keep null when empty so input field stays empty)
+    useEffect(() => {
+        if (formData.start_time) {
+            setTempTime(dayjs(formData.start_time, "HH:mm"));
+        } else {
+            setTempTime(null);
+        }
+    }, [formData.start_time]);
 
     const { data: skillsData } = useQuery({
         queryKey: ["common-skills"],
@@ -156,19 +169,27 @@ export default function NewEventModal({
         return selectedDateStr === currentDateStr && currentMeridiem === "PM";
     })();
 
-    // Use DOM manipulation to hide/disable AM option when it's PM
+    // Use DOM manipulation to hide/disable AM option when it's PM (works for both web and mobile)
     useEffect(() => {
         if (!isPMToday || !isOpen) return;
 
         const disableAMOption = () => {
-            // Try multiple selectors to find AM option in MUI TimePicker
+            // Try multiple selectors to find AM option in MUI TimePicker (both desktop and mobile)
             const selectors = [
                 '.MuiMultiSectionDigitalClockSection-item[data-value="AM"]',
                 '.MuiMultiSectionDigitalClockSection-item:has-text("AM")',
                 '[role="option"][aria-label*="AM"]',
                 '.MuiPickersClock-meridiemText[data-value="AM"]',
                 'button[aria-label*="AM"]',
-                'div[role="option"]:has-text("AM")'
+                'div[role="option"]:has-text("AM")',
+                // Mobile-specific selectors
+                '.MuiMobileTimePickerToolbar-root [data-value="AM"]',
+                '.MuiMobileTimePickerToolbar-root button:has-text("AM")',
+                '.MuiPickersToolbar-root [data-value="AM"]',
+                '.MuiPickersToolbar-root button:has-text("AM")',
+                // General mobile time picker selectors
+                '[class*="MobileTimePicker"] [data-value="AM"]',
+                '[class*="MobileTimePicker"] button:has-text("AM")',
             ];
 
             selectors.forEach(selector => {
@@ -195,7 +216,10 @@ export default function NewEventModal({
             });
 
             // Also try to find by text content more broadly - ONLY target AM, never PM
-            const allElements = document.querySelectorAll('.MuiMultiSectionDigitalClockSection-item, [role="option"], button');
+            // This works for both desktop and mobile time pickers
+            const allElements = document.querySelectorAll(
+                '.MuiMultiSectionDigitalClockSection-item, [role="option"], button, [class*="TimePicker"] button, [class*="TimePicker"] [role="option"]'
+            );
             allElements.forEach((el: any) => {
                 const text = el?.textContent?.trim() || el?.innerText?.trim() || '';
                 // ONLY disable AM, make sure we never touch PM
@@ -210,8 +234,12 @@ export default function NewEventModal({
             });
         };
 
-        // Run immediately and set up observer for when picker opens
+        // Run immediately and set up observer for when picker opens (especially important for mobile)
         const timer = setTimeout(disableAMOption, 100);
+        // Also run after a longer delay to catch mobile picker that might open later
+        const timer2 = setTimeout(disableAMOption, 500);
+        const timer3 = setTimeout(disableAMOption, 1000);
+        
         const observer = new MutationObserver(() => {
             disableAMOption();
         });
@@ -220,11 +248,13 @@ export default function NewEventModal({
             childList: true, 
             subtree: true,
             attributes: true,
-            attributeFilter: ['class', 'style']
+            attributeFilter: ['class', 'style', 'data-value', 'aria-label']
         });
 
         return () => {
             clearTimeout(timer);
+            clearTimeout(timer2);
+            clearTimeout(timer3);
             observer.disconnect();
         };
     }, [isPMToday, isOpen, formData.select_date]);
@@ -260,6 +290,12 @@ export default function NewEventModal({
     });
 
     const handleTimeChange = (time: dayjs.Dayjs | null) => {
+        if (time) {
+            setFormData((prev) => ({ ...prev, start_time: time.format("HH:mm") }));
+        }
+    };
+
+    const handleTimeAccept = (time: dayjs.Dayjs | null) => {
         if (time) {
             setFormData((prev) => ({ ...prev, start_time: time.format("HH:mm") }));
         }
@@ -584,12 +620,60 @@ export default function NewEventModal({
                                 <TimePicker
                                     timeSteps={{ minutes: 15 }}
                                     format="h:mm A"
-                                    value={
-                                        formData.start_time
-                                            ? dayjs(formData.start_time, "HH:mm")
-                                            : null
-                                    }
-                                    onChange={handleTimeChange}
+                                    value={tempTime}
+                                    onChange={(time) => {
+                                        // If tempTime is null and user is selecting a time, set it
+                                        // This ensures mobile picker has a value to display
+                                        if (!tempTime && time) {
+                                            setTempTime(time);
+                                        } else {
+                                            setTempTime(time);
+                                        }
+                                    }}
+                                    onOpen={() => {
+                                        // Save the original tempTime value before opening
+                                        setOriginalTempTime(tempTime);
+                                        
+                                        // When picker opens on mobile and tempTime is null, set a default
+                                        // This ensures the mobile dialog shows a time instead of empty
+                                        if (!tempTime && formData.select_date) {
+                                            const selectedDateStr = dayjs(formData.select_date).format("YYYY-MM-DD");
+                                            
+                                            // Use moment for timezone calculation
+                                            let currentTimeInTimezone: moment.Moment;
+                                            if (volunteerUtcOffsetValue) {
+                                                currentTimeInTimezone = moment().utcOffset(volunteerUtcOffsetValue);
+                                            } else {
+                                                currentTimeInTimezone = moment();
+                                            }
+                                            
+                                            const currentDateStr = currentTimeInTimezone.format("YYYY-MM-DD");
+                                            const currentMeridiem = currentTimeInTimezone.format("A");
+                                            
+                                            // If it's today and PM, set default to 12:00 PM (noon)
+                                            if (selectedDateStr === currentDateStr && currentMeridiem === "PM") {
+                                                setTempTime(dayjs("12:00", "HH:mm"));
+                                            } else {
+                                                // Otherwise, set to current time rounded to next 15 minutes
+                                                const now = currentTimeInTimezone;
+                                                const currentMinute = now.minute();
+                                                const roundedMinute = Math.ceil(currentMinute / 15) * 15;
+                                                const defaultTime = now.minute(roundedMinute).second(0).millisecond(0);
+                                                setTempTime(dayjs(defaultTime.format("HH:mm"), "HH:mm"));
+                                            }
+                                        }
+                                    }}
+                                    onClose={() => {
+                                        // If user cancels without accepting, reset tempTime to original value
+                                        // This ensures the input field stays empty if no time was selected
+                                        setTempTime(originalTempTime);
+                                        setOriginalTempTime(null);
+                                    }}
+                                    onAccept={(time) => {
+                                        // Clear the original tempTime tracking since user accepted
+                                        setOriginalTempTime(null);
+                                        handleTimeAccept(time);
+                                    }}
                                     shouldDisableTime={shouldDisableTime}
                                     minTime={(() => {
                                         // If selected date is today and it's PM, set minTime to 12:00 PM to disable AM
