@@ -14,7 +14,7 @@ const EventCard = ({
 }: EventCardProps) => {
     const isMobile = useMediaQuery("(max-width: 767px)");
     const isTablet = useMediaQuery("(min-width: 768px) and (max-width: 1199px)");
-    const isDesktop = useMediaQuery("(min-width: 1200px)");
+    const isDesktop = useMediaQuery("(min-width: 1400px)");
     
     // Show dot and title on mobile and desktop, hide on tablet
     const showDotAndTitle = isMobile || isDesktop;
