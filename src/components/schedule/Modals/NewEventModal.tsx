@@ -454,6 +454,21 @@ export default function NewEventModal({
         setSkillSelectValue(null);
     };
 
+    // Helper function to check if time slots overlap
+    const areSlotsOverlapping = (start1: string, end1: string, start2: string, end2: string): boolean => {
+        const start1Minutes = dayjs(start1, "HH:mm");
+        const end1Minutes = dayjs(end1, "HH:mm");
+        const start2Minutes = dayjs(start2, "HH:mm");
+        const end2Minutes = dayjs(end2, "HH:mm");
+        
+        return start1Minutes.isBefore(end2Minutes) && end1Minutes.isAfter(start2Minutes);
+    };
+
+    // Helper function to calculate end time from start time and duration
+    const calculateEndTime = (startTime: string, durationMinutes: number): string => {
+        return dayjs(startTime, "HH:mm").add(durationMinutes, "minute").format("HH:mm");
+    };
+
     const handleSubmit = async () => {
         if (!formData.duration || !formData.start_time || !formData.title?.trim()) {
             showToast({ message: "Please fill in duration, start time and title", type: "error" });
@@ -491,6 +506,39 @@ export default function NewEventModal({
             const selectedTimeStr = formData.start_time;
             if (selectedTimeStr < currentTimeStr) {
                 showToast({ message: "Cannot create session for a past time", type: "error" });
+                return;
+            }
+        }
+
+        // Check for overlapping time slots
+        if (slotsData && Array.isArray(slotsData) && slotsData.length > 0) {
+            const durationMinutes = Number(formData.duration) || 0;
+            const newStartTime = formData.start_time;
+            const newEndTime = calculateEndTime(newStartTime, durationMinutes);
+
+            // Check if the new slot overlaps with any existing slot
+            const hasOverlap = slotsData.some((slot: any) => {
+                if (!slot.start_time || !slot.end_time) return false;
+                
+                // Check for exact match
+                if (slot.start_time === newStartTime && slot.end_time === newEndTime) {
+                    return true;
+                }
+                
+                // Check for overlap
+                return areSlotsOverlapping(
+                    newStartTime,
+                    newEndTime,
+                    slot.start_time,
+                    slot.end_time
+                );
+            });
+
+            if (hasOverlap) {
+                showToast({ 
+                    message: "Time slot overlaps with an existing session", 
+                    type: "error" 
+                });
                 return;
             }
         }
