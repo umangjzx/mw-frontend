@@ -110,25 +110,6 @@ export default function NewEventModal({
     // Track selected meridiem explicitly to ensure PM hours show immediately
     const [selectedMeridiem, setSelectedMeridiem] = useState<string | null>(null);
 
-    // Reset all form fields when modal opens
-    useEffect(() => {
-        if (isOpen) {
-            setFormData({
-                select_date: new Date(),
-                duration: "",
-                start_time: "",
-                title: "",
-                description: "",
-                tags: [],
-            });
-            setSkillSelectValue(null);
-            setSelectedSkills([]);
-            setTempTime(null);
-            setOriginalTempTime(null);
-            setSelectedMeridiem(null);
-        }
-    }, [isOpen]);
-
     const { volunteerDetails, volunteerUtcOffset } = useAppStore();
     const timezoneRaw =
         (volunteerDetails as { volunteer_contact_details?: { timezone?: string; utc_offset?: string } })
@@ -142,6 +123,51 @@ export default function NewEventModal({
             ?.volunteer_contact_details?.utc_offset || 
         volunteerUtcOffset || 
         (timezoneRaw ? extractTimezoneOffset(timezoneRaw) : null);
+
+    // Get today's date in YYYY-MM-DD format in volunteer's timezone
+    const getTodayDate = () => {
+        if (volunteerUtcOffsetValue) {
+            // Get current date in volunteer's timezone
+            const todayInTimezone = moment().utcOffset(volunteerUtcOffsetValue);
+            return todayInTimezone.format("YYYY-MM-DD");
+        }
+        return dayjs().format("YYYY-MM-DD");
+    };
+
+    // Get today's date as a Date object in volunteer's timezone
+    const getTodayDateObject = (): Date => {
+        if (volunteerUtcOffsetValue) {
+            // Get current date in volunteer's timezone
+            const todayInTimezone = moment().utcOffset(volunteerUtcOffsetValue);
+            const dateStr = todayInTimezone.format("YYYY-MM-DD");
+            // Create a Date object from the date string (YYYY-MM-DD format is interpreted as local midnight)
+            // We need to create it in a way that represents the correct date
+            const [year, month, day] = dateStr.split("-").map(Number);
+            return new Date(year, month - 1, day);
+        }
+        return new Date();
+    };
+
+    // Reset all form fields when modal opens
+    useEffect(() => {
+        if (isOpen) {
+            // Get today's date in volunteer's timezone (AST)
+            const todayInTimezone = getTodayDateObject();
+            setFormData({
+                select_date: todayInTimezone,
+                duration: "",
+                start_time: "",
+                title: "",
+                description: "",
+                tags: [],
+            });
+            setSkillSelectValue(null);
+            setSelectedSkills([]);
+            setTempTime(null);
+            setOriginalTempTime(null);
+            setSelectedMeridiem(null);
+        }
+    }, [isOpen, volunteerUtcOffsetValue]);
 
     // Sync tempTime with formData.start_time (keep null when empty so input field stays empty)
     useEffect(() => {
@@ -271,9 +297,6 @@ export default function NewEventModal({
             observer.disconnect();
         };
     }, [isPMToday, isOpen, formData.select_date]);
-
-    // Get today's date in YYYY-MM-DD format
-    const getTodayDate = () => dayjs().format("YYYY-MM-DD");
 
     const handleDateChange = (date: Date | null) => {
         setFormData((prev) => ({ ...prev, select_date: date }));
