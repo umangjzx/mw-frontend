@@ -108,11 +108,21 @@ export default function NewEventModal({
     // Track the original tempTime when picker opens, so we can reset on cancel
     const [originalTempTime, setOriginalTempTime] = useState<dayjs.Dayjs | null>(null);
 
-    // Reset tags input field when modal opens
+    // Reset all form fields when modal opens
     useEffect(() => {
         if (isOpen) {
+            setFormData({
+                select_date: new Date(),
+                duration: "",
+                start_time: "",
+                title: "",
+                description: "",
+                tags: [],
+            });
             setSkillSelectValue(null);
             setSelectedSkills([]);
+            setTempTime(null);
+            setOriginalTempTime(null);
         }
     }, [isOpen]);
 
@@ -379,10 +389,12 @@ export default function NewEventModal({
                     const minutesToCheck = [0, 15, 30, 45];
                     // Disable hour if all 15-minute intervals are either past or booked
                     return minutesToCheck.every((minute) => {
-                        if (minute < currentMinute) {
+                        const timeStr = timeValue.hour(hour).minute(minute).format("HH:mm");
+                        // Check if time is in the past - be precise with comparison
+                        if (timeStr < currentTimeStr) {
                             return true; // Past time
                         }
-                        const timeStr = timeValue.hour(hour).minute(minute).format("HH:mm");
+                        // If time is exactly current time or future, check if booked
                         return isTimeSlotBooked(timeStr);
                     });
                 }
@@ -395,7 +407,7 @@ export default function NewEventModal({
             } else {
                 // For minutes view on today
                 const timeStr = timeValue.format("HH:mm");
-                // Check if time is in the past
+                // Check if time is in the past - allow times that are >= current time
                 if (timeStr < currentTimeStr) {
                     return true;
                 }
@@ -516,6 +528,8 @@ export default function NewEventModal({
                 });
                 setSelectedSkills([]);
                 setSkillSelectValue(null);
+                setTempTime(null);
+                setOriginalTempTime(null);
                 onClose();
             } else {
                 showToast({ message: "Failed to create event", type: "error" });
@@ -538,6 +552,8 @@ export default function NewEventModal({
         });
         setSelectedSkills([]);
         setSkillSelectValue(null);
+        setTempTime(null);
+        setOriginalTempTime(null);
         onClose();
     };
 
@@ -633,35 +649,7 @@ export default function NewEventModal({
                                     onOpen={() => {
                                         // Save the original tempTime value before opening
                                         setOriginalTempTime(tempTime);
-                                        
-                                        // When picker opens on mobile and tempTime is null, set a default
-                                        // This ensures the mobile dialog shows a time instead of empty
-                                        if (!tempTime && formData.select_date) {
-                                            const selectedDateStr = dayjs(formData.select_date).format("YYYY-MM-DD");
-                                            
-                                            // Use moment for timezone calculation
-                                            let currentTimeInTimezone: moment.Moment;
-                                            if (volunteerUtcOffsetValue) {
-                                                currentTimeInTimezone = moment().utcOffset(volunteerUtcOffsetValue);
-                                            } else {
-                                                currentTimeInTimezone = moment();
-                                            }
-                                            
-                                            const currentDateStr = currentTimeInTimezone.format("YYYY-MM-DD");
-                                            const currentMeridiem = currentTimeInTimezone.format("A");
-                                            
-                                            // If it's today and PM, set default to 12:00 PM (noon)
-                                            if (selectedDateStr === currentDateStr && currentMeridiem === "PM") {
-                                                setTempTime(dayjs("12:00", "HH:mm"));
-                                            } else {
-                                                // Otherwise, set to current time rounded to next 15 minutes
-                                                const now = currentTimeInTimezone;
-                                                const currentMinute = now.minute();
-                                                const roundedMinute = Math.ceil(currentMinute / 15) * 15;
-                                                const defaultTime = now.minute(roundedMinute).second(0).millisecond(0);
-                                                setTempTime(dayjs(defaultTime.format("HH:mm"), "HH:mm"));
-                                            }
-                                        }
+                                        // Don't set default time - let user select their own time
                                     }}
                                     onClose={() => {
                                         // If user cancels without accepting, reset tempTime to original value
@@ -675,33 +663,6 @@ export default function NewEventModal({
                                         handleTimeAccept(time);
                                     }}
                                     shouldDisableTime={shouldDisableTime}
-                                    minTime={(() => {
-                                        // If selected date is today and it's PM, set minTime to 12:00 PM to disable AM
-                                        if (!formData.select_date) return undefined;
-                                        
-                                        const selectedDateStr = dayjs(formData.select_date).format("YYYY-MM-DD");
-                                        
-                                        // Use moment for timezone calculation
-                                        let currentTimeInTimezone: moment.Moment;
-                                        if (volunteerUtcOffsetValue) {
-                                            currentTimeInTimezone = moment().utcOffset(volunteerUtcOffsetValue);
-                                        } else {
-                                            currentTimeInTimezone = moment();
-                                        }
-                                        
-                                        const currentDateStr = currentTimeInTimezone.format("YYYY-MM-DD");
-                                        const currentMeridiem = currentTimeInTimezone.format("A");
-                                       
-                                        
-                                        if (selectedDateStr === currentDateStr && currentMeridiem === "PM") {
-                                            // Set minTime to 12:00 PM (noon) to disable all AM times
-                                            const minTime = dayjs("12:00", "HH:mm");
-                                            
-                                            return minTime;
-                                        }
-                                        
-                                        return undefined;
-                                    })()}
                                     closeOnSelect={false}
                                     slotProps={{
                                         textField: {
