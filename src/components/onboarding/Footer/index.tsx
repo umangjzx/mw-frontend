@@ -9,7 +9,7 @@ import Logo from "@/components/common/Logo";
 type Props = {};
 
 type PolicyLink = {
-    href: string;
+    href?: string;
     label: string;
     target?: string;
 };
@@ -20,29 +20,29 @@ type SocialLink = {
     label: string;
 };
 
-const policyLinks: PolicyLink[] = [
-    { href: "/privacy-policy", target: "_blank", label: "Privacy Policy" },
-    { href: "/terms-and-conditions", target: "_blank", label: "Terms & Conditions" },
-    {
-        href: "mailto:support@melodywings.org",
-        target: "_blank",
-        label: "Contact Us - support@melodywings.org",
-    },
-];
-
-const socialLinks: SocialLink[] = [
-    { label: "LinkedIn", icon: FaLinkedin, href: "https://www.linkedin.com/company/melodywings" },
-    { label: "Instagram", icon: FaInstagram, href: "https://www.instagram.com/melodywings_" },
-    {
-        label: "Facebook",
-        icon: FaFacebook,
-        href: "https://www.facebook.com/profile.php?id=61575239913366",
-    },
-    // { label: "X", icon: FaSquareXTwitter, href: "https://x.com" },
-    // { label: "WhatsApp", icon: FaWhatsapp, href: "https://wa.me/1234567890" },
-];
-
 const Footer = (props: Props) => {
+    const policyLinks: PolicyLink[] = [
+        { href: "/privacy-policy", target: "_blank", label: "Privacy Policy" },
+        { href: "/terms-and-conditions", target: "_blank", label: "Terms & Conditions" },
+        { href: "/join-us", label: "Join Us" },
+        {
+            href: "mailto:support@melodywings.org",
+            target: "_blank",
+            label: "Contact Us - support@melodywings.org",
+        },
+    ];
+
+    const socialLinks: SocialLink[] = [
+        { label: "LinkedIn", icon: FaLinkedin, href: "https://www.linkedin.com/company/melodywings" },
+        { label: "Instagram", icon: FaInstagram, href: "https://www.instagram.com/melodywings_" },
+        {
+            label: "Facebook",
+            icon: FaFacebook,
+            href: "https://www.facebook.com/profile.php?id=61575239913366",
+        },
+        // { label: "X", icon: FaSquareXTwitter, href: "https://x.com" },
+        // { label: "WhatsApp", icon: FaWhatsapp, href: "https://wa.me/1234567890" },
+    ];
     const renderSocialLinks = () => (
         <div className="flex items-center gap-6">
             {socialLinks.map((link) => (
@@ -66,10 +66,10 @@ const Footer = (props: Props) => {
                 <div className="flex w-full flex-col lg:flex-row justify-between items-center lg:items-start gap-4 py-8 lg:py-0">
                     {/* Left side - Policy and Terms links */}
                     <div className="flex flex-col max-lg:items-center mb-5 lg:mb-0 gap-6">
-                        {policyLinks.map((link) => (
+                        {policyLinks.map((link, index) => (
                             <Link
-                                key={link?.href}
-                                href={link?.href}
+                                key={link?.href || index}
+                                href={link?.href || "#"}
                                 rel="noopener noreferrer"
                                 target={link?.target}
                                 className="text-sm text-gray-600 underline hover:text-gray-900 transition-colors"
