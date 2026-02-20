@@ -107,6 +107,8 @@ export default function NewEventModal({
     const [tempTime, setTempTime] = useState<dayjs.Dayjs | null>(null);
     // Track the original tempTime when picker opens, so we can reset on cancel
     const [originalTempTime, setOriginalTempTime] = useState<dayjs.Dayjs | null>(null);
+    // Track selected meridiem explicitly to ensure PM hours show immediately
+    const [selectedMeridiem, setSelectedMeridiem] = useState<string | null>(null);
 
     // Reset all form fields when modal opens
     useEffect(() => {
@@ -123,6 +125,7 @@ export default function NewEventModal({
             setSelectedSkills([]);
             setTempTime(null);
             setOriginalTempTime(null);
+            setSelectedMeridiem(null);
         }
     }, [isOpen]);
 
@@ -353,6 +356,15 @@ export default function NewEventModal({
             const selectedHour24 = timeValue.hour();
             const selectedHour12 = parseInt(timeValue.format("h")); // 1-12 format
             
+            // Handle meridiem selection specifically (when user clicks AM/PM)
+            if (clockType === "meridiem") {
+                // Only disable AM when it's currently PM, always allow PM
+                if (selectedMeridiem === "AM") {
+                    return true; // Disable AM when it's PM - all AM times are in the past
+                }
+                // Always allow PM selection
+                return false;
+            }
             
             // If we're selecting AM and it's currently PM, disable AM (same logic as disabling past hours/minutes)
             // Check multiple ways to catch meridiem selection
@@ -375,21 +387,88 @@ export default function NewEventModal({
                 }
             }
         }
+        
+        // For meridiem selection on future dates or when it's AM, always allow both AM and PM
+        if (clockType === "meridiem") {
+            return false; // Never disable meridiem selection for future dates or when it's AM
+        }
 
         // If selected date is today, check if time is in the past
         if (selectedDateStr === currentDateStr) {
             if (clockType === "hours") {
-                const hour = timeValue.hour();
+                // Get the hour in 12-hour format (1-12) from the clock face
+                const hour12 = parseInt(timeValue.format("h")); // 1-12 format
+                
+                // Check what meridiem is currently selected
+                // Priority: 1) selectedMeridiem state (tracks explicit PM/AM clicks), 2) tempTime, 3) timeValue
+                const tempTimeMeridiem = tempTime ? tempTime.format("A") : null;
+                const timeValueMeridiem = timeValue.format("A");
+                
+                // Determine current meridiem: use selectedMeridiem state first (most reliable for immediate PM clicks)
+                // then tempTime, then timeValue, then default to being permissive
+                const currentSelectedMeridiem = selectedMeridiem || tempTimeMeridiem || (timeValueMeridiem === "PM" || timeValueMeridiem === "AM" ? timeValueMeridiem : null);
+                
+                // Convert 12-hour format to 24-hour format based on selected meridiem
+                let actualHour24: number;
+                
+                if (currentSelectedMeridiem === "PM") {
+                    // PM selected: 1-11 PM = 13-23, 12 PM = 12 (noon)
+                    if (hour12 === 12) {
+                        actualHour24 = 12; // 12 PM = noon
+                    } else {
+                        actualHour24 = hour12 + 12; // 1-11 PM = 13-23
+                    }
+                } else if (currentSelectedMeridiem === "AM") {
+                    // AM selected: 1-11 AM = 1-11, 12 AM = 0 (midnight)
+                    if (hour12 === 12) {
+                        actualHour24 = 0; // 12 AM = midnight
+                    } else {
+                        actualHour24 = hour12; // 1-11 AM = 1-11
+                    }
+                } else {
+                    // No meridiem selected yet - be very permissive, default to PM
+                    // This is critical: when user clicks PM, meridiem might not be set in timeValue yet
+                    // So we default to PM to ensure hours show immediately
+                    let amHour24: number;
+                    let pmHour24: number;
+                    
+                    if (hour12 === 12) {
+                        amHour24 = 0; // 12 AM = midnight
+                        pmHour24 = 12; // 12 PM = noon
+                    } else {
+                        amHour24 = hour12; // 1-11 AM
+                        pmHour24 = hour12 + 12; // 1-11 PM
+                    }
+                    
+                    // If both AM and PM versions are in the past, disable
+                    if (amHour24 < currentHour && pmHour24 < currentHour) {
+                        return true;
+                    }
+                    
+                    // Always default to PM when meridiem is unclear - this ensures PM hours show
+                    // immediately when user clicks PM, matching desktop behavior
+                    // Only use AM if PM is clearly in the past and AM is in the future
+                    if (pmHour24 >= currentHour) {
+                        actualHour24 = pmHour24; // Default to PM - allows PM hours to show immediately
+                    } else if (amHour24 >= currentHour) {
+                        actualHour24 = amHour24; // Use AM only if PM is past and AM is future
+                    } else {
+                        return true; // Both are in the past
+                    }
+                }
+                
                 // If hour is in the past, disable it
-                if (hour < currentHour) {
+                if (actualHour24 < currentHour) {
                     return true;
                 }
+                
                 // If hour is current hour, check if all 15-minute slots are unavailable (past or booked)
-                if (hour === currentHour) {
+                if (actualHour24 === currentHour) {
                     const minutesToCheck = [0, 15, 30, 45];
                     // Disable hour if all 15-minute intervals are either past or booked
-                    return minutesToCheck.every((minute) => {
-                        const timeStr = timeValue.hour(hour).minute(minute).format("HH:mm");
+                    // But keep the hour visible if it's the current hour - minute picker will handle past minutes
+                    const allSlotsUnavailable = minutesToCheck.every((minute) => {
+                        const timeStr = dayjs().hour(actualHour24).minute(minute).format("HH:mm");
                         // Check if time is in the past - be precise with comparison
                         if (timeStr < currentTimeStr) {
                             return true; // Past time
@@ -397,11 +476,16 @@ export default function NewEventModal({
                         // If time is exactly current time or future, check if booked
                         return isTimeSlotBooked(timeStr);
                     });
+                    
+                    // Don't disable the current hour even if all 15-min slots are past
+                    // This allows users to see the hour and select future minutes if available
+                    // The minute picker will properly disable past minutes
+                    return false; // Always show current hour
                 }
                 // For future hours today, check if all slots in the hour are booked
                 const minutesToCheck = [0, 15, 30, 45];
                 return minutesToCheck.every((minute) => {
-                    const timeStr = timeValue.hour(hour).minute(minute).format("HH:mm");
+                    const timeStr = dayjs().hour(actualHour24).minute(minute).format("HH:mm");
                     return isTimeSlotBooked(timeStr);
                 });
             } else {
@@ -602,6 +686,7 @@ export default function NewEventModal({
         setSkillSelectValue(null);
         setTempTime(null);
         setOriginalTempTime(null);
+        setSelectedMeridiem(null);
         onClose();
     };
 
@@ -686,18 +771,53 @@ export default function NewEventModal({
                                     format="h:mm A"
                                     value={tempTime}
                                     onChange={(time) => {
-                                        // If tempTime is null and user is selecting a time, set it
-                                        // This ensures mobile picker has a value to display
-                                        if (!tempTime && time) {
-                                            setTempTime(time);
-                                        } else {
-                                            setTempTime(time);
+                                        // Always update tempTime when time changes
+                                        // This includes when user clicks AM/PM (meridiem changes)
+                                        // This ensures mobile picker shows hours correctly when PM is selected
+                                        setTempTime(time);
+                                        // Track meridiem explicitly when it changes
+                                        if (time) {
+                                            const meridiem = time.format("A");
+                                            setSelectedMeridiem(meridiem);
                                         }
                                     }}
                                     onOpen={() => {
                                         // Save the original tempTime value before opening
                                         setOriginalTempTime(tempTime);
-                                        // Don't set default time - let user select their own time
+                                        
+                                        // If tempTime is null, set default time based on current meridiem
+                                        // This ensures hours are visible immediately when picker opens
+                                        if (!tempTime) {
+                                            // Get current time in volunteer's timezone
+                                            let currentTimeInTimezone: moment.Moment;
+                                            if (volunteerUtcOffsetValue) {
+                                                currentTimeInTimezone = moment().utcOffset(volunteerUtcOffsetValue);
+                                            } else {
+                                                currentTimeInTimezone = moment();
+                                            }
+                                            
+                                            const currentMeridiem = currentTimeInTimezone.format("A");
+                                            const currentHour = currentTimeInTimezone.hour();
+                                            
+                                            // If it's PM, set default to 1 PM (13:00) to show all PM hours
+                                            // If it's AM, set default to current hour or 1 AM
+                                            if (currentMeridiem === "PM") {
+                                                // Set to 1 PM (13:00) - this ensures all PM hours are visible
+                                                const defaultTime = dayjs().hour(13).minute(0).second(0);
+                                                setTempTime(defaultTime);
+                                                setSelectedMeridiem("PM");
+                                            } else {
+                                                // If it's AM, set to current hour or 1 AM
+                                                const defaultHour = currentHour > 0 ? currentHour : 1;
+                                                const defaultTime = dayjs().hour(defaultHour).minute(0).second(0);
+                                                setTempTime(defaultTime);
+                                                setSelectedMeridiem("AM");
+                                            }
+                                        } else {
+                                            // If tempTime exists, track its meridiem
+                                            const meridiem = tempTime.format("A");
+                                            setSelectedMeridiem(meridiem);
+                                        }
                                     }}
                                     onClose={() => {
                                         // If user cancels without accepting, reset tempTime to original value
