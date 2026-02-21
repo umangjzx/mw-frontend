@@ -582,7 +582,7 @@ export default function NewEventModal({
 
     const handleSubmit = async () => {
         if (!formData.duration || !formData.start_time || !formData.title?.trim()) {
-            showToast({ message: "Please fill in duration, start time and title", type: "error" });
+            showToast({ message: "Please fill in Duration, start time and title", type: "error" });
             return;
         }
         if (selectedSkills.length === 0) {
