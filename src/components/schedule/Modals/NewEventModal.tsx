@@ -110,25 +110,6 @@ export default function NewEventModal({
     // Track selected meridiem explicitly to ensure PM hours show immediately
     const [selectedMeridiem, setSelectedMeridiem] = useState<string | null>(null);
 
-    // Reset all form fields when modal opens
-    useEffect(() => {
-        if (isOpen) {
-            setFormData({
-                select_date: new Date(),
-                duration: "",
-                start_time: "",
-                title: "",
-                description: "",
-                tags: [],
-            });
-            setSkillSelectValue(null);
-            setSelectedSkills([]);
-            setTempTime(null);
-            setOriginalTempTime(null);
-            setSelectedMeridiem(null);
-        }
-    }, [isOpen]);
-
     const { volunteerDetails, volunteerUtcOffset } = useAppStore();
     const timezoneRaw =
         (volunteerDetails as { volunteer_contact_details?: { timezone?: string; utc_offset?: string } })
@@ -142,6 +123,51 @@ export default function NewEventModal({
             ?.volunteer_contact_details?.utc_offset || 
         volunteerUtcOffset || 
         (timezoneRaw ? extractTimezoneOffset(timezoneRaw) : null);
+
+    // Get today's date in YYYY-MM-DD format in volunteer's timezone
+    const getTodayDate = () => {
+        if (volunteerUtcOffsetValue) {
+            // Get current date in volunteer's timezone
+            const todayInTimezone = moment().utcOffset(volunteerUtcOffsetValue);
+            return todayInTimezone.format("YYYY-MM-DD");
+        }
+        return dayjs().format("YYYY-MM-DD");
+    };
+
+    // Get today's date as a Date object in volunteer's timezone
+    const getTodayDateObject = (): Date => {
+        if (volunteerUtcOffsetValue) {
+            // Get current date in volunteer's timezone
+            const todayInTimezone = moment().utcOffset(volunteerUtcOffsetValue);
+            const dateStr = todayInTimezone.format("YYYY-MM-DD");
+            // Create a Date object from the date string (YYYY-MM-DD format is interpreted as local midnight)
+            // We need to create it in a way that represents the correct date
+            const [year, month, day] = dateStr.split("-").map(Number);
+            return new Date(year, month - 1, day);
+        }
+        return new Date();
+    };
+
+    // Reset all form fields when modal opens
+    useEffect(() => {
+        if (isOpen) {
+            // Get today's date in volunteer's timezone (AST)
+            const todayInTimezone = getTodayDateObject();
+            setFormData({
+                select_date: todayInTimezone,
+                duration: "",
+                start_time: "",
+                title: "",
+                description: "",
+                tags: [],
+            });
+            setSkillSelectValue(null);
+            setSelectedSkills([]);
+            setTempTime(null);
+            setOriginalTempTime(null);
+            setSelectedMeridiem(null);
+        }
+    }, [isOpen, volunteerUtcOffsetValue]);
 
     // Sync tempTime with formData.start_time (keep null when empty so input field stays empty)
     useEffect(() => {
@@ -272,9 +298,6 @@ export default function NewEventModal({
         };
     }, [isPMToday, isOpen, formData.select_date]);
 
-    // Get today's date in YYYY-MM-DD format
-    const getTodayDate = () => dayjs().format("YYYY-MM-DD");
-
     const handleDateChange = (date: Date | null) => {
         setFormData((prev) => ({ ...prev, select_date: date }));
     };
@@ -284,7 +307,7 @@ export default function NewEventModal({
     };
 
     // Fetch available slots for the selected date
-    const { data: slotsData } = useQuery({
+    const { data: slotsData, refetch: refetchSlots } = useQuery({
         queryKey: ["available-slots", dayjs(formData.select_date).format("YYYY-MM-DD")],
         queryFn: async () => {
             if (!formData.select_date) return [];
@@ -457,7 +480,8 @@ export default function NewEventModal({
                     }
                 }
                 
-                // If hour is in the past, disable it
+                // If hour is in the past (next hour or later), disable it
+                // Special case: hour 12 (noon) should be disabled after 1:00 PM
                 if (actualHour24 < currentHour) {
                     return true;
                 }
@@ -466,8 +490,16 @@ export default function NewEventModal({
                 if (actualHour24 === currentHour) {
                     const minutesToCheck = [0, 15, 30, 45];
                     // Disable hour if all 15-minute intervals are either past or booked
-                    // But keep the hour visible if it's the current hour - minute picker will handle past minutes
-                    const allSlotsUnavailable = minutesToCheck.every((minute) => {
+                    // But for hour 12 (noon), keep it enabled if we're still in the 12:XX hour
+                    // This allows users to see hour 12 during 12:00-12:59 PM
+                    if (hour12 === 12 && currentSelectedMeridiem === "PM" && actualHour24 === 12 && currentHour === 12) {
+                        // Hour 12 (noon) is current hour - keep it enabled so user can see it
+                        // Minute picker will handle disabling past minutes
+                        return false;
+                    }
+                    
+                    // For other hours, check if all slots are unavailable
+                    return minutesToCheck.every((minute) => {
                         const timeStr = dayjs().hour(actualHour24).minute(minute).format("HH:mm");
                         // Check if time is in the past - be precise with comparison
                         if (timeStr < currentTimeStr) {
@@ -476,11 +508,6 @@ export default function NewEventModal({
                         // If time is exactly current time or future, check if booked
                         return isTimeSlotBooked(timeStr);
                     });
-                    
-                    // Don't disable the current hour even if all 15-min slots are past
-                    // This allows users to see the hour and select future minutes if available
-                    // The minute picker will properly disable past minutes
-                    return false; // Always show current hour
                 }
                 // For future hours today, check if all slots in the hour are booked
                 const minutesToCheck = [0, 15, 30, 45];
@@ -785,6 +812,12 @@ export default function NewEventModal({
                                         // Save the original tempTime value before opening
                                         setOriginalTempTime(tempTime);
                                         
+                                        // Fetch slots when time picker opens
+                                        // This ensures we have the latest slot data for overlap checking
+                                        if (formData.select_date) {
+                                            refetchSlots();
+                                        }
+                                        
                                         // If tempTime is null, set default time based on current meridiem
                                         // This ensures hours are visible immediately when picker opens
                                         if (!tempTime) {
@@ -799,16 +832,16 @@ export default function NewEventModal({
                                             const currentMeridiem = currentTimeInTimezone.format("A");
                                             const currentHour = currentTimeInTimezone.hour();
                                             
-                                            // If it's PM, set default to 1 PM (13:00) to show all PM hours
-                                            // If it's AM, set default to current hour or 1 AM
+                                            // If it's PM, set default to 12 PM (12:00) to show all PM hours
+                                            // If it's AM, set default to current hour or 12 AM
                                             if (currentMeridiem === "PM") {
-                                                // Set to 1 PM (13:00) - this ensures all PM hours are visible
-                                                const defaultTime = dayjs().hour(13).minute(0).second(0);
+                                                // Set to 12 PM (12:00) - this ensures all PM hours are visible
+                                                const defaultTime = dayjs().hour(12).minute(0).second(0);
                                                 setTempTime(defaultTime);
                                                 setSelectedMeridiem("PM");
                                             } else {
-                                                // If it's AM, set to current hour or 1 AM
-                                                const defaultHour = currentHour > 0 ? currentHour : 1;
+                                                // If it's AM, set to current hour or 12 AM
+                                                const defaultHour = currentHour > 0 ? currentHour : 0;
                                                 const defaultTime = dayjs().hour(defaultHour).minute(0).second(0);
                                                 setTempTime(defaultTime);
                                                 setSelectedMeridiem("AM");
