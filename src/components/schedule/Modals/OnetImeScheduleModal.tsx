@@ -98,7 +98,7 @@ const OnetImeScheduleModal = ({
         });
         setIsSaving(true);
         const formattedData = validSlots.map((slot) => ({
-            date: moment(currentDate).format("DD-MM-YYYY"),
+            date: moment(currentDate, "YYYY-MM-DD").format("DD-MM-YYYY"),
             volunteer_slot_id: generateTimeSlotId(slot.start_time, slot.end_time),
             start_time: slot.start_time,
             end_time: slot.end_time,
@@ -288,7 +288,7 @@ const OnetImeScheduleModal = ({
 
     return (
         <SideModal
-            title={`${moment(currentDate).format("DD MMMM YYYY")}`}
+            title={`${moment(currentDate, "YYYY-MM-DD").format("DD MMMM YYYY")}`}
             onClose={handleClose}
             isOpen={isOpen}
             onSave={handleSubmit}
@@ -310,7 +310,7 @@ const OnetImeScheduleModal = ({
                         labelClassName="!text-[1rem] !font-medium"
                         inputType="datepicker"
                         placeholder="Select a date"
-                        value={new Date(currentDate)}
+                        value={currentDate ? moment(currentDate, "YYYY-MM-DD").toDate() : new Date()}
                         required={true}
                         disabled={true}
                         error={""}
@@ -325,7 +325,7 @@ const OnetImeScheduleModal = ({
                         {existingSlots.map((slot, idx) => (
                             <div
                                 key={idx}
-                                className="md:border border-gray-200 rounded-lg  flex flex-col md:flex-row md:justify-between md:items-center gap-2 md:gap-0 mt-2 w-full"
+                                className="md:border border-gray-200 rounded-lg  flex flex-col lg:p-[5px] md:flex-row md:justify-between md:items-center gap-2 md:gap-0 mt-2 w-full"
                             >
                                 {/* Mobile: start/time pills + "to" */}
                                 <div className="flex items-center gap-2 w-full md:hidden">
