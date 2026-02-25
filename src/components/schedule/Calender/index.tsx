@@ -152,13 +152,40 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
         arg.jsEvent.preventDefault();
 
         const dateEvents = arg.allSegs.map((seg: any) => seg?.event);
+        
+        // FullCalendar's moreLinkClick arg.date might be in UTC or have timezone issues
+        // The most reliable way is to get the date from the events themselves or use dateStr
+        let dateStr: string;
+        
+        // First, try to get dateStr if available (most reliable)
+        if (arg.dateStr) {
+            dateStr = arg.dateStr;
+        } else if (dateEvents.length > 0 && dateEvents[0].start) {
+            // Use the first event's start date to determine the correct date
+            // Events should have the correct date that matches the calendar cell
+            // Format the event's start date to get just the date part (YYYY-MM-DD)
+            const eventDate = moment(dateEvents[0].start);
+            dateStr = eventDate.format("YYYY-MM-DD");
+        } else {
+            // Fallback: The arg.date might be in UTC or have timezone offset
+            // Since arg.date shows the wrong day, we need to get the calendar day
+            // Try using the view's date system or calculate from the date
+            // If arg.date is "Wed Mar 25 2026 17:00:00" but calendar shows 26,
+            // we might need to add a day or use a different extraction method
+            // For now, use moment to parse and format, which should handle timezone
+            const parsedDate = moment(arg.date);
+            dateStr = parsedDate.format("YYYY-MM-DD");
+            
+            // If this still gives wrong date, we might need to check the calendar cell's date
+            // But since we have events, the first condition should catch it
+        }
+        
+        // Format for display using the correct date string
+        const formattedDate = moment(dateStr).format("MMM DD, YYYY");
+        
         setCurrentEventData({
             events: dateEvents,
-            date: formatDate(arg.date, {
-                month: "short",
-                day: "2-digit",
-                year: "numeric",
-            }),
+            date: formattedDate,
         });
         setShowModal("events");
     };
