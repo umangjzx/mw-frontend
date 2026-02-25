@@ -176,7 +176,7 @@ const Header = (props: Props) => {
                                     </div>
                                     <Button
                                         onClick={handleAddEvent}
-                                        title="Add New Event"
+                                        title="Add New Instant Session"
                                         customClassName="!bg-white max-lg:!text-sm !font-medium !text-black rounded-full lg:!p-3 !py-3 !px-3"
                                     />
                                 </div>
@@ -184,14 +184,14 @@ const Header = (props: Props) => {
                              {isMobileOrTabScreen && (
                                 <Button
                                     onClick={handleAddEvent}
-                                    title="Add New Event"
-                                    customClassName="!bg-white  !text-[16px]  lg:!text-sm !font-medium !text-black rounded-full !py-2 max-lg:flex-1"
+                                    title="Add New Instant Session"
+                                    customClassName="!bg-white  !text-[14px]  lg:!text-sm !font-medium !text-black rounded-full !py-2 max-lg:flex-1"
                                 />
                             )}
                             <Button
                                 onClick={handleMySchedule}
-                                title={isMobileOrTabScreen ? "My Schedule" : "Schedule my availability"}
-                                customClassName="!bg-white !border !border-gray-200 !text-[16px] lg:!text-sm !font-medium !text-black rounded-full !py-2 lg:!py-3 lg:!px-3 max-lg:flex-1"
+                                title={ "My Schedule" }
+                                customClassName="!bg-white !border !border-gray-200 !text-[14px] lg:!text-[16px] !font-medium !text-black rounded-full !py-2 lg:!py-3 lg:!px-3 max-lg:flex-1"
                             />
                            
                         </div>
