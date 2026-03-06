@@ -1,5 +1,6 @@
 import { create } from "zustand";
-type EndpointProps = {
+
+export type EndpointProps = {
     onboarding: {
         update: (role: "volunteer" | "learner") => `onboarding/${typeof role}`;
         getOnboardingStatus: (id: string, role: "volunteer" | "learner") => string;
@@ -22,6 +23,7 @@ type EndpointProps = {
         getIndividualLearner: (id: string) => string;
         getConnectedVolunteers: (id: string) => string;
         getTotalLearnersCount: string;
+        emailPreference: (id: string) => string;
     };
     volunteer: {
         update: (id: string) => string;
