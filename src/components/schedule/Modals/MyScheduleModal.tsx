@@ -13,12 +13,13 @@ import ChevronRightIcon from "@/assets/icons/ChevronRightIcon";
 import CheckIcon from "@/assets/icons/CheckIcon";
 import CustomRecurrenceModal from "@/components/schedule/Modals/CustomRecurrenceModal";
 
-import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
+import { LocalizationProvider, MobileTimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { showToast } from "@/components/common/Toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAppStore } from "@/store/useAppStore";
 import InnerWidth from "@/utils/innerWidth";
+import type { MyScheduleModalProps } from "./index.type";
 
 interface TimeSlot {
     start_time: string;
@@ -111,7 +112,8 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
 
         GET_API(endpoints.volunteer_slot.get)
             .then((res: any) => {
-                // Initialize all days with empty arrays
+                const slotsData: APIScheduleFormat[] = Array.isArray(res?.data) ? res.data : [];
+
                 const newSchedule: DaySchedule = {
                     Sunday: [],
                     Monday: [],
@@ -121,10 +123,6 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                     Friday: [],
                     Saturday: [],
                 };
-
-                // Handle response: res.data should be an array of day objects
-                // Response format: [{ day: "Sunday", slots: [...], volunteer_id: "...", updated_at: "..." }, ...]
-                const slotsData = Array.isArray(res?.data) ? res.data : [];
 
                 if (slotsData.length === 0) {
                     setSchedule(newSchedule);
@@ -144,10 +142,10 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                 const newRepeatFrequency: { [day: string]: { [slotId: string]: string } } = {};
 
                 // Populate the schedule with API data
-                slotsData.forEach((dayData: any) => {
+                slotsData.forEach((dayData: APIScheduleFormat) => {
                     const dayName = dayData.day;
                     if (dayName && dayData.slots && Array.isArray(dayData.slots)) {
-                        newSchedule[dayName] = dayData.slots.map((slot: any, slotIndex: number) => {
+                        newSchedule[dayName] = dayData.slots.map((slot: APITimeSlot, slotIndex: number) => {
                             const slotId = slot.volunteer_slot_id ?? `load_${dayName}_${slotIndex}`;
                             return {
                                 volunteer_slot_id: slot.volunteer_slot_id,
@@ -187,7 +185,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                 setCustomRecurrenceData(newCustomRecurrenceData);
                 setRepeatFrequency(newRepeatFrequency);
             })
-            .catch((error: any) => {
+            .catch(() => {
                 showToast({ message: "Failed to load schedule", type: "error" });
             });
     }, [isOpen]);
@@ -297,8 +295,8 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                     type === "start_time"
                         ? 0
                         : dayjs(a.start_time, "HH:mm").isBefore(dayjs(b.start_time, "HH:mm"))
-                        ? -1
-                        : 1
+                            ? -1
+                            : 1
                 ),
         }));
     };
@@ -437,7 +435,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             onClose();
             queryClient.invalidateQueries({ queryKey: ["volunteer-events"] });
         },
-        error: () => {},
+        error: () => { },
     });
 
     // Add this CSS class to style the TimePicker input
@@ -484,11 +482,11 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                 [day]: prev[day].map((slot) =>
                     getSlotId(slot) === slotId
                         ? {
-                              ...slot,
-                              slot_type: "repeats_weekly",
-                              start_date: undefined,
-                              end_date: undefined,
-                          }
+                            ...slot,
+                            slot_type: "repeats_weekly",
+                            start_date: undefined,
+                            end_date: undefined,
+                        }
                         : slot
                 ),
             }));
@@ -529,14 +527,14 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
             [currentDayForCustom]: prev[currentDayForCustom].map((slot) =>
                 getSlotId(slot) === currentSlotIdForCustom
                     ? {
-                          ...slot,
-                          slot_type: "custom" as const,
-                          start_date: startDateStr,
-                          end_date:
-                              data.endType === "date" && data.endDate
-                                  ? endDateStr || undefined
-                                  : undefined,
-                      }
+                        ...slot,
+                        slot_type: "custom" as const,
+                        start_date: startDateStr,
+                        end_date:
+                            data.endType === "date" && data.endDate
+                                ? endDateStr || undefined
+                                : undefined,
+                    }
                     : slot
             ),
         }));
@@ -594,16 +592,15 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                     ? dayjs(slot.start_time, "HH:mm")
                     : null
                 : slot.end_time
-                ? dayjs(slot.end_time, "HH:mm")
-                : null
+                    ? dayjs(slot.end_time, "HH:mm")
+                    : null
         );
 
         const [tempTime, setTempTime] = useState<dayjs.Dayjs | null>(selectedTime);
 
         return (
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <TimePicker
-                    timeSteps={{ minutes: 1 }}
+                <MobileTimePicker
                     format="h:mm A"
                     value={tempTime}
                     onChange={(time) => setTempTime(time)}
@@ -671,7 +668,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                                         <ChevronRightIcon
                                             className={`transition-transform ${
                                                 isExpanded ? "rotate-90" : ""
-                                            }`}
+                                                }`}
                                         />
                                     </div>
                                     {isExpanded && (
@@ -748,27 +745,27 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                                                                             >
                                                                                 <span className="text-sm font-medium text-gray-700">
                                                                                     {slot?.slot_type ===
-                                                                                    "custom"
+                                                                                        "custom"
                                                                                         ? "Custom"
                                                                                         : (repeatFrequency[
-                                                                                              day
-                                                                                          ]?.[
-                                                                                              slotId
-                                                                                          ]
-                                                                                              ? repeatOptions.find(
-                                                                                                    (
-                                                                                                        opt
-                                                                                                    ) =>
-                                                                                                        opt.value ===
-                                                                                                        repeatFrequency[
-                                                                                                            day
-                                                                                                        ]?.[
-                                                                                                            slotId
-                                                                                                        ]
-                                                                                                )
-                                                                                                    ?.label
-                                                                                              : null) ||
-                                                                                          "Repeats Weekly"}
+                                                                                            day
+                                                                                        ]?.[
+                                                                                            slotId
+                                                                                        ]
+                                                                                            ? repeatOptions.find(
+                                                                                                (
+                                                                                                    opt
+                                                                                                ) =>
+                                                                                                    opt.value ===
+                                                                                                    repeatFrequency[
+                                                                                                    day
+                                                                                                    ]?.[
+                                                                                                    slotId
+                                                                                                    ]
+                                                                                            )
+                                                                                                ?.label
+                                                                                            : null) ||
+                                                                                        "Repeats Weekly"}
                                                                                 </span>
                                                                                 <svg
                                                                                     width="20"
@@ -797,23 +794,52 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                                                                             {openDropdowns[day]?.[
                                                                                 slotId
                                                                             ] && (
-                                                                                <div
-                                                                                    className="absolute top-full left-0 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-10"
-                                                                                    onClick={(e) =>
-                                                                                        e.stopPropagation()
-                                                                                    }
-                                                                                >
-                                                                                    {repeatOptions.map(
-                                                                                        (
-                                                                                            option
-                                                                                        ) => (
-                                                                                            <div
-                                                                                                key={
-                                                                                                    option.value
-                                                                                                }
-                                                                                                className={cn(
-                                                                                                    "flex items-center justify-between p-3 text-sm cursor-pointer transition-colors",
-                                                                                                    repeatFrequency[
+                                                                                    <div
+                                                                                        className="absolute top-full left-0 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-10"
+                                                                                        onClick={(e) =>
+                                                                                            e.stopPropagation()
+                                                                                        }
+                                                                                    >
+                                                                                        {repeatOptions.map(
+                                                                                            (
+                                                                                                option
+                                                                                            ) => (
+                                                                                                <div
+                                                                                                    key={
+                                                                                                        option.value
+                                                                                                    }
+                                                                                                    className={cn(
+                                                                                                        "flex items-center justify-between p-3 text-sm cursor-pointer transition-colors",
+                                                                                                        repeatFrequency[
+                                                                                                            day
+                                                                                                        ]?.[
+                                                                                                            slotId
+                                                                                                        ] ===
+                                                                                                            option.value ||
+                                                                                                            (!repeatFrequency[
+                                                                                                                day
+                                                                                                            ]?.[
+                                                                                                                slotId
+                                                                                                            ] &&
+                                                                                                                option.value ===
+                                                                                                                "weekly")
+                                                                                                            ? "bg-gray-50 text-gray-900 font-medium"
+                                                                                                            : "text-gray-700 hover:bg-gray-50"
+                                                                                                    )}
+                                                                                                    onClick={() =>
+                                                                                                        handleRepeatFrequencyChange(
+                                                                                                            day,
+                                                                                                            slotId,
+                                                                                                            option.value
+                                                                                                        )
+                                                                                                    }
+                                                                                                >
+                                                                                                    <span>
+                                                                                                        {
+                                                                                                            option.label
+                                                                                                        }
+                                                                                                    </span>
+                                                                                                    {(repeatFrequency[
                                                                                                         day
                                                                                                     ]?.[
                                                                                                         slotId
@@ -825,43 +851,14 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                                                                                                             slotId
                                                                                                         ] &&
                                                                                                             option.value ===
-                                                                                                                "weekly")
-                                                                                                        ? "bg-gray-50 text-gray-900 font-medium"
-                                                                                                        : "text-gray-700 hover:bg-gray-50"
-                                                                                                )}
-                                                                                                onClick={() =>
-                                                                                                    handleRepeatFrequencyChange(
-                                                                                                        day,
-                                                                                                        slotId,
-                                                                                                        option.value
-                                                                                                    )
-                                                                                                }
-                                                                                            >
-                                                                                                <span>
-                                                                                                    {
-                                                                                                        option.label
-                                                                                                    }
-                                                                                                </span>
-                                                                                                {(repeatFrequency[
-                                                                                                    day
-                                                                                                ]?.[
-                                                                                                    slotId
-                                                                                                ] ===
-                                                                                                    option.value ||
-                                                                                                    (!repeatFrequency[
-                                                                                                        day
-                                                                                                    ]?.[
-                                                                                                        slotId
-                                                                                                    ] &&
-                                                                                                        option.value ===
                                                                                                             "weekly")) && (
-                                                                                                    <CheckIcon />
-                                                                                                )}
-                                                                                            </div>
-                                                                                        )
-                                                                                    )}
-                                                                                </div>
-                                                                            )}
+                                                                                                            <CheckIcon />
+                                                                                                        )}
+                                                                                                </div>
+                                                                                            )
+                                                                                        )}
+                                                                                    </div>
+                                                                                )}
                                                                         </>
                                                                     );
                                                                 })()}
@@ -896,30 +893,30 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                 initialData={
                     currentDayForCustom && currentSlotIdForCustom
                         ? (() => {
-                              const customData =
-                                  customRecurrenceData[currentDayForCustom]?.[
-                                      currentSlotIdForCustom
-                                  ];
-                              const slotData = schedule[currentDayForCustom]?.find(
-                                  (s) => getSlotId(s) === currentSlotIdForCustom
-                              );
+                            const customData =
+                                customRecurrenceData[currentDayForCustom]?.[
+                                currentSlotIdForCustom
+                                ];
+                            const slotData = schedule[currentDayForCustom]?.find(
+                                (s) => getSlotId(s) === currentSlotIdForCustom
+                            );
 
-                              // Prefer customRecurrenceData, fallback to slotData
-                              if (customData) {
-                                  return {
-                                      start_date: customData.start_date,
-                                      end_date: customData.end_date,
-                                      repeatEvery: customData.weekly_repeat_interval || 0,
-                                  };
-                              } else if (slotData?.slot_type === "custom" && slotData.start_date) {
-                                  return {
-                                      start_date: slotData.start_date,
-                                      end_date: slotData.end_date,
-                                      repeatEvery: 2,
-                                  };
-                              }
-                              return undefined;
-                          })()
+                            // Prefer customRecurrenceData, fallback to slotData
+                            if (customData) {
+                                return {
+                                    start_date: customData.start_date,
+                                    end_date: customData.end_date,
+                                    repeatEvery: customData.weekly_repeat_interval || 0,
+                                };
+                            } else if (slotData?.slot_type === "custom" && slotData.start_date) {
+                                return {
+                                    start_date: slotData.start_date,
+                                    end_date: slotData.end_date,
+                                    repeatEvery: 2,
+                                };
+                            }
+                            return undefined;
+                        })()
                         : undefined
                 }
                 onClose={() => {

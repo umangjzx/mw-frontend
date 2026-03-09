@@ -1,6 +1,7 @@
 import { Input } from "@/components/common/Input";
 import CenterModal from "@/components/common/Modals/CenterModal";
 import { alertModalConstants } from "@/constants/schedule";
+import { AlertModalProps } from "./index.type.d";
 
 const AlertModal = ({ isOpen, onClose, onProceed, onCancel, value, onChange }: AlertModalProps) => {
 

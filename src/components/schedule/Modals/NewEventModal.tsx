@@ -5,7 +5,7 @@ import CenterModal from "@/components/common/Modals/CenterModal";
 import { Input } from "@/components/common/Input";
 import Button from "@/components/common/Button";
 import TagComponent from "@/components/common/Tag";
-import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
+import { LocalizationProvider, MobileTimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import moment from "moment-timezone";
@@ -116,12 +116,12 @@ export default function NewEventModal({
             ?.volunteer_contact_details?.timezone ?? "";
 
     const volunteerTimezone = timezoneRaw.includes(" - ") ? timezoneRaw.split(" - ")[0]?.trim() ?? timezoneRaw : timezoneRaw;
-    
+
     // Get UTC offset from volunteerDetails or store, with fallback to extracting from timezone string
-    const volunteerUtcOffsetValue = 
+    const volunteerUtcOffsetValue =
         (volunteerDetails as { volunteer_contact_details?: { utc_offset?: string } })
-            ?.volunteer_contact_details?.utc_offset || 
-        volunteerUtcOffset || 
+            ?.volunteer_contact_details?.utc_offset ||
+        volunteerUtcOffset ||
         (timezoneRaw ? extractTimezoneOffset(timezoneRaw) : null);
 
     // Get today's date in YYYY-MM-DD format in volunteer's timezone
@@ -193,7 +193,7 @@ export default function NewEventModal({
     const isPMToday = (() => {
         if (!formData.select_date) return false;
         const selectedDateStr = dayjs(formData.select_date).format("YYYY-MM-DD");
-        
+
         // Use moment for timezone calculation
         let currentTimeInTimezone: moment.Moment;
         if (volunteerUtcOffsetValue) {
@@ -201,10 +201,10 @@ export default function NewEventModal({
         } else {
             currentTimeInTimezone = moment();
         }
-        
+
         const currentDateStr = currentTimeInTimezone.format("YYYY-MM-DD");
         const currentMeridiem = currentTimeInTimezone.format("A");
-        
+
         return selectedDateStr === currentDateStr && currentMeridiem === "PM";
     })();
 
@@ -238,7 +238,7 @@ export default function NewEventModal({
                         const text = el?.textContent?.trim() || el?.innerText?.trim() || '';
                         const ariaLabel = el?.getAttribute('aria-label') || '';
                         const dataValue = el?.getAttribute('data-value') || '';
-                        
+
                         if (text === 'AM' || ariaLabel.includes('AM') || dataValue === 'AM') {
                             // Hide and disable the AM option
                             (el as HTMLElement).style.display = 'none';
@@ -278,13 +278,13 @@ export default function NewEventModal({
         // Also run after a longer delay to catch mobile picker that might open later
         const timer2 = setTimeout(disableAMOption, 500);
         const timer3 = setTimeout(disableAMOption, 1000);
-        
+
         const observer = new MutationObserver(() => {
             disableAMOption();
         });
-        
-        observer.observe(document.body, { 
-            childList: true, 
+
+        observer.observe(document.body, {
+            childList: true,
             subtree: true,
             attributes: true,
             attributeFilter: ['class', 'style', 'data-value', 'aria-label']
@@ -342,7 +342,7 @@ export default function NewEventModal({
 
         const selectedDate = dayjs(formData.select_date);
         const selectedDateStr = selectedDate.format("YYYY-MM-DD");
-        
+
         // Get current time in volunteer's timezone
         let currentTimeInTimezone: moment.Moment;
         if (volunteerUtcOffsetValue) {
@@ -378,7 +378,7 @@ export default function NewEventModal({
             const selectedMeridiem = timeValue.format("A");
             const selectedHour24 = timeValue.hour();
             const selectedHour12 = parseInt(timeValue.format("h")); // 1-12 format
-            
+
             // Handle meridiem selection specifically (when user clicks AM/PM)
             if (clockType === "meridiem") {
                 // Only disable AM when it's currently PM, always allow PM
@@ -388,13 +388,13 @@ export default function NewEventModal({
                 // Always allow PM selection
                 return false;
             }
-            
+
             // If we're selecting AM and it's currently PM, disable AM (same logic as disabling past hours/minutes)
             // Check multiple ways to catch meridiem selection
             if (selectedMeridiem === "AM") {
                 return true; // Disable AM when it's PM - all AM times are in the past
             }
-            
+
             // Also check by hour: if hour is 1-11 with AM meridiem, disable when it's PM
             // Hour 12 with AM is midnight (12:00 AM), also disable when it's PM
             // IMPORTANT: Only disable if meridiem is AM, never disable PM
@@ -410,7 +410,7 @@ export default function NewEventModal({
                 }
             }
         }
-        
+
         // For meridiem selection on future dates or when it's AM, always allow both AM and PM
         if (clockType === "meridiem") {
             return false; // Never disable meridiem selection for future dates or when it's AM
@@ -421,19 +421,19 @@ export default function NewEventModal({
             if (clockType === "hours") {
                 // Get the hour in 12-hour format (1-12) from the clock face
                 const hour12 = parseInt(timeValue.format("h")); // 1-12 format
-                
+
                 // Check what meridiem is currently selected
                 // Priority: 1) selectedMeridiem state (tracks explicit PM/AM clicks), 2) tempTime, 3) timeValue
                 const tempTimeMeridiem = tempTime ? tempTime.format("A") : null;
                 const timeValueMeridiem = timeValue.format("A");
-                
+
                 // Determine current meridiem: use selectedMeridiem state first (most reliable for immediate PM clicks)
                 // then tempTime, then timeValue, then default to being permissive
                 const currentSelectedMeridiem = selectedMeridiem || tempTimeMeridiem || (timeValueMeridiem === "PM" || timeValueMeridiem === "AM" ? timeValueMeridiem : null);
-                
+
                 // Convert 12-hour format to 24-hour format based on selected meridiem
                 let actualHour24: number;
-                
+
                 if (currentSelectedMeridiem === "PM") {
                     // PM selected: 1-11 PM = 13-23, 12 PM = 12 (noon)
                     if (hour12 === 12) {
@@ -454,7 +454,7 @@ export default function NewEventModal({
                     // So we default to PM to ensure hours show immediately
                     let amHour24: number;
                     let pmHour24: number;
-                    
+
                     if (hour12 === 12) {
                         amHour24 = 0; // 12 AM = midnight
                         pmHour24 = 12; // 12 PM = noon
@@ -462,12 +462,12 @@ export default function NewEventModal({
                         amHour24 = hour12; // 1-11 AM
                         pmHour24 = hour12 + 12; // 1-11 PM
                     }
-                    
+
                     // If both AM and PM versions are in the past, disable
                     if (amHour24 < currentHour && pmHour24 < currentHour) {
                         return true;
                     }
-                    
+
                     // Always default to PM when meridiem is unclear - this ensures PM hours show
                     // immediately when user clicks PM, matching desktop behavior
                     // Only use AM if PM is clearly in the past and AM is in the future
@@ -479,13 +479,13 @@ export default function NewEventModal({
                         return true; // Both are in the past
                     }
                 }
-                
+
                 // If hour is in the past (next hour or later), disable it
                 // Special case: hour 12 (noon) should be disabled after 1:00 PM
                 if (actualHour24 < currentHour) {
                     return true;
                 }
-                
+
                 // If hour is current hour, check if all 15-minute slots are unavailable (past or booked)
                 if (actualHour24 === currentHour) {
                     const minutesToCheck = [0, 15, 30, 45];
@@ -497,7 +497,7 @@ export default function NewEventModal({
                         // Minute picker will handle disabling past minutes
                         return false;
                     }
-                    
+
                     // For other hours, check if all slots are unavailable
                     return minutesToCheck.every((minute) => {
                         const timeStr = dayjs().hour(actualHour24).minute(minute).format("HH:mm");
@@ -571,7 +571,7 @@ export default function NewEventModal({
         const end1Minutes = dayjs(end1, "HH:mm");
         const start2Minutes = dayjs(start2, "HH:mm");
         const end2Minutes = dayjs(end2, "HH:mm");
-        
+
         return start1Minutes.isBefore(end2Minutes) && end1Minutes.isAfter(start2Minutes);
     };
 
@@ -589,12 +589,12 @@ export default function NewEventModal({
             showToast({ message: "Please add tags", type: "error" });
             return;
         }
-        
+
         // Validate that the selected time is not in the past
         const dateStr = formData.select_date
             ? dayjs(formData.select_date).format("YYYY-MM-DD")
             : dayjs().format("YYYY-MM-DD");
-        
+
         // Get current time in volunteer's timezone using moment
         let currentTimeInTimezone: moment.Moment;
         if (volunteerUtcOffsetValue) {
@@ -602,16 +602,16 @@ export default function NewEventModal({
         } else {
             currentTimeInTimezone = moment();
         }
-        
+
         const currentDateStr = currentTimeInTimezone.format("YYYY-MM-DD");
         const currentTimeStr = currentTimeInTimezone.format("HH:mm");
-        
+
         // Check if selected date is in the past
         if (dateStr < currentDateStr) {
             showToast({ message: "Cannot create session for a past date", type: "error" });
             return;
         }
-        
+
         // Check if selected time is in the past (only for today)
         if (dateStr === currentDateStr) {
             const selectedTimeStr = formData.start_time;
@@ -630,12 +630,12 @@ export default function NewEventModal({
             // Check if the new slot overlaps with any existing slot
             const hasOverlap = slotsData.some((slot: any) => {
                 if (!slot.start_time || !slot.end_time) return false;
-                
+
                 // Check for exact match
                 if (slot.start_time === newStartTime && slot.end_time === newEndTime) {
                     return true;
                 }
-                
+
                 // Check for overlap
                 return areSlotsOverlapping(
                     newStartTime,
@@ -646,9 +646,9 @@ export default function NewEventModal({
             });
 
             if (hasOverlap) {
-                showToast({ 
-                    message: "Time slot overlaps with an existing session", 
-                    type: "error" 
+                showToast({
+                    message: "Time slot overlaps with an existing session",
+                    type: "error"
                 });
                 return;
             }
@@ -793,8 +793,7 @@ export default function NewEventModal({
                                 Start Time{volunteerTimezone ? ` (${volunteerTimezone})` : ""}
                             </label>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <TimePicker
-                                    timeSteps={{ minutes: 15 }}
+                                <MobileTimePicker
                                     format="h:mm A"
                                     value={tempTime}
                                     onChange={(time) => {
@@ -811,13 +810,13 @@ export default function NewEventModal({
                                     onOpen={() => {
                                         // Save the original tempTime value before opening
                                         setOriginalTempTime(tempTime);
-                                        
+
                                         // Fetch slots when time picker opens
                                         // This ensures we have the latest slot data for overlap checking
                                         if (formData.select_date) {
                                             refetchSlots();
                                         }
-                                        
+
                                         // If tempTime is null, set default time based on current meridiem
                                         // This ensures hours are visible immediately when picker opens
                                         if (!tempTime) {
@@ -828,10 +827,10 @@ export default function NewEventModal({
                                             } else {
                                                 currentTimeInTimezone = moment();
                                             }
-                                            
+
                                             const currentMeridiem = currentTimeInTimezone.format("A");
                                             const currentHour = currentTimeInTimezone.hour();
-                                            
+
                                             // If it's PM, set default to 12 PM (12:00) to show all PM hours
                                             // If it's AM, set default to current hour or 12 AM
                                             if (currentMeridiem === "PM") {
@@ -991,18 +990,18 @@ export default function NewEventModal({
                     </div>
                 </div>
                 <div className="flex md:hidden gap-3 justify-end pt-5  border-t border-stroke">
-                        <Button
-                            title="Cancel"
-                            onClick={handleCancel}
-                            customClassName="!bg-white !text-black !font-medium rounded-full !px-6 !py-2.5"
-                        />
-                        <Button
-                            title={isSubmitting ? "Creating..." : "Create Event"}
-                            onClick={handleSubmit}
-                            disabled={isSubmitting}
-                            customClassName="!bg-black !text-white !font-medium rounded-full !px-6 !py-2.5"
-                        />
-                    </div>
+                    <Button
+                        title="Cancel"
+                        onClick={handleCancel}
+                        customClassName="!bg-white !text-black !font-medium rounded-full !px-6 !py-2.5"
+                    />
+                    <Button
+                        title={isSubmitting ? "Creating..." : "Create Event"}
+                        onClick={handleSubmit}
+                        disabled={isSubmitting}
+                        customClassName="!bg-black !text-white !font-medium rounded-full !px-6 !py-2.5"
+                    />
+                </div>
             </CenterModal>
         </>
     );
