@@ -1,4 +1,6 @@
-type FeedbackModalProps = {
+import dayjs from "dayjs";
+
+export type FeedbackModalProps = {
     isOpen: boolean;
     mode?: "view" | "edit" | "create";
     onClose: () => void;
@@ -7,7 +9,7 @@ type FeedbackModalProps = {
     Loading: boolean;
 };
 
-type AllEventsModalProps = {
+export type AllEventsModalProps = {
     isOpen: boolean;
     onClose: () => void;
     onSave?: () => void;
@@ -19,7 +21,7 @@ type AllEventsModalProps = {
     onEventClick: (event: any, data: any) => void;
 };
 
-type AlertModalProps = {
+export type AlertModalProps = {
     isOpen: boolean;
     onClose: () => void;
     onProceed: () => void;
@@ -28,29 +30,29 @@ type AlertModalProps = {
     onChange: (value: string) => void;
 };
 
-type AddNewMeetingModalProps = {
+export type AddNewMeetingModalProps = {
     isOpen: boolean;
     onClose: () => void;
 };
 
-type MyScheduleModalProps = {
+export type MyScheduleModalProps = {
     isOpen: boolean;
     onClose: () => void;
 };
 
-type ApprovalModalProps = {
+export type ApprovalModalProps = {
     isOpen: boolean;
     onClose: () => void;
 };
 
-type CustomRecurrenceModalProps = {
+export type CustomRecurrenceModalProps = {
     isOpen: boolean;
     onClose: () => void;
     onSave?: (data: {
         repeatEvery: number;
         repeatUnit: string;
-        startDate: any;
+        startDate: dayjs.Dayjs | null;
         endType: "never" | "date";
-        endDate: any;
+        endDate: dayjs.Dayjs | null;
     }) => void;
 };
