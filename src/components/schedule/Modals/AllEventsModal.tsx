@@ -1,5 +1,6 @@
 import CenterModal from "@/components/common/Modals/CenterModal";
 import EventCard from "../Calender/EventCard";
+import { AllEventsModalProps } from "./index.type.d";
 
 const AllEventsModal = ({ isOpen, onClose, data, onEventClick }: AllEventsModalProps) => {
     return (

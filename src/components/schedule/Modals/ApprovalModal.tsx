@@ -8,6 +8,7 @@ import { endpoints } from "@/api/constants";
 import Cookies from "js-cookie";
 import moment from "moment";
 import InnerWidth from "@/utils/innerWidth";
+import { ApprovalModalProps } from "./index.type.d";
 
 type SessionsData = {
     learner_first_name: string;
@@ -53,7 +54,7 @@ const ApprovalModal: React.FC<ApprovalModalProps> = ({ isOpen, onClose }) => {
 
     const handleUpdateReadsNotifications = async () => {
         // Flatten all sessions from all items and filter for unread ones
-        const unreadSessions = data?.items?.flatMap((item: any) => 
+        const unreadSessions = data?.items?.flatMap((item: any) =>
             item?.sessions?.filter((session: any) => session?.is_read === false) || []
         ) || [];
 
@@ -71,14 +72,14 @@ const ApprovalModal: React.FC<ApprovalModalProps> = ({ isOpen, onClose }) => {
             } catch (error) {
                 console.error("Error updating unread sessions:", error);
             }
-        } 
+        }
     };
 
     useEffect(() => {
         if (data) {
             const transformedData = data?.items || [];
             setNotificationsData(transformedData);
-            
+
             // Debug: Log all sessions and their is_read status
             data?.items?.forEach((item: any, index: number) => {
                 console.log(`Item ${index} (${item.date}):`, item.sessions?.map((session: any) => ({
@@ -86,7 +87,7 @@ const ApprovalModal: React.FC<ApprovalModalProps> = ({ isOpen, onClose }) => {
                     is_read: session.is_read
                 })));
             });
-            
+
             handleUpdateReadsNotifications();
         }
     }, [data]);
