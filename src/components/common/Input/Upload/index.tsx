@@ -8,6 +8,7 @@ import { getFileData, handleConvertBasedOnContentType } from "./helper";
 import { useAppStore } from "@/store/useAppStore";
 import { DELETE_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
+import { showToast } from "../../Toast";
 
 const Uploader = ({ maxFiles = 1, ...props }: UploadProps) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -35,7 +36,7 @@ const Uploader = ({ maxFiles = 1, ...props }: UploadProps) => {
         fn: (file: any) => getFileData(file),
         success: handleSuccess,
         error: () => {
-            alert("Error submitting form");
+            showToast({ message: "Error submitting form", type: "error" });
         },
     });
 
@@ -56,7 +57,7 @@ const Uploader = ({ maxFiles = 1, ...props }: UploadProps) => {
         const remainingSlots = maxFiles - currentFileCount;
 
         if (remainingSlots <= 0) {
-            alert(`Maximum ${maxFiles} files allowed`);
+            showToast({ message: `Maximum ${maxFiles} files allowed`, type: "error" });
             return;
         }
 

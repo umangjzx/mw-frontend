@@ -197,9 +197,20 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
         days.forEach((day) => {
             const dayErrors: string[] = [];
             schedule[day].forEach((slot, index) => {
+                const slotLabel = `Time slot ${index + 1}`;
+                // One field empty: require both start and end
+                if (slot.start_time && !slot.end_time) {
+                    dayErrors.push(`${slotLabel}: Please select end time`);
+                }
+                if (!slot.start_time && slot.end_time) {
+                    dayErrors.push(`${slotLabel}: Please select start time`);
+                }
+                // Both filled: no same time, no overlap
                 if (slot.start_time && slot.end_time) {
-                    if (isTimeOverlapping(day, slot.start_time, slot.end_time, index)) {
-                        dayErrors.push(`Time slot ${index + 1} overlaps with another slot`);
+                    if (slot.start_time === slot.end_time) {
+                        dayErrors.push(`${slotLabel}: Start and end time cannot be the same`);
+                    } else if (isTimeOverlapping(day, slot.start_time, slot.end_time, index)) {
+                        dayErrors.push(`${slotLabel} overlaps with another slot`);
                     }
                 }
             });
@@ -598,6 +609,16 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
 
         const [tempTime, setTempTime] = useState<dayjs.Dayjs | null>(selectedTime);
 
+        // Prevent end time = start time: end picker min is start + 1 min; start picker max is end - 1 min
+        const minTime =
+            type === "end_time" && slot.start_time
+                ? dayjs(slot.start_time, "HH:mm").add(1, "minute")
+                : undefined;
+        const maxTime =
+            type === "start_time" && slot.end_time
+                ? dayjs(slot.end_time, "HH:mm").subtract(1, "minute")
+                : undefined;
+
         return (
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <MobileTimePicker
@@ -610,6 +631,8 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                             handleTimeChange(day, slotIndex, type, tempTime.format("HH:mm"));
                         }
                     }}
+                    minTime={minTime}
+                    maxTime={maxTime}
                     closeOnSelect={false}
                     sx={{
                         "& .MuiOutlinedInput-root": {
