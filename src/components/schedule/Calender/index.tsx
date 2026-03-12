@@ -17,9 +17,11 @@ import "./styles.css";
 interface CalendarProps {
     events: any;
     onDateSelect?: (date: string) => void;
+    /** When true, events that have already ended (past dates) are not shown. */
+    hidePastEvents?: boolean;
 }
 
-const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
+const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect, hidePastEvents = false }) => {
     const [showModal, setShowModal] = useState<ModalType>(null);
     const [currentEventData, setCurrentEventData] = useState<{
         events: EventApi[];
@@ -263,7 +265,7 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
     };
 
     // Preprocess events: fix midnight-crossing (end before start on same day)
-    const processedEvents =
+    let processedEvents =
         events?.map((event: any) => {
             if (event.start && event.end) {
                 const startMoment = moment(event.start);
@@ -281,6 +283,15 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
             }
             return event;
         }) || [];
+
+    // Optionally hide events that have already ended (past dates)
+    if (hidePastEvents) {
+        const startOfToday = moment().startOf("day");
+        processedEvents = processedEvents.filter((event: any) => {
+            const eventEnd = event.end ? moment(event.end) : moment(event.start);
+            return eventEnd.isValid() && !eventEnd.isBefore(startOfToday);
+        });
+    }
 
     return (
         <>

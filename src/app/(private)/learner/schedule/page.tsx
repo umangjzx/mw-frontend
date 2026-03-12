@@ -92,9 +92,9 @@ export default function LearnerSchedulePage() {
                 <div className="w-full h-full animate-fadeIn">
                     {
                         isMobileOrTabScreen ?
-                            <MobileCalender events={data || []} />
+                            <MobileCalender events={data || []} hidePastEvents />
                             :
-                            <Calendar events={data || []} />
+                            <Calendar events={data || []} hidePastEvents />
                     }
                     <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleNavigate} />
                     <FeedbackModal
