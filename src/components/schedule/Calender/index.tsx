@@ -339,6 +339,7 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect, hidePastEvent
                     selectMirror={false}
                     eventClick={handleEventClick}
                     dateClick={handleDateClick}
+                    expandRows={true}
                     dayMaxEvents={true}
                     weekends={true}
                     headerToolbar={false}

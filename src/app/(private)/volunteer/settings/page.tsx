@@ -92,7 +92,7 @@ const Settings = () => {
                     />
                 </div>
 
-                <div className="flex flex-col md:flex-row bg-white p-3 md:p-0 rounded-[12px] md:bg-transparent justify-between gap-2 items-center w-full">
+                {/* <div className="flex flex-col md:flex-row bg-white p-3 md:p-0 rounded-[12px] md:bg-transparent justify-between gap-2 items-center w-full">
                     <div className="flex flex-col gap-2">
                         <p className="md:text-base text-[14px] font-medium">
                             Session Match Email Notification Preferences
@@ -141,7 +141,7 @@ const Settings = () => {
                         dropdownAlign={{ points: ["tc", "bc"] }}
                         className="session-match-select w-full md:w-[400px] [&_.ant-select-selector]:!rounded-lg [&_.ant-select-selector]:!border-gray-300 [&_.ant-select-selector]:!h-auto [&_.ant-select-selector]:!min-h-10 "
                     />
-                </div>
+                </div> */}
             </div>
         </div>
     );
