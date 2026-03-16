@@ -30,9 +30,9 @@ const SelectInputCreatable = ({
     }, [selectOptions, value, isMultiSelect]);
 
     const selectedValue = useMemo(() => {
-        return isMultiSelect
-            ? value
-            : selectOptions.find(option => option?.value === value);
+        if (isMultiSelect) return value;
+        const singleVal = Array.isArray(value) ? value[0] : value;
+        return selectOptions.find(option => option?.value === singleVal);
     }, [selectOptions, value, isMultiSelect]);
 
     const handleCreate = (inputValue: string) => {
@@ -72,7 +72,8 @@ const SelectInputCreatable = ({
                     MultiValueContainer: () => null,
                 }}
                 classNames={{
-                    container: () => (props.inputClassName ? "w-[49%]" : "w-full"),
+                    container: () =>
+                        props.inputClassName?.includes("w-full") ? "w-full" : (props.inputClassName ? "w-[49%]" : "w-full"),
                 }}
                 backspaceRemovesValue={false}
             />

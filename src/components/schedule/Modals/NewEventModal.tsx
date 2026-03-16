@@ -12,7 +12,7 @@ import moment from "moment-timezone";
 import { POST_API, GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import { showToast } from "@/components/common/Toast";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAppStore } from "@/store/useAppStore";
 import useInnerWidth from "@/hooks/useInnerWidth";
 import ModalCloseIcon from "@/assets/icons/ModalCloseIcon";
@@ -112,10 +112,15 @@ export default function NewEventModal({
 
     const { volunteerDetails, volunteerUtcOffset } = useAppStore();
     const timezoneRaw =
-        (volunteerDetails as { volunteer_contact_details?: { timezone?: string; utc_offset?: string } })
-            ?.volunteer_contact_details?.timezone ?? "";
+        (
+            volunteerDetails as {
+                volunteer_contact_details?: { timezone?: string; utc_offset?: string };
+            }
+        )?.volunteer_contact_details?.timezone ?? "";
 
-    const volunteerTimezone = timezoneRaw.includes(" - ") ? timezoneRaw.split(" - ")[0]?.trim() ?? timezoneRaw : timezoneRaw;
+    const volunteerTimezone = timezoneRaw.includes(" - ")
+        ? (timezoneRaw.split(" - ")[0]?.trim() ?? timezoneRaw)
+        : timezoneRaw;
 
     // Get UTC offset from volunteerDetails or store, with fallback to extracting from timezone string
     const volunteerUtcOffsetValue =
@@ -178,6 +183,7 @@ export default function NewEventModal({
         }
     }, [formData.start_time]);
 
+    const queryClient = useQueryClient();
     const { data: skillsData } = useQuery({
         queryKey: ["common-skills"],
         queryFn: async () => {
@@ -231,22 +237,22 @@ export default function NewEventModal({
                 '[class*="MobileTimePicker"] button:has-text("AM")',
             ];
 
-            selectors.forEach(selector => {
+            selectors.forEach((selector) => {
                 try {
                     const elements = document.querySelectorAll(selector);
                     elements.forEach((el: any) => {
-                        const text = el?.textContent?.trim() || el?.innerText?.trim() || '';
-                        const ariaLabel = el?.getAttribute('aria-label') || '';
-                        const dataValue = el?.getAttribute('data-value') || '';
+                        const text = el?.textContent?.trim() || el?.innerText?.trim() || "";
+                        const ariaLabel = el?.getAttribute("aria-label") || "";
+                        const dataValue = el?.getAttribute("data-value") || "";
 
-                        if (text === 'AM' || ariaLabel.includes('AM') || dataValue === 'AM') {
+                        if (text === "AM" || ariaLabel.includes("AM") || dataValue === "AM") {
                             // Hide and disable the AM option
-                            (el as HTMLElement).style.display = 'none';
-                            (el as HTMLElement).style.visibility = 'hidden';
-                            (el as HTMLElement).style.pointerEvents = 'none';
-                            (el as HTMLElement).style.opacity = '0';
-                            (el as HTMLElement).setAttribute('disabled', 'true');
-                            (el as HTMLElement).setAttribute('aria-disabled', 'true');
+                            (el as HTMLElement).style.display = "none";
+                            (el as HTMLElement).style.visibility = "hidden";
+                            (el as HTMLElement).style.pointerEvents = "none";
+                            (el as HTMLElement).style.opacity = "0";
+                            (el as HTMLElement).setAttribute("disabled", "true");
+                            (el as HTMLElement).setAttribute("aria-disabled", "true");
                         }
                     });
                 } catch (e) {
@@ -260,15 +266,15 @@ export default function NewEventModal({
                 '.MuiMultiSectionDigitalClockSection-item, [role="option"], button, [class*="TimePicker"] button, [class*="TimePicker"] [role="option"]'
             );
             allElements.forEach((el: any) => {
-                const text = el?.textContent?.trim() || el?.innerText?.trim() || '';
+                const text = el?.textContent?.trim() || el?.innerText?.trim() || "";
                 // ONLY disable AM, make sure we never touch PM
-                if (text === 'AM' && text !== 'PM') {
-                    (el as HTMLElement).style.display = 'none';
-                    (el as HTMLElement).style.visibility = 'hidden';
-                    (el as HTMLElement).style.pointerEvents = 'none';
-                    (el as HTMLElement).style.opacity = '0';
-                    (el as HTMLElement).setAttribute('disabled', 'true');
-                    (el as HTMLElement).setAttribute('aria-disabled', 'true');
+                if (text === "AM" && text !== "PM") {
+                    (el as HTMLElement).style.display = "none";
+                    (el as HTMLElement).style.visibility = "hidden";
+                    (el as HTMLElement).style.pointerEvents = "none";
+                    (el as HTMLElement).style.opacity = "0";
+                    (el as HTMLElement).setAttribute("disabled", "true");
+                    (el as HTMLElement).setAttribute("aria-disabled", "true");
                 }
             });
         };
@@ -287,7 +293,7 @@ export default function NewEventModal({
             childList: true,
             subtree: true,
             attributes: true,
-            attributeFilter: ['class', 'style', 'data-value', 'aria-label']
+            attributeFilter: ["class", "style", "data-value", "aria-label"],
         });
 
         return () => {
@@ -429,7 +435,12 @@ export default function NewEventModal({
 
                 // Determine current meridiem: use selectedMeridiem state first (most reliable for immediate PM clicks)
                 // then tempTime, then timeValue, then default to being permissive
-                const currentSelectedMeridiem = selectedMeridiem || tempTimeMeridiem || (timeValueMeridiem === "PM" || timeValueMeridiem === "AM" ? timeValueMeridiem : null);
+                const currentSelectedMeridiem =
+                    selectedMeridiem ||
+                    tempTimeMeridiem ||
+                    (timeValueMeridiem === "PM" || timeValueMeridiem === "AM"
+                        ? timeValueMeridiem
+                        : null);
 
                 // Convert 12-hour format to 24-hour format based on selected meridiem
                 let actualHour24: number;
@@ -492,7 +503,12 @@ export default function NewEventModal({
                     // Disable hour if all 15-minute intervals are either past or booked
                     // But for hour 12 (noon), keep it enabled if we're still in the 12:XX hour
                     // This allows users to see hour 12 during 12:00-12:59 PM
-                    if (hour12 === 12 && currentSelectedMeridiem === "PM" && actualHour24 === 12 && currentHour === 12) {
+                    if (
+                        hour12 === 12 &&
+                        currentSelectedMeridiem === "PM" &&
+                        actualHour24 === 12 &&
+                        currentHour === 12
+                    ) {
                         // Hour 12 (noon) is current hour - keep it enabled so user can see it
                         // Minute picker will handle disabling past minutes
                         return false;
@@ -559,6 +575,39 @@ export default function NewEventModal({
         }
     };
 
+    /** Create a new skill via POST /api/v1/common/skills/ and return it for use in payload. */
+    const createSkill = async (skillName: string): Promise<Skill | null> => {
+        const name = skillName?.trim();
+        if (!name) return null;
+        try {
+            const res = await POST_API<{ skill_name: string }>(endpoints.common("skills"), {
+                skill_name: name,
+            });
+            if (res?.status === 201 || res?.status === 200) {
+                const data = res?.data as { skill_id?: string; skill_name?: string } | string;
+                const skillId = typeof data === "string" ? data : (data?.skill_id ?? "");
+                const skillNameRes =
+                    typeof data === "object" && data?.skill_name ? data.skill_name : name;
+                if (skillId) {
+                    return { skill_id: skillId, skill_name: skillNameRes };
+                }
+                return { skill_id: name, skill_name: name };
+            }
+        } catch {
+            showToast({ message: "Failed to create tag", type: "error" });
+        }
+        return null;
+    };
+
+    const handleCreateSkill = async (skillName: string) => {
+        const newSkill = await createSkill(skillName);
+        if (newSkill && !selectedSkills.some((s) => s.skill_id === newSkill.skill_id)) {
+            setSelectedSkills((prev) => [...prev, newSkill]);
+            setSkillSelectValue(null);
+            queryClient.invalidateQueries({ queryKey: ["common-skills"] });
+        }
+    };
+
     const handleRemoveSkill = (skillId: string) => {
         setSelectedSkills((prev) => prev.filter((s) => s.skill_id !== skillId));
         // Clear the input field to ensure the removed tag can be selected again
@@ -566,7 +615,12 @@ export default function NewEventModal({
     };
 
     // Helper function to check if time slots overlap
-    const areSlotsOverlapping = (start1: string, end1: string, start2: string, end2: string): boolean => {
+    const areSlotsOverlapping = (
+        start1: string,
+        end1: string,
+        start2: string,
+        end2: string
+    ): boolean => {
         const start1Minutes = dayjs(start1, "HH:mm");
         const end1Minutes = dayjs(end1, "HH:mm");
         const start2Minutes = dayjs(start2, "HH:mm");
@@ -648,7 +702,7 @@ export default function NewEventModal({
             if (hasOverlap) {
                 showToast({
                     message: "Time slot overlaps with an existing session",
-                    type: "error"
+                    type: "error",
                 });
                 return;
             }
@@ -823,25 +877,34 @@ export default function NewEventModal({
                                             // Get current time in volunteer's timezone
                                             let currentTimeInTimezone: moment.Moment;
                                             if (volunteerUtcOffsetValue) {
-                                                currentTimeInTimezone = moment().utcOffset(volunteerUtcOffsetValue);
+                                                currentTimeInTimezone =
+                                                    moment().utcOffset(volunteerUtcOffsetValue);
                                             } else {
                                                 currentTimeInTimezone = moment();
                                             }
 
-                                            const currentMeridiem = currentTimeInTimezone.format("A");
+                                            const currentMeridiem =
+                                                currentTimeInTimezone.format("A");
                                             const currentHour = currentTimeInTimezone.hour();
 
                                             // If it's PM, set default to 12 PM (12:00) to show all PM hours
                                             // If it's AM, set default to current hour or 12 AM
                                             if (currentMeridiem === "PM") {
                                                 // Set to 12 PM (12:00) - this ensures all PM hours are visible
-                                                const defaultTime = dayjs().hour(12).minute(0).second(0);
+                                                const defaultTime = dayjs()
+                                                    .hour(12)
+                                                    .minute(0)
+                                                    .second(0);
                                                 setTempTime(defaultTime);
                                                 setSelectedMeridiem("PM");
                                             } else {
                                                 // If it's AM, set to current hour or 12 AM
-                                                const defaultHour = currentHour > 0 ? currentHour : 0;
-                                                const defaultTime = dayjs().hour(defaultHour).minute(0).second(0);
+                                                const defaultHour =
+                                                    currentHour > 0 ? currentHour : 0;
+                                                const defaultTime = dayjs()
+                                                    .hour(defaultHour)
+                                                    .minute(0)
+                                                    .second(0);
                                                 setTempTime(defaultTime);
                                                 setSelectedMeridiem("AM");
                                             }
@@ -959,17 +1022,26 @@ export default function NewEventModal({
                         <Input
                             key={`skill-select-${selectedSkills.length}`}
                             name="skill_select"
-                            inputType="select"
-                            placeholder="Search and select skills"
-                            value={skillSelectValue ?? ""}
+                            inputType="select-creatable"
+                            variant="single"
+                            placeholder="Search and select skills or create a new tag"
+                            value={skillSelectValue ? [skillSelectValue] : []}
                             onChange={(value: string | number) => {
-                                const id = String(value);
-                                handleAddSkill(id);
+                                if (value != null && value !== "") {
+                                    handleAddSkill(String(value));
+                                }
                             }}
+                            onCreate={handleCreateSkill}
+                            allowCreate={true}
+                            endpoint="skills"
                             options={skillOptions.filter(
-                                (opt) => !selectedSkills.some((s) => s.skill_id === opt.value || String(s.skill_id) === String(opt.value))
+                                (opt) =>
+                                    !selectedSkills.some(
+                                        (s) =>
+                                            s.skill_id === opt.value ||
+                                            String(s.skill_id) === String(opt.value)
+                                    )
                             )}
-                            showSearch={true}
                             inputClassName="w-full !h-12 [&_.ant-select-selector]:!text-base"
                         />
                     </div>
