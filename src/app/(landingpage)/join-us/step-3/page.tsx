@@ -33,15 +33,19 @@ const JoinUsStep3Page = () => {
     const [photoConsent, setPhotoConsent] = useState<'yes' | 'no' | ''>('');
     const [termsAccepted, setTermsAccepted] = useState(false);
 
+    const handleSubmit = () => {
+        router.push('/join-us/success');
+    };
+
     return (
         <div className="min-h-screen bg-background-input flex flex-col items-center">
             {/* Title section */}
             <section className="w-full flex flex-col items-center justify-center pt-10 md:pt-16">
-                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h1 className="text-2xl md:text-4xl lg:text-[40px] font-semibold tracking-tight text-gray-900 mb-3">
+                <div className="max-w-5xl flex flex-col gap-[12px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h1 className="text-[20px] font-medium text-gray-900">
                         We&apos;re excited that you want to join us! 😊
                     </h1>
-                    <p className="text-sm md:text-base lg:text-lg text-black lg:text-gray-600 italic">
+                    <p className="text-[16px] md:text-[20px] text-[#121212] italic">
                         Fill in the details below so we can get to know you better. Once submitted, our team will
                         review your information and get in touch with you soon.
                     </p>
@@ -50,9 +54,9 @@ const JoinUsStep3Page = () => {
 
             {/* Form card */}
             <main className="w-full flex-1 flex justify-center py-8 md:py-12 lg:py-16">
-                <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="w-full md:max-w-5xl md:mx-auto md:px-8">
                     <form
-                        className="bg-white rounded-[24px] shadow-sm px-4 sm:px-6 md:px-10 lg:px-12 py-6 md:py-8 lg:py-10 space-y-10"
+                        className="bg-white md:rounded-[24px] shadow-sm px-4 sm:px-6 md:px-10 lg:px-12 py-6 md:py-8 lg:py-10 space-y-10 w-full min-w-0"
                         onSubmit={(e) => {
                             e.preventDefault();
                             router.push('/join-us/success');
@@ -60,13 +64,13 @@ const JoinUsStep3Page = () => {
                     >
                         {/* Application Questions */}
                         <section className="space-y-5">
-                            <h2 className="text-lg md:text-xl lg:text-2xl font-semibold text-gray-900">
+                            <h2 className="md:text-[24px] text-[20px] font-medium text-gray-900">
                                 Application Questions
                             </h2>
 
                             {/* Are you looking for an internship */}
                             <div className="space-y-2">
-                                <p className="text-sm font-medium text-gray-800">
+                                <p className="text-[16px] font-normal text-gray-800">
                                     Are you looking for an internship opportunity
                                 </p>
                                 <RadioInput
@@ -93,12 +97,12 @@ const JoinUsStep3Page = () => {
                                     'What skills would you bring to this role?',
                                 ].map((label) => (
                                     <div key={label} className="space-y-2">
-                                        <label className="text-sm font-medium text-gray-800">
+                                        <label className="text-[16px] font-normal text-gray-800">
                                             {label}
                                         </label>
                                         <textarea
                                             rows={4}
-                                            className="w-full rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                            className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border"
                                             placeholder={
                                                 label ===
                                                 'What relevant experience do you have for this role?'
@@ -110,26 +114,26 @@ const JoinUsStep3Page = () => {
                                 ))}
 
                                 {/* Hours available / when start */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium text-gray-800">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full min-w-0">
+                                    <div className="space-y-2 w-full min-w-0">
+                                        <label className="text-[16px] font-normal text-gray-800">
                                             How many hours per week are you available?
                                         </label>
                                         <input
                                             type="text"
-                                            className="w-full rounded-xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                            className="w-full min-w-0 rounded-xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border"
                                             placeholder="Enter here"
                                             value={hoursAvailable}
                                             onChange={(e) => setHoursAvailable(e.target.value)}
                                         />
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium text-gray-800">
+                                    <div className="space-y-2 w-full min-w-0">
+                                        <label className="text-[16px] font-normal text-gray-800">
                                             When would you be available to start?
                                         </label>
                                         <input
                                             type="text"
-                                            className="w-full rounded-xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                            className="w-full min-w-0 rounded-xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border"
                                             placeholder="Enter here"
                                             value={startDate}
                                             onChange={(e) => setStartDate(e.target.value)}
@@ -137,25 +141,25 @@ const JoinUsStep3Page = () => {
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-800">
+                                <div className="space-y-2 w-full min-w-0">
+                                    <label className="text-[16px] font-normal text-gray-800">
                                         Have you previously volunteered or worked with children or neurodivergent
                                         learners? If yes, please describe.
                                     </label>
                                     <textarea
                                         rows={4}
-                                        className="w-full rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                        className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border"
                                         placeholder="Describe here"
                                     />
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-800">
+                                <div className="space-y-2 w-full min-w-0">
+                                    <label className="text-[16px] font-normal text-gray-800">
                                         Is there anything else you would like us to know about you?
                                     </label>
                                     <textarea
                                         rows={4}
-                                        className="w-full rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                        className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border"
                                         placeholder="Describe here"
                                     />
                                 </div>
@@ -166,13 +170,13 @@ const JoinUsStep3Page = () => {
 
                         {/* Legal and Safety Information */}
                         <section className="space-y-6">
-                            <h2 className="text-lg md:text-xl lg:text-2xl font-semibold text-gray-900">
+                            <h2 className="md:text-[24px] text-[20px] font-medium text-gray-900">
                                 Legal and Safety Information
                             </h2>
 
                             {/* 1. Criminal Background Check */}
-                            <div className="rounded-3xl border border-gray-200 px-4 sm:px-5 md:px-6 py-4 md:py-5 space-y-4">
-                                <p className="text-sm font-semibold text-gray-900">
+                            <div className="rounded-3xl md:border border-gray-200  md:px-6 py-4 md:py-5 space-y-4">
+                                <p className="text-[20px] font-medium text-gray-900">
                                     1. Criminal Background Check
                                 </p>
                                 {[
@@ -181,7 +185,7 @@ const JoinUsStep3Page = () => {
                                     'Have you been convicted of any crimes involving minors, abuse, or neglect?',
                                 ].map((question, index) => (
                                     <div key={question} className="space-y-2">
-                                        <p className="text-sm text-gray-800">{question}</p>
+                                        <p className="text-[16px] text-gray-800">{question}</p>
                                         <RadioInput
                                             inputType="radio"
                                             name={`criminal_${index}`}
@@ -207,24 +211,24 @@ const JoinUsStep3Page = () => {
                                     </div>
                                 ))}
                                 <div className="space-y-2">
-                                    <p className="text-sm text-gray-800">
+                                    <p className="text-[16px] text-gray-800">
                                         Please describe the circumstance behind the &quot;yes&quot; answer above.
                                     </p>
                                     <textarea
                                         rows={3}
-                                        className="w-full rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                        className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border"
                                         placeholder="Describe here"
                                     />
                                 </div>
                             </div>
 
                             {/* 2. Sex Offender Registry Check */}
-                            <div className="rounded-3xl border border-gray-200 px-4 sm:px-5 md:px-6 py-4 md:py-5 space-y-4">
-                                <p className="text-sm font-semibold text-gray-900">
+                            <div className="rounded-3xl md:border border-gray-200  md:px-6 py-4 md:py-5 space-y-4">
+                                <p className="text-[20px] font-medium text-gray-900">
                                     2. Sex Offender Registry Check
                                 </p>
                                 <div className="space-y-2">
-                                    <p className="text-sm text-gray-800">
+                                    <p className="text-[16px] text-gray-800">
                                         Are you listed on any state or national sex offender registries?
                                     </p>
                                     <RadioInput
@@ -242,20 +246,20 @@ const JoinUsStep3Page = () => {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-sm text-gray-800">
+                                    <p className="text-[16px] text-gray-800">
                                         Please describe the circumstance behind the &quot;yes&quot; answer above.
                                     </p>
                                     <textarea
                                         rows={3}
-                                        className="w-full rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                        className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border"
                                         placeholder="Describe here"
                                     />
                                 </div>
                             </div>
 
                             {/* 3. Disciplinary History */}
-                            <div className="rounded-3xl border border-gray-200 px-4 sm:px-5 md:px-6 py-4 md:py-5 space-y-4">
-                                <p className="text-sm font-semibold text-gray-900">
+                            <div className="rounded-3xl md:border border-gray-200  md:px-6 py-4 md:py-5 space-y-4">
+                                <p className="text-[20px] font-medium text-gray-900">
                                     3. Disciplinary History
                                 </p>
                                 {[
@@ -264,7 +268,7 @@ const JoinUsStep3Page = () => {
                                     'Have you ever faced dismissal, suspension, probation, or any other disciplinary or academic action from a college, university, or professional school?',
                                 ].map((question, index) => (
                                     <div key={question} className="space-y-2">
-                                        <p className="text-sm text-gray-800">{question}</p>
+                                        <p className="text-[16px] text-gray-800">{question}</p>
                                         <RadioInput
                                             inputType="radio"
                                             name={`disciplinary_${index}`}
@@ -290,24 +294,24 @@ const JoinUsStep3Page = () => {
                                     </div>
                                 ))}
                                 <div className="space-y-2">
-                                    <p className="text-sm text-gray-800">
+                                    <p className="text-[16px] text-gray-800">
                                         Please describe the circumstance behind the &quot;yes&quot; answer above.
                                     </p>
                                     <textarea
                                         rows={3}
-                                        className="w-full rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                        className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border"
                                         placeholder="Describe here"
                                     />
                                 </div>
                             </div>
 
                             {/* 4. Health and Safety Information */}
-                            <div className="rounded-3xl border border-gray-200 px-4 sm:px-5 md:px-6 py-4 md:py-5 space-y-4">
-                                <p className="text-sm font-semibold text-gray-900">
+                            <div className="rounded-3xl     md:border border-gray-200  md:px-6 py-4 md:py-5 space-y-4">
+                                <p className="text-[20px] font-medium text-gray-900">
                                     4. Health and Safety Information
                                 </p>
                                 <div className="space-y-2">
-                                    <p className="text-sm text-gray-800">
+                                    <p className="text-[16px] text-gray-800">
                                         Do you have any physical or mental health conditions that may affect your
                                         ability to perform volunteer duties?
                                     </p>
@@ -326,27 +330,27 @@ const JoinUsStep3Page = () => {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-sm text-gray-800">
+                                    <p className="text-[16px] text-gray-800">
                                         Please describe the circumstance behind the &quot;yes&quot; answer above.
                                     </p>
                                     <textarea
                                         rows={3}
-                                        className="w-full rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                        className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border"
                                         placeholder="Describe here"
                                     />
                                 </div>
                             </div>
 
                             {/* 5. Consents */}
-                            <div className="rounded-3xl border border-gray-200 px-4 sm:px-5 md:px-6 py-4 md:py-5 space-y-4">
-                                <p className="text-sm font-semibold text-gray-900">5. Consents</p>
+                            <div className="rounded-3xl md:border border-gray-200  md:px-6 py-4 md:py-5 space-y-4">
+                                <p className="text-[20px] font-medium text-gray-900">5. Consents</p>
                                 {[
                                     'Do you consent to do child abuse registry and sex offender checks if needed? *',
                                     "Do you agree to follow the organization's policies on confidentiality, behavior, and safeguarding procedures? *",
                                     "Do you understand that your volunteer role may be terminated based on any criminal activity or failure to adhere to the organization's policies? *",
                                 ].map((question, index) => (
                                     <div key={question} className="space-y-2">
-                                        <p className="text-sm text-gray-800">{question}</p>
+                                        <p className="text-[16px] text-gray-800">{question}</p>
                                         <RadioInput
                                             inputType="radio"
                                             name={`consent_${index}`}
@@ -372,24 +376,24 @@ const JoinUsStep3Page = () => {
                                     </div>
                                 ))}
                                 <div className="space-y-2">
-                                    <p className="text-sm text-gray-800">
+                                    <p className="text-[16px] text-gray-800">
                                         Please describe the circumstance behind the &quot;No&quot; answer above.
                                     </p>
                                     <textarea
                                         rows={3}
-                                        className="w-full rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                        className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border"
                                         placeholder="Describe here"
                                     />
                                 </div>
                             </div>
 
                             {/* 6. Previous Volunteer Experience */}
-                            <div className="rounded-3xl border border-gray-200 px-4 sm:px-5 md:px-6 py-4 md:py-5 space-y-4">
-                                <p className="text-sm font-semibold text-gray-900">
+                            <div className="rounded-3xl md:border border-gray-200  md:px-6 py-4 md:py-5 space-y-4">
+                                <p className="text-[20px] font-medium text-gray-900">
                                     6. Previous Volunteer Experience
                                 </p>
                                 <div className="space-y-2">
-                                    <p className="text-sm text-gray-800">
+                                    <p className="text-[16px] text-gray-800">
                                         Have you ever been involved in any incidents or complaints during previous
                                         volunteer roles? *
                                     </p>
@@ -408,12 +412,12 @@ const JoinUsStep3Page = () => {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-sm text-gray-800">
+                                    <p className="text-[16px] text-gray-800">
                                         Please describe the circumstance behind the &quot;yes&quot; answer above.
                                     </p>
                                     <textarea
                                         rows={3}
-                                        className="w-full rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                        className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border"
                                         placeholder="Mention here"
                                     />
                                 </div>
@@ -422,12 +426,12 @@ const JoinUsStep3Page = () => {
 
                         {/* Consent and permissions */}
                         <section className="space-y-4">
-                            <h2 className="text-lg md:text-xl lg:text-2xl font-semibold text-gray-900">
+                            <h2 className="md:text-[24px] text-[20px] font-medium text-gray-900">
                                 Consent and Permissions
                             </h2>
 
                             <div className="space-y-2">
-                                <p className="text-sm font-medium text-gray-800">Photo/Video Consent</p>
+                                <p className="text-[16px] font-normal text-gray-800">Photo/Video Consent</p>
                                 <p className="text-xs md:text-sm text-gray-600">
                                     (for use in program materials or promotional content)
                                 </p>
@@ -452,12 +456,12 @@ const JoinUsStep3Page = () => {
                                     type="checkbox"
                                     checked={termsAccepted}
                                     onChange={(e) => setTermsAccepted(e.target.checked)}
-                                    className="mt-1 h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
+                                    className="mt-1 h-4 w-4 rounded border-gray-300 text-black focus:ring-0 focus:ring-offset-0"
                                 />
-                                <p className="text-xs md:text-sm text-gray-700 leading-relaxed">
+                                <p className="text-xs md:text-sm text-[#121212] leading-relaxed">
                                     I consent to MW collecting, using and/or sharing my personal information as
-                                    mentioned in the <span className="underline">Privacy Policy</span>. By accepting
-                                    the <span className="underline">Terms of Service</span>, either by clicking a box
+                                    mentioned in the <span className="underline font-semibold">Privacy Policy</span>. <br className='mb-2'/>  By accepting
+                                    the <span className="underline font-semibold">Terms of Service</span>, either by clicking a box
                                     indicating your acceptance or by using and navigating through our platform through
                                     our website, you agree that (a) you have read and understood the agreement; (b) you
                                     represent that you are at least 18 years old; (c) you can form a binding contract;
@@ -465,7 +469,7 @@ const JoinUsStep3Page = () => {
                                     terms. Individuals under the age of 18 or those with mental developmental
                                     disabilities of any age may access the services only when accompanied by a parent
                                     or legal guardian. Parents or guardians accompanying such users, by accepting the{' '}
-                                    <span className="underline">Terms of Service</span>, either by clicking a box
+                                    <span className="underline font-semibold">Terms of Service</span>, either by clicking a box
                                     indicating your acceptance or by using and navigating through our platform through
                                     our website, (a) you have read and understood the agreement; (b) you represent that
                                     you are the parent or legal guardian of such individual (c) your acceptance of
@@ -482,14 +486,15 @@ const JoinUsStep3Page = () => {
                                 type="button"
                                 title="Previous"
                                 btnVariant="tertiary"
-                                customClassName="!px-6 !py-2 !h-10 md:!h-11 border border-gray-300 !text-gray-700"
+                                customClassName="!px-6 !py-2 !h-10 md:!h-11 border !rounded-[10px] border-gray-300 !text-gray-700"
                                 onClick={() => router.push('/join-us/step-2')}
                             />
                             <Button
                                 type="submit"
                                 title="Submit Application"
                                 btnVariant="secondary"
-                                customClassName="!px-6 !py-2 !h-10 md:!h-11"
+                                onClick={handleSubmit}
+                                customClassName="!px-6 !py-2 !rounded-[10px] !h-10 md:!h-11"
                             />
                         </div>
                     </form>
