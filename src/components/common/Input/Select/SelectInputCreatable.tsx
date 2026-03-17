@@ -15,7 +15,6 @@ const SelectInputCreatable = ({
     variant,
     ...props
 }: MultiSelectInputCreatableProps) => {
-    
     const [selectOptions, setSelectOptions] = useState(options);
     const isMultiSelect = variant === "multi";
 
@@ -49,7 +48,15 @@ const SelectInputCreatable = ({
     };
 
     return (
-        <div className="flex flex-col gap-2 w-full">
+        <div className="flex flex-col gap-2 w-full relative">
+            {isLoading && (
+                <div
+                    className="absolute inset-0 z-10 flex items-center justify-center rounded-md bg-white/80"
+                    aria-hidden
+                >
+                   loading...
+                </div>
+            )}
             <CreatableSelect
                 {...props}
                 required={false}
@@ -57,15 +64,14 @@ const SelectInputCreatable = ({
                 value={selectedValue}
                 onChange={handleChange}
                 onCreateOption={handleCreate}
-                isLoading={isLoading}
+                isLoading={false}
                 isClearable
                 classNamePrefix="select"
-                isDisabled={disabled}
-                placeholder={placeholder || "Search and Select"}
+                isDisabled={disabled || isLoading}
+                placeholder={isLoading ? "" : (placeholder || "Search and Select")}
                 formatCreateLabel={(inputValue: string) => `Create - "${inputValue}"`}
                 loadingMessage={() => "Loading..."}
                 hideSelectedOptions={isMultiSelect}
-                styles={customStyles}
                 components={{
                     DropdownIndicator: () => <BiCaretDown className="text-black mr-1" />,
                     ClearIndicator: () => null,
@@ -76,6 +82,12 @@ const SelectInputCreatable = ({
                         props.inputClassName?.includes("w-full") ? "w-full" : (props.inputClassName ? "w-[49%]" : "w-full"),
                 }}
                 backspaceRemovesValue={false}
+                menuPortalTarget={typeof document !== "undefined" ? document.body : undefined}
+                menuPosition="fixed"
+                styles={{
+                    ...customStyles,
+                    menuPortal: (base: any) => ({ ...base, zIndex: 9999 }),
+                }}
             />
 
             {isMultiSelect && (
