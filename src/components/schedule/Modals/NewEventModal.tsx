@@ -102,6 +102,7 @@ export default function NewEventModal({
 
     const [selectedSkills, setSelectedSkills] = useState<Skill[]>([]);
     const [skillSelectValue, setSkillSelectValue] = useState<string | null>(null);
+    const [isCreatingSkill, setIsCreatingSkill] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     // Temporary time state for mobile time picker dialog
     const [tempTime, setTempTime] = useState<dayjs.Dayjs | null>(null);
@@ -600,11 +601,16 @@ export default function NewEventModal({
     };
 
     const handleCreateSkill = async (skillName: string) => {
-        const newSkill = await createSkill(skillName);
-        if (newSkill && !selectedSkills.some((s) => s.skill_id === newSkill.skill_id)) {
-            setSelectedSkills((prev) => [...prev, newSkill]);
-            setSkillSelectValue(null);
-            queryClient.invalidateQueries({ queryKey: ["common-skills"] });
+        setIsCreatingSkill(true);
+        try {
+            const newSkill = await createSkill(skillName);
+            if (newSkill && !selectedSkills.some((s) => s.skill_id === newSkill.skill_id)) {
+                setSelectedSkills((prev) => [...prev, newSkill]);
+                setSkillSelectValue(null);
+                queryClient.invalidateQueries({ queryKey: ["common-skills"] });
+            }
+        } finally {
+            setIsCreatingSkill(false);
         }
     };
 
@@ -1034,6 +1040,7 @@ export default function NewEventModal({
                             onCreate={handleCreateSkill}
                             allowCreate={true}
                             endpoint="skills"
+                            isLoading={isCreatingSkill}
                             options={skillOptions.filter(
                                 (opt) =>
                                     !selectedSkills.some(
