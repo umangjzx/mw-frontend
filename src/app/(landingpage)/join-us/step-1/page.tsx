@@ -3,21 +3,39 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/common/Button';
+import { Input } from '@/components/common/Input';
 import RadioInput from '@/components/common/Input/RadioButton';
+
+const COUNTRY_CODE_OPTIONS = [
+    { label: '+1', value: '+1' },
+    { label: '+91', value: '+91' },
+];
 
 const JoinUsStep1Page = () => {
     const router = useRouter();
     const [compensationPreference, setCompensationPreference] = useState<'unpaid_ok' | 'paid_only' | ''>('');
+    const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
+    const [phoneCountryCode, setPhoneCountryCode] = useState<string | number>('+1');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [dateOfBirth, setDateOfBirth] = useState('');
+    const [country, setCountry] = useState<string | number>('');
+    const [state, setState] = useState<string | number>('');
+    const [linkedIn, setLinkedIn] = useState('');
+    const [school, setSchool] = useState('');
+    const [gradeLevel, setGradeLevel] = useState('');
+    const [employmentDetails, setEmploymentDetails] = useState('');
+    const [compensation, setCompensation] = useState('');
 
     return (
         <div className="min-h-screen bg-background-input flex flex-col items-center">
             {/* Title section (similar style to onboarding) */}
             <section className="w-full flex flex-col items-center justify-center pt-10 md:pt-16">
-                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h1 className="text-2xl md:text-[32px] font-medium tracking-tight text-gray-900 mb-3">
+                <div className="max-w-5xl flex flex-col gap-[12px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h1 className="text-[24px] md:text-[32px] font-medium tracking-tight text-gray-900 ">
                         We&apos;re excited that you want to join us! 😊
                     </h1>
-                    <p className="text-sm md:text-[20px]  text-[#121212] italic">
+                    <p className="text-[14px] md:text-[20px]  text-[#121212] italic">
                         Fill in the details below so we can get to know you better. Once submitted, our team
                         will review your information and get in touch with you soon.
                     </p>
@@ -26,11 +44,11 @@ const JoinUsStep1Page = () => {
 
             {/* Form card */}
             <main className="w-full flex-1 flex justify-center py-8 md:py-12 lg:py-16">
-                <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="bg-white rounded-[24px] shadow-sm px-4 sm:px-6 md:px-10 lg:px-12 py-6 md:py-8 lg:py-10">
+                <div className="w-full max-w-5xl md:mx-auto md:px-8">
+                    <div className="bg-white md:rounded-[24px] md:shadow-sm px-4 sm:px-6 md:px-10 lg:px-12 py-6 md:py-8 lg:py-10">
                         {/* Basic information heading */}
                         <div className="mb-6 md:mb-8">
-                            <h2 className="text-lg md:text-xl lg:text-2xl font-semibold text-gray-900">
+                            <h2 className="text-[20px] md:text-[24px] font-medium text-gray-900">
                                 Basic Information
                             </h2>
                         </div>
@@ -42,144 +60,164 @@ const JoinUsStep1Page = () => {
                                 router.push('/join-us/step-2');
                             }}
                         >
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full min-w-0">
                                 {/* Full name */}
-                                <div className="flex flex-col gap-1">
-                                    <label className="text-sm font-medium text-gray-800">
-                                        Full Name<span className="text-red-500">*</span>
-                                    </label>
-                                    <input
-                                        type="text"
-                                        className="w-full rounded-xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-                                        placeholder="Eg. John Doe"
-                                    />
-                                </div>
+                                <Input
+                                    inputType="text"
+                                    name="full_name"
+                                    label="Full Name"
+                                    required
+                                    value={fullName}
+                                    onChange={(v) => setFullName(typeof v === 'string' ? v : v?.[0] ?? '')}
+                                    placeholder="Eg. John Doe"
+                                    rootClassName="w-full"
+                                    inputClassName="w-full rounded-xl border-gray-200"
+                                />
 
                                 {/* Email */}
-                                <div className="flex flex-col gap-1">
-                                    <label className="text-sm font-medium text-gray-800">
-                                        Email Address<span className="text-red-500">*</span>
-                                    </label>
-                                    <input
-                                        type="email"
-                                        className="w-full rounded-xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-                                        placeholder="Enter Email Address"
-                                    />
-                                </div>
+                                <Input
+                                    inputType="text"
+                                    name="email"
+                                    label="Email Address"
+                                    required
+                                    value={email}
+                                    onChange={(v) => setEmail(typeof v === 'string' ? v : v?.[0] ?? '')}
+                                    placeholder="Enter Email Address"
+                                    rootClassName="w-full"
+                                    inputClassName="w-full rounded-xl border-gray-200"
+                                />
 
                                 {/* Phone */}
-                                <div className="flex flex-col gap-1">
-                                    <label className="text-sm font-medium text-gray-800">
-                                        Phone No<span className="text-red-500">*</span>
+                                <div className="flex flex-col gap-2 w-full min-w-0">
+                                    <label className="text-sm font-medium text-gray-700">
+                                        Phone No<span className="text-red-500"> *</span>
                                     </label>
-                                    <div className="flex gap-2">
-                                        <select className="w-20 md:w-24 rounded-xl border border-gray-200 bg-background-input px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
-                                            <option>+1</option>
-                                            <option>+91</option>
-                                        </select>
-                                        <input
-                                            type="tel"
-                                            className="flex-1 rounded-xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                                    <div className="flex gap-2 w-full min-w-0">
+                                        <Input
+                                            inputType="select"
+                                            name="phone_country_code"
+                                            value={phoneCountryCode}
+                                            onChange={(v) => setPhoneCountryCode(v ?? '+1')}
+                                            options={COUNTRY_CODE_OPTIONS}
+                                            rootClassName="!w-20 md:!w-24 !mb-0 shrink-0"
+                                            inputClassName="w-full rounded-xl border-gray-200"
+                                        />
+                                        <Input
+                                            inputType="text"
+                                            name="phone_number"
+                                            value={phoneNumber}
+                                            onChange={(v) => setPhoneNumber(typeof v === 'string' ? v : v?.[0] ?? '')}
                                             placeholder="Enter Phone number"
+                                            rootClassName="w-full flex-1 min-w-0 !mb-0"
+                                            inputClassName="w-full rounded-xl border-gray-200"
                                         />
                                     </div>
                                 </div>
 
                                 {/* Date of birth */}
-                                <div className="flex flex-col gap-1">
-                                    <label className="text-sm font-medium text-gray-800">
-                                        Date of Birth<span className="text-red-500">*</span>
-                                    </label>
-                                    <input
-                                        type="text"
-                                        className="w-full rounded-xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-                                        placeholder="dd/mm/yyyy"
-                                    />
-                                </div>
+                                <Input
+                                    inputType="text"
+                                    name="date_of_birth"
+                                    label="Date of Birth"
+                                    required
+                                    value={dateOfBirth}
+                                    onChange={(v) => setDateOfBirth(typeof v === 'string' ? v : v?.[0] ?? '')}
+                                    placeholder="dd/mm/yyyy"
+                                    rootClassName="w-full"
+                                    inputClassName="w-full rounded-xl border-gray-200"
+                                />
 
                                 {/* Country */}
-                                <div className="flex flex-col gap-1">
-                                    <label className="text-sm font-medium text-gray-800">
-                                        Country of Residence<span className="text-red-500">*</span>
-                                    </label>
-                                    <select className="w-full rounded-xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
-                                        <option value="">Select Country</option>
-                                    </select>
-                                </div>
+                                <Input
+                                    inputType="select"
+                                    name="country"
+                                    label="Country of Residence"
+                                    required
+                                    value={country}
+                                    onChange={(v) => setCountry(v ?? '')}
+                                    placeholder="Select Country"
+                                    options={[]}
+                                    rootClassName="w-full"
+                                    inputClassName="w-full rounded-xl border-gray-200"
+                                />
 
                                 {/* State */}
-                                <div className="flex flex-col gap-1">
-                                    <label className="text-sm font-medium text-gray-800">
-                                        State<span className="text-red-500">*</span>
-                                    </label>
-                                    <select className="w-full rounded-xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
-                                        <option value="">Select State</option>
-                                    </select>
-                                </div>
+                                <Input
+                                    inputType="select"
+                                    name="state"
+                                    label="State"
+                                    required
+                                    value={state}
+                                    onChange={(v) => setState(v ?? '')}
+                                    placeholder="Select State"
+                                    options={[]}
+                                    rootClassName="w-full"
+                                    inputClassName="w-full rounded-xl border-gray-200"
+                                />
 
                                 {/* LinkedIn */}
-                                <div className="flex flex-col gap-1">
-                                    <label className="text-sm font-medium text-gray-800">
-                                        LinkedIn or Portfolio
-                                    </label>
-                                    <input
-                                        type="url"
-                                        className="w-full rounded-xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-                                        placeholder="Paste link here"
-                                    />
-                                </div>
+                                <Input
+                                    inputType="text"
+                                    name="linkedin"
+                                    label="LinkedIn or Portfolio"
+                                    value={linkedIn}
+                                    onChange={(v) => setLinkedIn(typeof v === 'string' ? v : v?.[0] ?? '')}
+                                    placeholder="Paste link here"
+                                    rootClassName="w-full"
+                                    inputClassName="w-full rounded-xl border-gray-200"
+                                />
 
                                 {/* School / University */}
-                                <div className="flex flex-col gap-1">
-                                    <label className="text-sm font-medium text-gray-800">
-                                        School / University
-                                    </label>
-                                    <input
-                                        type="text"
-                                        className="w-full rounded-xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-                                        placeholder="Enter School/University"
-                                    />
-                                </div>
+                                <Input
+                                    inputType="text"
+                                    name="school"
+                                    label="School / University"
+                                    value={school}
+                                    onChange={(v) => setSchool(typeof v === 'string' ? v : v?.[0] ?? '')}
+                                    placeholder="Enter School/University"
+                                    rootClassName="w-full"
+                                    inputClassName="w-full rounded-xl border-gray-200"
+                                />
 
                                 {/* Grade level */}
-                                <div className="flex flex-col gap-1">
-                                    <label className="text-sm font-medium text-gray-800">
-                                        Grade Level / Year
-                                    </label>
-                                    <input
-                                        type="text"
-                                        className="w-full rounded-xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-                                        placeholder="Enter level/year"
-                                    />
-                                </div>
+                                <Input
+                                    inputType="text"
+                                    name="grade_level"
+                                    label="Grade Level / Year"
+                                    value={gradeLevel}
+                                    onChange={(v) => setGradeLevel(typeof v === 'string' ? v : v?.[0] ?? '')}
+                                    placeholder="Enter level/year"
+                                    rootClassName="w-full"
+                                    inputClassName="w-full rounded-xl border-gray-200"
+                                />
 
                                 {/* Current employment */}
-                                <div className="flex flex-col gap-1">
-                                    <label className="text-sm font-medium text-gray-800">
-                                        Current Employment Details
-                                    </label>
-                                    <input
-                                        type="text"
-                                        className="w-full rounded-xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-                                        placeholder="Enter details"
-                                    />
-                                </div>
+                                <Input
+                                    inputType="text"
+                                    name="employment_details"
+                                    label="Current Employment Details"
+                                    value={employmentDetails}
+                                    onChange={(v) => setEmploymentDetails(typeof v === 'string' ? v : v?.[0] ?? '')}
+                                    placeholder="Enter details"
+                                    rootClassName="w-full"
+                                    inputClassName="w-full rounded-xl border-gray-200"
+                                />
 
                                 {/* Compensation */}
-                                <div className="flex flex-col gap-1 md:col-span-2">
-                                    <label className="text-sm font-medium text-gray-800">
-                                        Compensation / Stipend Expectation
-                                    </label>
-                                    <input
-                                        type="text"
-                                        className="w-full rounded-xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-                                        placeholder="Enter here"
-                                    />
-                                </div>
+                                <Input
+                                    inputType="text"
+                                    name="compensation"
+                                    label="Compensation / Stipend Expectation"
+                                    value={compensation}
+                                    onChange={(v) => setCompensation(typeof v === 'string' ? v : v?.[0] ?? '')}
+                                    placeholder="Enter here"
+                                    rootClassName="w-full md:col-span-2"
+                                    inputClassName="w-full rounded-xl border-gray-200"
+                                />
                             </div>
 
                             {/* Info text */}
-                            <div className="mt-6 text-xs md:text-[14px]  text-[#4F4F4F] leading-relaxed">
+                            <div className="mt-2 text-[14px]  text-[#4F4F4F] leading-relaxed">
                                 This internship is currently unpaid and designed as a volunteer or learning
                                 opportunity. MelodyWings is a nonprofit organization, and while compensation
                                 cannot be guaranteed at this time, stipends or honorariums may be offered in the
@@ -188,7 +226,7 @@ const JoinUsStep1Page = () => {
 
                             {/* Radio confirmation */}
                             <div className="mt-4 space-y-3">
-                                <p className="text-xs md:text-[14px]     text-[#4F4F4F]">
+                                <p className="text-[14px]     text-[#4F4F4F]">
                                     Please confirm that you understand and are comfortable with this arrangement.
                                 </p>
 
@@ -216,11 +254,11 @@ const JoinUsStep1Page = () => {
                             </div>
 
                             {/* Navigation buttons */}
-                            <div className="mt-8 flex justify-between items-center">
+                            <div className="mt-8 flex w-full  gap-3 md:flex-row md:justify-between md:items-center">
                                 <Button
                                     title="Previous"
                                     btnVariant="tertiary"
-                                    customClassName="!px-6 !py-2  !rounded-[10px] !h-10 md:!h-11 border border-gray-300 !text-gray-700"
+                                    customClassName="!px-6 !py-2 !w-full md:!w-auto !rounded-[10px] !h-10 md:!h-11 border border-gray-300 !text-gray-700"
                                     onClick={() => router.push('/join-us')}
                                 />
                                 <Button
@@ -228,7 +266,7 @@ const JoinUsStep1Page = () => {
                                     title="Next Step"
                                     btnVariant="secondary"
                                     onClick={()=>{router.push('/join-us/step-2')}}
-                                    customClassName="!px-6 !rounded-[10px] !py-2 !h-10 md:!h-11"
+                                    customClassName="!px-6 !w-full md:!w-auto !rounded-[10px] !py-2 !h-10 md:!h-11"
                                 />
                             </div>
                         </form>

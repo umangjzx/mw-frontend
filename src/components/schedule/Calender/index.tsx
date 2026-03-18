@@ -7,7 +7,7 @@ import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import moment from "moment";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import MeetingPreviewModal from "../MeetingPreviewModal";
 import { AlertModal, AllEventsModal } from "../Modals";
 import DayCellContent from "./DayCellContent";
@@ -37,6 +37,8 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect, hidePastEvent
     const [selectedEvent, setSelectedEvent] = useState<EventApi | null>(null);
     const [selectedEventForFeedback, setSelectedEventForFeedback] = useState<EventApi | null>(null);
     const calendarRef = useRef<any>(null);
+    /** Below 1280px: always show 1 event + "+N more". Wider screens: auto-fit events in the cell. */
+    const [dayMaxEvents, setDayMaxEvents] = useState<number | boolean>(1);
     const searchParams = useSearchParams();
     const currentDate = searchParams.get("current_month");
     const modalParam = searchParams.get("modal");
@@ -47,6 +49,16 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect, hidePastEvent
             setShowPreview(false);
         }
     }, [modalParam]);
+
+    useLayoutEffect(() => {
+        const LAPTOP_MAX_WIDTH_PX = 1280; // Tailwind xl — typical laptop with sidebar
+        const updateDayMax = () => {
+            setDayMaxEvents(window.innerWidth < LAPTOP_MAX_WIDTH_PX ? 1 : true);
+        };
+        updateDayMax();
+        window.addEventListener("resize", updateDayMax);
+        return () => window.removeEventListener("resize", updateDayMax);
+    }, []);
 
     const handleEventClick = (clickInfo: EventClickArg) => {
         const rect = clickInfo?.el?.getBoundingClientRect();
@@ -331,6 +343,7 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect, hidePastEvent
             />
             <div className="p-4 calendar-container">
                 <FullCalendar
+                    key={typeof dayMaxEvents === "number" ? `n-${dayMaxEvents}` : "auto"}
                     ref={calendarRef}
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                     initialView="dayGridMonth"
@@ -340,7 +353,7 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect, hidePastEvent
                     eventClick={handleEventClick}
                     dateClick={handleDateClick}
                     expandRows={true}
-                    dayMaxEvents={true}
+                    dayMaxEvents={dayMaxEvents}
                     weekends={true}
                     headerToolbar={false}
                     dayHeaderContent={customDayHeaderContent}

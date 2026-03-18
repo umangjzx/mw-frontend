@@ -8,7 +8,7 @@ type ThankyouCardProps = {
     description: string;
 };
 
-const ThankyouCard = ({ title, description }: ThankyouCardProps) => {
+export const ThankyouCardBase = ({ title, description }: ThankyouCardProps) => {
     return (
         <div className='md:bg-white max-w-[1040px] w-full mx-auto flex flex-col items-center justify-center gap-8 p-10 rounded-3xl'>
             <ThankyouIcon />
@@ -18,4 +18,4 @@ const ThankyouCard = ({ title, description }: ThankyouCardProps) => {
     );
 };
 
-export default isAuth(ThankyouCard);
+export default isAuth(ThankyouCardBase);
