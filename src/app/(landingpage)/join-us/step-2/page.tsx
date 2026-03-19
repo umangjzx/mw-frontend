@@ -2,6 +2,9 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useJoinUsStore } from "@/store/useJoinUsStore";
+import { submitStep2, updateStep2 } from "@/api/join-us";
+import { showToast } from "@/components/common/Toast";
 import Button from "@/components/common/Button";
 import PositionCard from "../PositionCard";
 
@@ -68,13 +71,44 @@ const POSITION_OPTIONS = [
 
 const JoinUsStep2Page = () => {
     const router = useRouter();
-    const [selectedPosition, setSelectedPosition] = useState<string>("");
-    const [customRole, setCustomRole] = useState("");
+    const { applicationId, step2Submitted, setStep2Submitted, step2Data, setStep2Data } = useJoinUsStore();
+    const [loading, setLoading] = useState(false);
+    const [selectedPosition, setSelectedPosition] = useState<string>(step2Data?.selected_position || "");
+    const [customRole, setCustomRole] = useState(step2Data?.custom_role_description || "");
     const OTHER_VALUE = "other_custom_role";
 
-    const handleNext = () => {
-        // In the future, validate selection before navigation
-        router.push("/join-us/step-3");
+    const handleNext = async () => {
+        if (!applicationId) {
+            showToast({ type: 'error', message: 'Application ID missing. Please start from Step 1.' });
+            router.push('/join-us/step-1');
+            return;
+        }
+        if (!selectedPosition) {
+            showToast({ type: 'error', message: 'Please select a position.' });
+            return;
+        }
+
+        const payload = {
+            application_id: applicationId,
+            selected_position: selectedPosition,
+            custom_role_description: selectedPosition === OTHER_VALUE ? customRole : null
+        };
+
+        setLoading(true);
+        try {
+            if (!step2Submitted) {
+                await submitStep2(payload);
+                setStep2Submitted(true);
+            } else {
+                await updateStep2(applicationId, payload);
+            }
+            setStep2Data(payload);
+            router.push('/join-us/step-3');
+        } catch (err: any) {
+            showToast({ type: 'error', message: err?.message || 'Something went wrong!' });
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -153,13 +187,11 @@ const JoinUsStep2Page = () => {
                                     onClick={() => router.push("/join-us/step-1")}
                                 />
                                 <Button
-                                    type="submit"
-                                    title="Next Step"
+                                    htmlType="submit"
+                                    title={loading ? "Loading..." : "Next Step"}
+                                    disabled={loading}
                                     btnVariant="secondary"
-                                    onClick={() => {
-                                        router.push("/join-us/step-3");
-                                    }}
-                                    customClassName="!px-6 !w-full md:!w-auto !rounded-[10px] !py-2 !h-10 md:!h-11"
+                                    customClassName="!px-6 !w-full md:!w-auto !rounded-[10px] !py-2 !h-10 md:!h-11 disabled:opacity-50"
                                 />
                             </div>
                         </form>

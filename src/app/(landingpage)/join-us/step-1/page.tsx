@@ -2,6 +2,9 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useJoinUsStore } from '@/store/useJoinUsStore';
+import { submitStep1, updateStep1 } from '@/api/join-us';
+import { showToast } from '@/components/common/Toast';
 import Button from '@/components/common/Button';
 import { Input } from '@/components/common/Input';
 import RadioInput from '@/components/common/Input/RadioButton';
@@ -13,19 +16,88 @@ const COUNTRY_CODE_OPTIONS = [
 
 const JoinUsStep1Page = () => {
     const router = useRouter();
-    const [compensationPreference, setCompensationPreference] = useState<'unpaid_ok' | 'paid_only' | ''>('');
-    const [fullName, setFullName] = useState('');
-    const [email, setEmail] = useState('');
-    const [phoneCountryCode, setPhoneCountryCode] = useState<string | number>('+1');
-    const [phoneNumber, setPhoneNumber] = useState('');
-    const [dateOfBirth, setDateOfBirth] = useState('');
-    const [country, setCountry] = useState<string | number>('');
-    const [state, setState] = useState<string | number>('');
-    const [linkedIn, setLinkedIn] = useState('');
-    const [school, setSchool] = useState('');
-    const [gradeLevel, setGradeLevel] = useState('');
-    const [employmentDetails, setEmploymentDetails] = useState('');
-    const [compensation, setCompensation] = useState('');
+    const { applicationId, setApplicationId, step1Submitted, setStep1Submitted, step1Data, setStep1Data } = useJoinUsStore();
+    const [loading, setLoading] = useState(false);
+
+    const [compensationPreference, setCompensationPreference] = useState<'unpaid_ok' | 'paid_only' | ''>(step1Data?.compensation_preference || '');
+    const [fullName, setFullName] = useState(step1Data?.full_name || '');
+    const [email, setEmail] = useState(step1Data?.email || '');
+    const [phoneCountryCode, setPhoneCountryCode] = useState<string | number>(step1Data?.phone?.country_code || '+1');
+    const [phoneNumber, setPhoneNumber] = useState(step1Data?.phone?.number || '');
+    const [dateOfBirth, setDateOfBirth] = useState(step1Data?.date_of_birth || '');
+    const [country, setCountry] = useState<string | number>(step1Data?.address?.country || '');
+    const [state, setState] = useState<string | number>(step1Data?.address?.state || '');
+    const [linkedIn, setLinkedIn] = useState(step1Data?.linkedin_or_portfolio_url || '');
+    const [school, setSchool] = useState(step1Data?.education?.school_or_university || '');
+    const [gradeLevel, setGradeLevel] = useState(step1Data?.education?.grade_level_or_year || '');
+    const [employmentDetails, setEmploymentDetails] = useState(step1Data?.current_employment_details || '');
+    const [compensation, setCompensation] = useState(step1Data?.compensation_expectation || '');
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!compensationPreference) {
+            showToast({ type: 'error', message: 'Please confirm compensation preference.' });
+            return;
+        }
+
+        const payload = {
+            full_name: fullName,
+            email: email,
+            phone: {
+                country_code: phoneCountryCode.toString(),
+                number: phoneNumber
+            },
+            date_of_birth: dateOfBirth,
+            address: {
+                country: country.toString(),
+                state: state.toString()
+            },
+            linkedin_or_portfolio_url: linkedIn || null,
+            education: {
+                school_or_university: school || null,
+                grade_level_or_year: gradeLevel || null
+            },
+            current_employment_details: employmentDetails || null,
+            compensation_expectation: compensation || null,
+            compensation_preference: compensationPreference
+        };
+
+        setLoading(true);
+        try {
+            if (!step1Submitted || !applicationId) {
+                const res: any = await submitStep1(payload);
+
+                const responseData = res?.data || res;
+                const newAppId = responseData?.application_id
+                    || responseData?.applicationId
+                    || responseData?.id
+                    || responseData?.data?.application_id
+                    || responseData?.data?.applicationId
+                    || responseData?.data?.id;
+
+                if (!newAppId) {
+                    showToast({ type: 'error', message: 'Application ID not returned. Check console.' });
+                    console.error("Step 1 POST Response:", res);
+                    setLoading(false);
+                    return;
+                }
+
+                setApplicationId(newAppId);
+                setStep1Submitted(true);
+                setStep1Data(payload);
+                router.push('/join-us/step-2');
+            } else {
+                await updateStep1(applicationId, payload);
+                setStep1Data(payload);
+                router.push('/join-us/step-2');
+            }
+        } catch (err: any) {
+            showToast({ type: 'error', message: err?.message || 'Something went wrong!' });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-background-input flex flex-col items-center">
@@ -55,10 +127,7 @@ const JoinUsStep1Page = () => {
 
                         {/* Form fields */}
                         <form
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                router.push('/join-us/step-2');
-                            }}
+                            onSubmit={handleSubmit}
                         >
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full min-w-0">
                                 {/* Full name */}
@@ -116,13 +185,14 @@ const JoinUsStep1Page = () => {
 
                                 {/* Date of birth */}
                                 <Input
-                                    inputType="text"
+                                    inputType="birthdatepicker"
                                     name="date_of_birth"
                                     label="Date of Birth"
                                     required
                                     value={dateOfBirth}
-                                    onChange={(v) => setDateOfBirth(typeof v === 'string' ? v : v?.[0] ?? '')}
-                                    placeholder="dd/mm/yyyy"
+                                    birthDatePicker={{ minAge: 13, maxAge: 100 }}
+                                    onChange={(v) => setDateOfBirth(typeof v === 'string' ? v : '')}
+                                    placeholder="Select Date of Birth"
                                     rootClassName="w-full"
                                     inputClassName="w-full rounded-xl border-gray-200"
                                 />
@@ -262,11 +332,11 @@ const JoinUsStep1Page = () => {
                                     onClick={() => router.push('/join-us')}
                                 />
                                 <Button
-                                    type="submit"
-                                    title="Next Step"
+                                    htmlType="submit"
+                                    title={loading ? "Loading..." : "Next Step"}
+                                    disabled={loading}
                                     btnVariant="secondary"
-                                    onClick={()=>{router.push('/join-us/step-2')}}
-                                    customClassName="!px-6 !w-full md:!w-auto !rounded-[10px] !py-2 !h-10 md:!h-11"
+                                    customClassName="!px-6 !w-full md:!w-auto !rounded-[10px] !py-2 !h-10 md:!h-11 disabled:opacity-50"
                                 />
                             </div>
                         </form>

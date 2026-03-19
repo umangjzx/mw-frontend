@@ -24,7 +24,7 @@ const Footer = (props: Props) => {
     const policyLinks: PolicyLink[] = [
         { href: "/privacy-policy", target: "_blank", label: "Privacy Policy" },
         { href: "/terms-and-conditions", target: "_blank", label: "Terms & Conditions" },
-        // { href: "/join-us", label: "Join Us" },
+        { href: "/join-us", label: "Join Us" },
         {
             href: "mailto:support@melodywings.org",
             target: "_blank",
