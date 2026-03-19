@@ -302,7 +302,17 @@ This makes sure all 3 steps update the same application.
 {
   "application_id": "app_01JXYZ8A2M6P9Q4R3T7U",
   "selected_position": "social_media_intern",
-  "custom_role_description": ""
+  "custom_role_description": "",
+  "position": {
+    "title": "Social Media Intern",
+    "description": "Help grow MelodyWings' online presence by creating engaging content and sharing stories from our community.",
+    "responsibilities": [
+      "Creating posts for Instagram, TikTok, and other platforms",
+      "Designing simple graphics or short videos",
+      "Highlighting volunteer stories and learner experiences",
+      "Assisting with campaigns that promote MelodyWings sessions and events"
+    ]
+  }
 }
 ```
 

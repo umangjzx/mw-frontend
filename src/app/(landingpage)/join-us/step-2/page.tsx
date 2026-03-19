@@ -88,10 +88,21 @@ const JoinUsStep2Page = () => {
             return;
         }
 
+        const selectedOpt = POSITION_OPTIONS.find(opt => opt.value === selectedPosition);
+
         const payload = {
             application_id: applicationId,
             selected_position: selectedPosition,
-            custom_role_description: selectedPosition === OTHER_VALUE ? customRole : null
+            custom_role_description: selectedPosition === OTHER_VALUE ? customRole : null,
+            position: selectedOpt ? {
+                title: selectedOpt.label,
+                description: selectedOpt.description,
+                responsibilities: selectedOpt.responsibilities
+            } : (selectedPosition === OTHER_VALUE ? {
+                title: "Other (Custom Role)",
+                description: customRole,
+                responsibilities: []
+            } : null)
         };
 
         setLoading(true);
@@ -173,6 +184,10 @@ const JoinUsStep2Page = () => {
                                         onChange={(e) => {
                                             setCustomRole(e.target.value);
                                             setSelectedPosition(OTHER_VALUE);
+                                        }}
+                                        onKeyDown={(e) => {
+                                            // Stop propagation so the spacebar doesn't trigger PositionCard selection
+                                            e.stopPropagation();
                                         }}
                                     />
                                 </PositionCard>

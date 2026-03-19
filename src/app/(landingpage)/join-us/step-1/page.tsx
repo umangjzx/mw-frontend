@@ -9,11 +9,7 @@ import { showToast } from '@/components/common/Toast';
 import Button from '@/components/common/Button';
 import { Input } from '@/components/common/Input';
 import RadioInput from '@/components/common/Input/RadioButton';
-
-const COUNTRY_CODE_OPTIONS = [
-    { label: '+1', value: '+1' },
-    { label: '+91', value: '+91' },
-];
+import { COUNTRY_CODE_OPTIONS, countryDialCodes } from '@/utils/countryDialCodes';
 
 const JoinUsStep1Page = () => {
     const router = useRouter();
@@ -86,6 +82,16 @@ const JoinUsStep1Page = () => {
             }
         };
         fetchStates();
+    }, [country]);
+
+    // Update phone country code automatically when country changes
+    useEffect(() => {
+        if (country) {
+            const dialCode = countryDialCodes[country.toString()];
+            if (dialCode) {
+                setPhoneCountryCode(dialCode);
+            }
+        }
     }, [country]);
 
     const handleSubmit = async (e: React.FormEvent) => {
