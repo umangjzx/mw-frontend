@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useJoinUsStore } from '@/store/useJoinUsStore';
 import { submitStep1, updateStep1 } from '@/api/join-us';
+import { getCountries, getStates } from '@/api/common';
 import { showToast } from '@/components/common/Toast';
 import Button from '@/components/common/Button';
 import { Input } from '@/components/common/Input';
@@ -33,8 +34,68 @@ const JoinUsStep1Page = () => {
     const [employmentDetails, setEmploymentDetails] = useState(step1Data?.current_employment_details || '');
     const [compensation, setCompensation] = useState(step1Data?.compensation_expectation || '');
 
+    // Store for dropdown options
+    const [countryOptions, setCountryOptions] = useState<{ label: string; value: string }[]>([]);
+    const [stateOptions, setStateOptions] = useState<{ label: string; value: string }[]>([]);
+
+    useEffect(() => {
+        const fetchCountries = async () => {
+            try {
+                const res: any = await getCountries();
+                const data = res?.data || res;
+                if (Array.isArray(data)) {
+                    setCountryOptions(data.map((c: any) => ({
+                        label: c.country_name,
+                        value: c.country_code
+                    })));
+                } else if (data?.data && Array.isArray(data.data)) {
+                    setCountryOptions(data.data.map((c: any) => ({
+                        label: c.country_name,
+                        value: c.country_code
+                    })));
+                }
+            } catch (err) {
+                console.error("Failed to fetch countries", err);
+            }
+        };
+        fetchCountries();
+    }, []);
+
+    useEffect(() => {
+        const fetchStates = async () => {
+            if (!country) {
+                setStateOptions([]);
+                return;
+            }
+            try {
+                const res: any = await getStates(country.toString());
+                const data = res?.data || res;
+                if (Array.isArray(data)) {
+                    setStateOptions(data.map((s: any) => ({
+                        label: s.state_name,
+                        value: s.state_code
+                    })));
+                } else if (data?.data && Array.isArray(data.data)) {
+                    setStateOptions(data.data.map((s: any) => ({
+                        label: s.state_name,
+                        value: s.state_code
+                    })));
+                }
+            } catch (err) {
+                console.error("Failed to fetch states", err);
+            }
+        };
+        fetchStates();
+    }, [country]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            showToast({ type: 'error', message: 'Please enter a valid email address.' });
+            return;
+        }
 
         if (!compensationPreference) {
             showToast({ type: 'error', message: 'Please confirm compensation preference.' });
@@ -150,7 +211,7 @@ const JoinUsStep1Page = () => {
                                     label="Email Address"
                                     required
                                     value={email}
-                                    onChange={(v) => setEmail(typeof v === 'string' ? v : v?.[0] ?? '')}
+                                    onChange={(v: any) => setEmail(typeof v === 'string' ? v : v?.[0] ?? '')}
                                     placeholder="Enter Email Address"
                                     rootClassName="w-full"
                                     inputClassName="w-full rounded-xl border-gray-200"
@@ -175,7 +236,7 @@ const JoinUsStep1Page = () => {
                                             inputType="text"
                                             name="phone_number"
                                             value={phoneNumber}
-                                            onChange={(v) => setPhoneNumber(typeof v === 'string' ? v : v?.[0] ?? '')}
+                                            onChange={(v) => setPhoneNumber((typeof v === 'string' ? v : v?.[0] ?? '').replace(/\D/g, ''))}
                                             placeholder="Enter Phone number"
                                             rootClassName="w-full flex-1 min-w-0 !mb-0"
                                             inputClassName="w-full rounded-xl border-gray-200"
@@ -203,10 +264,14 @@ const JoinUsStep1Page = () => {
                                     name="country"
                                     label="Country of Residence"
                                     required
+                                    showSearch
                                     value={country}
-                                    onChange={(v) => setCountry(v ?? '')}
+                                    onChange={(v) => {
+                                        setCountry(v ?? '');
+                                        setState(''); // reset state when country changes
+                                    }}
                                     placeholder="Select Country"
-                                    options={[]}
+                                    options={countryOptions}
                                     rootClassName="w-full"
                                     inputClassName="w-full rounded-xl border-gray-200"
                                 />
@@ -217,10 +282,12 @@ const JoinUsStep1Page = () => {
                                     name="state"
                                     label="State"
                                     required
+                                    showSearch
                                     value={state}
                                     onChange={(v) => setState(v ?? '')}
                                     placeholder="Select State"
-                                    options={[]}
+                                    options={stateOptions}
+                                    disabled={!country}
                                     rootClassName="w-full"
                                     inputClassName="w-full rounded-xl border-gray-200"
                                 />
