@@ -28,6 +28,7 @@ export const endpoints: EndpointProps = {
         getIndividualLearner: (id: string) => `learner/${id}`,
         getConnectedVolunteers: (id: string) => `learner/${id}/connected_volunteers`,
         getTotalLearnersCount: "learner/total_learners_count",
+        emailPreference: (id: string) => `learner/${id}/email_preference`,
     },
     volunteer: {
         update: (id: string) => `volunteers/${id}`,

@@ -7,7 +7,7 @@ import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import moment from "moment";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import MeetingPreviewModal from "../MeetingPreviewModal";
 import { AlertModal, AllEventsModal } from "../Modals";
 import DayCellContent from "./DayCellContent";
@@ -17,9 +17,11 @@ import "./styles.css";
 interface CalendarProps {
     events: any;
     onDateSelect?: (date: string) => void;
+    /** When true, events that have already ended (past dates) are not shown. */
+    hidePastEvents?: boolean;
 }
 
-const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
+const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect, hidePastEvents = false }) => {
     const [showModal, setShowModal] = useState<ModalType>(null);
     const [currentEventData, setCurrentEventData] = useState<{
         events: EventApi[];
@@ -35,6 +37,8 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
     const [selectedEvent, setSelectedEvent] = useState<EventApi | null>(null);
     const [selectedEventForFeedback, setSelectedEventForFeedback] = useState<EventApi | null>(null);
     const calendarRef = useRef<any>(null);
+    /** Below 1280px: always show 1 event + "+N more". Wider screens: auto-fit events in the cell. */
+    const [dayMaxEvents, setDayMaxEvents] = useState<number | boolean>(1);
     const searchParams = useSearchParams();
     const currentDate = searchParams.get("current_month");
     const modalParam = searchParams.get("modal");
@@ -45,6 +49,16 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
             setShowPreview(false);
         }
     }, [modalParam]);
+
+    useLayoutEffect(() => {
+        const LAPTOP_MAX_WIDTH_PX = 1280; // Tailwind xl — typical laptop with sidebar
+        const updateDayMax = () => {
+            setDayMaxEvents(window.innerWidth < LAPTOP_MAX_WIDTH_PX ? 1 : true);
+        };
+        updateDayMax();
+        window.addEventListener("resize", updateDayMax);
+        return () => window.removeEventListener("resize", updateDayMax);
+    }, []);
 
     const handleEventClick = (clickInfo: EventClickArg) => {
         const rect = clickInfo?.el?.getBoundingClientRect();
@@ -263,7 +277,7 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
     };
 
     // Preprocess events: fix midnight-crossing (end before start on same day)
-    const processedEvents =
+    let processedEvents =
         events?.map((event: any) => {
             if (event.start && event.end) {
                 const startMoment = moment(event.start);
@@ -281,6 +295,15 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
             }
             return event;
         }) || [];
+
+    // Optionally hide events that have already ended (past dates)
+    if (hidePastEvents) {
+        const startOfToday = moment().startOf("day");
+        processedEvents = processedEvents.filter((event: any) => {
+            const eventEnd = event.end ? moment(event.end) : moment(event.start);
+            return eventEnd.isValid() && !eventEnd.isBefore(startOfToday);
+        });
+    }
 
     return (
         <>
@@ -320,6 +343,7 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
             />
             <div className="p-4 calendar-container">
                 <FullCalendar
+                    key={typeof dayMaxEvents === "number" ? `n-${dayMaxEvents}` : "auto"}
                     ref={calendarRef}
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                     initialView="dayGridMonth"
@@ -328,7 +352,8 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
                     selectMirror={false}
                     eventClick={handleEventClick}
                     dateClick={handleDateClick}
-                    dayMaxEvents={true}
+                    expandRows={true}
+                    dayMaxEvents={dayMaxEvents}
                     weekends={true}
                     headerToolbar={false}
                     dayHeaderContent={customDayHeaderContent}
