@@ -24,9 +24,8 @@ const PositionCard: React.FC<PositionCardProps> = ({
             <div className="flex flex-col gap-[20px]">
                 <div className="flex items-center gap-2 md:gap-3">
                     <span
-                        className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
-                            selected ? "border-gray-900" : "border-gray-300"
-                        }`}
+                        className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${selected ? "border-gray-900" : "border-gray-300"
+                            }`}
                     >
                         {selected && (
                             <span className="h-2.5 w-2.5 rounded-full bg-gray-900" />
@@ -38,7 +37,7 @@ const PositionCard: React.FC<PositionCardProps> = ({
                 </div>
                 <div className="flex flex-col gap-[20px]">
                     <p className="text-[14px] md:text-[16px] leading-relaxed  text-[#4F4F4F]">
-                        {description}   
+                        {description}
                     </p>
                     {responsibilities && responsibilities.length > 0 && (
                         <div>
@@ -70,11 +69,10 @@ const PositionCard: React.FC<PositionCardProps> = ({
                         onSelect();
                     }
                 }}
-                className={`w-full text-left cursor-pointer select-none rounded-3xl ring-1 ring-inset px-4 sm:px-5 md:px-6 py-4 md:py-5 lg:py-6 bg-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/40 ${
-                    selected
+                className={`w-full text-left cursor-pointer select-none rounded-3xl ring-1 ring-inset px-4 sm:px-5 md:px-6 py-4 md:py-5 lg:py-6 bg-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/40 ${selected
                         ? "ring-gray-900 shadow-sm bg-gray-50"
                         : "ring-gray-200 hover:ring-gray-300"
-                }`}
+                    }`}
             >
                 {content}
             </div>
