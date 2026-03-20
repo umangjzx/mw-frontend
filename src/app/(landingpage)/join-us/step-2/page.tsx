@@ -77,6 +77,11 @@ const JoinUsStep2Page = () => {
     const [customRole, setCustomRole] = useState(step2Data?.custom_role_description || "");
     const OTHER_VALUE = "other_custom_role";
 
+    const isNextEnabled =
+        !loading &&
+        !!selectedPosition &&
+        (selectedPosition !== OTHER_VALUE || !!customRole.trim());
+
     const handleNext = async () => {
         if (!applicationId) {
             showToast({ type: 'error', message: 'Application ID missing. Please start from Step 1.' });
@@ -106,6 +111,7 @@ const JoinUsStep2Page = () => {
         };
 
         setLoading(true);
+        let navigated = false;
         try {
             if (!step2Submitted) {
                 await submitStep2(payload);
@@ -115,10 +121,11 @@ const JoinUsStep2Page = () => {
             }
             setStep2Data(payload);
             router.push('/join-us/step-3');
+            navigated = true;
         } catch (err: any) {
             showToast({ type: 'error', message: err?.message || 'Something went wrong!' });
         } finally {
-            setLoading(false);
+            if (!navigated) setLoading(false);
         }
     };
 
@@ -204,7 +211,8 @@ const JoinUsStep2Page = () => {
                                 <Button
                                     htmlType="submit"
                                     title={loading ? "Loading..." : "Next Step"}
-                                    disabled={loading}
+                                    loading={loading}
+                                    disabled={!isNextEnabled}
                                     btnVariant="secondary"
                                     customClassName="!px-6 !w-full md:!w-auto !rounded-[10px] !py-2 !h-10 md:!h-11 disabled:opacity-50"
                                 />

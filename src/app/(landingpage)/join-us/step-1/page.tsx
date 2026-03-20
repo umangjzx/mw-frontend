@@ -16,6 +16,11 @@ const JoinUsStep1Page = () => {
     const { applicationId, setApplicationId, step1Submitted, setStep1Submitted, step1Data, setStep1Data } = useJoinUsStore();
     const [loading, setLoading] = useState(false);
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const [countriesLoading, setCountriesLoading] = useState(false);
+    const [statesLoading, setStatesLoading] = useState(false);
+
     const [compensationPreference, setCompensationPreference] = useState<'unpaid_ok' | 'paid_only' | ''>(step1Data?.compensation_preference || '');
     const [fullName, setFullName] = useState(step1Data?.full_name || '');
     const [email, setEmail] = useState(step1Data?.email || '');
@@ -36,6 +41,7 @@ const JoinUsStep1Page = () => {
 
     useEffect(() => {
         const fetchCountries = async () => {
+            setCountriesLoading(true);
             try {
                 const res: any = await getCountries();
                 const data = res?.data || res;
@@ -52,6 +58,8 @@ const JoinUsStep1Page = () => {
                 }
             } catch (err) {
                 console.error("Failed to fetch countries", err);
+            } finally {
+                setCountriesLoading(false);
             }
         };
         fetchCountries();
@@ -61,8 +69,10 @@ const JoinUsStep1Page = () => {
         const fetchStates = async () => {
             if (!country) {
                 setStateOptions([]);
+                setStatesLoading(false);
                 return;
             }
+            setStatesLoading(true);
             try {
                 const res: any = await getStates(country.toString());
                 const data = res?.data || res;
@@ -79,6 +89,8 @@ const JoinUsStep1Page = () => {
                 }
             } catch (err) {
                 console.error("Failed to fetch states", err);
+            } finally {
+                setStatesLoading(false);
             }
         };
         fetchStates();
@@ -94,12 +106,45 @@ const JoinUsStep1Page = () => {
         }
     }, [country]);
 
+    const isNextEnabled =
+        !loading &&
+        !!fullName.trim() &&
+        emailRegex.test(email) &&
+        !!phoneCountryCode &&
+        phoneNumber.trim().length > 0 &&
+        !!dateOfBirth &&
+        !!country &&
+        !!state &&
+        !!compensationPreference;
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!fullName.trim()) {
+            showToast({ type: 'error', message: 'Please enter your full name.' });
+            return;
+        }
         if (!emailRegex.test(email)) {
             showToast({ type: 'error', message: 'Please enter a valid email address.' });
+            return;
+        }
+
+        if (!phoneCountryCode || phoneNumber.trim().length === 0) {
+            showToast({ type: 'error', message: 'Please enter your phone number.' });
+            return;
+        }
+
+        if (!dateOfBirth) {
+            showToast({ type: 'error', message: 'Please select your date of birth.' });
+            return;
+        }
+
+        if (!country) {
+            showToast({ type: 'error', message: 'Please select your country.' });
+            return;
+        }
+
+        if (!state) {
+            showToast({ type: 'error', message: 'Please select your state.' });
             return;
         }
 
@@ -131,6 +176,7 @@ const JoinUsStep1Page = () => {
         };
 
         setLoading(true);
+        let navigated = false;
         try {
             if (!step1Submitted || !applicationId) {
                 const res: any = await submitStep1(payload);
@@ -153,16 +199,18 @@ const JoinUsStep1Page = () => {
                 setApplicationId(newAppId);
                 setStep1Submitted(true);
                 setStep1Data(payload);
+                navigated = true;
                 router.push('/join-us/step-2');
             } else {
                 await updateStep1(applicationId, payload);
                 setStep1Data(payload);
+                navigated = true;
                 router.push('/join-us/step-2');
             }
         } catch (err: any) {
             showToast({ type: 'error', message: err?.message || 'Something went wrong!' });
         } finally {
-            setLoading(false);
+            if (!navigated) setLoading(false);
         }
     };
 
@@ -271,12 +319,14 @@ const JoinUsStep1Page = () => {
                                     label="Country of Residence"
                                     required
                                     showSearch
+                                    disabled={countriesLoading}
+                                    isLoading={countriesLoading}
                                     value={country}
                                     onChange={(v) => {
                                         setCountry(v ?? '');
                                         setState(''); // reset state when country changes
                                     }}
-                                    placeholder="Select Country"
+                                    placeholder={countriesLoading ? "Loading countries..." : "Select Country"}
                                     options={countryOptions}
                                     rootClassName="w-full"
                                     inputClassName="w-full rounded-xl border-gray-200"
@@ -289,11 +339,12 @@ const JoinUsStep1Page = () => {
                                     label="State"
                                     required
                                     showSearch
+                                    disabled={!country || statesLoading}
+                                    isLoading={statesLoading}
                                     value={state}
                                     onChange={(v) => setState(v ?? '')}
-                                    placeholder="Select State"
+                                    placeholder={statesLoading ? "Loading states..." : "Select State"}
                                     options={stateOptions}
-                                    disabled={!country}
                                     rootClassName="w-full"
                                     inputClassName="w-full rounded-xl border-gray-200"
                                 />
@@ -407,7 +458,8 @@ const JoinUsStep1Page = () => {
                                 <Button
                                     htmlType="submit"
                                     title={loading ? "Loading..." : "Next Step"}
-                                    disabled={loading}
+                                    loading={loading}
+                                    disabled={!isNextEnabled}
                                     btnVariant="secondary"
                                     customClassName="!px-6 !w-full md:!w-auto !rounded-[10px] !py-2 !h-10 md:!h-11 disabled:opacity-50"
                                 />

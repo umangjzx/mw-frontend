@@ -65,6 +65,24 @@ const JoinUsStep3Page = () => {
     const [photoConsent, setPhotoConsent] = useState<'yes' | 'no' | ''>(getBoolOrEmpty(initConsentPerms.photo_or_video_consent));
     const [termsAccepted, setTermsAccepted] = useState(initConsentPerms.acknowledgement_of_program_policies === true);
 
+    // Description fields are required only when the matching yes/no selection triggers it.
+    const requiresCrimDetails = criminalCheck1 === 'yes' || criminalCheck2 === 'yes' || criminalCheck3 === 'yes';
+    const requiresSexDetails = sexOffenderCheck === 'yes';
+    const requiresDiscDetails = disciplinary1 === 'yes' || disciplinary2 === 'yes' || disciplinary3 === 'yes';
+    const requiresHealthDetails = healthCheck === 'yes';
+    const requiresConsentDetails = consent1 === 'no' || consent2 === 'no' || consent3 === 'no';
+    const requiresPrevVolDetails = previousVolunteer === 'yes';
+
+    const isNextEnabled =
+        !loading &&
+        termsAccepted &&
+        (!requiresCrimDetails || !!crimDetails.trim()) &&
+        (!requiresSexDetails || !!sexDetails.trim()) &&
+        (!requiresDiscDetails || !!discDetails.trim()) &&
+        (!requiresHealthDetails || !!healthDetails.trim()) &&
+        (!requiresConsentDetails || !!consentDetails.trim()) &&
+        (!requiresPrevVolDetails || !!prevVolDetails.trim());
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -76,6 +94,36 @@ const JoinUsStep3Page = () => {
 
         if (!termsAccepted) {
             showToast({ type: 'error', message: 'Please accept the Terms of Service to continue.' });
+            return;
+        }
+
+        if (requiresCrimDetails && !crimDetails.trim()) {
+            showToast({ type: 'error', message: 'Please describe the circumstance for the criminal background check.' });
+            return;
+        }
+
+        if (requiresSexDetails && !sexDetails.trim()) {
+            showToast({ type: 'error', message: 'Please describe the circumstance for the sex offender registry check.' });
+            return;
+        }
+
+        if (requiresDiscDetails && !discDetails.trim()) {
+            showToast({ type: 'error', message: 'Please describe the circumstance for the disciplinary history.' });
+            return;
+        }
+
+        if (requiresHealthDetails && !healthDetails.trim()) {
+            showToast({ type: 'error', message: 'Please describe the circumstance for the health and safety question.' });
+            return;
+        }
+
+        if (requiresConsentDetails && !consentDetails.trim()) {
+            showToast({ type: 'error', message: 'Please describe the circumstance for the consent (No answers).' });
+            return;
+        }
+
+        if (requiresPrevVolDetails && !prevVolDetails.trim()) {
+            showToast({ type: 'error', message: 'Please describe the circumstance for your previous volunteer experience.' });
             return;
         }
 
@@ -286,7 +334,14 @@ const JoinUsStep3Page = () => {
 
                                 <div className="space-y-2">
                                     <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.</p>
-                                    <textarea rows={3} className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border" placeholder="Describe here" value={crimDetails} onChange={(e) => setCrimDetails(e.target.value)} />
+                                    <textarea
+                                        rows={3}
+                                        disabled={!requiresCrimDetails}
+                                        className={`w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border ${!requiresCrimDetails ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                        placeholder="Describe here"
+                                        value={crimDetails}
+                                        onChange={(e) => setCrimDetails(e.target.value)}
+                                    />
                                 </div>
                             </div>
 
@@ -298,7 +353,14 @@ const JoinUsStep3Page = () => {
                                 </div>
                                 <div className="space-y-2">
                                     <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.</p>
-                                    <textarea rows={3} className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border" placeholder="Describe here" value={sexDetails} onChange={(e) => setSexDetails(e.target.value)} />
+                                    <textarea
+                                        rows={3}
+                                        disabled={!requiresSexDetails}
+                                        className={`w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border ${!requiresSexDetails ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                        placeholder="Describe here"
+                                        value={sexDetails}
+                                        onChange={(e) => setSexDetails(e.target.value)}
+                                    />
                                 </div>
                             </div>
 
@@ -320,7 +382,14 @@ const JoinUsStep3Page = () => {
 
                                 <div className="space-y-2">
                                     <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.</p>
-                                    <textarea rows={3} className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border" placeholder="Describe here" value={discDetails} onChange={(e) => setDiscDetails(e.target.value)} />
+                                    <textarea
+                                        rows={3}
+                                        disabled={!requiresDiscDetails}
+                                        className={`w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border ${!requiresDiscDetails ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                        placeholder="Describe here"
+                                        value={discDetails}
+                                        onChange={(e) => setDiscDetails(e.target.value)}
+                                    />
                                 </div>
                             </div>
 
@@ -332,7 +401,14 @@ const JoinUsStep3Page = () => {
                                 </div>
                                 <div className="space-y-2">
                                     <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.</p>
-                                    <textarea rows={3} className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border" placeholder="Describe here" value={healthDetails} onChange={(e) => setHealthDetails(e.target.value)} />
+                                    <textarea
+                                        rows={3}
+                                        disabled={!requiresHealthDetails}
+                                        className={`w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border ${!requiresHealthDetails ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                        placeholder="Describe here"
+                                        value={healthDetails}
+                                        onChange={(e) => setHealthDetails(e.target.value)}
+                                    />
                                 </div>
                             </div>
 
@@ -352,7 +428,14 @@ const JoinUsStep3Page = () => {
                                 </div>
                                 <div className="space-y-2">
                                     <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;No&quot; answer above.</p>
-                                    <textarea rows={3} className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border" placeholder="Describe here" value={consentDetails} onChange={(e) => setConsentDetails(e.target.value)} />
+                                    <textarea
+                                        rows={3}
+                                        disabled={!requiresConsentDetails}
+                                        className={`w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border ${!requiresConsentDetails ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                        placeholder="Describe here"
+                                        value={consentDetails}
+                                        onChange={(e) => setConsentDetails(e.target.value)}
+                                    />
                                 </div>
                             </div>
 
@@ -364,7 +447,14 @@ const JoinUsStep3Page = () => {
                                 </div>
                                 <div className="space-y-2">
                                     <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.</p>
-                                    <textarea rows={3} className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border" placeholder="Mention here" value={prevVolDetails} onChange={(e) => setPrevVolDetails(e.target.value)} />
+                                    <textarea
+                                        rows={3}
+                                        disabled={!requiresPrevVolDetails}
+                                        className={`w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border ${!requiresPrevVolDetails ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                        placeholder="Mention here"
+                                        value={prevVolDetails}
+                                        onChange={(e) => setPrevVolDetails(e.target.value)}
+                                    />
                                 </div>
                             </div>
                         </section>
@@ -387,7 +477,7 @@ const JoinUsStep3Page = () => {
 
                         <div className="mt-4 flex justify-between items-center">
                             <Button type="button" title="Previous" btnVariant="tertiary" customClassName="!px-6 !py-2 !h-10 md:!h-11 border !rounded-[10px] border-gray-300 !text-gray-700 disabled:opacity-50" onClick={() => router.push('/join-us/step-2')} disabled={loading} />
-                            <Button htmlType="submit" title={loading ? "Submitting..." : "Submit Application"} disabled={loading || !termsAccepted} btnVariant="secondary" customClassName="!px-6 !py-2 !rounded-[10px] !h-10 md:!h-11 disabled:opacity-50" />
+                            <Button htmlType="submit" title={loading ? "Submitting..." : "Submit Application"} loading={loading} disabled={!isNextEnabled} btnVariant="secondary" customClassName="!px-6 !py-2 !rounded-[10px] !h-10 md:!h-11 disabled:opacity-50" />
                         </div>
                     </form>
                 </div>
