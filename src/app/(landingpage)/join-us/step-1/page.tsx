@@ -117,6 +117,12 @@ const JoinUsStep1Page = () => {
         !!state &&
         !!compensationPreference;
 
+    const selectedCountryName =
+        countryOptions.find((opt) => opt.value === country?.toString())?.label || country?.toString();
+
+    const selectedStateName =
+        stateOptions.find((opt) => opt.value === state?.toString())?.label || state?.toString();
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!fullName.trim()) {
@@ -162,8 +168,9 @@ const JoinUsStep1Page = () => {
             },
             date_of_birth: dateOfBirth,
             address: {
-                country: country.toString(),
-                state: state.toString()
+                // Send the selected display values (names), not the internal codes.
+                country: selectedCountryName,
+                state: selectedStateName
             },
             linkedin_or_portfolio_url: linkedIn || null,
             education: {
