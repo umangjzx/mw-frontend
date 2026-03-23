@@ -278,7 +278,7 @@ const Donate = () => {
                             <span
                                 key={index}
                                 className={`h-2 rounded-full transition-all ${
-                                    index === topCardsIndex ? "w-7 bg-[#121212]" : "w-2 bg-[#D9D9D9]"
+                                    index === topCardsIndex ? "w-2 bg-[#4F4F4F]" : "w-2 bg-[#D9D9D9]"
                                 }`}
                             />
                         ))}
