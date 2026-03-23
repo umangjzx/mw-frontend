@@ -1,7 +1,7 @@
 "use client";
 
 import DonateCard from "@/components/common/DonateCard";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { donateCardData } from "@/constants/landingPage";
 import RadioInput from "@/components/common/Input/RadioButton";
 import { Input } from "@/components/common/Input";
@@ -112,6 +112,26 @@ const Donate = () => {
     const [fundOtherDetail, setFundOtherDetail] = useState("");
     const [message, setMessage] = useState("");
     const [hearAbout, setHearAbout] = useState<string | number>("");
+
+    // Mobile-only carousel state for "How Your Donation Helps" cards.
+    const [topCardsIndex, setTopCardsIndex] = useState(0);
+    const topCardsCarouselRef = useRef<HTMLDivElement | null>(null);
+
+    const handleTopCardsScroll = () => {
+        const el = topCardsCarouselRef.current;
+        if (!el) return;
+
+        const children = Array.from(el.children) as HTMLElement[];
+        if (children.length === 0) return;
+
+        const firstLeft = children[0].offsetLeft;
+        const step =
+            children.length > 1 ? children[1].offsetLeft - firstLeft : children[0].offsetWidth;
+        if (!step) return;
+
+        const idx = Math.round((el.scrollLeft - firstLeft) / step);
+        setTopCardsIndex(Math.max(0, Math.min(idx, children.length - 1)));
+    };
 
     useEffect(() => {
         const fetchCountries = async () => {
@@ -228,10 +248,41 @@ const Donate = () => {
             </section>
 
             <section className={`${PAGE_GUTTER_CLASS} pt-10 md:pt-12`}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                {/* Desktop/tablet */}
+                <div className="hidden sm:grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                     {donateCardData.map((item, index) => (
                         <DonateCard key={index} {...item} />
                     ))}
+                </div>
+
+                {/* Mobile carousel */}
+                <div className="sm:hidden">
+                    <div
+                        ref={topCardsCarouselRef}
+                        onScroll={handleTopCardsScroll}
+                        className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 no-scrollbar"
+                    >
+                        {donateCardData.map((item, index) => (
+                            <div
+                                key={index}
+                                className="flex-[0_0_86%] snap-start"
+                                aria-label={item.title}
+                            >
+                                <DonateCard {...item} />
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="flex items-center justify-center gap-2 mt-4">
+                        {donateCardData.map((_, index) => (
+                            <span
+                                key={index}
+                                className={`h-2 rounded-full transition-all ${
+                                    index === topCardsIndex ? "w-7 bg-[#121212]" : "w-2 bg-[#D9D9D9]"
+                                }`}
+                            />
+                        ))}
+                    </div>
                 </div>
             </section>
 
@@ -293,7 +344,7 @@ const Donate = () => {
                 <div className="w-full md:w-[70%] md:px-0 md:mx-auto">
                     <form
                         onSubmit={handleDonateSubmit}
-                        className="bg-white md:rounded-[24px] md:shadow-sm px-4 sm:px-6 md:px-10 lg:px-12 py-6 md:py-8 lg:py-10 space-y-0 md:space-y-10 w-full min-w-0"
+                        className="bg-white md:rounded-[24px] md:shadow-sm px-5 sm:px-6 md:px-10 lg:px-12 py-6 md:py-8 lg:py-10 space-y-0 md:space-y-10 w-full min-w-0"
                     >
                         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                             <h2 className="text-[20px] md:text-[24px] font-medium text-gray-900">
