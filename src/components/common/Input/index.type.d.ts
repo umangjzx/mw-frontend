@@ -135,6 +135,12 @@ type RadioInputProps = BaseInputProps & {
     variant?: RadioVariant;
     inputClassName?: string;
     radioButtonClassName?: string;
+    /** Stack options in a column (full-width rows) instead of wrapping horizontally */
+    layout?: "horizontal" | "vertical";
+    /** Classes for each option's main label (default variant) */
+    optionLabelClassName?: string;
+    /** Classes for each option's sublabel (default variant) */
+    optionSublabelClassName?: string;
 };
 
 type UploadProps = BaseInputProps & {

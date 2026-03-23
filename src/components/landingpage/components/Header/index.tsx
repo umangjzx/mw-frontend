@@ -41,8 +41,8 @@ const Header = () => {
 
     const links = [
         { title: "About Us", link: "/about-us" },
+        { title: "Donate", link: "/donate" },
         // { title: "Blogs", link: "/blogs" },
-        // { title: "Donate", link: "/donate" },
         // { title: "Team Up", link: "/" },
     ];
 
@@ -117,7 +117,10 @@ const Header = () => {
                             </div>
                         </div>
                     </SideNavBar>
-                    <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+                    <LoginModal
+                        isOpen={isLoginModalOpen}
+                        onClose={() => setIsLoginModalOpen(false)}
+                    />
                     <SignUpAsModal
                         isOpen={paramMode === "learner" || paramMode === "volunteer"}
                         onClose={() => setParamMode(null)}
