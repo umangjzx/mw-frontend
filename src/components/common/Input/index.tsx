@@ -9,7 +9,6 @@ import { AsyncSelect, MultiSelect } from "./Select";
 import { Select } from "./Select";
 import ContactInput from "../ContactInput";
 import dayjs from "dayjs";
-import moment from "moment";
 import SelectInputCreatable from "./Select/SelectInputCreatable";
 import TimeRangePicker from "./Picker/TimeRangePicker";
 
@@ -429,7 +428,9 @@ export const Input: React.FC<InputProps> = (props) => {
                         format="YYYY-MM-DD"
                         placeholder={["Start Date", "End Date"]}
                         onChange={(date) => props.onChange(date)}
-                        disabledDate={(current) => current && current < moment().startOf("day")}
+                        disabledDate={(current) =>
+                            Boolean(current && current.isBefore(dayjs().startOf("day"), "day"))
+                        }
                     />
                 );
         }
