@@ -17,11 +17,9 @@ import "./styles.css";
 interface CalendarProps {
     events: any;
     onDateSelect?: (date: string) => void;
-    /** When true, events that have already ended (past dates) are not shown. */
-    hidePastEvents?: boolean;
 }
 
-const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect, hidePastEvents = false }) => {
+const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
     const [showModal, setShowModal] = useState<ModalType>(null);
     const [currentEventData, setCurrentEventData] = useState<{
         events: EventApi[];
@@ -166,11 +164,11 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect, hidePastEvent
         arg.jsEvent.preventDefault();
 
         const dateEvents = arg.allSegs.map((seg: any) => seg?.event);
-        
+
         // FullCalendar's moreLinkClick arg.date might be in UTC or have timezone issues
         // The most reliable way is to get the date from the events themselves or use dateStr
         let dateStr: string;
-        
+
         // First, try to get dateStr if available (most reliable)
         if (arg.dateStr) {
             dateStr = arg.dateStr;
@@ -189,14 +187,14 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect, hidePastEvent
             // For now, use moment to parse and format, which should handle timezone
             const parsedDate = moment(arg.date);
             dateStr = parsedDate.format("YYYY-MM-DD");
-            
+
             // If this still gives wrong date, we might need to check the calendar cell's date
             // But since we have events, the first condition should catch it
         }
-        
+
         // Format for display using the correct date string
         const formattedDate = moment(dateStr).format("MMM DD, YYYY");
-        
+
         setCurrentEventData({
             events: dateEvents,
             date: formattedDate,
@@ -296,14 +294,7 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect, hidePastEvent
             return event;
         }) || [];
 
-    // Optionally hide events that have already ended (past dates)
-    if (hidePastEvents) {
-        const startOfToday = moment().startOf("day");
-        processedEvents = processedEvents.filter((event: any) => {
-            const eventEnd = event.end ? moment(event.end) : moment(event.start);
-            return eventEnd.isValid() && !eventEnd.isBefore(startOfToday);
-        });
-    }
+
 
     return (
         <>
@@ -328,7 +319,7 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect, hidePastEvent
                 onCancel={handleCloseModal}
                 onProceed={() => setShowModal(null)}
                 value={""}
-                onChange={() => {}}
+                onChange={() => { }}
                 onClose={handleCloseModal}
             />
 

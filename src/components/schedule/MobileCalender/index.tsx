@@ -11,11 +11,9 @@ import MobileMeetingPreviewModal from "./MeetingPreview";
 interface CalendarProps {
     events: any;
     onDateSelect?: (date: string) => void;
-    /** When true, events that have already ended (past dates) are not shown. */
-    hidePastEvents?: boolean;
 }
 
-const MobileCalender: React.FC<CalendarProps> = ({ events = [], onDateSelect, hidePastEvents = false }) => {
+const MobileCalender: React.FC<CalendarProps> = ({ events = [], onDateSelect }) => {
     const calendarRef = useRef<any>(null);
     const searchParams = useSearchParams();
     const currentDate = searchParams.get("current_month");
@@ -24,13 +22,6 @@ const MobileCalender: React.FC<CalendarProps> = ({ events = [], onDateSelect, hi
 
     const groupedEvents = useMemo(() => {
         let list = events ?? [];
-        if (hidePastEvents) {
-            const startOfToday = moment().startOf("day");
-            list = list.filter((item: any) => {
-                const eventDate = moment(item.date ?? item.end ?? item.start);
-                return eventDate.isValid() && !eventDate.isBefore(startOfToday);
-            });
-        }
         return Object.values(
             list.reduce((acc: Record<string, any[]>, item: any) => {
                 (acc[item.date] ||= []).push(item);
@@ -39,7 +30,7 @@ const MobileCalender: React.FC<CalendarProps> = ({ events = [], onDateSelect, hi
         ).sort(
             (a: any, b: any) => new Date(a[0].date).getTime() - new Date(b[0].date).getTime()
         );
-    }, [events, hidePastEvents]);
+    }, [events]);
 
     const [showModal, setShowModal] = useState<ModalType>(null);
     const [showPreview, setShowPreview] = useState(true);
@@ -105,7 +96,7 @@ const MobileCalender: React.FC<CalendarProps> = ({ events = [], onDateSelect, hi
                 onCancel={handleCloseModal}
                 onProceed={() => setShowModal(null)}
                 value={""}
-                onChange={() => {}}
+                onChange={() => { }}
                 onClose={handleCloseModal}
             />
             <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">

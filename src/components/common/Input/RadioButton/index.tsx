@@ -10,6 +10,9 @@ const RadioInput: React.FC<RadioInputProps> = ({
     inputClassName = "",
     variant = "default",
     radioButtonClassName = "",
+    layout = "horizontal",
+    optionLabelClassName = "",
+    optionSublabelClassName = "",
 }) => {
     if (variant === "rating") {
         return (
@@ -63,17 +66,41 @@ const RadioInput: React.FC<RadioInputProps> = ({
             disabled={disabled}
             className={inputClassName}
         >
-            <div className="flex flex-wrap items-center gap-2 w-full h-full">
+            <div
+                className={
+                    layout === "vertical"
+                        ? "flex flex-col gap-3 w-full"
+                        : "flex flex-wrap items-center md:gap-2 gap-4 w-full h-full"
+                }
+            >
                 {options.map((option) => (
                     <div
                         key={option.value}
-                        className={`flex items-center hover:bg-background-input bg-background-input px-2 py-1 rounded-lg ${radioButtonClassName}`}
+                        className={`flex items-start min-w-0 hover:bg-background-input bg-background-input px-2 py-1 rounded-lg ${
+                            layout === "vertical" ? "w-full" : "items-center"
+                        } ${radioButtonClassName}`}
                     >
-                        <Radio value={option.value}>
+                        <Radio value={option.value} className="w-full">
                             <div>
-                                <span className="text-sm">{option.label}</span>
+                                <span
+                                    className={
+                                        optionLabelClassName.trim()
+                                            ? optionLabelClassName
+                                            : "text-sm font-medium text-gray-900"
+                                    }
+                                >
+                                    {option.label}
+                                </span>
                                 {option.sublabel && (
-                                    <p className="text-sm text-gray-500 ml-0">{option.sublabel}</p>
+                                    <p
+                                        className={
+                                            optionSublabelClassName.trim()
+                                                ? `${optionSublabelClassName} mt-0.5 leading-snug`
+                                                : "text-sm text-gray-500 mt-0.5 leading-snug"
+                                        }
+                                    >
+                                        {option.sublabel}
+                                    </p>
                                 )}
                             </div>
                         </Radio>

@@ -6,6 +6,7 @@ const PROTECTED_ROUTES = ["/learner", "/volunteer"];
 const LANDING_PAGE_ROUTES = [
   "/",
   "/about-us",
+  "/donate",
   "/join-us",
   "/join-us/step-1",
   "/join-us/step-2",
@@ -14,7 +15,7 @@ const LANDING_PAGE_ROUTES = [
   "/privacy-policy",
   "/terms-and-conditions",
 ];
-const ALWAYS_ACCESSIBLE_ROUTES = ["/privacy-policy", "/terms-and-conditions"];
+const ALWAYS_ACCESSIBLE_ROUTES = ["/donate", "/privacy-policy", "/terms-and-conditions"];
 const EXCLUDED_PATHS = ["/favicon.ico", "/logo.png"];
 
 // List of search engine crawler user agents
@@ -57,6 +58,7 @@ export default function middleware(req: NextRequest) {
   const PUBLIC_ROUTES = [
     "/",
     "/about-us",
+    "/donate",
     "/join-us",
     "/join-us/step-1",
     "/join-us/step-2",
