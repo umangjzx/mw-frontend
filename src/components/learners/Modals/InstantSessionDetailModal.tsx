@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Drawer } from "antd";
+import { Drawer, Spin } from "antd";
 import CenterModal from "@/components/common/Modals/CenterModal";
 import TagComponent from "@/components/common/Tag";
 import Button from "@/components/common/Button";
@@ -88,7 +88,7 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
                 setIsCheckingValidation(true);
                 // Reset to default state before checking
                 setIsValidated(true);
-                
+
                 try {
                     const sessionDate = session.date || "";
                     const startTime = session.start_time_24 || "";
@@ -175,17 +175,17 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
             if (res?.status === 200 || res?.status === 201) {
                 claimSuccess = true;
                 showToast({ message: "Session claimed successfully", type: "success" });
-                
+
                 // Invalidate queries first
                 queryClient.invalidateQueries({ queryKey: ["learner-instant-sessions"] });
                 queryClient.invalidateQueries({ queryKey: ["learner-accepted-instant-sessions"] });
-                
+
                 // Wait for queries to refetch (loader stays visible)
                 await Promise.all([
                     queryClient.refetchQueries({ queryKey: ["learner-instant-sessions", sessionDate] }),
                     queryClient.refetchQueries({ queryKey: ["learner-accepted-instant-sessions", sessionDate] }),
                 ]);
-                
+
                 // Don't hide loader here - let ClaimConfirmationModal hide it after fetching session details
                 onClaim?.();
                 return true;
@@ -238,14 +238,12 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
                 <Button
                     title="Claim Now"
                     btnVariant="secondary"
-                    customClassName={`w-full ${
-                        isClaimDisabled
-                            ? "!bg-[#1E1E1E] !cursor-not-allowed !text-white"
-                            : ""
-                    }`}
+                    customClassName={`w-full ${isClaimDisabled
+                        ? "!bg-[#1E1E1E] !cursor-not-allowed !text-white"
+                        : ""
+                        }`}
                     onClick={handleClaim}
                     disabled={isClaimDisabled}
-                    loading={isCheckingValidation}
                 />
             </div>
         </div>
@@ -295,7 +293,7 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
                         <Image
                             src={
                                 session.instructor.profilePicture &&
-                                session.instructor.profilePicture !== "/dummy-profile.webp"
+                                    session.instructor.profilePicture !== "/dummy-profile.webp"
                                     ? session.instructor.profilePicture
                                     : PersonImg
                             }
@@ -352,15 +350,23 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
                     }}
                 >
                     <div className="flex flex-col h-full overflow-hidden rounded-t-2xl">
-                        <div className="flex-shrink-0 px-6 pt-5 pb-4 border-b border-stroke">
-                            {headerContent}
-                        </div>
-                        <div className="flex-1 min-h-0 overflow-y-auto px-6 py-4">
-                            {modalBodyContent}
-                        </div>
-                        <div className="flex-shrink-0 px-6 py-4 border-t border-stroke bg-white">
-                            {footerContent}
-                        </div>
+                        {isCheckingValidation ? (
+                            <div className="flex-1 flex items-center justify-center">
+                                <Spin size="large" />
+                            </div>
+                        ) : (
+                            <>
+                                <div className="flex-shrink-0 px-6 pt-5 pb-4 border-b border-stroke">
+                                    {headerContent}
+                                </div>
+                                <div className="flex-1 min-h-0 overflow-y-auto px-6 py-4">
+                                    {modalBodyContent}
+                                </div>
+                                <div className="flex-shrink-0 px-6 py-4 border-t border-stroke bg-white">
+                                    {footerContent}
+                                </div>
+                            </>
+                        )}
                     </div>
                 </Drawer>
             ) : (
@@ -369,13 +375,21 @@ const InstantSessionDetailModal: React.FC<InstantSessionDetailModalProps> = ({
                     onClose={onClose}
                     width={600}
                     hideCloseIcon={true}
-                    headerComponent={headerContent}
+                    hideFooter={isCheckingValidation}
+                    rootClassName={isCheckingValidation ? "!rounded-2xl" : ""}
+                    headerComponent={!isCheckingValidation ? headerContent : undefined}
                     headerClassName="!px-6 !py-5 !border-0"
-                    bodyClassName="!px-6 !py-1"
-                    footerComponent={footerContent}
+                    bodyClassName={isCheckingValidation ? "!px-6 !py-1 !rounded-2xl" : "!px-6 !py-1"}
+                    footerComponent={!isCheckingValidation ? footerContent : undefined}
                     footerClassName="!px-6 !py-4 !border-0"
                 >
-                    {modalBodyContent}
+                    {isCheckingValidation ? (
+                        <div className="flex items-center justify-center py-20 min-h-[300px] rounded-2xl">
+                            <Spin size="large" />
+                        </div>
+                    ) : (
+                        modalBodyContent
+                    )}
                 </CenterModal>
             )}
 

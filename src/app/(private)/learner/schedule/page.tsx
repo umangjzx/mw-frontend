@@ -25,14 +25,14 @@ export default function LearnerSchedulePage() {
     const router = useRouter();
     const isMobileOrTabScreen = InnerWidth() < 1024;
 
-    const { eventDetails, currentMonth,setLearnerUtcOffset,setLearnerTimeZone } = useAppStore();
+    const { eventDetails, currentMonth, setLearnerUtcOffset, setLearnerTimeZone } = useAppStore();
     const queryClient = useQueryClient();
 
     const [modal] = useQueryState("modal");
     const learnerId = Cookies.get("learner_id");
 
     const getEvents = () => getCalendarEvents(learnerId as string, "learner", currentMonth);
- 
+
     const { data, isFetching } = useQuery({
         queryKey: ["learner-events", currentMonth],
         queryFn: getEvents,
@@ -92,9 +92,9 @@ export default function LearnerSchedulePage() {
                 <div className="w-full h-full animate-fadeIn">
                     {
                         isMobileOrTabScreen ?
-                            <MobileCalender events={data || []} hidePastEvents />
+                            <MobileCalender events={data || []} />
                             :
-                            <Calendar events={data || []} hidePastEvents />
+                            <Calendar events={data || []} />
                     }
                     <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleNavigate} />
                     <FeedbackModal

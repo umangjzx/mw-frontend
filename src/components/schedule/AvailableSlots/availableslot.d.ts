@@ -5,6 +5,8 @@ interface AvailableSlotsRadioGroupProps {
     errors: string;
     slotError: string;
     fetchingSlots: boolean;
+    selectedDate?: string;
+    volunteerTimezone?: string;
 }
 
 interface Slot {
