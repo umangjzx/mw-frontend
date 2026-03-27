@@ -75,8 +75,8 @@ const durationOptions = [
     { label: "30 mins", value: "30" },
     { label: "45 mins", value: "45" },
     { label: "1 hour", value: "60" },
-    { label: "1.5 hours", value: "90" },
-    { label: "2 hours", value: "120" },
+    // { label: "1.5 hours", value: "90" },
+    // { label: "2 hours", value: "120" },
 ];
 
 /** Request body for POST /api/v1/session/instant_session */

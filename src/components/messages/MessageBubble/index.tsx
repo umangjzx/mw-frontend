@@ -1,6 +1,8 @@
+"use client";
 import React from "react";
 import Image from "next/image";
-import moment from "moment";
+import moment from "moment-timezone";
+import { useAppStore } from "@/store/useAppStore";
 interface MessageBubbleProps {
     message: string;
     timestamp: string;
@@ -16,6 +18,37 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
     isOwnMessage,
     userImage,
 }) => {
+    const { volunteerDetails, learnerDetails } = useAppStore();
+
+    const timezoneMapping: Record<string, string> = {
+        AKST: "America/Anchorage",
+        AST: "America/Halifax",
+        CST: "America/Chicago",
+        EST: "America/New_York",
+        HST: "Pacific/Honolulu",
+        MST: "America/Denver",
+        NST: "America/St_Johns",
+        PST: "America/Los_Angeles",
+        IST: "Asia/Kolkata",
+    };
+
+    const timezoneRaw =
+        (volunteerDetails as { volunteer_contact_details?: { timezone?: string } })
+            ?.volunteer_contact_details?.timezone ||
+        (learnerDetails as {
+            learner_personal_info?: { learner_contact_details?: { timezone?: string } };
+        })?.learner_personal_info?.learner_contact_details?.timezone ||
+        "";
+
+    const rawAbbreviation = timezoneRaw.includes(" - ")
+        ? (timezoneRaw.split(" - ")[0]?.trim() ?? "")
+        : timezoneRaw.trim();
+
+    const ianaTimezone = timezoneMapping[rawAbbreviation];
+    const formattedMessageTime = ianaTimezone
+        ? moment.parseZone(date).tz(ianaTimezone)
+        : moment.parseZone(date);
+
     return (
         <div
             className={`w-full h-fit flex items-${
@@ -24,7 +57,9 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
         >
             <div
                 className={`flex gap-2 transition-all duration-300 ease-in-out max-w-[85%] md:max-w-none ${
-                    isOwnMessage ? "flex-row-reverse ml-auto md:ml-0 md:flex-row" : "flex-row mr-auto md:mr-0"
+                    isOwnMessage
+                        ? "flex-row-reverse ml-auto md:ml-0 md:flex-row"
+                        : "flex-row mr-auto md:mr-0"
                 }`}
             >
                 {!isOwnMessage && userImage && (
@@ -44,13 +79,17 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
                     <p className="md:text-base text-[16px] text-[#121212] break-words">{message}</p>
                     <div
                         className={`flex justify-end mt-2 items-center gap-1.5 md:gap-2 md:text-sm text-[16px] font-normal ${
-                            isOwnMessage ? "text-[#4F4F4F] md:text-gray-500" : "text-[#4F4F4F] md:text-gray-500"
+                            isOwnMessage
+                                ? "text-[#4F4F4F] md:text-gray-500"
+                                : "text-[#4F4F4F] md:text-gray-500"
                         }`}
                     >
-                        <span className="md:hidden">{moment.parseZone(date).format("Do MMM")}</span>
+                        <span className="md:hidden">{formattedMessageTime.format("Do MMM")}</span>
                         <span className="md:hidden font-black">•</span>
-                        <span className="md:hidden">{moment.parseZone(date).format("h:mm a")}</span>
-                        <span className="hidden md:inline">{moment.parseZone(date).format("Do MMM • h:mm a")}</span>
+                        <span className="md:hidden">{formattedMessageTime.format("h:mm a")}</span>
+                        <span className="hidden md:inline">
+                            {formattedMessageTime.format("Do MMM • h:mm a")}
+                        </span>
                     </div>
                 </div>
                 {isOwnMessage && userImage && (
