@@ -319,6 +319,7 @@ const OnetImeScheduleModal = ({
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <MobileTimePicker
                     format="h:mm A"
+                    minutesStep={1}
                     timezone={volunteerTimezone || "UTC"}
                     value={tempTime}
                     onChange={(time) => setTempTime(time)}
