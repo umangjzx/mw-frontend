@@ -159,6 +159,20 @@ const OnetImeScheduleModal = ({
             return;
         }
 
+        // Enforce max slot duration of 60 minutes.
+        const hasMoreThanOneHourSlot = finalSlots.some((slot) => {
+            const start = dayjs(slot.start_time, "HH:mm");
+            const end = dayjs(slot.end_time, "HH:mm");
+            return end.diff(start, "minute") > 60;
+        });
+        if (hasMoreThanOneHourSlot) {
+            showToast({
+                message: "Each slot must be within one hour.",
+                type: "error",
+            });
+            return;
+        }
+
         if (invalidSlots.length > 0) {
             showToast({
                 message: "Please fix invalid or overlapping slots before submitting.",
@@ -277,6 +291,13 @@ const OnetImeScheduleModal = ({
             if (slotA.start_time === slotA.end_time) {
                 if (!newInvalidSlots.includes(idxA)) newInvalidSlots.push(idxA);
             }
+
+            // 4. Check for durations more than one hour
+            const slotStart = dayjs(slotA.start_time, "HH:mm");
+            const slotEnd = dayjs(slotA.end_time, "HH:mm");
+            if (slotEnd.diff(slotStart, "minute") > 60) {
+                if (!newInvalidSlots.includes(idxA)) newInvalidSlots.push(idxA);
+            }
         });
 
         setInvalidSlots(newInvalidSlots);
@@ -327,20 +348,22 @@ const OnetImeScheduleModal = ({
                     shouldDisableTime={(timeValue: dayjs.Dayjs, clockType: string) => {
                         const nowInTz = getNowInVolunteerTimezone();
                         const isToday = currentDate === nowInTz.format("YYYY-MM-DD");
-                        const timeStr = timeValue.format("HH:mm");
 
-                        const isBooked = existingSlots.some((slot) => {
-                            if (!slot.start_time || !slot.end_time) return false;
-                            return timeStr >= slot.start_time && timeStr < slot.end_time;
-                        });
-
-                        if (isToday) {
-                            if (timeValue.isBefore(nowInTz, "minute")) return true;
+                        // Keep blocking past times for current day.
+                        if (isToday && timeValue.isBefore(nowInTz, "minute")) {
+                            return true;
                         }
 
-                        if (clockType === "hours" || clockType === "minutes") {
-                            return isBooked;
+                        // Only restrict booked values in the minute picker.
+                        // This allows selecting the same hour again (e.g. 4:30 after 4:20 is booked).
+                        if (clockType === "minutes") {
+                            const timeStr = timeValue.format("HH:mm");
+                            return existingSlots.some((slot) => {
+                                if (!slot.start_time || !slot.end_time) return false;
+                                return timeStr >= slot.start_time && timeStr < slot.end_time;
+                            });
                         }
+
                         return false;
                     }}
 
