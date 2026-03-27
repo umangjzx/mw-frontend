@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Lottie from "react-lottie-player";
 import LearnerLoadingAnimation from "@/assets/json/animations/Learner.json";
 import VolunteerLoadingAnimation from "@/assets/json/animations/Volunteer.json";
@@ -21,22 +21,12 @@ const LottieLoader: React.FC<Props> = ({
 }) => {
     const role = Cookies.get("role");
 
-    useEffect(() => {
-        if (typeof window === "undefined") return; // SSR safety check
-
-        if (fullscreen && isLoading) {
-            document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "";
-        }
-        return () => {
-            document.body.style.overflow = "";
-        };
-    }, [isLoading, fullscreen]);
     if (!isLoading || typeof window === "undefined") return null;
 
     const loaderContent = (
-        <div className={`w-[6rem] md:w-[8rem] lg:w-[9rem] h-[6rem] md:h-[8rem] lg:h-[9rem] flex-center ${customClassName}`}>
+        <div
+            className={`pointer-events-auto w-[6rem] md:w-[8rem] lg:w-[9rem] h-[6rem] md:h-[8rem] lg:h-[9rem] flex-center ${customClassName}`}
+        >
             <Lottie
                 loop
                 play
@@ -54,7 +44,9 @@ const LottieLoader: React.FC<Props> = ({
     return createPortal(
         <div
             style={{ zIndex: zIndex || 2000 }}
-            className="fixed inset-0 w-screen h-screen flex-center"
+            className="fixed inset-0 w-screen h-screen flex items-center justify-center pointer-events-none"
+            aria-busy="true"
+            role="status"
         >
             {loaderContent}
         </div>,
