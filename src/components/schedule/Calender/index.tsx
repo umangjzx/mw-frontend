@@ -294,8 +294,6 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
             return event;
         }) || [];
 
-
-
     return (
         <>
             <MeetingPreviewModal
@@ -319,7 +317,7 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
                 onCancel={handleCloseModal}
                 onProceed={() => setShowModal(null)}
                 value={""}
-                onChange={() => { }}
+                onChange={() => {}}
                 onClose={handleCloseModal}
             />
 

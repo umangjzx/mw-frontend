@@ -17,7 +17,7 @@ const LottieLoader: React.FC<Props> = ({
     isLoading,
     customClassName,
     zIndex,
-    fullscreen = true,
+    fullscreen = false,
 }) => {
     const role = Cookies.get("role");
 
@@ -30,7 +30,9 @@ const LottieLoader: React.FC<Props> = ({
             <Lottie
                 loop
                 play
-                animationData={role === "learner" ? LearnerLoadingAnimation : VolunteerLoadingAnimation}
+                animationData={
+                    role === "learner" ? LearnerLoadingAnimation : VolunteerLoadingAnimation
+                }
                 rendererSettings={{ preserveAspectRatio: "xMidYMid slice" }}
                 style={{ width: "100%", borderRadius: "10px" }}
             />
@@ -38,7 +40,11 @@ const LottieLoader: React.FC<Props> = ({
     );
 
     if (!fullscreen) {
-        return <div className="w-full h-full min-h-[70vh] flex items-center justify-center">{loaderContent}</div>;
+        return (
+            <div className="flex h-full w-full min-h-0 items-center justify-center">
+                {loaderContent}
+            </div>
+        );
     }
 
     return createPortal(
