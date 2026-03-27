@@ -3,6 +3,7 @@ import Lottie from "react-lottie-player";
 import LearnerLoadingAnimation from "@/assets/json/animations/Learner.json";
 import VolunteerLoadingAnimation from "@/assets/json/animations/Volunteer.json";
 import Cookies from "js-cookie";
+import { createPortal } from "react-dom";
 
 type Props = {
     isLoading: boolean;
@@ -26,24 +27,24 @@ const LottieLoader: React.FC<Props> = ({ isLoading, customClassName, zIndex }) =
             document.body.style.overflow = "";
         };
     }, [isLoading]);
-    return (
-        <>
-            {isLoading && (
-                <div
-                    style={{ zIndex: zIndex || "1" }}
-                    className="w-full h-full flex-center">
-                    <div className={`w-[6rem] md:w-[8rem] lg:w-[9rem] h-[6rem] md:h-[8rem] lg:h-[9rem] flex-center ${customClassName}`}>
-                        <Lottie
-                            loop
-                            play
-                            animationData={role === "learner" ? LearnerLoadingAnimation : VolunteerLoadingAnimation}
-                            rendererSettings={{ preserveAspectRatio: "xMidYMid slice" }}
-                            style={{ width: "100%", borderRadius: "10px" }}
-                        />
-                    </div>
-                </div>
-            )}
-        </>
+    if (!isLoading || typeof window === "undefined") return null;
+
+    return createPortal(
+        <div
+            style={{ zIndex: zIndex || 2000 }}
+            className="fixed inset-0 w-screen h-screen bg-white flex-center"
+        >
+            <div className={`w-[6rem] md:w-[8rem] lg:w-[9rem] h-[6rem] md:h-[8rem] lg:h-[9rem] flex-center ${customClassName}`}>
+                <Lottie
+                    loop
+                    play
+                    animationData={role === "learner" ? LearnerLoadingAnimation : VolunteerLoadingAnimation}
+                    rendererSettings={{ preserveAspectRatio: "xMidYMid slice" }}
+                    style={{ width: "100%", borderRadius: "10px" }}
+                />
+            </div>
+        </div>,
+        document.body
     );
 };
 
