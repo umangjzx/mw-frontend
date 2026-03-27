@@ -285,8 +285,8 @@ export default function NewEventModal({
                 return true;
             }
 
-            // check if all 15-minute slots in this hour are unavailable (past or booked)
-            const minutesToCheck = [0, 15, 30, 45];
+            // Check if all minute slots in this hour are unavailable (past or booked)
+            const minutesToCheck = Array.from({ length: 60 }, (_, minute) => minute);
             return minutesToCheck.every((minute) => {
                 const checkTime = timeValue.minute(minute).second(0);
                 if (isToday && checkTime.isBefore(nowInTz, "minute")) return true;
@@ -589,6 +589,7 @@ export default function NewEventModal({
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <MobileTimePicker
                                     format="h:mm A"
+                                    minutesStep={1}
                                     timezone={volunteerTimezone || "UTC"}
                                     value={tempTime}
                                     onChange={(time) => {
