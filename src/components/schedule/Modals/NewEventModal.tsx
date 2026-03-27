@@ -289,12 +289,12 @@ export default function NewEventModal({
             const minutesToCheck = [0, 15, 30, 45];
             return minutesToCheck.every((minute) => {
                 const checkTime = timeValue.minute(minute).second(0);
-                if (isToday && checkTime.isBefore(nowInTz)) return true;
+                if (isToday && checkTime.isBefore(nowInTz, "minute")) return true;
                 return isTimeSlotBooked(checkTime.format("HH:mm"));
             });
         } else if (clockType === "minutes") {
             const timeStr = timeValue.format("HH:mm");
-            if (isToday && timeValue.isBefore(nowInTz)) return true;
+            if (isToday && timeValue.isBefore(nowInTz, "minute")) return true;
             return isTimeSlotBooked(timeStr);
         } else if (clockType === "meridiem") {
             if (isToday && nowInTz.format("A") === "PM" && timeValue.format("A") === "AM") {
