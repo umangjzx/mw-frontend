@@ -86,27 +86,24 @@ export default function LearnerSchedulePage() {
 
     return (
         <>
-            {isFetching ? (
-                <LottieLoader isLoading={true} />
-            ) : (
-                <div className="w-full h-full animate-fadeIn">
-                    {
-                        isMobileOrTabScreen ?
-                            <MobileCalender events={data || []} />
-                            :
-                            <Calendar events={data || []} />
-                    }
-                    <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleNavigate} />
-                    <FeedbackModal
-                        mode="create"
-                        isOpen={isOpenFeedback}
-                        onClose={handleNavigate}
-                        onSubmit={onSave}
-                        data={eventDetails}
-                        Loading={isPending}
-                    />
-                </div>
-            )}
+            <div className="w-full h-full animate-fadeIn">
+                {isFetching ? (
+                    <LottieLoader isLoading={true} fullscreen={false} />
+                ) : isMobileOrTabScreen ? (
+                    <MobileCalender events={data || []} />
+                ) : (
+                    <Calendar events={data || []} />
+                )}
+                <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleNavigate} />
+                <FeedbackModal
+                    mode="create"
+                    isOpen={isOpenFeedback}
+                    onClose={handleNavigate}
+                    onSubmit={onSave}
+                    data={eventDetails}
+                    Loading={isPending}
+                />
+            </div>
         </>
     );
 }
