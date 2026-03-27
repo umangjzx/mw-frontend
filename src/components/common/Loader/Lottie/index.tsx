@@ -10,15 +10,21 @@ type Props = {
     customClassName?: string;
     children?: React.ReactNode;
     zIndex?: string | number;
+    fullscreen?: boolean;
 };
 
-const LottieLoader: React.FC<Props> = ({ isLoading, customClassName, zIndex }) => {
+const LottieLoader: React.FC<Props> = ({
+    isLoading,
+    customClassName,
+    zIndex,
+    fullscreen = true,
+}) => {
     const role = Cookies.get("role");
 
     useEffect(() => {
         if (typeof window === "undefined") return; // SSR safety check
-        
-        if (isLoading) {
+
+        if (fullscreen && isLoading) {
             document.body.style.overflow = "hidden";
         } else {
             document.body.style.overflow = "";
@@ -26,23 +32,31 @@ const LottieLoader: React.FC<Props> = ({ isLoading, customClassName, zIndex }) =
         return () => {
             document.body.style.overflow = "";
         };
-    }, [isLoading]);
+    }, [isLoading, fullscreen]);
     if (!isLoading || typeof window === "undefined") return null;
+
+    const loaderContent = (
+        <div className={`w-[6rem] md:w-[8rem] lg:w-[9rem] h-[6rem] md:h-[8rem] lg:h-[9rem] flex-center ${customClassName}`}>
+            <Lottie
+                loop
+                play
+                animationData={role === "learner" ? LearnerLoadingAnimation : VolunteerLoadingAnimation}
+                rendererSettings={{ preserveAspectRatio: "xMidYMid slice" }}
+                style={{ width: "100%", borderRadius: "10px" }}
+            />
+        </div>
+    );
+
+    if (!fullscreen) {
+        return <div className="w-full h-full min-h-[70vh] flex items-center justify-center">{loaderContent}</div>;
+    }
 
     return createPortal(
         <div
             style={{ zIndex: zIndex || 2000 }}
-            className="fixed inset-0 w-screen h-screen bg-white flex-center"
+            className="fixed inset-0 w-screen h-screen flex-center"
         >
-            <div className={`w-[6rem] md:w-[8rem] lg:w-[9rem] h-[6rem] md:h-[8rem] lg:h-[9rem] flex-center ${customClassName}`}>
-                <Lottie
-                    loop
-                    play
-                    animationData={role === "learner" ? LearnerLoadingAnimation : VolunteerLoadingAnimation}
-                    rendererSettings={{ preserveAspectRatio: "xMidYMid slice" }}
-                    style={{ width: "100%", borderRadius: "10px" }}
-                />
-            </div>
+            {loaderContent}
         </div>,
         document.body
     );
