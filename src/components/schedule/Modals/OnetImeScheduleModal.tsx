@@ -326,11 +326,9 @@ const OnetImeScheduleModal = ({
                     onOpen={() => {
                         setOriginalTempTime(tempTime);
                         if (!tempTime) {
-                            // Default to present in volunteer's timezone rounded to 15 mins
+                            // Default to current minute in volunteer's timezone
                             const nowInTz = getNowInVolunteerTimezone();
-                            const minutes = nowInTz.minute();
-                            const roundedMinutes = Math.ceil(minutes / 15) * 15;
-                            const defaultTime = nowInTz.minute(roundedMinutes).second(0);
+                            const defaultTime = nowInTz.second(0);
                             setTempTime(defaultTime);
                         }
                     }}
