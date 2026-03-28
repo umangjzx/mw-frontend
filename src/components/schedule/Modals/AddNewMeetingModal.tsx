@@ -577,7 +577,11 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
                     errors={errors.selected_slot || ""}
                     slotError={slotError}
                     fetchingSlots={fetchingSlots}
-                    selectedDate={formData.select_date ? moment(formData.select_date).format("YYYY-MM-DD") : undefined}
+                    selectedDate={
+                        formData.select_date
+                            ? moment(formData.select_date).format("YYYY-MM-DD")
+                            : undefined
+                    }
                     volunteerTimezone={volunteerTimezone}
                 />
 
