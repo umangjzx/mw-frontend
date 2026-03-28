@@ -5,7 +5,11 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import moment from "moment-timezone";
-
+import Cookies from "js-cookie";
+import { useQuery } from "@tanstack/react-query";
+import { GET_API } from "@/api/request";
+import { endpoints } from "@/api/constants";
+import { useAppStore } from "@/store/useAppStore";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -20,24 +24,67 @@ const AvailableSlotsRadioGroup: React.FC<AvailableSlotsRadioGroupProps> = ({
     volunteerTimezone,
 }) => {
     const [isSlotsAvailable, setIsSlotsAvailable] = useState(false);
+    console.log("availableSlots", availableSlots);
 
-    // Filter slots that are in the past if the selected date is today
+
+    const role = Cookies.get("role");
+    const volunteerId = Cookies.get("volunteer_id");
+    const learnerId = Cookies.get("learner_id");
+    const isVolunteer = role === "volunteer";
+
+
+
+    const getUserDetails = async () => {
+        const endpoint = isVolunteer
+            ? endpoints.volunteer.getIndividualVolunteer(volunteerId as string)
+            : endpoints.learner.getIndividualLearner(learnerId as string);
+        const { status, data } = await GET_API(endpoint);
+
+        if (status !== 200 || !data) return null;
+
+
+        return data;
+    };
+
+    const queryKey = isVolunteer
+        ? ["volunteerDetails", volunteerId]
+        : ["learnerDetails", learnerId];
+    const { data } = useQuery({
+        queryKey: queryKey,
+        queryFn: async () => await getUserDetails(),
+    });
+    const timezoneMapping: Record<string, string> = {
+        AKST: "America/Anchorage",
+        AST: "America/Halifax",
+        CST: "America/Chicago",
+        EST: "America/New_York",
+        HST: "Pacific/Honolulu",
+        MST: "America/Denver",
+        NST: "America/St_Johns",
+        PST: "America/Los_Angeles",
+        IST: "Asia/Kolkata",
+    };
+
+    const userProfileTimezone = isVolunteer
+        ? data?.volunteer_contact_details?.timezone
+        : data?.learner_personal_info?.learner_contact_details?.timezone;
+
+    // Handle full timezone strings like "MST - Mountain Standard Time (UTC-07:00)"
+    const tzKey = userProfileTimezone?.split(" - ")[0] || "";
+    const userIANA = (tzKey && timezoneMapping[tzKey]) || (userProfileTimezone && !userProfileTimezone.includes(" ") ? userProfileTimezone : dayjs.tz.guess());
+
     const filteredSlots = availableSlots.filter((slot) => {
         if (!selectedDate) return true;
 
-        const now = dayjs(); // User's local time
+        const now = dayjs().tz(userIANA);
         const todayStr = now.format("YYYY-MM-DD");
 
+        // Filter out past dates
+        if (selectedDate < todayStr) return false;
+
         if (selectedDate === todayStr) {
-            // Combine date and time (assuming slot.start_time is HH:mm)
-            // We compare it as if it's in the user's local timezone
             const [hours, minutes] = slot.start_time.split(":").map(Number);
-            const slotStartTime = now
-                .clone()
-                .hour(hours)
-                .minute(minutes)
-                .second(0)
-                .millisecond(0);
+            const slotStartTime = now.clone().hour(hours).minute(minutes).second(0).millisecond(0);
 
             return slotStartTime.isAfter(now);
         }
