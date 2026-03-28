@@ -151,7 +151,7 @@ const JoinUsStep2Page = () => {
                         {/* Question heading */}
                         <div className="mb-6 md:mb-8">
                             <h2 className="text-lg md:text-[24px] font-medium text-gray-900">
-                                Which position are you most interested in?
+                                Which position are you most interested in?<span className="text-red-500"> *</span>
                             </h2>
                         </div>
 

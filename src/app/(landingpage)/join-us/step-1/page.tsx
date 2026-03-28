@@ -428,7 +428,7 @@ const JoinUsStep1Page = () => {
                             {/* Radio confirmation */}
                             <div className="mt-4 space-y-3">
                                 <p className="text-[14px]     text-[#4F4F4F]">
-                                    Please confirm that you understand and are comfortable with this arrangement.
+                                    Please confirm that you understand and are comfortable with this arrangement.<span className="text-red-500"> *</span>
                                 </p>
 
                                 <RadioInput

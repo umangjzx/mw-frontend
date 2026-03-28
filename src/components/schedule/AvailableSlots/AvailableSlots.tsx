@@ -55,13 +55,25 @@ const AvailableSlotsRadioGroup: React.FC<AvailableSlotsRadioGroupProps> = ({
     });
     const timezoneMapping: Record<string, string> = {
         AKST: "America/Anchorage",
+        AKDT: "America/Anchorage",
         AST: "America/Halifax",
+        ADT: "America/Halifax",
         CST: "America/Chicago",
+        CDT: "America/Chicago",
         EST: "America/New_York",
+        EDT: "America/New_York",
         HST: "Pacific/Honolulu",
+        HDT: "Pacific/Honolulu",
         MST: "America/Denver",
+        MDT: "America/Denver",
+        MT: "America/Denver",
         NST: "America/St_Johns",
+        NDT: "America/St_Johns",
         PST: "America/Los_Angeles",
+        PDT: "America/Los_Angeles",
+        PT: "America/Los_Angeles",
+        CT: "America/Chicago",
+        ET: "America/New_York",
         IST: "Asia/Kolkata",
     };
 
@@ -77,12 +89,17 @@ const AvailableSlotsRadioGroup: React.FC<AvailableSlotsRadioGroupProps> = ({
     const filteredSlots = availableSlots.filter((slot) => {
         if (!selectedDate) return true;
 
-        // Use the explicitly provided volunteer timezone to interpret the slot's start time.
-        // If not provided, fallback to the user's local timezone guess.
-        const tz = volunteerTimezone || dayjs.tz.guess();
+        // Use the explicitly provided volunteer's resolved IANA timezone (from parent)
+        // or fall back to interpreting the time in their reported local timezone.
+        const tz = volunteerTimezone || userIANA;
+
+        // Correctly parse the slot's start time in the volunteer's timezone context.
         const slotStartTime = dayjs.tz(`${selectedDate} ${slot.start_time}`, tz);
 
-        // Hide if the slot is in the past relative to exactly now.
+        // Debug log to help track MDT vs MST issues
+        console.log(`Slot ${slot.start_time} ${tz} -> Abs: ${slotStartTime.toISOString()}, Now: ${dayjs().toISOString()}`);
+
+        // Hide if the slot is in the past relative to exactly now (absolute comparison).
         return slotStartTime.isAfter(dayjs());
     });
 
@@ -130,15 +147,20 @@ const AvailableSlotsRadioGroup: React.FC<AvailableSlotsRadioGroupProps> = ({
                 value={selectedSlot}
             >
                 <div className="flex gap-3 flex-wrap">
-                    {filteredSlots.map((slot) => (
-                        <Radio
-                            key={slot.volunteer_slot_id}
-                            value={slot.volunteer_slot_id}
-                            className="text-sm !text-[#16A34A] font-medium underline whitespace-nowrap"
-                        >
-                            {`${formatTime(slot.start_time)} - ${formatTime(slot.end_time)}`}
-                        </Radio>
-                    ))}
+                    {filteredSlots.map((slot) => {
+                        const tz = volunteerTimezone || userIANA;
+                        const abbr = dayjs.tz(`${selectedDate} ${slot.start_time}`, tz).format("z");
+
+                        return (
+                            <Radio
+                                key={slot.volunteer_slot_id}
+                                value={slot.volunteer_slot_id}
+                                className="text-sm !text-[#16A34A] font-medium underline whitespace-nowrap"
+                            >
+                                {`${formatTime(slot.start_time)} - ${formatTime(slot.end_time)} ${abbr}`}
+                            </Radio>
+                        );
+                    })}
                 </div>
             </Radio.Group>
             {isSlotsAvailable && <p className="text-xs text-red-500 mt-1">{errors}</p>}
