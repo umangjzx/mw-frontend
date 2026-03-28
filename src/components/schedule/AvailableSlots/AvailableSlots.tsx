@@ -85,27 +85,12 @@ const AvailableSlotsRadioGroup: React.FC<AvailableSlotsRadioGroupProps> = ({
     const tzKey = userProfileTimezone?.split(" - ")[0] || "";
     const userIANA = (tzKey && timezoneMapping[tzKey]) || (userProfileTimezone && !userProfileTimezone.includes(" ") ? userProfileTimezone : dayjs.tz.guess());
 
-    // Filter slots based on absolute time comparison.
-    const filteredSlots = availableSlots.filter((slot) => {
-        if (!selectedDate) return true;
-
-        // Use the explicitly provided volunteer's resolved IANA timezone (from parent)
-        // or fall back to interpreting the time in their reported local timezone.
-        const tz = volunteerTimezone || userIANA;
-
-        // Correctly parse the slot's start time in the volunteer's timezone context.
-        const slotStartTime = dayjs.tz(`${selectedDate} ${slot.start_time}`, tz);
-
-        // Debug log to help track MDT vs MST issues
-        console.log(`Slot ${slot.start_time} ${tz} -> Abs: ${slotStartTime.toISOString()}, Now: ${dayjs().toISOString()}`);
-
-        // Hide if the slot is in the past relative to exactly now (absolute comparison).
-        return slotStartTime.isAfter(dayjs());
-    });
+    // No filtering needed - showing all slots from API as requested.
+    const displaySlots = availableSlots;
 
     useEffect(() => {
-        setIsSlotsAvailable(filteredSlots.length > 0);
-    }, [availableSlots, filteredSlots.length]);
+        setIsSlotsAvailable(displaySlots.length > 0);
+    }, [displaySlots.length]);
 
     if (!isSlotsAvailable) {
         return (
@@ -117,7 +102,7 @@ const AvailableSlotsRadioGroup: React.FC<AvailableSlotsRadioGroupProps> = ({
                         {fetchingSlots ? (
                             <span>Fetching slots...</span>
                         ) : selectedDate ? (
-                            <span>No future slots available for this date.</span>
+                            <span>No slots available for this date.</span>
                         ) : (
                             <span>To see available slots, select a volunteer and date.</span>
                         )}
@@ -133,7 +118,7 @@ const AvailableSlotsRadioGroup: React.FC<AvailableSlotsRadioGroupProps> = ({
             <Radio.Group
                 size="small"
                 onChange={(e) => {
-                    const selectedSlot = filteredSlots.find(
+                    const selectedSlot = displaySlots.find(
                         (slot) => slot.volunteer_slot_id === e.target.value
                     );
                     if (selectedSlot) {
@@ -147,7 +132,7 @@ const AvailableSlotsRadioGroup: React.FC<AvailableSlotsRadioGroupProps> = ({
                 value={selectedSlot}
             >
                 <div className="flex gap-3 flex-wrap">
-                    {filteredSlots.map((slot) => {
+                    {displaySlots.map((slot) => {
                         const tz = volunteerTimezone || userIANA;
                         const abbr = dayjs.tz(`${selectedDate} ${slot.start_time}`, tz).format("z");
 
