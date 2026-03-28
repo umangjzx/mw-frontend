@@ -267,7 +267,7 @@ const JoinUsStep3Page = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full min-w-0">
                                     <div className="space-y-2 w-full min-w-0">
                                         <label className="text-[16px] font-normal text-gray-800">
-                                            How many hours per week are you available?
+                                            How many hours per week are you available?<span className="text-red-500"> *</span>
                                         </label>
                                         <input
                                             type="text"
@@ -333,7 +333,7 @@ const JoinUsStep3Page = () => {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.</p>
+                                    <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.{requiresCrimDetails && <span className="text-red-500"> *</span>}</p>
                                     <textarea
                                         rows={3}
                                         disabled={!requiresCrimDetails}
@@ -352,7 +352,7 @@ const JoinUsStep3Page = () => {
                                     <RadioInput inputType="radio" name="sex_offender" value={sexOffenderCheck} onChange={(v) => setSexOffenderCheck(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.</p>
+                                    <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.{requiresSexDetails && <span className="text-red-500"> *</span>}</p>
                                     <textarea
                                         rows={3}
                                         disabled={!requiresSexDetails}
@@ -381,7 +381,7 @@ const JoinUsStep3Page = () => {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.</p>
+                                    <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.{requiresDiscDetails && <span className="text-red-500"> *</span>}</p>
                                     <textarea
                                         rows={3}
                                         disabled={!requiresDiscDetails}
@@ -400,7 +400,7 @@ const JoinUsStep3Page = () => {
                                     <RadioInput inputType="radio" name="health_safety" value={healthCheck} onChange={(v) => setHealthCheck(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.</p>
+                                    <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.{requiresHealthDetails && <span className="text-red-500"> *</span>}</p>
                                     <textarea
                                         rows={3}
                                         disabled={!requiresHealthDetails}
@@ -427,7 +427,7 @@ const JoinUsStep3Page = () => {
                                     <RadioInput name="consent_3" value={consent3} onChange={(v) => setConsent3(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" inputType="radio" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;No&quot; answer above.</p>
+                                    <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;No&quot; answer above.{requiresConsentDetails && <span className="text-red-500"> *</span>}</p>
                                     <textarea
                                         rows={3}
                                         disabled={!requiresConsentDetails}
@@ -446,7 +446,7 @@ const JoinUsStep3Page = () => {
                                     <RadioInput inputType="radio" name="previous_volunteer" value={previousVolunteer} onChange={(v) => setPreviousVolunteer(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.</p>
+                                    <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.{requiresPrevVolDetails && <span className="text-red-500"> *</span>}</p>
                                     <textarea
                                         rows={3}
                                         disabled={!requiresPrevVolDetails}

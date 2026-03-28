@@ -55,13 +55,25 @@ const AvailableSlotsRadioGroup: React.FC<AvailableSlotsRadioGroupProps> = ({
     });
     const timezoneMapping: Record<string, string> = {
         AKST: "America/Anchorage",
+        AKDT: "America/Anchorage",
         AST: "America/Halifax",
+        ADT: "America/Halifax",
         CST: "America/Chicago",
+        CDT: "America/Chicago",
         EST: "America/New_York",
+        EDT: "America/New_York",
         HST: "Pacific/Honolulu",
+        HDT: "Pacific/Honolulu",
         MST: "America/Denver",
+        MDT: "America/Denver",
+        MT: "America/Denver",
         NST: "America/St_Johns",
+        NDT: "America/St_Johns",
         PST: "America/Los_Angeles",
+        PDT: "America/Los_Angeles",
+        PT: "America/Los_Angeles",
+        CT: "America/Chicago",
+        ET: "America/New_York",
         IST: "Asia/Kolkata",
     };
 
@@ -73,22 +85,12 @@ const AvailableSlotsRadioGroup: React.FC<AvailableSlotsRadioGroupProps> = ({
     const tzKey = userProfileTimezone?.split(" - ")[0] || "";
     const userIANA = (tzKey && timezoneMapping[tzKey]) || (userProfileTimezone && !userProfileTimezone.includes(" ") ? userProfileTimezone : dayjs.tz.guess());
 
-    // Filter slots based on absolute time comparison.
-    const filteredSlots = availableSlots.filter((slot) => {
-        if (!selectedDate) return true;
-
-        // Use the explicitly provided volunteer timezone to interpret the slot's start time.
-        // If not provided, fallback to the user's local timezone guess.
-        const tz = volunteerTimezone || dayjs.tz.guess();
-        const slotStartTime = dayjs.tz(`${selectedDate} ${slot.start_time}`, tz);
-
-        // Hide if the slot is in the past relative to exactly now.
-        return slotStartTime.isAfter(dayjs());
-    });
+    // No filtering needed - showing all slots from API as requested.
+    const displaySlots = availableSlots;
 
     useEffect(() => {
-        setIsSlotsAvailable(filteredSlots.length > 0);
-    }, [availableSlots, filteredSlots.length]);
+        setIsSlotsAvailable(displaySlots.length > 0);
+    }, [displaySlots.length]);
 
     if (!isSlotsAvailable) {
         return (
@@ -100,7 +102,7 @@ const AvailableSlotsRadioGroup: React.FC<AvailableSlotsRadioGroupProps> = ({
                         {fetchingSlots ? (
                             <span>Fetching slots...</span>
                         ) : selectedDate ? (
-                            <span>No future slots available for this date.</span>
+                            <span>No slots available for this date.</span>
                         ) : (
                             <span>To see available slots, select a volunteer and date.</span>
                         )}
@@ -116,7 +118,7 @@ const AvailableSlotsRadioGroup: React.FC<AvailableSlotsRadioGroupProps> = ({
             <Radio.Group
                 size="small"
                 onChange={(e) => {
-                    const selectedSlot = filteredSlots.find(
+                    const selectedSlot = displaySlots.find(
                         (slot) => slot.volunteer_slot_id === e.target.value
                     );
                     if (selectedSlot) {
@@ -130,15 +132,20 @@ const AvailableSlotsRadioGroup: React.FC<AvailableSlotsRadioGroupProps> = ({
                 value={selectedSlot}
             >
                 <div className="flex gap-3 flex-wrap">
-                    {filteredSlots.map((slot) => (
-                        <Radio
-                            key={slot.volunteer_slot_id}
-                            value={slot.volunteer_slot_id}
-                            className="text-sm !text-[#16A34A] font-medium underline whitespace-nowrap"
-                        >
-                            {`${formatTime(slot.start_time)} - ${formatTime(slot.end_time)}`}
-                        </Radio>
-                    ))}
+                    {displaySlots.map((slot) => {
+                        const tz = volunteerTimezone || userIANA;
+                        const abbr = dayjs.tz(`${selectedDate} ${slot.start_time}`, tz).format("z");
+
+                        return (
+                            <Radio
+                                key={slot.volunteer_slot_id}
+                                value={slot.volunteer_slot_id}
+                                className="text-sm !text-[#16A34A] font-medium underline whitespace-nowrap"
+                            >
+                                {`${formatTime(slot.start_time)} - ${formatTime(slot.end_time)} ${abbr}`}
+                            </Radio>
+                        );
+                    })}
                 </div>
             </Radio.Group>
             {isSlotsAvailable && <p className="text-xs text-red-500 mt-1">{errors}</p>}
