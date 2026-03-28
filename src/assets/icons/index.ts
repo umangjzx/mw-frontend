@@ -38,3 +38,7 @@ export { default as HostedByIcon } from "./HostedByIcon";
 export { default as VerifyTickIcon } from "./VerifyTickIcon";
 export { default as TodayIcon } from "./TodayIcon";
 export { default as SendIcon } from "./SendIcon";
+export {default as HeartDivider} from "./HeartDivider"
+export {default as SecureDonation} from "./SecureDonation"
+export {default as TaxDeductive} from "./TaxDeductive";
+export { default as NonProfit } from "./NonProfit";

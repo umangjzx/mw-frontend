@@ -25,14 +25,14 @@ export default function LearnerSchedulePage() {
     const router = useRouter();
     const isMobileOrTabScreen = InnerWidth() < 1024;
 
-    const { eventDetails, currentMonth,setLearnerUtcOffset,setLearnerTimeZone } = useAppStore();
+    const { eventDetails, currentMonth, setLearnerUtcOffset, setLearnerTimeZone } = useAppStore();
     const queryClient = useQueryClient();
 
     const [modal] = useQueryState("modal");
     const learnerId = Cookies.get("learner_id");
 
     const getEvents = () => getCalendarEvents(learnerId as string, "learner", currentMonth);
- 
+
     const { data, isFetching } = useQuery({
         queryKey: ["learner-events", currentMonth],
         queryFn: getEvents,
@@ -86,27 +86,24 @@ export default function LearnerSchedulePage() {
 
     return (
         <>
-            {isFetching ? (
-                <LottieLoader isLoading={true} />
-            ) : (
-                <div className="w-full h-full animate-fadeIn">
-                    {
-                        isMobileOrTabScreen ?
-                            <MobileCalender events={data || []} hidePastEvents />
-                            :
-                            <Calendar events={data || []} hidePastEvents />
-                    }
-                    <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleNavigate} />
-                    <FeedbackModal
-                        mode="create"
-                        isOpen={isOpenFeedback}
-                        onClose={handleNavigate}
-                        onSubmit={onSave}
-                        data={eventDetails}
-                        Loading={isPending}
-                    />
-                </div>
-            )}
+            <div className="w-full h-full animate-fadeIn">
+                {isFetching ? (
+                    <LottieLoader isLoading={true} fullscreen={false} />
+                ) : isMobileOrTabScreen ? (
+                    <MobileCalender events={data || []} />
+                ) : (
+                    <Calendar events={data || []} />
+                )}
+                <AddNewMeetingModal isOpen={isOpenSchedule} onClose={handleNavigate} />
+                <FeedbackModal
+                    mode="create"
+                    isOpen={isOpenFeedback}
+                    onClose={handleNavigate}
+                    onSubmit={onSave}
+                    data={eventDetails}
+                    Loading={isPending}
+                />
+            </div>
         </>
     );
 }

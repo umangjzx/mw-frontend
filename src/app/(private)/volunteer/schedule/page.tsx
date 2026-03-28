@@ -29,7 +29,8 @@ export default function SchedulePage() {
     const queryClient = useQueryClient();
     const router = useRouter();
     const isMobileOrTabScreen = InnerWidth() < 1024;
-    const { eventDetails, currentMonth,setVolunteerUtcOffset,setVolunteerTimeZone } = useAppStore();
+    const { eventDetails, currentMonth, setVolunteerUtcOffset, setVolunteerTimeZone } =
+        useAppStore();
     const [modal] = useQueryState("modal");
     const volunteerId = Cookies.get("volunteer_id");
     const [isOpenOnetImeSchedule, setIsOpenOnetImeSchedule] = useState(false);
@@ -43,7 +44,9 @@ export default function SchedulePage() {
     });
 
     const getVolunteerDetails = async () => {
-        const res = await GET_API(endpoints.volunteer.getIndividualVolunteer(volunteerId as string));
+        const res = await GET_API(
+            endpoints.volunteer.getIndividualVolunteer(volunteerId as string)
+        );
         if (res?.status === 200) {
             console.log("res?.data?.utc_offset", res?.data?.volunteer_contact_details?.utc_offset);
             setVolunteerUtcOffset(res?.data?.volunteer_contact_details?.utc_offset);
@@ -105,36 +108,35 @@ export default function SchedulePage() {
     }, [modal]);
 
     return (
-        <div className="w-full h-full animate-fadeIn relative">
-            {isFetching && (
-                <div className="absolute inset-0 z-10 flex items-center justify-center bg-white bg-opacity-75">
-                    <LottieLoader isLoading={true} />
-                </div>
+        <div className="w-full h-full animate-fadeIn">
+            {isFetching ? (
+                <LottieLoader isLoading={true} fullscreen={false} />
+            ) : isMobileOrTabScreen ? (
+                <MobileCalender events={data || []} onDateSelect={handleDateSelect} />
+            ) : (
+                <Calendar events={data || []} onDateSelect={handleDateSelect} />
             )}
-            <>
-                {isMobileOrTabScreen ? (
-                    <MobileCalender events={data || []} onDateSelect={handleDateSelect} />
-                ) : (
-                    <Calendar events={data || []} onDateSelect={handleDateSelect} />
-                )}
-                <MyScheduleModal isOpen={isOpenSchedule} onClose={handleNavigate} />
-                <ApprovalModal isOpen={isOpenApproval} onClose={handleNavigate} />
-                <NewEventModal isOpen={isOpenNewEvent} onClose={handleNavigate} onSubmit={handleNewEventSubmit} />
-                <FeedbackModal
-                    mode="create"
-                    isOpen={isOpenFeedback}
-                    onClose={handleNavigate}
-                    onSubmit={onSave}
-                    data={eventDetails}
-                    Loading={isPending}
-                />
-                <OnetImeScheduleModal
-                    isOpen={isOpenOnetImeSchedule}
-                    onClose={handleOpenOnetImeSchedule}
-                    isMobileScreen={isMobileOrTabScreen}
-                    currentDate={selectedDate}
-                />
-            </>
+            <MyScheduleModal isOpen={isOpenSchedule} onClose={handleNavigate} />
+            <ApprovalModal isOpen={isOpenApproval} onClose={handleNavigate} />
+            <NewEventModal
+                isOpen={isOpenNewEvent}
+                onClose={handleNavigate}
+                onSubmit={handleNewEventSubmit}
+            />
+            <FeedbackModal
+                mode="create"
+                isOpen={isOpenFeedback}
+                onClose={handleNavigate}
+                onSubmit={onSave}
+                data={eventDetails}
+                Loading={isPending}
+            />
+            <OnetImeScheduleModal
+                isOpen={isOpenOnetImeSchedule}
+                onClose={handleOpenOnetImeSchedule}
+                isMobileScreen={isMobileOrTabScreen}
+                currentDate={selectedDate}
+            />
         </div>
     );
 }

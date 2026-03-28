@@ -64,6 +64,76 @@ interface DeletedSlot {
     day: string;
 }
 
+interface TimePickerComponentProps {
+    day: string;
+    slot: TimeSlot;
+    slotIndex: number;
+    type: "start_time" | "end_time";
+    handleTimeChange: (day: string, slotIndex: number, type: "start_time" | "end_time", value: string | null) => void;
+    errors: { [key: string]: string[] };
+    timePickerClass: string;
+}
+
+const TimePickerComponent = ({
+    day,
+    slot,
+    slotIndex,
+    type,
+    handleTimeChange,
+    errors,
+    timePickerClass,
+}: TimePickerComponentProps) => {
+    const [selectedTime, setSelectedTime] = useState<dayjs.Dayjs | null>(
+        type === "start_time"
+            ? slot.start_time
+                ? dayjs(slot.start_time, "HH:mm")
+                : null
+            : slot.end_time
+                ? dayjs(slot.end_time, "HH:mm")
+                : null
+    );
+
+    const [tempTime, setTempTime] = useState<dayjs.Dayjs | null>(selectedTime);
+
+    // Sync state with props when slot changes
+    useEffect(() => {
+        const timeStr = type === "start_time" ? slot.start_time : slot.end_time;
+        const newTime = timeStr ? dayjs(timeStr, "HH:mm") : null;
+        setSelectedTime(newTime);
+        setTempTime(newTime);
+    }, [slot.start_time, slot.end_time, type]);
+
+    return (
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <MobileTimePicker
+                format="h:mm A"
+                value={tempTime}
+                onChange={(time) => setTempTime(time)}
+                onAccept={() => {
+                    if (tempTime) {
+                        setSelectedTime(tempTime);
+                        handleTimeChange(day, slotIndex, type, tempTime.format("HH:mm"));
+                    }
+                }}
+                closeOnSelect={false}
+                sx={{
+                    "& .MuiOutlinedInput-root": {
+                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                            border: "2px solid var(--background-secondary-color) !important",
+                        },
+                    },
+                }}
+                className={cn(
+                    timePickerClass,
+                    errors[day]?.some((error) =>
+                        error.includes(`Time slot ${slotIndex + 1}`)
+                    ) && "border-red-500"
+                )}
+            />
+        </LocalizationProvider>
+    );
+};
+
 const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) => {
     const [schedule, setSchedule] = useState<DaySchedule>({
         Sunday: [],
@@ -209,6 +279,11 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                 if (slot.start_time && slot.end_time) {
                     if (slot.start_time === slot.end_time) {
                         dayErrors.push(`${slotLabel}: Start and end time cannot be the same`);
+                    } else if (
+                        convertTimeToMinutes(slot.end_time) - convertTimeToMinutes(slot.start_time) >
+                        60
+                    ) {
+                        dayErrors.push(`${slotLabel}: Slot duration cannot exceed one hour`);
                     } else if (isTimeOverlapping(day, slot.start_time, slot.end_time, index)) {
                         dayErrors.push(`${slotLabel} overlaps with another slot`);
                     }
@@ -586,71 +661,6 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
         { label: "Custom", value: "custom" },
     ];
 
-    const TimePickerComponent = ({
-        day,
-        slot,
-        slotIndex,
-        type,
-    }: {
-        day: string;
-        slot: TimeSlot;
-        slotIndex: number;
-        type: "start_time" | "end_time";
-    }) => {
-        const [selectedTime, setSelectedTime] = useState<dayjs.Dayjs | null>(
-            type === "start_time"
-                ? slot.start_time
-                    ? dayjs(slot.start_time, "HH:mm")
-                    : null
-                : slot.end_time
-                    ? dayjs(slot.end_time, "HH:mm")
-                    : null
-        );
-
-        const [tempTime, setTempTime] = useState<dayjs.Dayjs | null>(selectedTime);
-
-        // Prevent end time = start time: end picker min is start + 1 min; start picker max is end - 1 min
-        const minTime =
-            type === "end_time" && slot.start_time
-                ? dayjs(slot.start_time, "HH:mm").add(1, "minute")
-                : undefined;
-        const maxTime =
-            type === "start_time" && slot.end_time
-                ? dayjs(slot.end_time, "HH:mm").subtract(1, "minute")
-                : undefined;
-
-        return (
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <MobileTimePicker
-                    format="h:mm A"
-                    value={tempTime}
-                    onChange={(time) => setTempTime(time)}
-                    onAccept={() => {
-                        if (tempTime) {
-                            setSelectedTime(tempTime);
-                            handleTimeChange(day, slotIndex, type, tempTime.format("HH:mm"));
-                        }
-                    }}
-                    minTime={minTime}
-                    maxTime={maxTime}
-                    closeOnSelect={false}
-                    sx={{
-                        "& .MuiOutlinedInput-root": {
-                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                border: "2px solid var(--background-secondary-color) !important",
-                            },
-                        },
-                    }}
-                    className={cn(
-                        timePickerClass,
-                        errors[day]?.some((error) =>
-                            error.includes(`Time slot ${slotIndex + 1}`)
-                        ) && "border-red-500"
-                    )}
-                />
-            </LocalizationProvider>
-        );
-    };
 
     return (
         <SideModal
@@ -689,8 +699,7 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                                     >
                                         <p className="font-semibold">{day}</p>
                                         <ChevronRightIcon
-                                            className={`transition-transform ${
-                                                isExpanded ? "rotate-90" : ""
+                                            className={`transition-transform ${isExpanded ? "rotate-90" : ""
                                                 }`}
                                         />
                                     </div>
@@ -713,6 +722,9 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                                                                         slot={slot}
                                                                         slotIndex={slotIndex}
                                                                         type="start_time"
+                                                                        handleTimeChange={handleTimeChange}
+                                                                        errors={errors}
+                                                                        timePickerClass={timePickerClass}
                                                                     />
                                                                 </div>
                                                                 <p className="text-sm font-medium">
@@ -724,6 +736,9 @@ const MyScheduleModal: React.FC<MyScheduleModalProps> = ({ isOpen, onClose }) =>
                                                                         slot={slot}
                                                                         slotIndex={slotIndex}
                                                                         type="end_time"
+                                                                        handleTimeChange={handleTimeChange}
+                                                                        errors={errors}
+                                                                        timePickerClass={timePickerClass}
                                                                     />
                                                                 </div>
                                                                 <span

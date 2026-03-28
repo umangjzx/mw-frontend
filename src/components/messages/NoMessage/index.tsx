@@ -4,9 +4,11 @@ import Nomessage from "@/assets/images/Nomessage.png";
 import Button from "@/components/common/Button";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { useState } from "react";
 const NoMessage = () => {
     const router = useRouter();
     const role = Cookies.get("role");
+    const [isNavigating, setIsNavigating] = useState(false);
 
     const handleGoToSettings = () => {
         if (role === "volunteer") {
@@ -17,6 +19,7 @@ const NoMessage = () => {
     };
 
     const handleStartConversation = () => {
+        setIsNavigating(true);
         if (role === "volunteer") {
             router.push("/volunteer/learners");
         } else {
@@ -34,6 +37,8 @@ const NoMessage = () => {
             </p>
             <Button
                 onClick={handleStartConversation}
+                loading={isNavigating}
+                disabled={isNavigating}
                 className="!text-[16px] !bg-black !text-white hover:!bg-black/80 hover:!text-white !rounded-full"
             >
                 Start Conversation

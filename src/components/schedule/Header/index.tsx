@@ -62,12 +62,12 @@ const Header = (props: Props) => {
         }
     };
 
-    const handleViewDemoforvolunteer=()=>{
-        if(typeof window !== "undefined"){
+    const handleViewDemoforvolunteer = () => {
+        if (typeof window !== "undefined") {
             window.open(VIEW_DEMO_LINK_FOR_VOLUNTEER, "_blank");
-            console.log(VIEW_DEMO_LINK_FOR_VOLUNTEER)
+            console.log(VIEW_DEMO_LINK_FOR_VOLUNTEER);
         }
-    }
+    };
 
     return (
         <div className="w-full h-full p-2 px-3">
@@ -79,7 +79,7 @@ const Header = (props: Props) => {
                             className="lg:hidden cursor-pointer"
                             onClick={() => setIsSideNavBarOpen(true)}
                         >
-                            <SideMenuIcon height="22px" width="22px"  />
+                            <SideMenuIcon height="22px" width="22px" />
                         </div>
                         <Button
                             onClick={() => {}}
@@ -111,7 +111,10 @@ const Header = (props: Props) => {
                                         customClassName="!border-none !bg-transparent font-semibold !text-black rounded-full !p-0"
                                     />
                                     {data?.unread_count > 0 && (
-                                        <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-black" aria-hidden />
+                                        <span
+                                            className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-black"
+                                            aria-hidden
+                                        />
                                     )}
                                 </div>
                             </>
@@ -174,26 +177,27 @@ const Header = (props: Props) => {
                                             </div>
                                         )}
                                     </div>
-                                    <Button
-                                        onClick={handleAddEvent}
-                                        title="Add New Instant Session"
-                                        customClassName="!bg-white max-lg:!text-sm !font-medium !text-black rounded-full lg:!p-3 !py-3 !px-3"
-                                    />
                                 </div>
                             )}
-                             {isMobileOrTabScreen && (
+                            {isMobileOrTabScreen && (
                                 <Button
                                     onClick={handleAddEvent}
                                     title="Add New Instant Session"
-                                    customClassName="!bg-white  !text-[14px]  lg:!text-sm !font-medium !text-black rounded-full !py-2 max-lg:flex-1"
+                                    customClassName="!bg-[#FFAC71] hover:!bg-[#FFAC71] focus:!bg-[#FFAC71] !text-[14px] lg:!text-sm !font-medium !text-black rounded-full !py-2 max-lg:flex-1 !border !border-[#FE5B11]"
                                 />
                             )}
                             <Button
                                 onClick={handleMySchedule}
-                                title={ "My Schedule" }
+                                title={"My Schedule"}
                                 customClassName="!bg-white !border !border-gray-200 !text-[14px] lg:!text-[16px] !font-medium !text-black rounded-full !py-2 lg:!py-3 lg:!px-3 max-lg:flex-1"
                             />
-                           
+                            {!isMobileOrTabScreen && (
+                                <Button
+                                    onClick={handleAddEvent}
+                                    title="Add New Instant Session"
+                                    customClassName="!bg-[#FFAC71] hover:!bg-[#FFAC71] focus:!bg-[#FFAC71] max-lg:!text-sm !font-medium !text-black rounded-full lg:!p-3 !py-3 !px-3 !border !border-[#FE5B11]"
+                                />
+                            )}
                         </div>
                     )}
                 </div>

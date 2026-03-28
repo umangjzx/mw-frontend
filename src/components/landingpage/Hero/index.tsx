@@ -3,28 +3,18 @@
 import HeroBannerImg from "@/assets/images/HeroBannerImg.png";
 import HeroBannerMobileImg from "@/assets/images/HeroBannerMobileImg.png";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import LandingPageButton from "../components/Button";
 import HeroBannerLogo from "@/assets/images/landingpage/hero-banner.png";
 import { useQueryState } from "nuqs";
-import dynamic from "next/dynamic";
+import Header from "../components/Header";
 
-const Header = dynamic(
-    () => import("../components/Header").then((m) => m.default),
-    { ssr: false }
-  );
-  
 
 const Hero = () => {
-    const [isVisible, setIsVisible] = useState(false);
     const [_, setParamMode] = useQueryState("signup_as");
 
-    useEffect(() => {
-        setIsVisible(true);
-    }, []);
-
     return (
-        <div className={`w-full h-full transition-opacity duration-1000 ease-in-out ${isVisible ? "opacity-100" : "opacity-0"}`}>
+        <div className="w-full h-full bg-white">
             <Header />
             <div className={`w-full md:h-[80vh] md:bg-white relative`}>
                 <div className="w-full !h-[300px] md:!h-full md:!relative">

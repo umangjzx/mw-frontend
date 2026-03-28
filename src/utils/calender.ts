@@ -97,7 +97,6 @@ export const getVolunteerInstantSession = async (
 function mapVolunteerSlotsToEvents(data: any[] | undefined): CalendarEvent[] {
     if (!Array.isArray(data)) return [];
     const events: CalendarEvent[] = [];
-    const today = moment().startOf("day");
 
     for (const dayData of data) {
         const slots = dayData?.slots ?? [];
@@ -106,37 +105,33 @@ function mapVolunteerSlotsToEvents(data: any[] | undefined): CalendarEvent[] {
         for (const slot of slots) {
             if (slot.session_details) {
                 const sd = slot.session_details;
-                const sessionDate = moment(sd.volunteer_start_date).startOf("day");
-                // Only show sessions that are today or in the future
-                if (sessionDate.isSameOrAfter(today)) {
-                    events.push({
-                        title: sd.session_title,
-                        date: sd.volunteer_start_date,
-                        start: moment(`${sd.volunteer_start_date} ${sd.volunteer_start_time}`).format(),
-                        end: moment(`${sd.volunteer_start_date} ${sd.volunteer_end_time}`).format(),
-                        backgroundColor: "var(--success-light-color)",
-                        classNames: ["event-item", "rounded-md", "py-1", "my-0.5"],
-                        textColor: "var(--success-color)",
-                        borderColor: "var(--success-color)",
-                        status: sd.status,
-                        extendedProps: {
-                            description: sd.session_description,
-                            meetLink: sd.meet_link,
-                            sessionId: sd.session_id,
-                            volunteerId: sd.volunteer_id,
-                            volunteer_full_name: sd.volunteer_full_name,
-                            learner: {
-                                id: sd.learner_id,
-                                firstName: sd.learner_full_name,
-                                lastName: sd.learner_last_name,
-                                picture: sd.learner_picture,
-                            },
-                            feedBackCollectedFromLearner: sd.feedback_collected_from_learner,
-                            feedBackCollectedFromVolunteer: sd.feedback_collected_from_volunteer,
+                events.push({
+                    title: sd.session_title,
+                    date: sd.volunteer_start_date,
+                    start: moment(`${sd.volunteer_start_date} ${sd.volunteer_start_time}`).format(),
+                    end: moment(`${sd.volunteer_start_date} ${sd.volunteer_end_time}`).format(),
+                    backgroundColor: "var(--success-light-color)",
+                    classNames: ["event-item", "rounded-md", "py-1", "my-0.5"],
+                    textColor: "var(--success-color)",
+                    borderColor: "var(--success-color)",
+                    status: sd.status,
+                    extendedProps: {
+                        description: sd.session_description,
+                        meetLink: sd.meet_link,
+                        sessionId: sd.session_id,
+                        volunteerId: sd.volunteer_id,
+                        volunteer_full_name: sd.volunteer_full_name,
+                        learner: {
+                            id: sd.learner_id,
+                            firstName: sd.learner_full_name,
+                            lastName: sd.learner_last_name,
+                            picture: sd.learner_picture,
                         },
-                    });
-                }
-            } else if (dayDate && moment(dayDate).isSameOrAfter(today)) {
+                        feedBackCollectedFromLearner: sd.feedback_collected_from_learner,
+                        feedBackCollectedFromVolunteer: sd.feedback_collected_from_volunteer,
+                    },
+                });
+            } else if (dayDate) {
                 events.push({
                     title: slot.title || "No Event",
                     date: dayDate,

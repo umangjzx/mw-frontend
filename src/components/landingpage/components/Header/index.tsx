@@ -41,8 +41,8 @@ const Header = () => {
 
     const links = [
         { title: "About Us", link: "/about-us" },
-        // { title: "Blogs", link: "/blogs" },
         // { title: "Donate", link: "/donate" },
+        // { title: "Blogs", link: "/blogs" },
         // { title: "Team Up", link: "/" },
     ];
 
@@ -54,7 +54,9 @@ const Header = () => {
     const hideNavigation = ["/privacy-policy", "/terms-and-conditions"].includes(pathname);
 
     return (
-        <div className="w-full mx-auto bg-white shadow-md ">
+        <div
+            className="w-full mx-auto bg-white shadow-md "
+        >
             <div className="w-full mx-auto flex justify-between items-center 2xl:px-[4%] px-[5%] py-5 ">
                 <Link href="/" className="cursor-pointer">
                     <Logo />
@@ -117,7 +119,10 @@ const Header = () => {
                             </div>
                         </div>
                     </SideNavBar>
-                    <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+                    <LoginModal
+                        isOpen={isLoginModalOpen}
+                        onClose={() => setIsLoginModalOpen(false)}
+                    />
                     <SignUpAsModal
                         isOpen={paramMode === "learner" || paramMode === "volunteer"}
                         onClose={() => setParamMode(null)}
