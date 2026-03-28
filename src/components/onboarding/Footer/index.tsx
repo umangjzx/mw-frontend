@@ -24,7 +24,7 @@ const Footer = (props: Props) => {
     const policyLinks: PolicyLink[] = [
         { href: "/privacy-policy", target: "_blank", label: "Privacy Policy" },
         { href: "/terms-and-conditions", target: "_blank", label: "Terms & Conditions" },
-        { href: "/join-us", label: "Join Us" },
+        // { href: "/join-us", label: "Join Us" },
         {
             href: "mailto:support@melodywings.org",
             target: "_blank",
@@ -33,7 +33,11 @@ const Footer = (props: Props) => {
     ];
 
     const socialLinks: SocialLink[] = [
-        { label: "LinkedIn", icon: FaLinkedin, href: "https://www.linkedin.com/company/melodywings" },
+        {
+            label: "LinkedIn",
+            icon: FaLinkedin,
+            href: "https://www.linkedin.com/company/melodywings",
+        },
         { label: "Instagram", icon: FaInstagram, href: "https://www.instagram.com/melodywings_" },
         {
             label: "Facebook",
