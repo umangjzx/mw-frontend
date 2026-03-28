@@ -73,22 +73,17 @@ const AvailableSlotsRadioGroup: React.FC<AvailableSlotsRadioGroupProps> = ({
     const tzKey = userProfileTimezone?.split(" - ")[0] || "";
     const userIANA = (tzKey && timezoneMapping[tzKey]) || (userProfileTimezone && !userProfileTimezone.includes(" ") ? userProfileTimezone : dayjs.tz.guess());
 
+    // Filter slots based on absolute time comparison.
     const filteredSlots = availableSlots.filter((slot) => {
         if (!selectedDate) return true;
 
-        const now = dayjs().tz(userIANA);
-        const todayStr = now.format("YYYY-MM-DD");
+        // Use the explicitly provided volunteer timezone to interpret the slot's start time.
+        // If not provided, fallback to the user's local timezone guess.
+        const tz = volunteerTimezone || dayjs.tz.guess();
+        const slotStartTime = dayjs.tz(`${selectedDate} ${slot.start_time}`, tz);
 
-        // Filter out past dates
-        if (selectedDate < todayStr) return false;
-
-        if (selectedDate === todayStr) {
-            const [hours, minutes] = slot.start_time.split(":").map(Number);
-            const slotStartTime = now.clone().hour(hours).minute(minutes).second(0).millisecond(0);
-
-            return slotStartTime.isAfter(now);
-        }
-        return true;
+        // Hide if the slot is in the past relative to exactly now.
+        return slotStartTime.isAfter(dayjs());
     });
 
     useEffect(() => {
