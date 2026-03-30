@@ -12,7 +12,7 @@ const Select = ({ disabled, inputType, inputClassName, isLoading, ...props }: Se
             disabled={disabled}
             showSearch={props.showSearch}
             notFoundContent={<p className="text-center py-2 font-medium text-gray-700">{isLoading ? <Spin size="small" /> : "No Data"}</p>}
-            rootClassName='text-sm border hover:bg-background-input !bg-background-input border-stroke rounded-md'
+            rootClassName='text-sm  hover:bg-background-input !bg-background-input rounded-md'
             className={`w-full text-sm h-fit rounded-md hover:bg-background-input bg-background-input ${inputClassName}`}
             options={props.options}
             popupClassName="overflow-auto no-scrollbar"
