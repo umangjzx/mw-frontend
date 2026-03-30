@@ -183,7 +183,7 @@ const JoinUsStep2Page = () => {
                                     onSelect={() => setSelectedPosition(OTHER_VALUE)}
                                 >
                                     <textarea
-                                        className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border"
+                                        className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0  box-border"
                                         rows={4}
                                         placeholder="Describe here"
                                         value={customRole}

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useJoinUsStore } from '@/store/useJoinUsStore';
 import { submitStep3, updateStep3 } from '@/api/join-us';
 import { showToast } from '@/components/common/Toast';
@@ -467,11 +468,21 @@ const JoinUsStep3Page = () => {
                                 <RadioInput inputType="radio" name="photo_consent" value={photoConsent} onChange={(v) => setPhotoConsent(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" />
                             </div>
 
-                            <div className="mt-4 flex items-start gap-2">
-                                <input id="terms" type="checkbox" checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} className="mt-1 h-4 w-4 rounded border-gray-300 text-black focus:ring-0 focus:ring-offset-0" />
-                                <p className="text-xs md:text-sm text-[#121212] leading-relaxed">
-                                    I consent to MW collecting, using and/or sharing my personal information as mentioned in the <span className="underline font-semibold">Privacy Policy</span>. <br className='mb-2' /> By accepting the <span className="underline font-semibold">Terms of Service</span>, either by clicking a box indicating your acceptance or by using and navigating through our platform through our website, you agree that (a) you have read and understood the agreement; (b) you represent that you are at least 18 years old; (c) you can form a binding contract; and (d) you accept this agreement and agree that you are legally bound by its terms. Individuals under the age of 18 or those with mental developmental disabilities of any age may access the services only when accompanied by a parent or legal guardian. Parents or guardians accompanying such users, by accepting the <span className="underline font-semibold">Terms of Service</span>, either by clicking a box indicating your acceptance or by using and navigating through our platform through our website, (a) you have read and understood the agreement; (b) you represent that you are the parent or legal guardian of such individual (c) your acceptance of these terms on behalf of the individual will form a binding contract; and (d) you accept this agreement on behalf of the individual and agree that the individual is legally bound by its terms&quot;
-                                </p>
+                            <div className="mt-4 flex flex-col items-start gap-2">
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        id="terms"
+                                        type="checkbox"
+                                        checked={termsAccepted}
+                                        onChange={(e) => setTermsAccepted(e.target.checked)}
+                                        className="h-4 w-4 rounded border-gray-300 text-black focus:ring-0 focus:ring-offset-0"
+                                    />
+                                    <p className="text-xs md:text-sm text-[#121212] leading-relaxed">
+                                        I consent to MW collecting, using and/or sharing my personal information as mentioned in the <Link href="/privacy-policy" target="_blank" className="underline font-semibold hover:text-primary transition-colors">Privacy Policy</Link>.
+                                    </p>
+                                </div>
+                               
+                                <p className="text-xs md:text-sm text-[#121212] leading-relaxed ">By accepting the <Link href="/terms-and-conditions" target="_blank" className="underline font-semibold hover:text-primary transition-colors">Terms of Service</Link>, either by clicking a box indicating your acceptance or by using and navigating through our platform through our website, you agree that (a) you have read and understood the agreement; (b) you represent that you are at least 18 years old; (c) you can form a binding contract; and (d) you accept this agreement and agree that you are legally bound by its terms. Individuals under the age of 18 or those with mental developmental disabilities of any age may access the services only when accompanied by a parent or legal guardian. Parents or guardians accompanying such users, by accepting the <Link href="/terms-and-conditions" target="_blank" className="underline font-semibold hover:text-primary transition-colors">Terms of Service</Link>, either by clicking a box indicating your acceptance or by using and navigating through our platform through our website, (a) you have read and understood the agreement; (b) you represent that you are the parent or legal guardian of such individual (c) your acceptance of these terms on behalf of the individual will form a binding contract; and (d) you accept this agreement on behalf of the individual and agree that the individual is legally bound by its terms&quot;</p>
                             </div>
                         </section>
 
