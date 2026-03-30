@@ -201,7 +201,7 @@ export const Input: React.FC<InputProps> = (props) => {
         if (!label) return null;
 
         const labelContent = (
-            <div className="inner-label max-lg:font-normal max-lg:text-sm">
+            <div className="inner-label">
                 <span>
                     {label}
                     {required && <span className="text-red-500">&nbsp;*</span>}
@@ -219,7 +219,13 @@ export const Input: React.FC<InputProps> = (props) => {
         );
 
         return (
-            <label htmlFor={name} className={`text-sm font-medium text-gray-700 ${labelClassName}`}>
+            <label
+                htmlFor={name}
+                className={cn(
+                    "text-[16px] md:text-sm font-normal text-gray-700",
+                    labelClassName
+                )}
+            >
                 <div
                     className={`flex ${
                         sublabelAlignment === "right" ? "items-center" : "flex-col items-start"

@@ -280,7 +280,7 @@ const JoinUsStep1Page = () => {
 
                                 {/* Phone */}
                                 <div className="flex flex-col gap-2 w-full min-w-0">
-                                    <label className="text-sm font-medium text-gray-700">
+                                    <label className="text-[16px] md:text-sm  text-gray-700">
                                         Phone No<span className="text-red-500"> *</span>
                                     </label>
                                     <div className="flex gap-2 w-full min-w-0">
@@ -451,6 +451,7 @@ const JoinUsStep1Page = () => {
                                         },
                                     ]}
                                     inputClassName="mt-1"
+                                    radioButtonClassName="w-full md:w-auto"
                                 />
                             </div>
 

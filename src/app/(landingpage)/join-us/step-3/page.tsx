@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { useJoinUsStore } from '@/store/useJoinUsStore';
 import { submitStep3, updateStep3 } from '@/api/join-us';
 import { showToast } from '@/components/common/Toast';
@@ -231,7 +230,7 @@ const JoinUsStep3Page = () => {
                             </h2>
 
                             <div className="space-y-2">
-                                <p className="text-[16px] font-normal text-gray-800">
+                                <p className="text-[16px] md:text-sm font-normal text-gray-800">
                                     Are you looking for an internship opportunity?
                                 </p>
                                 <RadioInput
@@ -249,25 +248,25 @@ const JoinUsStep3Page = () => {
 
                             <div className="space-y-4 md:space-y-5">
                                 <div className="space-y-2">
-                                    <label className="text-[16px] font-normal text-gray-800">Why are you interested in this opportunity with MelodyWings?</label>
+                                    <label className="text-[16px] md:text-sm font-normal text-gray-800">Why are you interested in this opportunity with MelodyWings?</label>
                                     <textarea rows={4} className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border" placeholder="Describe here" value={qMelodyWings} onChange={(e) => setQMelodyWings(e.target.value)} />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[16px] font-normal text-gray-800">Why are you interested in the role you selected?</label>
+                                    <label className="text-[16px] md:text-sm font-normal text-gray-800">Why are you interested in the role you selected?</label>
                                     <textarea rows={4} className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border" placeholder="Describe here" value={qRole} onChange={(e) => setQRole(e.target.value)} />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[16px] font-normal text-gray-800">What relevant experience do you have for this role?</label>
+                                    <label className="text-[16px] md:text-sm font-normal text-gray-800">What relevant experience do you have for this role?</label>
                                     <textarea rows={4} className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border" placeholder="Clubs, volunteer work, internships, school projects, etc." value={qExp} onChange={(e) => setQExp(e.target.value)} />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[16px] font-normal text-gray-800">What skills would you bring to this role?</label>
+                                    <label className="text-[16px] md:text-sm font-normal text-gray-800">What skills would you bring to this role?</label>
                                     <textarea rows={4} className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border" placeholder="Describe here" value={qSkills} onChange={(e) => setQSkills(e.target.value)} />
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full min-w-0">
                                     <div className="space-y-2 w-full min-w-0">
-                                        <label className="text-[16px] font-normal text-gray-800">
+                                        <label className="text-[16px] md:text-sm font-normal text-gray-800">
                                             How many hours per week are you available?<span className="text-red-500"> *</span>
                                         </label>
                                         <input
@@ -280,7 +279,7 @@ const JoinUsStep3Page = () => {
                                         />
                                     </div>
                                     <div className="space-y-2 w-full min-w-0">
-                                        <label className="text-[16px] font-normal text-gray-800">
+                                        <label className="text-[16px] md:text-sm font-normal text-gray-800">
                                             When would you be available to start?
                                         </label>
                                         <input
@@ -294,14 +293,14 @@ const JoinUsStep3Page = () => {
                                 </div>
 
                                 <div className="space-y-2 w-full min-w-0">
-                                    <label className="text-[16px] font-normal text-gray-800">
+                                    <label className="text-[16px] md:text-sm font-normal text-gray-800">
                                         Have you previously volunteered or worked with children or neurodivergent learners? If yes, please describe.
                                     </label>
                                     <textarea rows={4} className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border" placeholder="Describe here" value={qChildren} onChange={(e) => setQChildren(e.target.value)} />
                                 </div>
 
                                 <div className="space-y-2 w-full min-w-0">
-                                    <label className="text-[16px] font-normal text-gray-800">
+                                    <label className="text-[16px] md:text-sm font-normal text-gray-800">
                                         Is there anything else you would like us to know about you?
                                     </label>
                                     <textarea rows={4} className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border" placeholder="Describe here" value={qAdditional} onChange={(e) => setQAdditional(e.target.value)} />
@@ -313,7 +312,7 @@ const JoinUsStep3Page = () => {
 
                         {/* Legal and Safety Information */}
                         <section className="space-y-6">
-                            <h2 className="md:text-[24px] text-[20px] font-medium text-gray-900">
+                            <h2 className="text-[24px]  font-medium text-gray-900">
                                 Legal and Safety Information
                             </h2>
 
@@ -321,20 +320,20 @@ const JoinUsStep3Page = () => {
                                 <p className="text-[20px] font-medium text-gray-900">1. Criminal Background Check</p>
 
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Have you ever been convicted of a felony or misdemeanor?</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Have you ever been convicted of a felony or misdemeanor?</p>
                                     <RadioInput name="criminal_1" value={criminalCheck1} onChange={(v) => setCriminalCheck1(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" inputType="radio" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Have you ever been involved in any criminal activity or legal proceedings, including pending charges or arrests?</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Have you ever been involved in any criminal activity or legal proceedings, including pending charges or arrests?</p>
                                     <RadioInput name="criminal_2" value={criminalCheck2} onChange={(v) => setCriminalCheck2(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" inputType="radio" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Have you been convicted of any crimes involving minors, abuse, or neglect?</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Have you been convicted of any crimes involving minors, abuse, or neglect?</p>
                                     <RadioInput name="criminal_3" value={criminalCheck3} onChange={(v) => setCriminalCheck3(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" inputType="radio" />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.{requiresCrimDetails && <span className="text-red-500"> *</span>}</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.{requiresCrimDetails && <span className="text-red-500"> *</span>}</p>
                                     <textarea
                                         rows={3}
                                         disabled={!requiresCrimDetails}
@@ -349,11 +348,11 @@ const JoinUsStep3Page = () => {
                             <div className="rounded-3xl md:border border-gray-200 md:px-6 py-4 md:py-5 space-y-4">
                                 <p className="text-[20px] font-medium text-gray-900">2. Sex Offender Registry Check</p>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Are you listed on any state or national sex offender registries?</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Are you listed on any state or national sex offender registries?</p>
                                     <RadioInput inputType="radio" name="sex_offender" value={sexOffenderCheck} onChange={(v) => setSexOffenderCheck(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.{requiresSexDetails && <span className="text-red-500"> *</span>}</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.{requiresSexDetails && <span className="text-red-500"> *</span>}</p>
                                     <textarea
                                         rows={3}
                                         disabled={!requiresSexDetails}
@@ -369,20 +368,20 @@ const JoinUsStep3Page = () => {
                                 <p className="text-[20px] font-medium text-gray-900">3. Disciplinary History</p>
 
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Have you ever been terminated or asked to resign from a volunteer or employment position for reasons related to misconduct or inappropriate behavior?</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Have you ever been terminated or asked to resign from a volunteer or employment position for reasons related to misconduct or inappropriate behavior?</p>
                                     <RadioInput name="disc_1" value={disciplinary1} onChange={(v) => setDisciplinary1(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" inputType="radio" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Have you ever been involved in any disputes with employers or organizations related to safety or ethical issues?</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Have you ever been involved in any disputes with employers or organizations related to safety or ethical issues?</p>
                                     <RadioInput name="disc_2" value={disciplinary2} onChange={(v) => setDisciplinary2(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" inputType="radio" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Have you ever faced dismissal, suspension, probation, or any other disciplinary or academic action from a college, university, or professional school?</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Have you ever faced dismissal, suspension, probation, or any other disciplinary or academic action from a college, university, or professional school?</p>
                                     <RadioInput name="disc_3" value={disciplinary3} onChange={(v) => setDisciplinary3(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" inputType="radio" />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.{requiresDiscDetails && <span className="text-red-500"> *</span>}</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.{requiresDiscDetails && <span className="text-red-500"> *</span>}</p>
                                     <textarea
                                         rows={3}
                                         disabled={!requiresDiscDetails}
@@ -397,11 +396,11 @@ const JoinUsStep3Page = () => {
                             <div className="rounded-3xl md:border border-gray-200 md:px-6 py-4 md:py-5 space-y-4">
                                 <p className="text-[20px] font-medium text-gray-900">4. Health and Safety Information</p>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Do you have any physical or mental health conditions that may affect your ability to perform volunteer duties?</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Do you have any physical or mental health conditions that may affect your ability to perform volunteer duties?</p>
                                     <RadioInput inputType="radio" name="health_safety" value={healthCheck} onChange={(v) => setHealthCheck(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.{requiresHealthDetails && <span className="text-red-500"> *</span>}</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.{requiresHealthDetails && <span className="text-red-500"> *</span>}</p>
                                     <textarea
                                         rows={3}
                                         disabled={!requiresHealthDetails}
@@ -416,19 +415,19 @@ const JoinUsStep3Page = () => {
                             <div className="rounded-3xl md:border border-gray-200 md:px-6 py-4 md:py-5 space-y-4">
                                 <p className="text-[20px] font-medium text-gray-900">5. Consents</p>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Do you consent to do child abuse registry and sex offender checks if needed? *</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Do you consent to do child abuse registry and sex offender checks if needed? *</p>
                                     <RadioInput name="consent_1" value={consent1} onChange={(v) => setConsent1(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" inputType="radio" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Do you agree to follow the organization&apos;s policies on confidentiality, behavior, and safeguarding procedures? *</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Do you agree to follow the organization&apos;s policies on confidentiality, behavior, and safeguarding procedures? *</p>
                                     <RadioInput name="consent_2" value={consent2} onChange={(v) => setConsent2(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" inputType="radio" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Do you understand that your volunteer role may be terminated based on any criminal activity or failure to adhere to the organization&apos;s policies? *</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Do you understand that your volunteer role may be terminated based on any criminal activity or failure to adhere to the organization&apos;s policies? *</p>
                                     <RadioInput name="consent_3" value={consent3} onChange={(v) => setConsent3(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" inputType="radio" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;No&quot; answer above.{requiresConsentDetails && <span className="text-red-500"> *</span>}</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Please describe the circumstance behind the &quot;No&quot; answer above.{requiresConsentDetails && <span className="text-red-500"> *</span>}</p>
                                     <textarea
                                         rows={3}
                                         disabled={!requiresConsentDetails}
@@ -443,11 +442,11 @@ const JoinUsStep3Page = () => {
                             <div className="rounded-3xl md:border border-gray-200 md:px-6 py-4 md:py-5 space-y-4">
                                 <p className="text-[20px] font-medium text-gray-900">6. Previous Volunteer Experience</p>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Have you ever been involved in any incidents or complaints during previous volunteer roles? *</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Have you ever been involved in any incidents or complaints during previous volunteer roles? *</p>
                                     <RadioInput inputType="radio" name="previous_volunteer" value={previousVolunteer} onChange={(v) => setPreviousVolunteer(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.{requiresPrevVolDetails && <span className="text-red-500"> *</span>}</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.{requiresPrevVolDetails && <span className="text-red-500"> *</span>}</p>
                                     <textarea
                                         rows={3}
                                         disabled={!requiresPrevVolDetails}
@@ -461,28 +460,28 @@ const JoinUsStep3Page = () => {
                         </section>
 
                         <section className="space-y-4">
-                            <h2 className="md:text-[24px] text-[20px] font-medium text-gray-900">Consent and Permissions</h2>
+                            <h2 className="text-[24px] font-medium text-gray-900">Consent and Permissions</h2>
                             <div className="space-y-2">
-                                <p className="text-[16px] font-normal text-gray-800">Photo/Video Consent</p>
+                                <p className="text-[16px] md:text-sm font-normal text-gray-800">Photo/Video Consent</p>
                                 <p className="text-xs md:text-sm text-gray-600">(for use in program materials or promotional content)</p>
                                 <RadioInput inputType="radio" name="photo_consent" value={photoConsent} onChange={(v) => setPhotoConsent(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" />
                             </div>
 
-                            <div className="mt-4 flex flex-col items-start gap-2">
+                            <div className="mt-4 flex flex-col items-start gap-2 font-poppins">
                                 <div className="flex items-center gap-2">
                                     <input
                                         id="terms"
                                         type="checkbox"
                                         checked={termsAccepted}
                                         onChange={(e) => setTermsAccepted(e.target.checked)}
-                                        className="h-4 w-4 rounded border-gray-300 text-black focus:ring-0 focus:ring-offset-0"
+                                        className="h-5 w-4 !rounded border-gray-300 text-black focus:ring-0 focus:ring-offset-0"
                                     />
-                                    <p className="text-xs md:text-sm text-[#121212] leading-relaxed">
-                                        I consent to MW collecting, using and/or sharing my personal information as mentioned in the <Link href="/privacy-policy" target="_blank" className="underline font-semibold hover:text-primary transition-colors">Privacy Policy</Link>.
+                                    <p className="text-[16px] font-medium md:text-sm text-[#121212] leading-relaxed">
+                                        I consent to MW collecting, using and/or sharing my personal information as mentioned in the <span className="underline font-semibold">Privacy Policy</span>.
                                     </p>
                                 </div>
                                
-                                <p className="text-xs md:text-sm text-[#121212] leading-relaxed ">By accepting the <Link href="/terms-and-conditions" target="_blank" className="underline font-semibold hover:text-primary transition-colors">Terms of Service</Link>, either by clicking a box indicating your acceptance or by using and navigating through our platform through our website, you agree that (a) you have read and understood the agreement; (b) you represent that you are at least 18 years old; (c) you can form a binding contract; and (d) you accept this agreement and agree that you are legally bound by its terms. Individuals under the age of 18 or those with mental developmental disabilities of any age may access the services only when accompanied by a parent or legal guardian. Parents or guardians accompanying such users, by accepting the <Link href="/terms-and-conditions" target="_blank" className="underline font-semibold hover:text-primary transition-colors">Terms of Service</Link>, either by clicking a box indicating your acceptance or by using and navigating through our platform through our website, (a) you have read and understood the agreement; (b) you represent that you are the parent or legal guardian of such individual (c) your acceptance of these terms on behalf of the individual will form a binding contract; and (d) you accept this agreement on behalf of the individual and agree that the individual is legally bound by its terms&quot;</p>
+                                <p className="text-[16px] md:text-sm font-medium text-[#121212] leading-relaxed ">By accepting the <span className="underline font-semibold">Terms of Service</span>, either by clicking a box indicating your acceptance or by using and navigating through our platform through our website, you agree that (a) you have read and understood the agreement; (b) you represent that you are at least 18 years old; (c) you can form a binding contract; and (d) you accept this agreement and agree that you are legally bound by its terms. Individuals under the age of 18 or those with mental developmental disabilities of any age may access the services only when accompanied by a parent or legal guardian. Parents or guardians accompanying such users, by accepting the <span className="underline font-semibold">Terms of Service</span>, either by clicking a box indicating your acceptance or by using and navigating through our platform through our website, (a) you have read and understood the agreement; (b) you represent that you are the parent or legal guardian of such individual (c) your acceptance of these terms on behalf of the individual will form a binding contract; and (d) you accept this agreement on behalf of the individual and agree that the individual is legally bound by its terms&quot;</p>
                             </div>
                         </section>
 
