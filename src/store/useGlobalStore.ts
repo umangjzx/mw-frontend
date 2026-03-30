@@ -14,6 +14,7 @@ export const useGlobalStore: StateCreator<UseGlobalStoreProps> = (set, get) => (
     imageId: null,
     videoId: null,
     documentId: null,
+    isContentLoading: false,
     setCurrentMonth: (date: string) => set({ currentMonth: date }),
     setEventDetails: (details: any) => {
         const eventDetails = details?._def?.extendedProps  || details?.extendedProps;

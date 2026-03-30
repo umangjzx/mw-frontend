@@ -267,8 +267,9 @@ const JoinUsStep3Page = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full min-w-0">
                                     <div className="space-y-2 w-full min-w-0">
                                         <label className="text-[16px] md:text-sm font-normal text-gray-800">
-                                            How many hours per week are you available?<span className="text-red-500"> *</span>
+                                            How many hours per week are you available?
                                         </label>
+
                                         <input
                                             type="text"
                                             required
@@ -333,7 +334,7 @@ const JoinUsStep3Page = () => {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <p className="text-[16px] md:text-sm text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.{requiresCrimDetails && <span className="text-red-500"> *</span>}</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.</p>
                                     <textarea
                                         rows={3}
                                         disabled={!requiresCrimDetails}
@@ -352,7 +353,7 @@ const JoinUsStep3Page = () => {
                                     <RadioInput inputType="radio" name="sex_offender" value={sexOffenderCheck} onChange={(v) => setSexOffenderCheck(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] md:text-sm text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.{requiresSexDetails && <span className="text-red-500"> *</span>}</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.</p>
                                     <textarea
                                         rows={3}
                                         disabled={!requiresSexDetails}
@@ -381,7 +382,7 @@ const JoinUsStep3Page = () => {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <p className="text-[16px] md:text-sm text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.{requiresDiscDetails && <span className="text-red-500"> *</span>}</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.</p>
                                     <textarea
                                         rows={3}
                                         disabled={!requiresDiscDetails}
@@ -400,7 +401,7 @@ const JoinUsStep3Page = () => {
                                     <RadioInput inputType="radio" name="health_safety" value={healthCheck} onChange={(v) => setHealthCheck(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] md:text-sm text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.{requiresHealthDetails && <span className="text-red-500"> *</span>}</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.</p>
                                     <textarea
                                         rows={3}
                                         disabled={!requiresHealthDetails}
@@ -415,19 +416,19 @@ const JoinUsStep3Page = () => {
                             <div className="rounded-3xl md:border border-gray-200 md:px-6 py-4 md:py-5 space-y-4">
                                 <p className="text-[20px] font-medium text-gray-900">5. Consents</p>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] md:text-sm text-gray-800">Do you consent to do child abuse registry and sex offender checks if needed? *</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Do you consent to do child abuse registry and sex offender checks if needed?</p>
                                     <RadioInput name="consent_1" value={consent1} onChange={(v) => setConsent1(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" inputType="radio" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] md:text-sm text-gray-800">Do you agree to follow the organization&apos;s policies on confidentiality, behavior, and safeguarding procedures? *</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Do you agree to follow the organization&apos;s policies on confidentiality, behavior, and safeguarding procedures?</p>
                                     <RadioInput name="consent_2" value={consent2} onChange={(v) => setConsent2(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" inputType="radio" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] md:text-sm text-gray-800">Do you understand that your volunteer role may be terminated based on any criminal activity or failure to adhere to the organization&apos;s policies? *</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Do you understand that your volunteer role may be terminated based on any criminal activity or failure to adhere to the organization&apos;s policies?</p>
                                     <RadioInput name="consent_3" value={consent3} onChange={(v) => setConsent3(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" inputType="radio" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] md:text-sm text-gray-800">Please describe the circumstance behind the &quot;No&quot; answer above.{requiresConsentDetails && <span className="text-red-500"> *</span>}</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Please describe the circumstance behind the &quot;No&quot; answer above.</p>
                                     <textarea
                                         rows={3}
                                         disabled={!requiresConsentDetails}
@@ -442,11 +443,11 @@ const JoinUsStep3Page = () => {
                             <div className="rounded-3xl md:border border-gray-200 md:px-6 py-4 md:py-5 space-y-4">
                                 <p className="text-[20px] font-medium text-gray-900">6. Previous Volunteer Experience</p>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] md:text-sm text-gray-800">Have you ever been involved in any incidents or complaints during previous volunteer roles? *</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Have you ever been involved in any incidents or complaints during previous volunteer roles?</p>
                                     <RadioInput inputType="radio" name="previous_volunteer" value={previousVolunteer} onChange={(v) => setPreviousVolunteer(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] md:text-sm text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.{requiresPrevVolDetails && <span className="text-red-500"> *</span>}</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Please describe the circumstance behind the &quot;yes&quot; answer above.</p>
                                     <textarea
                                         rows={3}
                                         disabled={!requiresPrevVolDetails}
@@ -476,12 +477,12 @@ const JoinUsStep3Page = () => {
                                         onChange={(e) => setTermsAccepted(e.target.checked)}
                                         className="h-5 w-4 !rounded border-gray-300 text-black focus:ring-0 focus:ring-offset-0"
                                     />
-                                    <p className="text-[16px] font-medium md:text-sm text-[#121212] leading-relaxed">
-                                        I consent to MW collecting, using and/or sharing my personal information as mentioned in the <span className="underline font-semibold">Privacy Policy</span>.
+                                    <p className="text-[16px]  font-poppins font-medium text-[#4F4F4F]  leading-relaxed">
+                                        I consent to MW collecting, using and/or sharing my personal information as mentioned in the <span className="underline font-semibold text-[#121212]">Privacy Policy</span>.
                                     </p>
                                 </div>
-                               
-                                <p className="text-[16px] md:text-sm font-medium text-[#121212] leading-relaxed ">By accepting the <span className="underline font-semibold">Terms of Service</span>, either by clicking a box indicating your acceptance or by using and navigating through our platform through our website, you agree that (a) you have read and understood the agreement; (b) you represent that you are at least 18 years old; (c) you can form a binding contract; and (d) you accept this agreement and agree that you are legally bound by its terms. Individuals under the age of 18 or those with mental developmental disabilities of any age may access the services only when accompanied by a parent or legal guardian. Parents or guardians accompanying such users, by accepting the <span className="underline font-semibold">Terms of Service</span>, either by clicking a box indicating your acceptance or by using and navigating through our platform through our website, (a) you have read and understood the agreement; (b) you represent that you are the parent or legal guardian of such individual (c) your acceptance of these terms on behalf of the individual will form a binding contract; and (d) you accept this agreement on behalf of the individual and agree that the individual is legally bound by its terms&quot;</p>
+
+                                <p className="text-[16px]  font-poppins font-medium text-[#4F4F4F] leading-relaxed ">By accepting the <span className="underline font-semibold text-[#121212]">Terms of Service</span>, either by clicking a box indicating your acceptance or by using and navigating through our platform through our website, you agree that (a) you have read and understood the agreement; (b) you represent that you are at least 18 years old; (c) you can form a binding contract; and (d) you accept this agreement and agree that you are legally bound by its terms. Individuals under the age of 18 or those with mental developmental disabilities of any age may access the services only when accompanied by a parent or legal guardian. Parents or guardians accompanying such users, by accepting the <span className="underline font-semibold text-[#121212]">Terms of Service</span>, either by clicking a box indicating your acceptance or by using and navigating through our platform through our website, (a) you have read and understood the agreement; (b) you represent that you are the parent or legal guardian of such individual (c) your acceptance of these terms on behalf of the individual will form a binding contract; and (d) you accept this agreement on behalf of the individual and agree that the individual is legally bound by its terms&quot;</p>
                             </div>
                         </section>
 
