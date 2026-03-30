@@ -9,12 +9,13 @@ import ConfirmationSuccessfulModal from "@/components/learners/Modals/Confirmati
 import { useComponentStore } from "@/store/useComponenetStore";
 import { getHeaderIcon } from "@/layouts/helper";
 import { usePathname } from "next/navigation";
-import { InstantSessionIcon, TodayIcon } from "@/assets/icons";
+import { InstantSessionIcon } from "@/assets/icons";
 import { GET_API, DELETE_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { showToast } from "@/components/common/Toast";
 import LottieLoader from "@/components/common/Loader/Lottie";
+import DaySlider from "@/components/learners/DaySlider/index";
 
 export interface Session {
     id: string;
@@ -55,10 +56,10 @@ function mapItemToSession(item: any, date: string): Session {
     const rawTags = Array.isArray(item.tags)
         ? item.tags
         : Array.isArray(item.skills)
-        ? item.skills
-        : item.skill
-        ? [item.skill]
-        : [];
+            ? item.skills
+            : item.skill
+                ? [item.skill]
+                : [];
     const tags: string[] = rawTags
         .map((t: any) =>
             typeof t === "string"
@@ -126,7 +127,8 @@ export default function InstantSessionsPage() {
     const { setHeaderOptions } = useComponentStore();
     const pathname = usePathname();
 
-    const today = dayjs().format("YYYY-MM-DD");
+    const todayStr = useMemo(() => dayjs().format("YYYY-MM-DD"), []);
+    const [selectedDate, setSelectedDate] = useState(todayStr);
 
     // Query for available sessions
     const {
@@ -135,9 +137,9 @@ export default function InstantSessionsPage() {
         isFetching,
         isError,
     } = useQuery({
-        queryKey: ["learner-instant-sessions", today],
+        queryKey: ["learner-instant-sessions", selectedDate],
         queryFn: async () => {
-            const res = await GET_API(endpoints.session.getLearnerInstantSession(today));
+            const res = await GET_API(endpoints.session.getLearnerInstantSession(selectedDate));
             return res?.data;
         },
         refetchOnMount: true,
@@ -151,9 +153,11 @@ export default function InstantSessionsPage() {
         isFetching: isClaimedFetching,
         isError: isClaimedError,
     } = useQuery({
-        queryKey: ["learner-accepted-instant-sessions", today],
+        queryKey: ["learner-accepted-instant-sessions", selectedDate],
         queryFn: async () => {
-            const res = await GET_API(endpoints.session.getAcceptedInstantSessionsByDate(today));
+            const res = await GET_API(
+                endpoints.session.getAcceptedInstantSessionsByDate(selectedDate)
+            );
             return res?.data;
         },
         refetchOnMount: true,
@@ -164,9 +168,9 @@ export default function InstantSessionsPage() {
         if (!apiData) return [];
         const raw = Array.isArray(apiData) ? apiData : apiData.items ?? apiData.sessions ?? [];
         return raw
-            .map((item: any) => mapItemToSession(item, today))
+            .map((item: any) => mapItemToSession(item, selectedDate))
             .filter((s: Session) => s.status === "available");
-    }, [apiData, today]);
+    }, [apiData, selectedDate]);
 
     const claimedSessions: Session[] = useMemo(() => {
         if (!claimedApiData) return [];
@@ -174,14 +178,14 @@ export default function InstantSessionsPage() {
             ? claimedApiData
             : claimedApiData.items ?? claimedApiData.sessions ?? [];
         return raw
-            .map((item: any) => mapItemToSession(item, today))
-            .filter((s: Session) => s.date === today)
+            .map((item: any) => mapItemToSession(item, selectedDate))
+            .filter((s: Session) => s.date === selectedDate)
             .sort((a: Session, b: Session) =>
                 a.startDateTime && b.startDateTime
                     ? dayjs(a.startDateTime).valueOf() - dayjs(b.startDateTime).valueOf()
                     : 0
             );
-    }, [claimedApiData, today]);
+    }, [claimedApiData, selectedDate]);
 
     const handleSessionClick = (session: Session) => {
         setSelectedSession(session);
@@ -283,9 +287,11 @@ export default function InstantSessionsPage() {
                 });
 
                 // Refetch to ensure fresh data
-                await queryClient.refetchQueries({ queryKey: ["learner-instant-sessions", today] });
                 await queryClient.refetchQueries({
-                    queryKey: ["learner-accepted-instant-sessions", today],
+                    queryKey: ["learner-instant-sessions", selectedDate],
+                });
+                await queryClient.refetchQueries({
+                    queryKey: ["learner-accepted-instant-sessions", selectedDate],
                 });
 
                 handleCloseClaimedModal();
@@ -308,20 +314,15 @@ export default function InstantSessionsPage() {
             leftButton: {
                 buttonTitle: "Events",
                 buttonIcon: <InstantSessionIcon />,
-                buttonOnClick: () => {},
+                buttonOnClick: () => { },
                 buttonClassName: "!text-black !border-none !font-medium !pr-5 !text-[20px]",
                 showButton: true,
             },
-            centerButton: {
-                buttonTitle: "Today",
-                buttonIcon: <TodayIcon />,
-                buttonOnClick: () => {},
-                buttonClassName:
-                    "!text-black !border !border-gray-300 !font-medium !bg-white !w-[108px] !h-10 !rounded-full",
-                showButton: true,
-            },
+            centerComponent: (
+                <DaySlider selectedDate={selectedDate} onDateChange={setSelectedDate} />
+            ),
         });
-    }, [setHeaderOptions, pathname]);
+    }, [setHeaderOptions, pathname, selectedDate]);
 
     // Show loader when loading initially or fetching (when switching to page)
     const isPageLoading = isLoading || isClaimedLoading || isFetching || isClaimedFetching;
@@ -359,8 +360,9 @@ export default function InstantSessionsPage() {
                 <>
                     <div className="flex items-center my-6">
                         <div className="flex-1 border-t border-gray-200" />
-                        <span className="px-4    md:text-[20px] text-[16px] font-medium text-[#121212]">
-                            Today&apos;s claimed session
+                        <span className="px-4 md:text-[20px] text-[16px] font-medium text-[#121212]">
+                            {/* {selectedDate === todayStr ? "Today's" : "Tomorrow's"} claimed session */}
+                            claimed session
                         </span>
                         <div className="flex-1 border-t border-gray-200" />
                     </div>
