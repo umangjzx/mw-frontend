@@ -14,7 +14,8 @@ import { useState } from "react";
 import { VIEW_DEMO_LINK, VIEW_DEMO_LINK_FOR_VOLUNTEER } from "@/definitions";
 import { endpoints } from "@/api/constants";
 import { GET_API } from "@/api/request";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useIsFetching } from "@tanstack/react-query";
+import { useAppStore } from "@/store/useAppStore";
 
 type Props = {};
 
@@ -23,6 +24,11 @@ const Header = (props: Props) => {
     const router = useRouter();
     const volunteerId = Cookies.get("volunteer_id");
     const [isSideNavBarOpen, setIsSideNavBarOpen] = useState<boolean>(false);
+
+    // Check if any schedule-related events are fetching
+    const fetchingLearnerEvents = useIsFetching({ queryKey: ["learner-events"] });
+    const fetchingVolunteerEvents = useIsFetching({ queryKey: ["volunteer-events"] });
+    const isScheduleLoading = fetchingLearnerEvents > 0 || fetchingVolunteerEvents > 0;
 
     const getUnreadCount = async () => {
         const res: any = await GET_API(endpoints.session.getUnreadCount(volunteerId as string));
@@ -70,8 +76,8 @@ const Header = (props: Props) => {
     };
 
     return (
-        <div className="w-full h-full p-2 px-3">
-            <div className="w-full h-full flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-0">
+        <div className={`w-full h-full p-2 px-3 lg:min-h-[10vh] ${isScheduleLoading ? "opacity-50 pointer-events-none grayscale" : ""}`}>
+            <div className="w-full h-full flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-0 animate-fadeIn">
                 {/* Row 1 (mobile): menu + title + View Demo + Bell. Desktop: same row, no View Demo here */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center">
@@ -82,7 +88,7 @@ const Header = (props: Props) => {
                             <SideMenuIcon height="22px" width="22px" />
                         </div>
                         <Button
-                            onClick={() => {}}
+                            onClick={() => { }}
                             title={isMobileOrTabScreen ? "Schedule" : "My Schedule"}
                             icon={isMobileOrTabScreen ? undefined : <CalendarIcon />}
                             rootClassName="bg-transparent text-xl border-none font-medium shadow-none max-lg:!px-2"
@@ -137,7 +143,7 @@ const Header = (props: Props) => {
                                 <MonthYearPicker />
                             </div>
                             <Button
-                                onClick={() => {}}
+                                onClick={() => { }}
                                 icon={<IoIosSearch size={22} className="text-black" />}
                                 customClassName="!bg-white !rounded-full !border !border-gray-200 !p-2.5 !min-w-0"
                             />
