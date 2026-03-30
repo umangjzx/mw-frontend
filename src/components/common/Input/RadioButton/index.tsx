@@ -108,7 +108,7 @@ const RadioInput: React.FC<RadioInputProps> = ({
                 {options.map((option) => (
                     <div
                         key={option.value}
-                        className={`flex items-start min-w-0 hover:bg-background-input bg-background-input px-2 py-1 rounded-lg ${
+                        className={`flex items-start min-w-0 hover:bg-background-input border md:border-none bg-background-input px-2 py-1 rounded-lg ${
                             layout === "vertical" ? "w-full" : "items-center"
                         } ${radioButtonClassName}`}
                     >
