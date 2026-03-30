@@ -262,7 +262,7 @@ const JoinUsStep1Page = () => {
                                     onChange={(v) => setFullName(typeof v === 'string' ? v : v?.[0] ?? '')}
                                     placeholder="Eg. John Doe"
                                     rootClassName="w-full"
-                                    inputClassName="w-full rounded-xl border-gray-200"
+                                    inputClassName="w-full !rounded-xl border-gray-200"
                                 />
 
                                 {/* Email */}
@@ -275,12 +275,12 @@ const JoinUsStep1Page = () => {
                                     onChange={(v: any) => setEmail(typeof v === 'string' ? v : v?.[0] ?? '')}
                                     placeholder="Enter Email Address"
                                     rootClassName="w-full"
-                                    inputClassName="w-full rounded-xl border-gray-200"
+                                    inputClassName="w-full !rounded-xl border-gray-200"
                                 />
 
                                 {/* Phone */}
                                 <div className="flex flex-col gap-2 w-full min-w-0">
-                                    <label className="text-sm font-medium text-gray-700">
+                                    <label className="text-[16px] md:text-sm  text-gray-700">
                                         Phone No<span className="text-red-500"> *</span>
                                     </label>
                                     <div className="flex gap-2 w-full min-w-0">
@@ -290,8 +290,8 @@ const JoinUsStep1Page = () => {
                                             value={phoneCountryCode}
                                             onChange={(v) => setPhoneCountryCode(v ?? '+1')}
                                             options={COUNTRY_CODE_OPTIONS}
-                                            rootClassName="!w-20 md:!w-24 !mb-0 shrink-0"
-                                            inputClassName="w-full rounded-xl border-gray-200"
+                                            rootClassName="!w-20 md:w-[70px]! !mb-0 shrink-0"
+                                            inputClassName="w-full !rounded-[12px] border-gray-200 [&_.ant-select-selector]:!rounded-xl"
                                         />
                                         <Input
                                             inputType="text"
@@ -300,7 +300,7 @@ const JoinUsStep1Page = () => {
                                             onChange={(v) => setPhoneNumber((typeof v === 'string' ? v : v?.[0] ?? '').replace(/\D/g, ''))}
                                             placeholder="Enter Phone number"
                                             rootClassName="w-full flex-1 min-w-0 !mb-0"
-                                            inputClassName="w-full rounded-xl border-gray-200"
+                                            inputClassName="w-full !rounded-xl border-gray-200"
                                         />
                                     </div>
                                 </div>
@@ -316,7 +316,7 @@ const JoinUsStep1Page = () => {
                                     onChange={(v) => setDateOfBirth(typeof v === 'string' ? v : '')}
                                     placeholder="Select Date of Birth"
                                     rootClassName="w-full"
-                                    inputClassName="w-full rounded-xl border-gray-200"
+                                    inputClassName="w-full !rounded-xl border-gray-200"
                                 />
 
                                 {/* Country */}
@@ -336,7 +336,7 @@ const JoinUsStep1Page = () => {
                                     placeholder={countriesLoading ? "Loading countries..." : "Select Country"}
                                     options={countryOptions}
                                     rootClassName="w-full"
-                                    inputClassName="w-full rounded-xl border-gray-200"
+                                    inputClassName="w-full !rounded-xl border-gray-200 [&_.ant-select-selector]:!rounded-xl"
                                 />
 
                                 {/* State */}
@@ -353,7 +353,7 @@ const JoinUsStep1Page = () => {
                                     placeholder={statesLoading ? "Loading states..." : "Select State"}
                                     options={stateOptions}
                                     rootClassName="w-full"
-                                    inputClassName="w-full rounded-xl border-gray-200"
+                                    inputClassName="w-full !rounded-xl border-gray-200 [&_.ant-select-selector]:!rounded-xl"
                                 />
 
                                 {/* LinkedIn */}
@@ -365,7 +365,7 @@ const JoinUsStep1Page = () => {
                                     onChange={(v) => setLinkedIn(typeof v === 'string' ? v : v?.[0] ?? '')}
                                     placeholder="Paste link here"
                                     rootClassName="w-full"
-                                    inputClassName="w-full rounded-xl border-gray-200"
+                                    inputClassName="w-full !rounded-xl border-gray-200"
                                 />
 
                                 {/* School / University */}
@@ -377,7 +377,7 @@ const JoinUsStep1Page = () => {
                                     onChange={(v) => setSchool(typeof v === 'string' ? v : v?.[0] ?? '')}
                                     placeholder="Enter School/University"
                                     rootClassName="w-full"
-                                    inputClassName="w-full rounded-xl border-gray-200"
+                                    inputClassName="w-full !rounded-xl border-gray-200"
                                 />
 
                                 {/* Grade level */}
@@ -389,7 +389,7 @@ const JoinUsStep1Page = () => {
                                     onChange={(v) => setGradeLevel(typeof v === 'string' ? v : v?.[0] ?? '')}
                                     placeholder="Enter level/year"
                                     rootClassName="w-full"
-                                    inputClassName="w-full rounded-xl border-gray-200"
+                                    inputClassName="w-full !rounded-xl border-gray-200"
                                 />
 
                                 {/* Current employment */}
@@ -401,7 +401,7 @@ const JoinUsStep1Page = () => {
                                     onChange={(v) => setEmploymentDetails(typeof v === 'string' ? v : v?.[0] ?? '')}
                                     placeholder="Enter details"
                                     rootClassName="w-full"
-                                    inputClassName="w-full rounded-xl border-gray-200"
+                                    inputClassName="w-full !rounded-xl border-gray-200"
                                 />
 
                                 {/* Compensation */}
@@ -413,7 +413,7 @@ const JoinUsStep1Page = () => {
                                     onChange={(v) => setCompensation(typeof v === 'string' ? v : v?.[0] ?? '')}
                                     placeholder="Enter here"
                                     rootClassName="w-full md:col-span-2"
-                                    inputClassName="w-full rounded-xl border-gray-200"
+                                    inputClassName="w-full !rounded-xl border-gray-200"
                                 />
                             </div>
 
@@ -451,6 +451,7 @@ const JoinUsStep1Page = () => {
                                         },
                                     ]}
                                     inputClassName="mt-1"
+                                    radioButtonClassName="w-full md:w-auto"
                                 />
                             </div>
 

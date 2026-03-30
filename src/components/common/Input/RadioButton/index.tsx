@@ -58,14 +58,46 @@ const RadioInput: React.FC<RadioInputProps> = ({
         );
     }
 
+    const customRadioStyles = (
+        <style
+            dangerouslySetInnerHTML={{
+                __html: `
+            .custom-radio-group .ant-radio-inner {
+                border-width: 1px !important;
+                border-color: #d9d9d9 !important;
+                width: 18px !important;
+                height: 18px !important;
+                background-color: #fff !important;
+            }
+            .custom-radio-group .ant-radio-checked .ant-radio-inner {
+                border-width: 2px !important;
+                border-color: #000 !important;
+            }
+            .custom-radio-group .ant-radio-checked .ant-radio-inner::after {
+                background-color: #000 !important;
+                width: 10px !important;
+                height: 10px !important;
+                margin-top: -5px !important;
+                margin-left: -5px !important;
+                transform: scale(1) !important;
+                opacity: 1 !important;
+            }
+            .custom-radio-group .ant-radio-wrapper:hover .ant-radio-inner {
+                border-color: #000 !important;
+            }
+        `,
+            }}
+        />
+    );
     return (
         <Radio.Group
             name={name}
             value={value}
             onChange={(e) => onChange(e.target.value)}
             disabled={disabled}
-            className={inputClassName}
+            className={`custom-radio-group ${inputClassName}`}
         >
+            {customRadioStyles}
             <div
                 className={
                     layout === "vertical"
@@ -76,7 +108,7 @@ const RadioInput: React.FC<RadioInputProps> = ({
                 {options.map((option) => (
                     <div
                         key={option.value}
-                        className={`flex items-start min-w-0 hover:bg-background-input bg-background-input px-2 py-1 rounded-lg ${
+                        className={`flex items-start min-w-0 hover:bg-background-input border md:border-none bg-background-input px-2 py-1 rounded-lg ${
                             layout === "vertical" ? "w-full" : "items-center"
                         } ${radioButtonClassName}`}
                     >
