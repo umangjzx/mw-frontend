@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useJoinUsStore } from '@/store/useJoinUsStore';
 import { submitStep3, updateStep3 } from '@/api/join-us';
 import { showToast } from '@/components/common/Toast';
@@ -478,11 +479,11 @@ const JoinUsStep3Page = () => {
                                         className="h-5 w-4 !rounded border-gray-300 text-black focus:ring-0 focus:ring-offset-0"
                                     />
                                     <p className="text-[16px]  font-poppins font-medium text-[#4F4F4F]  leading-relaxed">
-                                        I consent to MW collecting, using and/or sharing my personal information as mentioned in the <span className="underline font-semibold text-[#121212]">Privacy Policy</span>.
+                                        I consent to MW collecting, using and/or sharing my personal information as mentioned in the <Link href="/privacy-policy" target="_blank" className="underline font-semibold text-[#121212]">Privacy Policy</Link>.
                                     </p>
                                 </div>
 
-                                <p className="text-[16px]  font-poppins font-medium text-[#4F4F4F] leading-relaxed ">By accepting the <span className="underline font-semibold text-[#121212]">Terms of Service</span>, either by clicking a box indicating your acceptance or by using and navigating through our platform through our website, you agree that (a) you have read and understood the agreement; (b) you represent that you are at least 18 years old; (c) you can form a binding contract; and (d) you accept this agreement and agree that you are legally bound by its terms. Individuals under the age of 18 or those with mental developmental disabilities of any age may access the services only when accompanied by a parent or legal guardian. Parents or guardians accompanying such users, by accepting the <span className="underline font-semibold text-[#121212]">Terms of Service</span>, either by clicking a box indicating your acceptance or by using and navigating through our platform through our website, (a) you have read and understood the agreement; (b) you represent that you are the parent or legal guardian of such individual (c) your acceptance of these terms on behalf of the individual will form a binding contract; and (d) you accept this agreement on behalf of the individual and agree that the individual is legally bound by its terms&quot;</p>
+                                <p className="text-[16px]  font-poppins font-medium text-[#4F4F4F] leading-relaxed ">By accepting the <Link href="/terms-and-conditions" target="_blank" className="underline font-semibold text-[#121212]">Terms of Service</Link>, either by clicking a box indicating your acceptance or by using and navigating through our platform through our website, you agree that (a) you have read and understood the agreement; (b) you represent that you are at least 18 years old; (c) you can form a binding contract; and (d) you accept this agreement and agree that you are legally bound by its terms. Individuals under the age of 18 or those with mental developmental disabilities of any age may access the services only when accompanied by a parent or legal guardian. Parents or guardians accompanying such users, by accepting the <Link href="/terms-and-conditions" target="_blank" className="underline font-semibold text-[#121212]">Terms of Service</Link>, either by clicking a box indicating your acceptance or by using and navigating through our platform through our website, (a) you have read and understood the agreement; (b) you represent that you are the parent or legal guardian of such individual (c) your acceptance of these terms on behalf of the individual will form a binding contract; and (d) you accept this agreement on behalf of the individual and agree that the individual is legally bound by its terms&quot;</p>
                             </div>
                         </section>
 
