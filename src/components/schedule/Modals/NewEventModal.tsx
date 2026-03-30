@@ -180,6 +180,11 @@ export default function NewEventModal({
         return getNowInVolunteerTimezone().format("YYYY-MM-DD");
     };
 
+    // Get tomorrow's date in YYYY-MM-DD format in volunteer's timezone
+    const getTomorrowDate = () => {
+        return getNowInVolunteerTimezone().add(1, "day").format("YYYY-MM-DD");
+    };
+
     // Get today's date as a Date object in volunteer's timezone
     const getTodayDateObject = (): Date => {
         const now = getNowInVolunteerTimezone();
@@ -508,7 +513,7 @@ export default function NewEventModal({
 
     const handleCancel = () => {
         setFormData({
-            select_date: new Date(),
+            select_date: getTodayDateObject(),
             duration: "",
             start_time: "",
             title: "",
@@ -564,15 +569,11 @@ export default function NewEventModal({
                             inputType="datepicker"
                             value={formData.select_date}
                             onChange={handleDateChange}
-                            disabled={true}
+                            disabled={false}
                             format="DD MMMM YYYY"
                             labelClassName="!text-base !text-[#121212]"
-                            inputClassName="w-full !h-12 md:!bg-white max-md:!bg-[#E0E0E0] md:!border-gray-200 max-md:!border-[#E0E0E0] md:hover:!bg-white max-md:hover:!bg-[#E0E0E0] md:hover:!border-gray-200 max-md:hover:!border-[#E0E0E0] md:focus:!bg-white max-md:focus:!bg-[#E0E0E0] md:focus:!border-gray-200 max-md:focus:!border-[#E0E0E0] md:[&_.ant-picker]:!bg-white md:[&_.ant-picker]:!border-gray-200 max-md:[&_.ant-picker]:!bg-[#E0E0E0] max-md:[&_.ant-picker]:!border-[#E0E0E0] md:[&_.ant-picker-input>input]:!bg-white max-md:[&_.ant-picker-input>input]:!bg-[#E0E0E0] [&_.ant-picker-input>input]:!text-[#121212] [&_.ant-picker-input>input]:!text-base [&_.ant-picker-suffix]:!text-[#4F4F4F] [&_.ant-picker-suffix_svg]:!text-[#4F4F4F] [&_.ant-picker-suffix_svg]:!fill-[#4F4F4F] [&_.ant-picker-suffix_span]:!text-[#4F4F4F] [&_.ant-picker-suffix_span_svg]:!text-[#4F4F4F] [&_.ant-picker-suffix_span_svg]:!fill-[#4F4F4F]"
-                            availableDates={
-                                formData.select_date
-                                    ? [dayjs(formData.select_date).format("YYYY-MM-DD")]
-                                    : [getTodayDate()]
-                            }
+                            inputClassName="w-full !h-12 !bg-white md:!border-gray-200 hover:!bg-white focus:!bg-white [&_.ant-picker]:!bg-white [&_.ant-picker]:!border-gray-200 [&_.ant-picker-input>input]:!bg-white [&_.ant-picker-input>input]:!text-[#121212] [&_.ant-picker-input>input]:!text-base [&_.ant-picker-suffix]:!text-[#4F4F4F]"
+                            availableDates={[getTodayDate(), getTomorrowDate()]}
                         />
                     </div>
 

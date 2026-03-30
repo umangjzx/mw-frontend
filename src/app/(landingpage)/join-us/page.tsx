@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
     
 const JoinUsPage = () => {
     const router = useRouter();
+    const [isLoading, setIsLoading] = React.useState(false);
     return (
         <div className="w-full bg-background-input min-h-screen">
             <div className="max-w-[1200px] mx-auto px-6 md:px-8 lg:px-12 py-5 md:py-16 lg:py-20">
@@ -78,8 +79,9 @@ const JoinUsPage = () => {
                         {/* CTA Button */}
                         <div className="flex justify-center md:justify-start mt-8">
                             <Button
-                                title="Apply here to Get Involved"
+                                title={isLoading ? "Loading..." : "Apply here to Get Involved"}
                                 btnVariant="secondary"
+                                loading={isLoading}
                                 customClassName="!w-full md:!w-auto !px-4 !py-[10px] !h-10 md:!h-12 lg:!text-[18px] !text-[14px] !font-medium !rounded-[10px] !text-white !bg-black hover:!bg-black"
                                 // onClick={() => {
                                 //     // Add your application link or modal handler here
@@ -89,6 +91,7 @@ const JoinUsPage = () => {
                                 //     );
                                 // }}
                                 onClick={() => {
+                                    setIsLoading(true);
                                     router.push("/join-us/step-1");
                                 }}
                             />
