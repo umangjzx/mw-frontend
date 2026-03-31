@@ -1,8 +1,17 @@
 "use client";
 
+import { useEffect } from "react";
+import { useJoinUsStore } from "@/store/useJoinUsStore";
 import { ThankyouCardBase } from "@/components/landingpage/ThankyouCard";
 
 const JoinUsSuccessPage = () => {
+    const { clearStore } = useJoinUsStore();
+
+    useEffect(() => {
+        // Clear all form data once application is finished and user sees success
+        clearStore();
+    }, [clearStore]);
+
     return (
         <div className="flex min-h-[60dvh] bg-background-input items-center justify-center flex-col gap-5 md:px-10">
             <ThankyouCardBase
