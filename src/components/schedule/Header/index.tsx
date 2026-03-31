@@ -26,9 +26,9 @@ const Header = (props: Props) => {
     const [isSideNavBarOpen, setIsSideNavBarOpen] = useState<boolean>(false);
 
     // Check if any schedule-related events are fetching
-    const fetchingLearnerEvents = useIsFetching({ queryKey: ["learner-events"] });
-    const fetchingVolunteerEvents = useIsFetching({ queryKey: ["volunteer-events"] });
-    const isScheduleLoading = fetchingLearnerEvents > 0 || fetchingVolunteerEvents > 0;
+    // const fetchingLearnerEvents = useIsFetching({ queryKey: ["learner-events"] });
+    // const fetchingVolunteerEvents = useIsFetching({ queryKey: ["volunteer-events"] });
+    // const isScheduleLoading = fetchingLearnerEvents > 0 || fetchingVolunteerEvents > 0;
 
     const getUnreadCount = async () => {
         const res: any = await GET_API(endpoints.session.getUnreadCount(volunteerId as string));
@@ -76,8 +76,10 @@ const Header = (props: Props) => {
     };
 
     return (
-        <div className={`w-full h-full p-2 px-3 lg:min-h-[10vh] ${isScheduleLoading ? "opacity-50 pointer-events-none grayscale" : ""}`}>
-            <div className="w-full h-full flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-0 animate-fadeIn">
+        // <div className={`w-full h-full p-2 px-3 lg:min-h-[10vh] ${isScheduleLoading ? "opacity-50 pointer-events-none grayscale" : ""}`}>
+        <div className="w-full h-full p-2 px-3">
+            {/* <div className="w-full h-full flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-0 animate-fadeIn"> */}
+            <div className="w-full h-full flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-0">
                 {/* Row 1 (mobile): menu + title + View Demo + Bell. Desktop: same row, no View Demo here */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center">
