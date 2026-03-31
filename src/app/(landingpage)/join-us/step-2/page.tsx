@@ -71,11 +71,20 @@ const POSITION_OPTIONS = [
 
 const JoinUsStep2Page = () => {
     const router = useRouter();
-    const { applicationId, step2Submitted, setStep2Submitted, step2Data, setStep2Data } = useJoinUsStore();
+    const { applicationId, step1Submitted, step2Submitted, setStep2Submitted, step2Data, setStep2Data } = useJoinUsStore();
     const [loading, setLoading] = useState(false);
+    const [isRedirecting, setIsRedirecting] = useState(false);
     const [selectedPosition, setSelectedPosition] = useState<string>(step2Data?.selected_position || "");
     const [customRole, setCustomRole] = useState(step2Data?.custom_role_description || "");
     const OTHER_VALUE = "other_custom_role";
+
+    React.useEffect(() => {
+        if (!step1Submitted || !applicationId) {
+            setIsRedirecting(true);
+            router.replace('/join-us/step-1');
+        }
+    }, [step1Submitted, applicationId, router]);
+
 
     const isNextEnabled =
         !loading &&
@@ -128,6 +137,10 @@ const JoinUsStep2Page = () => {
             if (!navigated) setLoading(false);
         }
     };
+
+    if (isRedirecting) {
+        return null;
+    }
 
     return (
         <div className="min-h-screen bg-background-input flex flex-col items-center">

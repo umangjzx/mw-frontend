@@ -11,8 +11,17 @@ import RadioInput from '@/components/common/Input/RadioButton';
 
 const JoinUsStep3Page = () => {
     const router = useRouter();
-    const { applicationId, step3Submitted, setStep3Submitted, step3Data, setStep3Data, clearStore } = useJoinUsStore();
+    const { applicationId, step1Submitted, step2Submitted, step3Submitted, setStep3Submitted, step3Data, setStep3Data, clearStore } = useJoinUsStore();
     const [loading, setLoading] = useState(false);
+    const [isRedirecting, setIsRedirecting] = useState(false);
+
+    React.useEffect(() => {
+        if (!step2Submitted || !applicationId) {
+            setIsRedirecting(true);
+            router.replace('/join-us/step-2');
+        }
+    }, [step2Submitted, applicationId, router]);
+
 
     // Helper functions for parsing initial booleans
     const getBoolOrEmpty = (val: boolean | null | undefined) => val === true ? 'yes' : val === false ? 'no' : '';
@@ -76,6 +85,26 @@ const JoinUsStep3Page = () => {
 
     const isNextEnabled =
         !loading &&
+        !!isInternship &&
+        !!hoursAvailable.trim() &&
+        !!startDate.trim() &&
+        !!qMelodyWings.trim() &&
+        !!qRole.trim() &&
+        !!qExp.trim() &&
+        !!qSkills.trim() &&
+        !!criminalCheck1 &&
+        !!criminalCheck2 &&
+        !!criminalCheck3 &&
+        !!sexOffenderCheck &&
+        !!disciplinary1 &&
+        !!disciplinary2 &&
+        !!disciplinary3 &&
+        !!healthCheck &&
+        !!consent1 &&
+        !!consent2 &&
+        !!consent3 &&
+        !!previousVolunteer &&
+        !!photoConsent &&
         termsAccepted &&
         (!requiresCrimDetails || !!crimDetails.trim()) &&
         (!requiresSexDetails || !!sexDetails.trim()) &&
@@ -83,6 +112,10 @@ const JoinUsStep3Page = () => {
         (!requiresHealthDetails || !!healthDetails.trim()) &&
         (!requiresConsentDetails || !!consentDetails.trim()) &&
         (!requiresPrevVolDetails || !!prevVolDetails.trim());
+
+    if (isRedirecting) {
+        return null;
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -191,10 +224,7 @@ const JoinUsStep3Page = () => {
             setStep3Data(payload);
             showToast({ type: 'success', message: 'Application submitted successfully!' });
 
-            // Clear store on completion
-            clearStore();
             router.push('/join-us/success');
-
         } catch (err: any) {
             showToast({ type: 'error', message: err?.message || 'Failed to submit application' });
         } finally {
