@@ -261,7 +261,7 @@ const JoinUsStep3Page = () => {
                             </h2>
 
                             <div className="space-y-2">
-                                <p className="text-[16px] font-normal text-gray-800">
+                                <p className="text-[16px] md:text-sm font-normal text-gray-800">
                                     Are you looking for an internship opportunity?
                                 </p>
                                 <RadioInput
@@ -279,19 +279,19 @@ const JoinUsStep3Page = () => {
 
                             <div className="space-y-4 md:space-y-5">
                                 <div className="space-y-2">
-                                    <label className="text-[16px] font-normal text-gray-800">Why are you interested in this opportunity with MelodyWings?</label>
+                                    <label className="text-[16px] md:text-sm font-normal text-gray-800">Why are you interested in this opportunity with MelodyWings?</label>
                                     <textarea rows={4} className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border" placeholder="Describe here" value={qMelodyWings} onChange={(e) => setQMelodyWings(e.target.value)} />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[16px] font-normal text-gray-800">Why are you interested in the role you selected?</label>
+                                    <label className="text-[16px] md:text-sm font-normal text-gray-800">Why are you interested in the role you selected?</label>
                                     <textarea rows={4} className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border" placeholder="Describe here" value={qRole} onChange={(e) => setQRole(e.target.value)} />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[16px] font-normal text-gray-800">What relevant experience do you have for this role?</label>
+                                    <label className="text-[16px] md:text-sm font-normal text-gray-800">What relevant experience do you have for this role?</label>
                                     <textarea rows={4} className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border" placeholder="Clubs, volunteer work, internships, school projects, etc." value={qExp} onChange={(e) => setQExp(e.target.value)} />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[16px] font-normal text-gray-800">What skills would you bring to this role?</label>
+                                    <label className="text-[16px] md:text-sm font-normal text-gray-800">What skills would you bring to this role?</label>
                                     <textarea rows={4} className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border" placeholder="Describe here" value={qSkills} onChange={(e) => setQSkills(e.target.value)} />
                                 </div>
 
@@ -311,7 +311,7 @@ const JoinUsStep3Page = () => {
                                         />
                                     </div>
                                     <div className="space-y-2 w-full min-w-0">
-                                        <label className="text-[16px] font-normal text-gray-800">
+                                        <label className="text-[16px] md:text-sm font-normal text-gray-800">
                                             When would you be available to start?
                                         </label>
                                         <input
@@ -325,14 +325,14 @@ const JoinUsStep3Page = () => {
                                 </div>
 
                                 <div className="space-y-2 w-full min-w-0">
-                                    <label className="text-[16px] font-normal text-gray-800">
+                                    <label className="text-[16px] md:text-sm font-normal text-gray-800">
                                         Have you previously volunteered or worked with children or neurodivergent learners? If yes, please describe.
                                     </label>
                                     <textarea rows={4} className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border" placeholder="Describe here" value={qChildren} onChange={(e) => setQChildren(e.target.value)} />
                                 </div>
 
                                 <div className="space-y-2 w-full min-w-0">
-                                    <label className="text-[16px] font-normal text-gray-800">
+                                    <label className="text-[16px] md:text-sm font-normal text-gray-800">
                                         Is there anything else you would like us to know about you?
                                     </label>
                                     <textarea rows={4} className="w-full min-w-0 rounded-2xl border border-gray-200 bg-background-input px-3 py-2.5 text-sm focus:outline-none focus:ring-0 focus:border-primary box-border" placeholder="Describe here" value={qAdditional} onChange={(e) => setQAdditional(e.target.value)} />
@@ -352,15 +352,15 @@ const JoinUsStep3Page = () => {
                                 <p className="text-[20px] font-medium text-gray-900">1. Criminal Background Check</p>
 
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Have you ever been convicted of a felony or misdemeanor?</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Have you ever been convicted of a felony or misdemeanor?</p>
                                     <RadioInput name="criminal_1" value={criminalCheck1} onChange={(v) => setCriminalCheck1(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" inputType="radio" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Have you ever been involved in any criminal activity or legal proceedings, including pending charges or arrests?</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Have you ever been involved in any criminal activity or legal proceedings, including pending charges or arrests?</p>
                                     <RadioInput name="criminal_2" value={criminalCheck2} onChange={(v) => setCriminalCheck2(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" inputType="radio" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Have you been convicted of any crimes involving minors, abuse, or neglect?</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Have you been convicted of any crimes involving minors, abuse, or neglect?</p>
                                     <RadioInput name="criminal_3" value={criminalCheck3} onChange={(v) => setCriminalCheck3(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" inputType="radio" />
                                 </div>
 
@@ -400,7 +400,7 @@ const JoinUsStep3Page = () => {
                                 <p className="text-[20px] font-medium text-gray-900">3. Disciplinary History</p>
 
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Have you ever been terminated or asked to resign from a volunteer or employment position for reasons related to misconduct or inappropriate behavior?</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Have you ever been terminated or asked to resign from a volunteer or employment position for reasons related to misconduct or inappropriate behavior?</p>
                                     <RadioInput name="disc_1" value={disciplinary1} onChange={(v) => setDisciplinary1(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" inputType="radio" />
                                 </div>
                                 <div className="space-y-2">
@@ -408,7 +408,7 @@ const JoinUsStep3Page = () => {
                                     <RadioInput name="disc_2" value={disciplinary2} onChange={(v) => setDisciplinary2(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" inputType="radio" />
                                 </div>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Have you ever faced dismissal, suspension, probation, or any other disciplinary or academic action from a college, university, or professional school?</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Have you ever faced dismissal, suspension, probation, or any other disciplinary or academic action from a college, university, or professional school?</p>
                                     <RadioInput name="disc_3" value={disciplinary3} onChange={(v) => setDisciplinary3(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" inputType="radio" />
                                 </div>
 
@@ -428,7 +428,7 @@ const JoinUsStep3Page = () => {
                             <div className="rounded-3xl md:border border-gray-200 md:px-6 py-4 md:py-5 space-y-4">
                                 <p className="text-[20px] font-medium text-gray-900">4. Health and Safety Information</p>
                                 <div className="space-y-2">
-                                    <p className="text-[16px] text-gray-800">Do you have any physical or mental health conditions that may affect your ability to perform volunteer duties?</p>
+                                    <p className="text-[16px] md:text-sm text-gray-800">Do you have any physical or mental health conditions that may affect your ability to perform volunteer duties?</p>
                                     <RadioInput inputType="radio" name="health_safety" value={healthCheck} onChange={(v) => setHealthCheck(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" />
                                 </div>
                                 <div className="space-y-2">
@@ -494,7 +494,7 @@ const JoinUsStep3Page = () => {
                         <section className="space-y-4">
                             <h2 className="text-[24px] font-medium text-gray-900">Consent and Permissions</h2>
                             <div className="space-y-2">
-                                <p className="text-[16px] font-normal text-gray-800">Photo/Video Consent</p>
+                                <p className="text-[16px] md:text-sm font-normal text-gray-800">Photo/Video Consent</p>
                                 <p className="text-xs md:text-sm text-gray-600">(for use in program materials or promotional content)</p>
                                 <RadioInput inputType="radio" name="photo_consent" value={photoConsent} onChange={(v) => setPhotoConsent(v as '' | 'yes' | 'no')} options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} inputClassName="mt-1" />
                             </div>
