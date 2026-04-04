@@ -8,64 +8,20 @@ import { Input } from "@/components/common/Input";
 import Button from "@/components/common/Button";
 import Accordian from "@/components/landingpage/components/Accordian";
 import { getCountries, getStates } from "@/api/common";
+import { getDonationAmountPresets, getDedicationOptions, getFundDestinations, getHowDidYouHearOptions } from "@/api/donation";
+import { getDonorWall } from "@/api/donation";
+import { getDonationFaqs } from "@/api/donation";
+import { getNameVisibilityOptions } from "@/api/donation";
+import { createCheckoutSession } from "@/api/donation";
 import { COUNTRY_CODE_OPTIONS } from "@/utils/countryDialCodes";
 import { cn } from "@/utils/merge-class";
 import { Input as AntInput } from "antd";
+import { showToast } from "@/components/common/Toast";
 import { HeartDivider, NonProfit, SecureDonation, TaxDeductive } from "@/assets/icons";
-const TOP_HIGHLIGHTS = [
-    { amount: "$15K", name: "Sarah Johnson" },
-    { amount: "$13K", name: "Michael Chen" },
-    { amount: "$10K", name: "Emily Rodriguez" },
-];
-
-const LEADERBOARD_ROWS = [
-    { rank: 4, name: "David Kim", amount: "$8,500" },
-    { rank: 5, name: "David Kim", amount: "$8,500" },
-    { rank: 6, name: "David Kim", amount: "$8,500" },
-    { rank: 7, name: "David Kim", amount: "$8,500" },
-];
-
-const DEDICATION_OPTIONS = [
-    { label: "No dedication", value: "none" },
-    { label: "In honor of someone", value: "honor" },
-    { label: "In memory of someone", value: "memory" },
-];
-
-const FUND_OPTIONS = [
-    { label: "General support", value: "general" },
-    { label: "Learning resources", value: "learning" },
-    { label: "Volunteer programs", value: "volunteer" },
-    { label: "Other", value: "other" },
-];
-
-const HEAR_ABOUT_OPTIONS = [
-    { label: "Social media", value: "social" },
-    { label: "Friend or family", value: "referral" },
-    { label: "Search engine", value: "search" },
-    { label: "School or organization", value: "org" },
-    { label: "Other", value: "other" },
-];
-
-const FAQ_ITEMS = [
-    {
-        key: "1",
-        label: "Is this donation tax-deductible?",
-        content:
-            "Your gift is tax deductible as permitted by law. We are a tax-exempt organization and will email you a donation receipt—please keep it as your official record for claiming a deduction.",
-    },
-    {
-        key: "2",
-        label: "Is my donation secure?",
-        content:
-            "Yes. Payments are processed over encrypted connections using industry-standard security. We never store your full card details on our servers.",
-    },
-    {
-        key: "3",
-        label: "How will my donation be used?",
-        content:
-            "Contributions support learning resources, volunteer training, platform operations, and community programs. You can designate a fund when you donate.",
-    },
-];
+// Donor wall UI data (fetched)
+type DonorHighlight = { name: string; amount: string };
+type LeaderboardRow = { rank: number; name: string; amount: string };
+type FaqItem = { key: string; label: string; content: string };
 
 const sectionBox =
     "md:rounded-2xl border-b md:border border-gray-200   py-5 md:px-6 md:py-6 space-y-4";
@@ -112,6 +68,21 @@ const Donate = () => {
     const [fundOtherDetail, setFundOtherDetail] = useState("");
     const [message, setMessage] = useState("");
     const [hearAbout, setHearAbout] = useState<string | number>("");
+    const [dedicationName, setDedicationName] = useState("");
+    const [dedicationOptions, setDedicationOptions] = useState<
+        { label: string; value: string }[]
+    >([]);
+    const [fundOptions, setFundOptions] = useState<{ label: string; value: string }[]>([]);
+    const [hearAboutOptions, setHearAboutOptions] = useState<
+        { label: string; value: string }[]
+    >([]);
+    const [nameVisibilityOptions, setNameVisibilityOptions] = useState<
+        { label: string; value: string; sublabel?: string }[]
+    >([]);
+    const [donorHighlights, setDonorHighlights] = useState<DonorHighlight[]>([]);
+    const [leaderboardRows, setLeaderboardRows] = useState<LeaderboardRow[]>([]);
+    const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
+    const [amountError, setAmountError] = useState<string>("");
 
     // Mobile-only carousel state for "How Your Donation Helps" cards.
     const [topCardsIndex, setTopCardsIndex] = useState(0);
@@ -169,6 +140,124 @@ const Donate = () => {
         };
         fetchCountries();
     }, []);
+    // FAQs
+    useEffect(() => {
+        getDonationFaqs()
+            .then((res: unknown) => {
+                const root = (res as any)?.data ?? res;
+
+                // Accept multiple shapes:
+                // - { data: { faqs: [...] } } | { faqs: [...] } | { data: [...] } | [...]
+                // - faqs as object map: { "Question": "Answer", ... }
+                let raw: any = [];
+                if (Array.isArray((root as any)?.faqs)) raw = (root as any).faqs;
+                else if (Array.isArray((root as any)?.data?.faqs)) raw = (root as any).data.faqs;
+                else if (Array.isArray((root as any)?.data)) raw = (root as any).data;
+                else if (Array.isArray(root)) raw = root;
+                else if ((root as any)?.faqs && typeof (root as any).faqs === "object") {
+                    raw = Object.entries((root as any).faqs).map(([q, a]) => ({ question: q, answer: a }));
+                } else if ((root as any)?.data?.faqs && typeof (root as any).data.faqs === "object") {
+                    raw = Object.entries((root as any).data.faqs).map(([q, a]) => ({ question: q, answer: a }));
+                }
+
+                if (!Array.isArray(raw)) return;
+
+                const mapped = raw
+                    .map((item: any, i: number) => {
+                        if (item && typeof item === "object") {
+                            const q = item.question ?? item.title ?? `FAQ ${i + 1}`;
+                            const a = item.answer ?? item.content ?? item.value ?? "";
+                            return { key: String(i + 1), label: String(q), content: String(a) };
+                        }
+                        return { key: String(i + 1), label: `FAQ ${i + 1}`, content: String(item ?? "") };
+                    })
+                    .filter((x: any) => x.content && String(x.content).trim().length > 0);
+                if (mapped.length) setFaqItems(mapped as FaqItem[]);
+            })
+            .catch((e) => console.error("Failed to load FAQs", e));
+    }, []);
+
+    // Donor wall
+    useEffect(() => {
+        getDonorWall()
+            .then((res: unknown) => {
+                const data = (res as any)?.data ?? res;
+                // Support {success, data:{donors:[...]}} or {donors:[...]} or plain array
+                const root = data as any;
+                const donors = (
+                    Array.isArray(root?.donors)
+                        ? root.donors
+                        : Array.isArray(root?.data?.donors)
+                        ? root.data.donors
+                        : Array.isArray(root)
+                        ? root
+                        : []
+                ) as Array<{
+                    display_name?: string;
+                    total_amount?: number;
+                    fund_destination?: string;
+                }>;
+                if (!Array.isArray(donors)) return;
+
+                const fmt = (n: number) =>
+                    new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(
+                        Number.isFinite(n) ? n : 0
+                    );
+
+                const sorted = [...donors].sort((a, b) => (b.total_amount ?? 0) - (a.total_amount ?? 0));
+                setDonorHighlights(
+                    sorted.slice(0, 3).map((d) => ({
+                        name: d.display_name || "Anonymous",
+                        amount: fmt(d.total_amount ?? 0),
+                    }))
+                );
+                setLeaderboardRows(
+                    sorted.slice(3, 10).map((d, i) => ({
+                        rank: i + 4,
+                        name: d.display_name || "Anonymous",
+                        amount: fmt(d.total_amount ?? 0),
+                    }))
+                );
+            })
+            .catch((e) => console.error("Failed to load donor wall", e));
+    }, []);
+    useEffect(() => {
+        getNameVisibilityOptions()
+            .then((res: unknown) => {
+                const data = (res as { data?: unknown })?.data ?? res;
+                const list = (Array.isArray(data) ? data : (data as any)?.data) as string[] | undefined;
+                if (!Array.isArray(list)) return;
+
+                const sublabelByValue: Record<"full" | "first_only" | "anonymous", string> = {
+                    full: "Your name will be visible to the public.",
+                    first_only: "Only your first name will be shown.",
+                    anonymous: "Your donation will remain private.",
+                };
+                const normalize = (s: string): "full" | "first_only" | "anonymous" => {
+                    const l = s.toLowerCase();
+                    if (l.includes("first")) return "first_only";
+                    if (l.includes("anonymous")) return "anonymous";
+                    return "full";
+                };
+
+                // Map unique values in order received
+                const options = Array.from(
+                    new Map(
+                        list.map((label) => {
+                            const value = normalize(label);
+                            return [
+                                value,
+                                { label, value, sublabel: sublabelByValue[value] },
+                            ] as const;
+                        })
+                    ).values()
+                );
+
+                setNameVisibilityOptions(options);
+                if (!nameVisibility && options[0]) setNameVisibility(options[0].value);
+            })
+            .catch((e) => console.error("Failed to load name visibility options", e));
+    }, []);
 
     useEffect(() => {
         const fetchStates = async () => {
@@ -215,20 +304,216 @@ const Donate = () => {
         const v = String(value);
         setDonateAmount(v);
         setIsCustom(v === "custom");
+        setAmountError("");
     };
 
-    const amountOptions = [
-        { label: "$10", value: "10" },
-        { label: "$15", value: "15" },
-        { label: "$25", value: "25" },
-        { label: "$100", value: "100" },
-        { label: "Custom", value: "custom" },
-    ];
+    const [amountOptions, setAmountOptions] = useState<
+        { label: string; value: string }[]
+    >([]);
+
+    useEffect(() => {
+        getDonationAmountPresets()
+            .then((res: unknown) => {
+                const data = (res as { data?: unknown })?.data ?? res;
+                const list = (Array.isArray(data) ? data : (data as any)?.data) as (string | number)[] | undefined;
+                if (!Array.isArray(list)) return;
+
+                const options = Array.from(
+                    new Map(
+                        list
+                            .map((it) => String(it).trim())
+                            .filter(Boolean)
+                            .filter((s) => !/^(other|custom)$/i.test(s.toLowerCase()))
+                            .map((s) => {
+                                const value = s.replace(/[^\d]/g, "");
+                                if (!value) return null;
+                                const label = s.startsWith("$") ? s : `$${value}`;
+                                return [value, { label, value }] as const;
+                            })
+                            .filter(Boolean) as Iterable<readonly [string, { label: string; value: string }]>
+                    ).values()
+                ).sort((a, b) => Number(a.value) - Number(b.value));
+
+                options.push({ label: "Custom", value: "custom" });
+                setAmountOptions(options);
+            })
+            .catch((e) => console.error("Failed to load amount presets", e));
+    }, []);
+
+    useEffect(() => {
+        getDedicationOptions()
+            .then((res: unknown) => {
+                const data = (res as { data?: unknown })?.data ?? res;
+                const list = (Array.isArray(data) ? data : (data as any)?.data) as string[] | undefined;
+                if (!Array.isArray(list)) return;
+
+                const normalize = (s: string) => {
+                    const l = s.toLowerCase();
+                    if (l.includes("honor")) return "honor";
+                    if (l.includes("memory")) return "memory";
+                    return "none";
+                };
+
+                const options = Array.from(
+                    new Map(
+                        list
+                            .map((label) => [normalize(label), { label, value: normalize(label) }] as const)
+                    ).values()
+                );
+                setDedicationOptions(options);
+            })
+            .catch((e) => console.error("Failed to load dedication options", e));
+    }, []);
+
+    useEffect(() => {
+        getFundDestinations()
+            .then((res: unknown) => {
+                const data = (res as { data?: unknown })?.data ?? res;
+                const list = (Array.isArray(data) ? data : (data as any)?.data) as string[] | undefined;
+                if (!Array.isArray(list)) return;
+
+                const slug = (s: string) =>
+                    s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
+                const options = Array.from(
+                    new Map(list.map((label) => [slug(label), { label, value: slug(label) }] as const)).values()
+                );
+                setFundOptions(options);
+
+                if (!options.find((o) => o.value === String(fundDesignation)) && options[0]) {
+                    setFundDesignation(options[0].value);
+                }
+            })
+            .catch((e) => console.error("Failed to load fund destinations", e));
+    }, []);
 
     const handleDonateSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Wire to payment API when available
+        const successUrl =
+            typeof window !== "undefined" ? `${window.location.origin}/donate/success` : "";
+        const cancelUrl =
+            typeof window !== "undefined" ? `${window.location.origin}/donate/cancel` : "";
+
+        // Resolve amount
+        const amountNumber = Number(isCustom ? customAmount : donateAmount || 0);
+        if (!Number.isFinite(amountNumber) || amountNumber <= 0) {
+            setAmountError("Please select an amount");
+            showToast({ type: "error", message: "Please select an amount" });
+            return;
+        }
+
+        // Basic required-field checks (personal details + billing address)
+        const missing: string[] = [];
+        if (!firstName) missing.push("First name");
+        if (!lastName) missing.push("Last name");
+        if (!email) missing.push("Email");
+        if (!address1) missing.push("Address line 1");
+        if (!city) missing.push("City");
+        if (!country) missing.push("Country");
+        if (!zip) missing.push("ZIP / Postal Code");
+        if (missing.length) {
+            showToast({ type: "error", message: `Please fill required fields: ${missing.join(", ")}` });
+            return;
+        }
+
+        // Map name visibility enum to API label
+        const nameVisibilityLabel =
+            nameVisibilityOptions.find((o) => o.value === nameVisibility)?.label ||
+            "Show my full name";
+
+        // Resolve fund destination label from selected value
+        const fundDestinationLabel =
+            fundOptions.find((o) => o.value === String(fundDesignation))?.label || "General Fund";
+
+        // Resolve dedication label
+        const dedicationLabel =
+            (dedication && dedicationOptions.find((o) => o.value === dedication)?.label) || "None";
+
+        // Resolve how did you hear label
+        const hearAboutLabel =
+            hearAboutOptions.find((o) => o.value === String(hearAbout))?.label || "";
+
+        const payload = {
+            amount: amountNumber,
+            cover_processing_fee: Boolean(coverFees),
+            success_url: successUrl,
+            cancel_url: cancelUrl,
+            first_name: firstName,
+            last_name: lastName,
+            email: email,
+            phone: `${phoneCountryCode ?? ""}${phoneNumber}`,
+            address_line_1: address1,
+            address_line_2: address2,
+            city: city,
+            state: state,
+            zip_code: zip,
+            country: String(country || ""),
+            name_visibility: nameVisibilityLabel,
+            show_on_donor_wall: Boolean(donorWall),
+            fund_destination: fundDestinationLabel,
+            dedication: dedicationLabel,
+            dedication_name: dedication === "honor" || dedication === "memory" ? dedicationName : "",
+            message: message,
+            how_did_you_hear: hearAboutLabel || "Other",
+            how_did_you_hear_other: "", // no input in UI yet
+            amount_other_description: isCustom ? "Custom amount" : "",
+        };
+
+        createCheckoutSession(payload)
+            .then((res: any) => {
+                const data = (res?.data as any) ?? res;
+                const redirectUrl =
+                    (data && (data.url || data.redirect_url)) ||
+                    (data?.data && (data.data.url || data.data.redirect_url));
+                if (redirectUrl && typeof window !== "undefined") {
+                    window.location.href = redirectUrl as string;
+                }
+            })
+            .catch((err) => {
+                console.error("Failed to create checkout session", err);
+                // optionally show toast
+            })
+            .finally(() => {
+                // optionally clear loading state
+            });
     };
+
+    useEffect(() => {
+        getHowDidYouHearOptions()
+            .then((res: unknown) => {
+                const data = (res as { data?: unknown })?.data ?? res;
+                const rawList: unknown = Array.isArray(data) ? data : (data as any)?.data;
+                if (!Array.isArray(rawList)) return;
+
+                const mapped = (rawList as string[]).reduce<
+                    { label: string; value: string }[]
+                >((acc, entry) => {
+                    const label = String(entry).trim();
+                    if (!label) return acc;
+                    const value = label
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, "-")
+                        .replace(/^-+|-+$/g, "");
+                    acc.push({ label, value });
+                    return acc;
+                }, []);
+
+                const unique = new Map<string, { label: string; value: string }>();
+                for (const m of mapped) if (!unique.has(m.value)) unique.set(m.value, m);
+                setHearAboutOptions(Array.from(unique.values()));
+
+                // Default selection if empty
+                if (!hearAbout && mapped.length > 0) {
+                    setHearAbout(Array.from(unique.values())[0]?.value ?? "");
+                }
+            })
+            .catch((e) => {
+                console.error("Failed to load how-did-you-hear options", e);
+            })
+            .finally(() => {
+                // placeholder for potential loading state
+            });
+    }, []);
 
     return (
         <div className="min-h-screen w-full bg-background-input flex flex-col">
@@ -298,7 +583,7 @@ const Donate = () => {
                 </div>
 
                 <div className="grid grid-cols-3 gap-4 md:gap-6 mt-8 md:mt-10">
-                    {TOP_HIGHLIGHTS.map((row) => (
+                    {donorHighlights.map((row) => (
                         <div
                             key={row.name}
                             className="bg-white rounded-2xl border border-[#FECACA]/80 md:px-5 px-2 md:py-6 py-2 text-center shadow-[0_0_14px_rgba(239,68,68,0.22),0_0_28px_rgba(239,68,68,0.1)]"
@@ -315,7 +600,7 @@ const Donate = () => {
                 </div>
 
                 <ul className="mt-6 md:mt-8 space-y-3">
-                    {LEADERBOARD_ROWS.map((row) => (
+                    {leaderboardRows.map((row) => (
                         <li
                             key={row.rank}
                             className="flex items-center gap-3 md:gap-4 bg-white rounded-xl border border-gray-100 px-4 py-3 shadow-sm"
@@ -415,6 +700,9 @@ const Donate = () => {
                                     />
                                 )}
                             </div>
+                            {amountError && (
+                                <p className="text-sm text-red-600 mt-1">{amountError}</p>
+                            )}
                         </div>
 
                         <div className={sectionBox}>
@@ -505,6 +793,7 @@ const Donate = () => {
                                     inputType="text"
                                     name="address1"
                                     label="Address Line 1"
+                                    required
                                     value={address1}
                                     onChange={(v) => setAddress1(typeof v === "string" ? v : "")}
                                     placeholder="Street address"
@@ -527,6 +816,7 @@ const Donate = () => {
                                     inputType="text"
                                     name="city"
                                     label="City"
+                                    required
                                     value={city}
                                     onChange={(v) => setCity(typeof v === "string" ? v : "")}
                                     placeholder="Enter city"
@@ -602,23 +892,7 @@ const Donate = () => {
                                             value as "" | "full" | "first_only" | "anonymous"
                                         )
                                     }
-                                    options={[
-                                        {
-                                            value: "full",
-                                            label: "Show full name",
-                                            sublabel: "Your name will be visible to the public.",
-                                        },
-                                        {
-                                            value: "first_only",
-                                            label: "Show first name only",
-                                            sublabel: "Only your first name will be shown.",
-                                        },
-                                        {
-                                            value: "anonymous",
-                                            label: "Donate anonymously",
-                                            sublabel: "Your donation will remain private.",
-                                        },
-                                    ]}
+                                    options={nameVisibilityOptions}
                                     radioButtonClassName="!bg-background-input rounded-xl border border-gray-200 md:w-[266px] w-full py-2.5 px-3 shadow-sm"
                                 />
                             </div>
@@ -643,10 +917,24 @@ const Donate = () => {
                                 label="Dedication (optional)"
                                 value={dedication}
                                 onChange={(v) => setDedication(v ?? "none")}
-                                options={DEDICATION_OPTIONS}
+                                options={dedicationOptions}
                                 rootClassName="w-full"
                                 inputClassName="w-full rounded-xl border-gray-200"
                             />
+
+                            {(dedication === "honor" || dedication === "memory") && (
+                                <Input
+                                    labelClassName={DONATE_LABEL_CLASS}
+                                    inputType="text"
+                                    name="dedication_name"
+                                    label=""
+                                    value={dedicationName}
+                                    onChange={(v) => setDedicationName(typeof v === "string" ? v : "")}
+                                    placeholder="Person name"
+                                    rootClassName="w-full"
+                                    inputClassName="w-full rounded-xl border-gray-200"
+                                />
+                            )}
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                 <Input
@@ -656,7 +944,7 @@ const Donate = () => {
                                     label="Campaign / fund designation"
                                     value={fundDesignation}
                                     onChange={(v) => setFundDesignation(v ?? "general")}
-                                    options={FUND_OPTIONS}
+                                    options={fundOptions}
                                     rootClassName="w-full"
                                     inputClassName="w-full rounded-xl border-gray-200"
                                 />
@@ -713,7 +1001,7 @@ const Donate = () => {
                                 value={hearAbout}
                                 onChange={(v) => setHearAbout(v ?? "")}
                                 placeholder="Select an option"
-                                options={HEAR_ABOUT_OPTIONS}
+                                options={hearAboutOptions}
                                 rootClassName="w-full"
                                 inputClassName="w-full rounded-xl border-gray-200"
                             />
@@ -734,7 +1022,7 @@ const Donate = () => {
                     Frequently Asked Questions
                 </h2>
                 <div className="w-full divide-y divide-gray-200">
-                    {FAQ_ITEMS.map((item, index) => (
+                {faqItems.map((item, index) => (
                         <Accordian key={item.key} items={item} defaultExpanded={index === 0} />
                     ))}
                 </div>

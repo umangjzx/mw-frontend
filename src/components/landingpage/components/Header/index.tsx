@@ -76,6 +76,14 @@ const Header = () => {
                                 ))}
                             </nav>
                             <div className="relative">
+                                <Link
+                                    href="/donate"
+                                    className="underline font-medium hover:text-gray-600 transition-all duration-300"
+                                >
+                                    Donate
+                                </Link>
+                            </div>
+                            <div className="relative">
                                 <Button
                                     title="Log In"
                                     className="!bg-black !px-3 !py-1 text-white hover:!bg-black hover:!text-white text-sm !rounded-lg"
