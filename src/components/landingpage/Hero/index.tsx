@@ -14,7 +14,7 @@ const Hero = () => {
     const [_, setParamMode] = useQueryState("signup_as");
 
     return (
-        <div className="w-full h-full bg-white">
+        <div className="w-full h-full bg-[#F4F7FB] md:bg-white">
             <Header />
             <div className={`w-full md:h-[80vh] md:bg-white relative`}>
                 <div className="w-full !h-[300px] md:!h-full md:!relative">
