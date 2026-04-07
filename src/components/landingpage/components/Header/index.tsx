@@ -40,8 +40,8 @@ const Header = () => {
     };
 
     const links = [
+        { title: "Donate", link: "/donate" },
         { title: "About Us", link: "/about-us" },
-        // { title: "Donate", link: "/donate" },
         // { title: "Blogs", link: "/blogs" },
         // { title: "Team Up", link: "/" },
     ];
@@ -75,14 +75,6 @@ const Header = () => {
                                     </Link>
                                 ))}
                             </nav>
-                            <div className="relative">
-                                <Link
-                                    href="/donate"
-                                    className="underline font-medium hover:text-gray-600 transition-all duration-300"
-                                >
-                                    Donate
-                                </Link>
-                            </div>
                             <div className="relative">
                                 <Button
                                     title="Log In"
