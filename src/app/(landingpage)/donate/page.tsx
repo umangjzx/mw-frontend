@@ -17,6 +17,7 @@ import { COUNTRY_CODE_OPTIONS } from "@/utils/countryDialCodes";
 import { cn } from "@/utils/merge-class";
 import { Input as AntInput } from "antd";
 import { showToast } from "@/components/common/Toast";
+import "./donate.css";
 import { HeartDivider, NonProfit, SecureDonation, TaxDeductive } from "@/assets/icons";
 // Donor wall UI data (fetched)
 type DonorHighlight = { name: string; amount: string };
@@ -24,7 +25,7 @@ type LeaderboardRow = { rank: number; name: string; amount: string };
 type FaqItem = { key: string; label: string; content: string };
 
 const sectionBox =
-    "md:rounded-2xl border-b md:border border-gray-200   py-5 md:px-6 md:py-6 space-y-4";
+    "md:rounded-[40px] border-b md:border border-gray-200   py-5 md:px-10 md:py-6 space-y-4";
 
 /** Field labels: 16px, regular weight, #121212 */
 const DONATE_LABEL_CLASS =
@@ -407,8 +408,10 @@ const Donate = () => {
         if (!firstName) missing.push("First name");
         if (!lastName) missing.push("Last name");
         if (!email) missing.push("Email");
+        if (!phoneNumber) missing.push("Phone number");
         if (!address1) missing.push("Address line 1");
         if (!city) missing.push("City");
+        if (!state) missing.push("State / Region");
         if (!country) missing.push("Country");
         if (!zip) missing.push("ZIP / Postal Code");
         if (missing.length) {
@@ -516,13 +519,13 @@ const Donate = () => {
     }, []);
 
     return (
-        <div className="min-h-screen w-full bg-background-input flex flex-col">
+        <div className="min-h-screen w-full bg-background-input flex flex-col donate-flow">
             <section className="w-full flex flex-col items-center justify-center pt-10 md:pt-16">
                 <div className={`${PAGE_GUTTER_CLASS} flex flex-col gap-[20px] text-center`}>
-                    <h1 className="text-[24px] md:text-[40px] font-medium tracking-tight text-gray-900">
+                    <h1 className="text-[24px] md:text-[40px] font-medium tracking-tight text-[#121212]">
                         Support Our Mission
                     </h1>
-                    <p className="text-[14px] md:text-[20px] font-regular md:font-medium text-[#4F4F4F] md:w-[60%] leading-relaxed mx-auto">
+                    <p className="text-[14px] md:text-[20px] font-regular md:font-medium text-[#4F4F4F] md:max-w-[1068px] md:leading-[28.2px] tracking-tight mx-auto">
                         At Melody Wings, we strive to provide opportunities for differently-abled
                         children to learn, grow, and unlock their potential. Your support helps us
                         sustain this mission and expand our reach to more learners in need.
@@ -533,7 +536,7 @@ const Donate = () => {
 
             <section className={`${PAGE_GUTTER_CLASS} pt-10 md:pt-12`}>
                 {/* Desktop/tablet */}
-                <div className="hidden sm:grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                <div className="hidden sm:grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-[repeat(4,285px)] lg:justify-center gap-4 md:gap-6">
                     {donateCardData.map((item, index) => (
                         <DonateCard key={index} {...item} />
                     ))}
@@ -586,12 +589,12 @@ const Donate = () => {
                     {donorHighlights.map((row) => (
                         <div
                             key={row.name}
-                            className="bg-white rounded-2xl border border-[#FECACA]/80 md:px-5 px-2 md:py-6 py-2 text-center shadow-[0_0_14px_rgba(239,68,68,0.22),0_0_28px_rgba(239,68,68,0.1)]"
+                            className="bg-white w-full h-auto md:w-[306.67px] md:h-[158px] rounded-[16px] border border-[#FECACA] p-4 md:p-8 flex flex-col items-center justify-center gap-2 md:gap-[10px] text-center shadow-[0_0_14px_rgba(239,68,68,0.22),0_0_28px_rgba(239,68,68,0.1)]"
                         >
                             <p className="text-[14px] md:text-[30px] font-semibold text-[#EF4444]">
                                 {row.amount}
                             </p>
-                            <div className="h-px bg-[#FECACA]   md:my-4 my-2" />
+                            <div className="h-px w-[100px] md:w-[120px] bg-[#FECACA] md:mt-1 mt-0" />
                             <p className="md:text-[18px] text-[12px] font-medium text-[#0A0A0A]">
                                 {row.name}
                             </p>
@@ -611,14 +614,14 @@ const Donate = () => {
                             <span className="flex-1 text-[12px] md:text-base text-gray-900 font-medium">
                                 {row.name}
                             </span>
-                            <span className="text-[12px] md:text-base font-semibold text-primary tabular-nums">
+                            <span className="text-[12px] md:text-base font-semibold text-[#EF4444] tabular-nums">
                                 {row.amount}
                             </span>
                         </li>
                     ))}
                 </ul>
 
-                <p className="text-center text-[12px] text-[#4F4F4F] italic mt-8 mx-auto">
+                <p className="text-center text-[16px] text-[#4F4F4F] italic mt-8 mx-auto">
                     Every contribution, regardless of size, makes a meaningful difference in the
                     lives we touch.
                 </p>
@@ -650,9 +653,9 @@ const Donate = () => {
                             </div>
                         </div>
 
-                        <div className={sectionBox}>
+                        <div className={`${sectionBox} border-none md:border-none md:pl-0`}>
                             <p className="text-base font-normal text-[#121212]">Select amount</p>
-                            <div className="flex flex-wrap items-center gap-2 w-full min-w-0">
+                            <div className="flex flex-wrap items-center md:gap-5 gap-2 w-full min-w-0">
                                 {amountOptions
                                     .filter((o) => o.value !== "custom")
                                     .map((opt) => {
@@ -663,7 +666,7 @@ const Donate = () => {
                                                 type="button"
                                                 onClick={() => handleDonateAmount(opt.value)}
                                                 className={cn(
-                                                    "shrink-0 rounded-xl border px-4 py-2 text-sm font-medium transition-colors min-h-[48px]",
+                                                    "shrink-0 rounded-[12px] border px-4 py-2 text-sm font-medium transition-colors min-h-[48px]",
                                                     selected
                                                         ? "bg-[#121212] text-white border-[#121212]"
                                                         : "bg-white text-[#121212] border-gray-200 hover:border-gray-300"
@@ -692,10 +695,10 @@ const Donate = () => {
                                             setCustomAmount(e.target.value.replace(/[^\d.]/g, ""))
                                         }
                                         placeholder="Enter Amount here"
-                                        suffix={<span className="text-gray-400">$</span>}
+                                        suffix={<span className="text-[#121212]">$</span>}
                                         className={cn(
-                                            "!rounded-xl !bg-background-input min-w-[160px] !h-[48px] w-[min(100%,280px)] flex-1",
-                                            "[&_.ant-input]:!bg-background-input"
+                                            "!h-[48px] !rounded-[12px] !border !border-[#E0E0E0] !bg-[#F4F7FB] min-w-[160px] w-[min(100%,280px)] md:w-[390px] flex-1 !px-3",
+                                            "[&_.ant-input]:!bg-[#F4F7FB] [&_.ant-input]:!text-[#121212]"
                                         )}
                                     />
                                 )}
@@ -748,7 +751,7 @@ const Donate = () => {
                                 />
                                 <div className="flex flex-col gap-2 w-full min-w-0">
                                     <label className="text-base font-normal text-[#121212]">
-                                        Phone Number
+                                        Phone Number <span className="text-red-600">*</span>
                                     </label>
                                     <div className="flex gap-2 w-full min-w-0">
                                         <Input
@@ -797,7 +800,7 @@ const Donate = () => {
                                     value={address1}
                                     onChange={(v) => setAddress1(typeof v === "string" ? v : "")}
                                     placeholder="Street address"
-                                    rootClassName="w-full md:col-span-2"
+                                    rootClassName="w-full"
                                     inputClassName="w-full rounded-xl border-gray-200"
                                 />
                                 <Input
@@ -808,7 +811,7 @@ const Donate = () => {
                                     value={address2}
                                     onChange={(v) => setAddress2(typeof v === "string" ? v : "")}
                                     placeholder="Apt, suite (optional)"
-                                    rootClassName="w-full md:col-span-2"
+                                    rootClassName="w-full"
                                     inputClassName="w-full rounded-xl border-gray-200"
                                 />
                                 <Input
@@ -820,6 +823,35 @@ const Donate = () => {
                                     value={city}
                                     onChange={(v) => setCity(typeof v === "string" ? v : "")}
                                     placeholder="Enter city"
+                                    rootClassName="w-full"
+                                    inputClassName="w-full rounded-xl border-gray-200"
+                                />
+                                <Input
+                                    labelClassName={DONATE_LABEL_CLASS}
+                                    inputType="select"
+                                    name="state"
+                                    label="State / Region"
+                                    required
+                                    showSearch
+                                    disabled={!country || statesLoading}
+                                    isLoading={statesLoading}
+                                    value={state}
+                                    onChange={(v) => setState(v ?? "")}
+                                    placeholder={statesLoading ? "Loading..." : "Select state"
+                                    }
+                                    options={stateOptions}
+                                    rootClassName="w-full"
+                                    inputClassName="w-full rounded-xl border-gray-200"
+                                />
+                                <Input
+                                    labelClassName={DONATE_LABEL_CLASS}
+                                    inputType="text"
+                                    name="zip"
+                                    label="ZIP / Postal Code"
+                                    required
+                                    value={zip}
+                                    onChange={(v) => setZip(typeof v === "string" ? v : "")}
+                                    placeholder="Enter ZIP or postal code"
                                     rootClassName="w-full"
                                     inputClassName="w-full rounded-xl border-gray-200"
                                 />
@@ -842,33 +874,6 @@ const Donate = () => {
                                     rootClassName="w-full"
                                     inputClassName="w-full rounded-xl border-gray-200"
                                 />
-                                <Input
-                                    labelClassName={DONATE_LABEL_CLASS}
-                                    inputType="select"
-                                    name="state"
-                                    label="State / Region"
-                                    showSearch
-                                    disabled={!country || statesLoading}
-                                    isLoading={statesLoading}
-                                    value={state}
-                                    onChange={(v) => setState(v ?? "")}
-                                    placeholder={statesLoading ? "Loading..." : "Select state"}
-                                    options={stateOptions}
-                                    rootClassName="w-full"
-                                    inputClassName="w-full rounded-xl border-gray-200"
-                                />
-                                <Input
-                                    labelClassName={DONATE_LABEL_CLASS}
-                                    inputType="text"
-                                    name="zip"
-                                    label="ZIP / Postal Code"
-                                    required
-                                    value={zip}
-                                    onChange={(v) => setZip(typeof v === "string" ? v : "")}
-                                    placeholder="Enter ZIP or postal code"
-                                    rootClassName="w-full"
-                                    inputClassName="w-full rounded-xl border-gray-200"
-                                />
                             </div>
                         </div>
 
@@ -877,9 +882,9 @@ const Donate = () => {
                                 Donation preferences
                             </h3>
                             <div className="space-y-2">
-                                <p className="text-base font-normal text-[#121212]">
+                                {/* <p className="text-base font-normal text-[#121212]">
                                     How should we show your name?
-                                </p>
+                                </p> */}
                                 <RadioInput
                                     inputType="radio"
                                     name="name_visibility"
@@ -905,7 +910,7 @@ const Donate = () => {
                                     value={donorWall}
                                     onChange={(checked) => setDonorWall(Boolean(checked))}
                                     placeholder="Show my name on the donor wall"
-                                    rootClassName="!mb-0 w-full"
+                                    rootClassName="!mb-0 w-full !flex !items-center !gap-3"
                                     inputClassName="!text-base !font-normal !text-[#121212] !w-full"
                                 />
                             </div>
@@ -963,21 +968,26 @@ const Donate = () => {
                                 />
                             </div>
 
-                            <div className={`${DONATE_CHECKBOX_ROW_CLASS} space-y-1`}>
-                                <Input
-                                    labelClassName={DONATE_LABEL_CLASS}
-                                    inputType="checkbox"
-                                    name="cover_fees"
-                                    value={coverFees}
-                                    onChange={(checked) => setCoverFees(Boolean(checked))}
-                                    placeholder="Cover processing fees"
-                                    rootClassName="!mb-0 w-full"
-                                    inputClassName="!text-base !font-normal !text-[#121212] !w-full"
-                                />
-                                <p className="text-[12px] text-[#121212] pl-6 -mt-1">
-                                    100% of your donation will go directly to Melody Wings when you
-                                    cover fees.
-                                </p>
+                            <div className={`${DONATE_CHECKBOX_ROW_CLASS} w-full`}>
+                                <div className="w-full flex items-center gap-3">
+                                    <input
+                                        type="checkbox"
+                                        name="cover_fees"
+                                        checked={coverFees}
+                                        onChange={(e) => setCoverFees(Boolean(e.target.checked))}
+                                        className="shrink-0 h-5 w-5 md:h-6 md:w-6 rounded border-gray-300 accent-black focus:ring-0 focus:ring-offset-0"
+                                        aria-label="Cover processing fees"
+                                    />
+                                    <div className="flex min-w-0 flex-col items-start gap-1">
+                                        <span className="!text-base !font-normal !text-[#121212]">
+                                            Cover processing fees
+                                        </span>
+                                        <p className="text-[12px] text-[#121212] -mt-1">
+                                            100% of your donation will go directly to Melody Wings when you
+                                            cover fees.
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
 
                             <Input

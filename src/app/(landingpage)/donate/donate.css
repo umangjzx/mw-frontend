@@ -1,0 +1,68 @@
+/* Donate page-only overrides */
+.donate-flow .ant-checkbox .ant-checkbox-inner {
+	width: 24px;
+	height: 24px;
+}
+
+.donate-flow .ant-checkbox {
+	inset-inline-start: 0; /* no layout shift */
+}
+
+.donate-flow .ant-checkbox .ant-checkbox-inner::after {
+	/* center the tick inside 24px box */
+	inset-inline-start: 50%;
+	inset-block-start: 50%;
+	transform: translate(-50%, -50%) rotate(45deg);
+	/* make the tick larger to occupy more width */
+	width: 8px;
+	height: 17px;
+}
+
+.donate-flow .ant-checkbox-checked .ant-checkbox-inner::after {
+	border-width: 3px;
+}
+
+/* Vertically center checkbox with its label in donate flow */
+.donate-flow .ant-checkbox-wrapper {
+	display: inline-flex;
+	align-items: center;
+}
+.donate-flow .ant-checkbox {
+	top: 0;
+}
+
+/* Align helper text under the label (checkbox width 24 + gap 12) */
+/* Helper text aligns with the same left edge as the label */
+.donate-flow .cover-fees-row p {
+	margin-left: 0;
+}
+
+/* Donate page only: remove default 16px horizontal padding from MUI AccordionSummary */
+.donate-flow .MuiAccordionSummary-root {
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}
+
+/* Donate page only: remove horizontal padding and white bg from details */
+.donate-flow .MuiAccordionDetails-root {
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+	background-color: transparent !important;
+}
+
+/* Ensure accordion container (Paper) has no white background on donate page */
+.donate-flow .MuiPaper-root.MuiAccordion-root {
+	background-color: transparent !important;
+	box-shadow: none !important;
+}
+
+/* Donate page only: widen gaps between radio items */
+.donate-flow .custom-radio-group > div {
+	gap: 1rem;
+}
+@media (min-width: 768px) {
+	.donate-flow .custom-radio-group > div {
+		gap: 2.7rem; /* md:gap-10 */
+	}
+}
+
