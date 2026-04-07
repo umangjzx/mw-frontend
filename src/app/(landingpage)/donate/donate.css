@@ -89,3 +89,8 @@
 	}
 }
 
+/* Utility: remove horizontal page gutter just for targeted sliders (mobile) */
+.donate-flow .bleed-x {
+	margin-left: -20px;  /* counteracts PAGE_GUTTER_CLASS px-5 */
+	margin-right: -20px; /* counteracts PAGE_GUTTER_CLASS px-5 */
+}

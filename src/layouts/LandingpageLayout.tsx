@@ -7,7 +7,7 @@ const LandingpageLayout: FC<PropsWithChildren> = ({ children }) => {
     return (
         <div>
             <Header />
-            <div className="w-full h-full bg-background-input">{children}</div>
+			<div className="w-full h-full bg-[#F4F7FB] md:bg-background-input">{children}</div>
             <Footer />
         </div>
     );

@@ -551,12 +551,12 @@ const Donate = () => {
                     <div
                         ref={topCardsCarouselRef}
                         onScroll={handleTopCardsScroll}
-                        className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 no-scrollbar"
+						className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 no-scrollbar bleed-x"
                     >
                         {donateCardData.map((item, index) => (
                             <div
                                 key={index}
-                                className="flex-[0_0_86%] snap-start"
+								className="flex-[0_0_86%] snap-start first:pl-5 last:pr-5"
                                 aria-label={item.title}
                             >
                                 <DonateCard {...item} />
