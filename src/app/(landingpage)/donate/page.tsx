@@ -25,7 +25,7 @@ type LeaderboardRow = { rank: number; name: string; amount: string };
 type FaqItem = { key: string; label: string; content: string };
 
 const sectionBox =
-    "md:rounded-[40px] border-b md:border border-gray-200   py-5 md:px-10 md:py-6 space-y-4";
+    "md:rounded-[40px] md:border-b md:border border-gray-200   py-5 md:px-10 md:py-6 space-y-4";
 
 /** Field labels: 16px, regular weight, #121212 */
 const DONATE_LABEL_CLASS =
@@ -65,7 +65,7 @@ const Donate = () => {
     const [statesLoading, setStatesLoading] = useState(false);
 
     const [dedication, setDedication] = useState<string | number>("none");
-    const [fundDesignation, setFundDesignation] = useState<string | number>("general");
+    const [fundDesignation, setFundDesignation] = useState<string | number>("other");
     const [fundOtherDetail, setFundOtherDetail] = useState("");
     const [message, setMessage] = useState("");
     const [hearAbout, setHearAbout] = useState<string | number>("");
@@ -379,10 +379,14 @@ const Donate = () => {
                 const options = Array.from(
                     new Map(list.map((label) => [slug(label), { label, value: slug(label) }] as const)).values()
                 );
+                // Ensure "Other" is always available in this dropdown.
+                if (!options.some((o) => o.value === "other")) {
+                    options.push({ label: "Other", value: "other" });
+                }
                 setFundOptions(options);
 
-                if (!options.find((o) => o.value === String(fundDesignation)) && options[0]) {
-                    setFundDesignation(options[0].value);
+                if (!options.find((o) => o.value === String(fundDesignation))) {
+                    setFundDesignation("other");
                 }
             })
             .catch((e) => console.error("Failed to load fund destinations", e));
@@ -579,7 +583,7 @@ const Donate = () => {
                     <h2 className="text-[24px] md:text-[30px] font-medium md:font-semibold text-[#121212]">
                         With Gratitude
                     </h2>
-                    <p className="text-[14px] md:text-[16px] text-[#4F4F4F]  mx-auto leading-relaxed">
+                    <p className="text-[14px] text-[#4F4F4F] mx-auto leading-relaxed md:hidden">
                         Honoring the generosity of our supporters whose contributions continue to
                         transform lives and build brighter futures.
                     </p>
@@ -589,7 +593,7 @@ const Donate = () => {
                     {donorHighlights.map((row) => (
                         <div
                             key={row.name}
-                            className="bg-white w-full h-auto md:w-[306.67px] md:h-[158px] rounded-[16px] border border-[#FECACA] p-4 md:p-8 flex flex-col items-center justify-center gap-2 md:gap-[10px] text-center shadow-[0_0_14px_rgba(239,68,68,0.22),0_0_28px_rgba(239,68,68,0.1)]"
+                            className="bg-white w-full h-auto md:h-[158px] rounded-[16px] border border-[#FECACA] p-4 md:p-8 flex flex-col items-center justify-center gap-2 md:gap-[10px] text-center shadow-[0_0_14px_rgba(239,68,68,0.22),0_0_28px_rgba(239,68,68,0.1)]"
                         >
                             <p className="text-[14px] md:text-[30px] font-semibold text-[#EF4444]">
                                 {row.amount}
@@ -621,7 +625,7 @@ const Donate = () => {
                     ))}
                 </ul>
 
-                <p className="text-center text-[16px] text-[#4F4F4F] italic mt-8 mx-auto">
+                <p className="text-center text-[12px] text-[#4F4F4F] italic md:mt-8 mt-4 mx-auto md:hidden">
                     Every contribution, regardless of size, makes a meaningful difference in the
                     lives we touch.
                 </p>
@@ -634,7 +638,7 @@ const Donate = () => {
                         className="bg-white md:rounded-[24px] md:shadow-sm px-5 sm:px-6 md:px-10 lg:px-12 py-6 md:py-8 lg:py-10 space-y-0 md:space-y-10 w-full min-w-0"
                     >
                         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                            <h2 className="text-[20px] md:text-[24px] font-medium text-gray-900">
+                            <h2 className="text-[20px] md:text-[24px] font-medium text-[#000000]">
                                 Make a Difference Today
                             </h2>
                             <div className="flex flex-wrap gap-2 md:gap-3 text-xs md:text-[14px] text-[#4F4F4F]">
@@ -709,7 +713,7 @@ const Donate = () => {
                         </div>
 
                         <div className={sectionBox}>
-                            <h3 className="text-[20px] font-medium text-[#121212]">
+                            <h3 className="text-[20px] font-medium text-[#121212] md:mb-6 mb-0">
                                 Personal details
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
@@ -787,7 +791,7 @@ const Donate = () => {
                         </div>
 
                         <div className={sectionBox}>
-                            <h3 className="text-[20px] font-medium text-[#121212]">
+                            <h3 className="text-[20px] font-medium text-[#121212] md:mb-6 mb-0">
                                 Billing address
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
@@ -878,7 +882,7 @@ const Donate = () => {
                         </div>
 
                         <div className={sectionBox}>
-                            <h3 className="text-[20px] font-medium text-[#121212]">
+                            <h3 className="text-[20px] font-medium text-[#121212] mb-0 md:mb-10">
                                 Donation preferences
                             </h3>
                             <div className="space-y-2">
@@ -902,24 +906,27 @@ const Donate = () => {
                                 />
                             </div>
 
-                            <div className={DONATE_CHECKBOX_ROW_CLASS}>
-                                <Input
-                                    labelClassName={DONATE_LABEL_CLASS}
-                                    inputType="checkbox"
-                                    name="donor_wall"
-                                    value={donorWall}
-                                    onChange={(checked) => setDonorWall(Boolean(checked))}
-                                    placeholder="Show my name on the donor wall"
-                                    rootClassName="!mb-0 w-full !flex !items-center !gap-3"
-                                    inputClassName="!text-base !font-normal !text-[#121212] !w-full"
-                                />
+                            <div className={`${DONATE_CHECKBOX_ROW_CLASS} w-full`}>
+                                <div className="w-full flex items-center gap-3">
+                                    <input
+                                        type="checkbox"
+                                        name="donor_wall"
+                                        checked={donorWall}
+                                        onChange={(e) => setDonorWall(Boolean(e.target.checked))}
+                                        className="donate-checkbox shrink-0"
+                                        aria-label="Show my name on the donor wall"
+                                    />
+                                    <span className="!text-base !font-normal !text-[#121212]">
+                                        Show my name on the donor wall
+                                    </span>
+                                </div>
                             </div>
 
                             <Input
                                 labelClassName={DONATE_LABEL_CLASS}
                                 inputType="select"
                                 name="dedication"
-                                label="Dedication (optional)"
+                                label="Dedication (Optional)"
                                 value={dedication}
                                 onChange={(v) => setDedication(v ?? "none")}
                                 options={dedicationOptions}
@@ -957,7 +964,7 @@ const Donate = () => {
                                     labelClassName={DONATE_LABEL_CLASS}
                                     inputType="text"
                                     name="fund_other"
-                                    label="Details (if Other)"
+                                    label="Details (If Other)"
                                     value={fundOtherDetail}
                                     onChange={(v) =>
                                         setFundOtherDetail(typeof v === "string" ? v : "")
@@ -975,7 +982,7 @@ const Donate = () => {
                                         name="cover_fees"
                                         checked={coverFees}
                                         onChange={(e) => setCoverFees(Boolean(e.target.checked))}
-                                        className="shrink-0 h-5 w-5 md:h-6 md:w-6 rounded border-gray-300 accent-black focus:ring-0 focus:ring-offset-0"
+                                        className="donate-checkbox shrink-0"
                                         aria-label="Cover processing fees"
                                     />
                                     <div className="flex min-w-0 flex-col items-start gap-1">
@@ -994,7 +1001,7 @@ const Donate = () => {
                                 labelClassName={DONATE_LABEL_CLASS}
                                 inputType="textarea"
                                 name="message"
-                                label="Leave a message (optional)"
+                                label="Leave a message (Optional)"
                                 value={message}
                                 onChange={(v) => setMessage(typeof v === "string" ? v : "")}
                                 placeholder="Share why you are supporting Melody Wings."
@@ -1007,7 +1014,7 @@ const Donate = () => {
                                 labelClassName={DONATE_LABEL_CLASS}
                                 inputType="select"
                                 name="hear_about"
-                                label="How did you hear about us? (optional)"
+                                label="How did you hear about us? (Optional)"
                                 value={hearAbout}
                                 onChange={(v) => setHearAbout(v ?? "")}
                                 placeholder="Select an option"
