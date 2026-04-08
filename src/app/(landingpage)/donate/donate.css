@@ -50,6 +50,13 @@
 	background-color: transparent !important;
 }
 
+/* Donate page only: FAQ uses page-inherited font (no global accordion impact) */
+.donate-flow .MuiAccordion-root,
+.donate-flow .MuiAccordionSummary-root,
+.donate-flow .MuiAccordionDetails-root {
+	font-family: inherit !important;
+}
+
 /* Ensure accordion container (Paper) has no white background on donate page */
 .donate-flow .MuiPaper-root.MuiAccordion-root {
 	background-color: transparent !important;
