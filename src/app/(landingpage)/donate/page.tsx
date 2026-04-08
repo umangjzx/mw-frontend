@@ -69,6 +69,7 @@ const Donate = () => {
     const [fundOtherDetail, setFundOtherDetail] = useState("");
     const [message, setMessage] = useState("");
     const [hearAbout, setHearAbout] = useState<string | number>("");
+    const [hearAboutOther, setHearAboutOther] = useState("");
     const [dedicationName, setDedicationName] = useState("");
     const [dedicationOptions, setDedicationOptions] = useState<
         { label: string; value: string }[]
@@ -84,6 +85,7 @@ const Donate = () => {
     const [leaderboardRows, setLeaderboardRows] = useState<LeaderboardRow[]>([]);
     const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
     const [amountError, setAmountError] = useState<string>("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Mobile-only carousel state for "How Your Donation Helps" cards.
     const [topCardsIndex, setTopCardsIndex] = useState(0);
@@ -395,6 +397,7 @@ const Donate = () => {
 
     const handleDonateSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        if (isSubmitting) return;
         const successUrl =
             typeof window !== "undefined" ? `${window.location.origin}/donate/success` : "";
         const cancelUrl =
@@ -432,6 +435,11 @@ const Donate = () => {
         // Resolve fund destination label from selected value
         const fundDestinationLabel =
             fundOptions.find((o) => o.value === String(fundDesignation))?.label || "General Fund";
+        const isFundOther = String(fundDesignation).toLowerCase() === "other";
+        if (isFundOther && !fundOtherDetail.trim()) {
+            showToast({ type: "error", message: "Please fill details for 'Other' fund designation" });
+            return;
+        }
 
         // Resolve dedication label
         const dedicationLabel =
@@ -440,6 +448,7 @@ const Donate = () => {
         // Resolve how did you hear label
         const hearAboutLabel =
             hearAboutOptions.find((o) => o.value === String(hearAbout))?.label || "";
+        const isHearAboutOther = ["other", "others"].includes(String(hearAbout).toLowerCase());
 
         const payload = {
             amount: amountNumber,
@@ -458,15 +467,16 @@ const Donate = () => {
             country: String(country || ""),
             name_visibility: nameVisibilityLabel,
             show_on_donor_wall: Boolean(donorWall),
-            fund_destination: fundDestinationLabel,
+            fund_destination: isFundOther ? fundOtherDetail.trim() : fundDestinationLabel,
             dedication: dedicationLabel,
             dedication_name: dedication === "honor" || dedication === "memory" ? dedicationName : "",
             message: message,
             how_did_you_hear: hearAboutLabel || "Other",
-            how_did_you_hear_other: "", // no input in UI yet
+            how_did_you_hear_other: isHearAboutOther ? hearAboutOther.trim() : "",
             amount_other_description: isCustom ? "Custom amount" : "",
         };
 
+        setIsSubmitting(true);
         createCheckoutSession(payload)
             .then((res: any) => {
                 const data = (res?.data as any) ?? res;
@@ -475,14 +485,18 @@ const Donate = () => {
                     (data?.data && (data.data.url || data.data.redirect_url));
                 if (redirectUrl && typeof window !== "undefined") {
                     window.location.href = redirectUrl as string;
+                    return;
                 }
+                setIsSubmitting(false);
+                showToast({ type: "error", message: "Unable to continue to checkout. Please try again." });
             })
             .catch((err) => {
                 console.error("Failed to create checkout session", err);
-                // optionally show toast
+                showToast({ type: "error", message: "Failed to process donation. Please try again." });
+                setIsSubmitting(false);
             })
             .finally(() => {
-                // optionally clear loading state
+                // Keep loader while redirecting to checkout page.
             });
     };
 
@@ -508,12 +522,11 @@ const Donate = () => {
 
                 const unique = new Map<string, { label: string; value: string }>();
                 for (const m of mapped) if (!unique.has(m.value)) unique.set(m.value, m);
-                setHearAboutOptions(Array.from(unique.values()));
-
-                // Default selection if empty
-                if (!hearAbout && mapped.length > 0) {
-                    setHearAbout(Array.from(unique.values())[0]?.value ?? "");
+                const options = Array.from(unique.values());
+                if (!options.some((o) => o.value === "other" || o.value === "others")) {
+                    options.push({ label: "Others", value: "others" });
                 }
+                setHearAboutOptions(options);
             })
             .catch((e) => {
                 console.error("Failed to load how-did-you-hear options", e);
@@ -1023,18 +1036,40 @@ const Donate = () => {
                                 name="hear_about"
                                 label="How did you hear about us? (Optional)"
                                 value={hearAbout}
-                                onChange={(v) => setHearAbout(v ?? "")}
+                                onChange={(v) => {
+                                    const next = v ?? "";
+                                    setHearAbout(next);
+                                    if (!["other", "others"].includes(String(next).toLowerCase())) {
+                                        setHearAboutOther("");
+                                    }
+                                }}
                                 placeholder="Select an option"
                                 options={hearAboutOptions}
                                 rootClassName="w-full"
                                 inputClassName="w-full rounded-xl border-gray-200"
                             />
+                            {["other", "others"].includes(String(hearAbout).toLowerCase()) && (
+                                <Input
+                                    labelClassName={DONATE_LABEL_CLASS}
+                                    inputType="text"
+                                    name="hear_about_other"
+                                    label="Please specify"
+                                    required
+                                    value={hearAboutOther}
+                                    onChange={(v) => setHearAboutOther(typeof v === "string" ? v : "")}
+                                    placeholder="Enter details"
+                                    rootClassName="w-full"
+                                    inputClassName="w-full rounded-xl border-gray-200"
+                                />
+                            )}
                         </div>
 
                         <Button
                             htmlType="submit"
                             title="Donate Now"
                             btnVariant="secondary"
+                            loading={isSubmitting}
+                            disabled={isSubmitting}
                             customClassName="!w-full !rounded-[10px] !py-3 !h-12 !text-base !font-medium !text-white !bg-black hover:!bg-black"
                         />
                     </form>
