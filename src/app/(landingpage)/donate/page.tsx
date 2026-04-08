@@ -65,7 +65,7 @@ const Donate = () => {
     const [statesLoading, setStatesLoading] = useState(false);
 
     const [dedication, setDedication] = useState<string | number>("none");
-    const [fundDesignation, setFundDesignation] = useState<string | number>("other");
+    const [fundDesignation, setFundDesignation] = useState<string | number>("general-fund");
     const [fundOtherDetail, setFundOtherDetail] = useState("");
     const [message, setMessage] = useState("");
     const [hearAbout, setHearAbout] = useState<string | number>("");
@@ -386,7 +386,8 @@ const Donate = () => {
                 setFundOptions(options);
 
                 if (!options.find((o) => o.value === String(fundDesignation))) {
-                    setFundDesignation("other");
+                    const general = options.find((o) => o.value === "general-fund");
+                    setFundDesignation(general ? general.value : options[0]?.value ?? "other");
                 }
             })
             .catch((e) => console.error("Failed to load fund destinations", e));
@@ -598,8 +599,8 @@ const Donate = () => {
                             <p className="text-[14px] md:text-[30px] font-semibold text-[#EF4444]">
                                 {row.amount}
                             </p>
-                            <div className="h-px w-[100px] md:w-[120px] bg-[#FECACA] md:mt-1 mt-0" />
-                            <p className="md:text-[18px] text-[12px] font-medium text-[#0A0A0A]">
+                            <div className="h-px w-[80px] bg-[#FECACA] mt-0 md:hidden" />
+                            <p className="md:text-[18px] text-[12px] font-medium text-[#0A0A0A] w-[100px] md:w-[120px] px-2 md:px-3 block truncate">
                                 {row.name}
                             </p>
                         </div>
@@ -615,7 +616,7 @@ const Donate = () => {
                             <span className="text-sm text-gray-400 w-6 tabular-nums">
                                 {row.rank}
                             </span>
-                            <span className="flex-1 text-[12px] md:text-base text-gray-900 font-medium">
+                            <span className="flex-1 min-w-0 truncate text-[12px] md:text-base text-gray-900 font-medium">
                                 {row.name}
                             </span>
                             <span className="text-[12px] md:text-base font-semibold text-[#EF4444] tabular-nums">
@@ -955,24 +956,30 @@ const Donate = () => {
                                     name="fund"
                                     label="Campaign / fund designation"
                                     value={fundDesignation}
-                                    onChange={(v) => setFundDesignation(v ?? "general")}
+                                    onChange={(v) => {
+                                        const val = v ?? "general-fund";
+                                        setFundDesignation(val);
+                                        if (val !== "other") setFundOtherDetail("");
+                                    }}
                                     options={fundOptions}
                                     rootClassName="w-full"
                                     inputClassName="w-full rounded-xl border-gray-200"
                                 />
-                                <Input
-                                    labelClassName={DONATE_LABEL_CLASS}
-                                    inputType="text"
-                                    name="fund_other"
-                                    label="Details (If Other)"
-                                    value={fundOtherDetail}
-                                    onChange={(v) =>
-                                        setFundOtherDetail(typeof v === "string" ? v : "")
-                                    }
-                                    placeholder="Enter here"
-                                    rootClassName="w-full"
-                                    inputClassName="w-full rounded-xl border-gray-200"
-                                />
+                                {String(fundDesignation) === "other" && (
+                                    <Input
+                                        labelClassName={DONATE_LABEL_CLASS}
+                                        inputType="text"
+                                        name="fund_other"
+                                        label="Details (If Other)"
+                                        value={fundOtherDetail}
+                                        onChange={(v) =>
+                                            setFundOtherDetail(typeof v === "string" ? v : "")
+                                        }
+                                        placeholder="Enter here"
+                                        rootClassName="w-full"
+                                        inputClassName="w-full rounded-xl border-gray-200"
+                                    />
+                                )}
                             </div>
 
                             <div className={`${DONATE_CHECKBOX_ROW_CLASS} w-full`}>
