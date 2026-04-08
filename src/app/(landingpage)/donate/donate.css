@@ -57,6 +57,14 @@
 	font-family: inherit !important;
 }
 
+/* Donate page: keep inputs/selects subtle on focus (remove dark outline/border) */
+.donate-flow .ant-select-selector,
+.donate-flow .ant-input,
+.donate-flow textarea.ant-input {
+	border-color: #e5e7eb !important; /* tailwind gray-200 */
+	box-shadow: none !important;
+	outline: none !important;
+}
 /* Ensure accordion container (Paper) has no white background on donate page */
 .donate-flow .MuiPaper-root.MuiAccordion-root {
 	background-color: transparent !important;
