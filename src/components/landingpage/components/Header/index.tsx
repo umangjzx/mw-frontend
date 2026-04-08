@@ -52,13 +52,21 @@ const Header = () => {
     };
 
     const hideNavigation = ["/privacy-policy", "/terms-and-conditions"].includes(pathname);
+    const noTapHighlight = {
+        WebkitTapHighlightColor: "transparent",
+        WebkitTouchCallout: "none",
+    } as const;
 
     return (
         <div
             className="w-full mx-auto bg-white shadow-md "
         >
             <div className="w-full mx-auto flex justify-between items-center 2xl:px-[4%] px-[5%] py-5 ">
-                <Link href="/" className="cursor-pointer">
+                <Link
+                    href="/"
+                    className="cursor-pointer focus:outline-none focus-visible:outline-none"
+                    style={noTapHighlight}
+                >
                     <Logo />
                 </Link>
                 {!hideNavigation && (
@@ -69,7 +77,8 @@ const Header = () => {
                                     <Link
                                         href={link.link}
                                         key={index}
-                                        className="underline font-medium hover:text-gray-600 transition-all duration-300"
+                                        className="underline font-medium hover:text-gray-600 transition-all duration-300 focus:outline-none focus-visible:outline-none active:outline-none"
+                                        style={noTapHighlight}
                                     >
                                         {link.title}
                                     </Link>
@@ -83,9 +92,15 @@ const Header = () => {
                                 />
                             </div>
                         </div>
-                        <div className="md:hidden cursor-pointer" onClick={handleSideNavBar}>
+                        <button
+                            type="button"
+                            aria-label="Open navigation menu"
+                            className="md:hidden cursor-pointer appearance-none border-0 bg-transparent p-0 leading-none touch-manipulation focus:outline-none focus-visible:outline-none active:outline-none"
+                            onClick={handleSideNavBar}
+                            style={noTapHighlight}
+                        >
                             <SideMenuIcon />
-                        </div>
+                        </button>
                     </>
                 )}
             </div>
@@ -93,10 +108,18 @@ const Header = () => {
                 <>
                     <SideNavBar isOpen={isSideNavBarOpen} onClose={handleCloseSideNavBar}>
                         <div className="flex justify-between items-center px-4">
-                            <Link href="/" className="cursor-pointer">
+                            <Link
+                                href="/"
+                                className="cursor-pointer focus:outline-none focus-visible:outline-none"
+                                style={noTapHighlight}
+                            >
                                 <Logo />
                             </Link>
-                            <div onClick={handleSideNavBar} className="cursor-pointer">
+                            <div
+                                onClick={handleSideNavBar}
+                                className="cursor-pointer focus:outline-none focus-visible:outline-none"
+                                style={noTapHighlight}
+                            >
                                 <IoMdClose className="text-[28px] mt-1 font-bold" />
                             </div>
                         </div>
@@ -105,7 +128,8 @@ const Header = () => {
                                 <div
                                     onClick={() => handleLinkClick(link.link)}
                                     key={index}
-                                    className="underline font-medium hover:text-gray-600 transition-all duration-300 text-base"
+                                    className="underline font-medium hover:text-gray-600 transition-all duration-300 text-base focus:outline-none focus-visible:outline-none active:outline-none"
+                                    style={noTapHighlight}
                                 >
                                     {link.title}
                                 </div>
