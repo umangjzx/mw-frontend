@@ -599,8 +599,8 @@ const Donate = () => {
                             <p className="text-[14px] md:text-[30px] font-semibold text-[#EF4444]">
                                 {row.amount}
                             </p>
-                            <div className="h-px w-[80px] bg-[#FECACA] mt-0 md:hidden" />
-                            <p className="md:text-[18px] text-[12px] font-medium text-[#0A0A0A] w-[100px] md:w-[120px] px-2 md:px-3 block truncate">
+                            <div className="h-px w-[80px] md:w-[180px] bg-[#FECACA] mt-0 md:mt-1" />
+                            <p className="md:text-[18px] text-[12px] font-medium text-[#0A0A0A] w-[100px] md:w-auto px-2 md:px-3 block truncate md:overflow-visible md:whitespace-normal md:text-clip">
                                 {row.name}
                             </p>
                         </div>
