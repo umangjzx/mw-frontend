@@ -9,8 +9,8 @@ interface DonateCardProps {
 
 const DonateCard = ({ title, subtitle, image }: DonateCardProps) => {
     return (
-        <div className="w-full min-h-[200px] sm:min-h-[220px] lg:min-h-[265px] relative rounded-2xl overflow-hidden shadow-sm">
-            <div className="relative w-full h-full min-h-[inherit] aspect-[4/3] sm:aspect-auto">
+        <div className="relative w-full lg:w-[285px] h-[200px] sm:h-[220px] lg:h-[265px] rounded-3xl overflow-hidden shadow-sm">
+            <div className="absolute inset-0 w-full h-full">
                 <Image
                     src={image}
                     alt={title}
@@ -23,7 +23,7 @@ const DonateCard = ({ title, subtitle, image }: DonateCardProps) => {
                     aria-hidden
                 />
             </div>
-            <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5 flex flex-col gap-2 z-10">
+            <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 flex flex-col gap-3 z-10">
                 <h2 className="text-white text-[14px] md:text-xl font-medium leading-snug">{title}</h2>
                 <p className="text-white text-[12px] md:text-[16px] italic leading-relaxed">{subtitle}</p>
             </div>

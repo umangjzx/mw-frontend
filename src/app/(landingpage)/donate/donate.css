@@ -1,0 +1,111 @@
+/* Donate page-only overrides */
+.donate-flow .ant-checkbox .ant-checkbox-inner {
+	width: 24px;
+	height: 24px;
+}
+
+.donate-flow .ant-checkbox {
+	inset-inline-start: 0; /* no layout shift */
+}
+
+.donate-flow .ant-checkbox .ant-checkbox-inner::after {
+	/* center the tick inside 24px box */
+	inset-inline-start: 50%;
+	inset-block-start: 50%;
+	transform: translate(-50%, -50%) rotate(45deg);
+	/* make the tick larger to occupy more width */
+	width: 8px;
+	height: 17px;
+}
+
+.donate-flow .ant-checkbox-checked .ant-checkbox-inner::after {
+	border-width: 3px;
+}
+
+/* Vertically center checkbox with its label in donate flow */
+.donate-flow .ant-checkbox-wrapper {
+	display: inline-flex;
+	align-items: center;
+}
+.donate-flow .ant-checkbox {
+	top: 0;
+}
+
+/* Align helper text under the label (checkbox width 24 + gap 12) */
+/* Helper text aligns with the same left edge as the label */
+.donate-flow .cover-fees-row p {
+	margin-left: 0;
+}
+
+/* Donate page only: remove default 16px horizontal padding from MUI AccordionSummary */
+.donate-flow .MuiAccordionSummary-root {
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}
+
+/* Donate page only: remove horizontal padding and white bg from details */
+.donate-flow .MuiAccordionDetails-root {
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+	background-color: transparent !important;
+}
+
+/* Donate page only: FAQ uses page-inherited font (no global accordion impact) */
+.donate-flow .MuiAccordion-root,
+.donate-flow .MuiAccordionSummary-root,
+.donate-flow .MuiAccordionDetails-root {
+	font-family: inherit !important;
+}
+
+/* Donate page: keep inputs/selects subtle on focus (remove dark outline/border) */
+.donate-flow .ant-select-selector,
+.donate-flow .ant-input,
+.donate-flow textarea.ant-input {
+	border-color: #e5e7eb !important; /* tailwind gray-200 */
+	box-shadow: none !important;
+	outline: none !important;
+}
+/* Ensure accordion container (Paper) has no white background on donate page */
+.donate-flow .MuiPaper-root.MuiAccordion-root {
+	background-color: transparent !important;
+	box-shadow: none !important;
+}
+
+/* Donate page-only custom checkbox (matches provided SVG style) */
+.donate-flow .donate-checkbox {
+	appearance: none;
+	-webkit-appearance: none;
+	width: 24px;
+	height: 24px;
+	border: 1px solid #d1d5db;
+	border-radius: 6px;
+	background-color: #fff;
+	cursor: pointer;
+	display: inline-block;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 24px 24px;
+}
+
+.donate-flow .donate-checkbox:checked {
+	border-color: #000;
+	background-color: #000;
+	background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 8.079L10.746 17.333C9.96511 18.1142 8.69878 18.1145 7.91756 17.3336C7.91738 17.3334 7.91719 17.3332 7.917 17.333L3.99998 13.417C3.60867 13.0257 3.60867 12.3913 3.99998 12C4.3913 11.6088 5.0257 11.6087 5.41697 12L9.33295 15.916L18.588 6.66202C18.9793 6.27211 19.6125 6.27323 20.0025 6.6645C20.3924 7.05581 20.3913 7.68909 20 8.079Z' fill='white'/%3E%3C/svg%3E");
+	background-size: 18px 18px;
+}
+
+/* Donate page only: widen gaps between radio items */
+.donate-flow .custom-radio-group > div {
+	gap: 1rem;
+}
+@media (min-width: 768px) {
+	.donate-flow .custom-radio-group > div {
+		gap: 2.7rem; /* md:gap-10 */
+	}
+}
+
+/* Utility: remove horizontal page gutter just for targeted sliders (mobile) */
+.donate-flow .bleed-x {
+	margin-left: -20px;  /* counteracts PAGE_GUTTER_CLASS px-5 */
+	margin-right: -20px; /* counteracts PAGE_GUTTER_CLASS px-5 */
+}
