@@ -10,6 +10,7 @@ import Sidebar from "@/components/common/Sidebar";
 import { useEffect, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { IoIosSearch } from "react-icons/io";
+import HeaderNotificationBell from "@/components/common/HeaderNotificationBell";
 
 const CommonHeader: React.FC = () => {
     const pathname = usePathname();
@@ -43,6 +44,7 @@ const CommonHeader: React.FC = () => {
         (pathname?.includes("/volunteer/messages") || pathname?.includes("/learner/messages")) &&
         searchParams?.get("chatId");
     const hideHeaderOnMobile = isMobile && isMessagesChatPage;
+    const isResourcesPage = pathname?.includes("/resources");
 
     const [isSideNavBarOpen, setIsSideNavBarOpen] = useState<boolean>(false);
     const [isSearchInputOpen, setIsSearchInputOpen] = useState<boolean>(false);
@@ -141,6 +143,7 @@ const CommonHeader: React.FC = () => {
                         "flex items-center justify-center gap-2"
                     )}
                 >
+                    {isResourcesPage && actionButtonPlacement === "left" && <HeaderNotificationBell />}
                     {showButton && (
                         <Button
                             title={actionButtonTitle}
@@ -185,6 +188,9 @@ const CommonHeader: React.FC = () => {
                                 icon={button?.buttonIcon}
                             />
                         ))}
+                    {(!isResourcesPage || actionButtonPlacement !== "left") && (
+                        <HeaderNotificationBell />
+                    )}
                 </div>
             </div>
             {(leftButton?.showButton || centerButton?.showButton || actionButtons?.length > 0) && (
@@ -221,6 +227,7 @@ const CommonHeader: React.FC = () => {
                             btnVariant="tertiary"
                         />
                     )}
+                    <HeaderNotificationBell />
                 </div>
             )}
             {isMobileOrTabScreen && (
