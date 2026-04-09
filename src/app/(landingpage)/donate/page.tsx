@@ -69,7 +69,6 @@ const Donate = () => {
     const [fundOtherDetail, setFundOtherDetail] = useState("");
     const [message, setMessage] = useState("");
     const [hearAbout, setHearAbout] = useState<string | number>("");
-    const [hearAboutOther, setHearAboutOther] = useState("");
     const [dedicationName, setDedicationName] = useState("");
     const [dedicationOptions, setDedicationOptions] = useState<
         { label: string; value: string }[]
@@ -401,7 +400,7 @@ const Donate = () => {
         const successUrl =
             typeof window !== "undefined" ? `${window.location.origin}/donate/success` : "";
         const cancelUrl =
-            typeof window !== "undefined" ? `${window.location.origin}/donate/cancel` : "";
+            typeof window !== "undefined" ? `${window.location.origin}/donate` : "";
 
         // Resolve amount
         const amountNumber = Number(isCustom ? customAmount : donateAmount || 0);
@@ -448,7 +447,6 @@ const Donate = () => {
         // Resolve how did you hear label
         const hearAboutLabel =
             hearAboutOptions.find((o) => o.value === String(hearAbout))?.label || "";
-        const isHearAboutOther = ["other", "others"].includes(String(hearAbout).toLowerCase());
 
         const payload = {
             amount: amountNumber,
@@ -472,7 +470,7 @@ const Donate = () => {
             dedication_name: dedication === "honor" || dedication === "memory" ? dedicationName : "",
             message: message,
             how_did_you_hear: hearAboutLabel || "Other",
-            how_did_you_hear_other: isHearAboutOther ? hearAboutOther.trim() : "",
+            how_did_you_hear_other: "",
             amount_other_description: isCustom ? "Custom amount" : "",
         };
 
@@ -1036,32 +1034,12 @@ const Donate = () => {
                                 name="hear_about"
                                 label="How did you hear about us? (Optional)"
                                 value={hearAbout}
-                                onChange={(v) => {
-                                    const next = v ?? "";
-                                    setHearAbout(next);
-                                    if (!["other", "others"].includes(String(next).toLowerCase())) {
-                                        setHearAboutOther("");
-                                    }
-                                }}
+                                onChange={(v) => setHearAbout(v ?? "")}
                                 placeholder="Select an option"
                                 options={hearAboutOptions}
                                 rootClassName="w-full"
                                 inputClassName="w-full rounded-xl border-gray-200"
                             />
-                            {["other", "others"].includes(String(hearAbout).toLowerCase()) && (
-                                <Input
-                                    labelClassName={DONATE_LABEL_CLASS}
-                                    inputType="text"
-                                    name="hear_about_other"
-                                    label="Please specify"
-                                    required
-                                    value={hearAboutOther}
-                                    onChange={(v) => setHearAboutOther(typeof v === "string" ? v : "")}
-                                    placeholder="Enter details"
-                                    rootClassName="w-full"
-                                    inputClassName="w-full rounded-xl border-gray-200"
-                                />
-                            )}
                         </div>
 
                         <Button
