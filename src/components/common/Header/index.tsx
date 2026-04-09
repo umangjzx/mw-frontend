@@ -45,6 +45,12 @@ const CommonHeader: React.FC = () => {
         searchParams?.get("chatId");
     const hideHeaderOnMobile = isMobile && isMessagesChatPage;
     const isResourcesPage = pathname?.includes("/resources");
+    const isVolunteerLearnersListMobile = isMobile && pathname === "/volunteer/learners";
+    const hasMobileStackedSearch =
+        isMobile &&
+        !hideSearch &&
+        (pathname?.includes("/community") || pathname?.includes("/resources"));
+    const hasStackedMobileHeader = hasMobileStackedSearch || isVolunteerLearnersListMobile;
 
     const [isSideNavBarOpen, setIsSideNavBarOpen] = useState<boolean>(false);
     const [isSearchInputOpen, setIsSearchInputOpen] = useState<boolean>(false);
@@ -65,8 +71,13 @@ const CommonHeader: React.FC = () => {
     if (hideHeader || hideHeaderOnMobile) return null;
 
     return (
-        <div className="w-full h-full relative">
-            <div className="w-full h-[64px] lg:h-full p-2 px-3 flex items-center justify-between relative">
+        <div className={cn("w-full h-full relative", hasStackedMobileHeader && "flex flex-col")}>
+            <div
+                className={cn(
+                    "w-full p-2 px-3 flex items-center justify-between relative",
+                    hasStackedMobileHeader ? "min-h-[64px] h-auto" : "h-[64px] lg:h-full"
+                )}
+            >
                 <div className="flex items-center gap-5">
                     <div className="flex capitalize items-center">
                         {showTitleButton || (
@@ -159,7 +170,11 @@ const CommonHeader: React.FC = () => {
                         (isMobileOrTabScreen &&
                             (leftButton?.showButton ||
                                 centerButton?.showButton ||
-                                actionButtons?.length > 0) ? null : isMobileOrTabScreen ? ( // Search moved to mobile row below when that row is shown
+                                actionButtons?.length > 0)
+                            ? null
+                            : hasMobileStackedSearch
+                              ? null
+                              : isMobileOrTabScreen ? ( // Search moved to mobile row below when that row is shown
                                     <Button
                                         icon={<IoIosSearch className="!text-xl" />}
                                         onClick={() => setIsSearchInputOpen(true)}
@@ -194,8 +209,26 @@ const CommonHeader: React.FC = () => {
                     )}
                 </div>
             </div>
+            {hasMobileStackedSearch && (
+                <div className="w-full px-3 pb-2 pt-1">
+                    <Input
+                        value={searchQuery ?? ""}
+                        inputType="search"
+                        name="search"
+                        inputClassName="!h-10 !rounded-full !border !border-[#E0E0E0] !bg-transparent hover:!bg-transparent focus:!bg-transparent hover:!border-[#E0E0E0] focus:!border-[#E0E0E0] gap-2 !px-4 !py-2.5"
+                        className="!w-full !mb-0 [&_.ant-input-affix-wrapper]:!bg-transparent [&_.ant-input-affix-wrapper]:hover:!bg-transparent [&_.ant-input-affix-wrapper]:focus-within:!bg-transparent [&_.ant-input]:!bg-transparent"
+                        onChange={handleSearch}
+                        placeholder={searchPlaceholder ?? "Search"}
+                    />
+                </div>
+            )}
             {(leftButton?.showButton || centerButton?.showButton || actionButtons?.length > 0) && (
-                <div className="lg:hidden w-full flex gap-2 px-3 pb-2 items-center">
+                <div
+                    className={cn(
+                        "lg:hidden w-full min-w-0 px-3 pb-2",
+                        isVolunteerLearnersListMobile ? "flex flex-col gap-2" : "flex gap-2 items-center"
+                    )}
+                >
                     {(centerButton?.showButton || centerComponent) && (
                         <div className="flex-1 min-w-0">
                             {centerComponent ? (
@@ -211,22 +244,46 @@ const CommonHeader: React.FC = () => {
                             )}
                         </div>
                     )}
-                    {actionButtons?.map((button: ActionButtons) => (
-                        <Button
-                            title={button?.buttonTitle}
-                            onClick={button?.buttonOnClick}
-                            rootClassName={button?.buttonClassName}
-                            size="small"
-                            icon={button?.buttonIcon}
-                        />
-                    ))}
-                    {!hideSearch && (
-                        <Button
-                            icon={<IoIosSearch className="!text-xl" />}
-                            onClick={() => setIsSearchInputOpen(true)}
-                            customClassName="!rounded-full !p-2 !h-fit"
-                            btnVariant="tertiary"
-                        />
+                    <div
+                        className={cn(
+                            "flex w-full gap-2",
+                            isVolunteerLearnersListMobile ? "items-stretch" : "items-center"
+                        )}
+                    >
+                        {actionButtons?.map((button: ActionButtons, index: number) => (
+                            <Button
+                                key={`${button?.buttonTitle ?? "action"}-${index}`}
+                                title={button?.buttonTitle}
+                                onClick={button?.buttonOnClick}
+                                rootClassName={cn(
+                                    button?.buttonClassName,
+                                    isVolunteerLearnersListMobile && "flex-1 min-w-0 !justify-center"
+                                )}
+                                size="small"
+                                icon={button?.buttonIcon}
+                            />
+                        ))}
+                        {!hideSearch && !isVolunteerLearnersListMobile && (
+                            <Button
+                                icon={<IoIosSearch className="!text-xl" />}
+                                onClick={() => setIsSearchInputOpen(true)}
+                                customClassName="!rounded-full !p-2 !h-fit"
+                                btnVariant="tertiary"
+                            />
+                        )}
+                    </div>
+                    {isVolunteerLearnersListMobile && !hideSearch && (
+                        <div className="box-border w-full min-w-0 py-2">
+                            <Input
+                                value={searchQuery ?? ""}
+                                inputType="search"
+                                name="search"
+                                inputClassName="!box-border !h-10 !w-full !min-w-0 !max-w-full !rounded-full !border !border-[#E0E0E0] !bg-white hover:!bg-white focus:!bg-white !px-4 !py-2.5"
+                                className="!mb-0 !w-full !min-w-0 !max-w-full [&_.ant-input-affix-wrapper]:!box-border [&_.ant-input-affix-wrapper]:!w-full [&_.ant-input-affix-wrapper]:!max-w-full"
+                                onChange={handleSearch}
+                                placeholder="Search"
+                            />
+                        </div>
                     )}
                 </div>
             )}
