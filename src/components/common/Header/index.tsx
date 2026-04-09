@@ -140,7 +140,8 @@ const CommonHeader: React.FC = () => {
                 <div
                     className={cn(
                         actionButtonPlacement === "left" ? "flex-row-reverse" : "flex",
-                        "flex items-center justify-center gap-2"
+                        "flex items-center justify-center gap-2",
+                        pathname?.includes("/community") && "ml-[26px]"
                     )}
                 >
                     {isResourcesPage && actionButtonPlacement === "left" && <HeaderNotificationBell />}
@@ -227,7 +228,6 @@ const CommonHeader: React.FC = () => {
                             btnVariant="tertiary"
                         />
                     )}
-                    <HeaderNotificationBell />
                 </div>
             )}
             {isMobileOrTabScreen && (
