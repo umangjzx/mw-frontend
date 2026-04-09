@@ -40,7 +40,7 @@ const Header = () => {
     };
 
     const links = [
-        { title: "Donate", link: "/donate" },
+        // { title: "Donate", link: "/donate" },
         { title: "About Us", link: "/about-us" },
         // { title: "Blogs", link: "/blogs" },
         // { title: "Team Up", link: "/" },
