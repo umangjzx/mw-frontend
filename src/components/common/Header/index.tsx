@@ -10,6 +10,7 @@ import Sidebar from "@/components/common/Sidebar";
 import { useEffect, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { IoIosSearch } from "react-icons/io";
+import HeaderNotificationBell from "@/components/common/HeaderNotificationBell";
 
 const CommonHeader: React.FC = () => {
     const pathname = usePathname();
@@ -185,6 +186,7 @@ const CommonHeader: React.FC = () => {
                                 icon={button?.buttonIcon}
                             />
                         ))}
+                    <HeaderNotificationBell />
                 </div>
             </div>
             {(leftButton?.showButton || centerButton?.showButton || actionButtons?.length > 0) && (
@@ -221,6 +223,7 @@ const CommonHeader: React.FC = () => {
                             btnVariant="tertiary"
                         />
                     )}
+                    <HeaderNotificationBell />
                 </div>
             )}
             {isMobileOrTabScreen && (
