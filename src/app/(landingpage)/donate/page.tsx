@@ -401,7 +401,7 @@ const Donate = () => {
         const successUrl =
             typeof window !== "undefined" ? `${window.location.origin}/donate/success` : "";
         const cancelUrl =
-            typeof window !== "undefined" ? `${window.location.origin}/donate/cancel` : "";
+            typeof window !== "undefined" ? `${window.location.origin}/donate` : "";
 
         // Resolve amount
         const amountNumber = Number(isCustom ? customAmount : donateAmount || 0);
