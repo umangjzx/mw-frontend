@@ -44,6 +44,7 @@ const CommonHeader: React.FC = () => {
         (pathname?.includes("/volunteer/messages") || pathname?.includes("/learner/messages")) &&
         searchParams?.get("chatId");
     const hideHeaderOnMobile = isMobile && isMessagesChatPage;
+    const isResourcesPage = pathname?.includes("/resources");
 
     const [isSideNavBarOpen, setIsSideNavBarOpen] = useState<boolean>(false);
     const [isSearchInputOpen, setIsSearchInputOpen] = useState<boolean>(false);
@@ -142,6 +143,7 @@ const CommonHeader: React.FC = () => {
                         "flex items-center justify-center gap-2"
                     )}
                 >
+                    {isResourcesPage && actionButtonPlacement === "left" && <HeaderNotificationBell />}
                     {showButton && (
                         <Button
                             title={actionButtonTitle}
@@ -186,7 +188,9 @@ const CommonHeader: React.FC = () => {
                                 icon={button?.buttonIcon}
                             />
                         ))}
-                    <HeaderNotificationBell />
+                    {(!isResourcesPage || actionButtonPlacement !== "left") && (
+                        <HeaderNotificationBell />
+                    )}
                 </div>
             </div>
             {(leftButton?.showButton || centerButton?.showButton || actionButtons?.length > 0) && (
