@@ -7,11 +7,14 @@ import ApprovalModal from "@/components/schedule/Modals/ApprovalModal";
 import { useQuery } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 
 const HeaderNotificationBell = () => {
+    const pathname = usePathname();
     const role = Cookies.get("role");
     const volunteerId = Cookies.get("volunteer_id");
     const [isOpen, setIsOpen] = useState(false);
+    const isResourcesPage = pathname?.includes("/resources");
 
     const { data } = useQuery({
         queryKey: ["unread-count"],
@@ -32,7 +35,9 @@ const HeaderNotificationBell = () => {
                 type="button"
                 aria-label="Notifications"
                 onClick={() => setIsOpen(true)}
-                className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-black transition-colors hover:bg-gray-50"
+                className={`relative inline-flex items-center justify-center rounded-full border-0 bg-white text-black transition-colors hover:bg-gray-50 md:border md:border-gray-200 ${
+                    isResourcesPage ? "h-6 w-6 md:h-10 md:w-10" : "h-10 w-10"
+                }`}
             >
                 <NotificationIcon width={18} height={18} />
                 {unreadCount > 0 && (
