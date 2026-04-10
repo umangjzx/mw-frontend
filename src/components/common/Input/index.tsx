@@ -329,8 +329,8 @@ export const Input: React.FC<InputProps> = (props) => {
                             props.inputClassName
                         )}
                         className={cn(
-                            props.inputClassName,
-                            `w-full text-sm p-2 rounded-md hover:bg-background-input !bg-background-input`
+                            `w-full text-sm p-2 rounded-md hover:bg-background-input !bg-background-input`,
+                            props.inputClassName
                         )}
                         prefix={<IoIosSearch className="text-gray text-xl" />}
                     />

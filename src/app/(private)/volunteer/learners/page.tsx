@@ -18,6 +18,7 @@ import { useEffect, useMemo, useState } from "react";
 import { RiFilter3Line } from "react-icons/ri";
 import { useDebounce } from "use-debounce";
 import { PAGINATION } from "@/definitions";
+import { cn } from "@/utils/merge-class";
 
 interface LearnerCardData {
     learnerId: string;
@@ -185,6 +186,9 @@ export default function LearnersPage() {
         }
     }, [searchParams, learnerId]);
 
+    const learnersActionButtonClassName =
+        "!text-white !text-sm !justify-center !h-10 !min-h-[40px] !px-3 !py-0 !rounded-[12px] !bg-[#1E1E1E] hover:!bg-[#1E1E1E] hover:!text-white md:!h-[35px] md:!min-h-0 md:!rounded-full md:!px-4 md:!py-2 md:!bg-black md:hover:!bg-black";
+
     useEffect(() => {
         setHeaderOptions({
             searchPlaceholder: "Find your learner",
@@ -198,8 +202,7 @@ export default function LearnersPage() {
                         ? "Learners History"
                         : "Learners I have worked with",
                     buttonOnClick: () => router.push("/volunteer/my-learners"),
-                    buttonClassName:
-                        "!bg-black !text-white hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4 !rounded-full",
+                    buttonClassName: learnersActionButtonClassName,
                     buttonPlacement: "right",
                     showButton: true,
                 },
@@ -207,14 +210,13 @@ export default function LearnersPage() {
                     buttonTitle: `Filters (${appliedFiltersCount})`,
                     buttonOnClick: () => setIsFilterOpen(true),
                     buttonIcon: <RiFilter3Line className="text-lg" />,
-                    buttonClassName:
-                        "!bg-black !text-white hover:!bg-black hover:!text-white !h-[35px] !text-sm !py-2 px-4 !rounded-full",
+                    buttonClassName: learnersActionButtonClassName,
                     buttonPlacement: "right",
                     showButton: true,
                 },
             ],
         });
-    }, [pathname, setHeaderOptions, appliedFiltersCount]);
+    }, [pathname, setHeaderOptions, appliedFiltersCount, isMobileScreen]);
 
     return (
         <div className="h-full animate-fadeIn">
