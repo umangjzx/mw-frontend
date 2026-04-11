@@ -32,7 +32,7 @@ export default function CommunityPage() {
             actionButtonTitle: "Add new post",
             actionButtonOnClick: handleAddNewPost,
             actionButtonClassName:
-                "!h-full !bg-background-secondary !text-black !rounded-xl hover:!bg-background-secondary hover:!text-black !text-xs !py-3 px-4",
+                "!h-full !w-[101px] md:!w-auto !bg-background-secondary !text-black !rounded-xl hover:!bg-background-secondary hover:!text-black !text-xs !py-3 px-4",
             actionButtonPlacement: "right",
             showButton: true,
             title: "Community",

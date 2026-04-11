@@ -12,35 +12,20 @@ import SideModal from "@/components/common/Modals/MobileSideModal";
 import Sidebar from "@/components/common/Sidebar";
 import { useState } from "react";
 import { VIEW_DEMO_LINK, VIEW_DEMO_LINK_FOR_VOLUNTEER } from "@/definitions";
-import { endpoints } from "@/api/constants";
-import { GET_API } from "@/api/request";
-import { useQuery, useIsFetching } from "@tanstack/react-query";
-import { useAppStore } from "@/store/useAppStore";
+import { useIsFetching } from "@tanstack/react-query";
+import HeaderNotificationBell from "@/components/common/HeaderNotificationBell";
 
 type Props = {};
 
 const Header = (props: Props) => {
     const role = Cookies.get("role");
     const router = useRouter();
-    const volunteerId = Cookies.get("volunteer_id");
     const [isSideNavBarOpen, setIsSideNavBarOpen] = useState<boolean>(false);
 
     // Check if any schedule-related events are fetching
     const fetchingLearnerEvents = useIsFetching({ queryKey: ["learner-events"] });
     const fetchingVolunteerEvents = useIsFetching({ queryKey: ["volunteer-events"] });
     const isScheduleLoading = fetchingLearnerEvents > 0 || fetchingVolunteerEvents > 0;
-
-    const getUnreadCount = async () => {
-        const res: any = await GET_API(endpoints.session.getUnreadCount(volunteerId as string));
-        return res?.data;
-    };
-
-    const { data } = useQuery({
-        queryKey: ["unread-count"],
-        queryFn: getUnreadCount,
-    });
-
-    console.log(data?.unread_count, "unreadCount");
 
     const innerWidth = InnerWidth();
     const isMobileOrTabScreen = innerWidth < 1024;
@@ -55,10 +40,6 @@ const Header = (props: Props) => {
 
     const handleMySchedule = () => {
         router.push("/volunteer/schedule?modal=my_schedule");
-    };
-
-    const handleNotification = () => {
-        router.push("/volunteer/schedule?modal=approval_notification");
     };
 
     const handleViewDemo = () => {
@@ -110,19 +91,7 @@ const Header = (props: Props) => {
                                     title="View Demo"
                                     customClassName="!bg-transparent !text-sm !font-medium !text-orange-500 hover:!text-orange-600 !border-none !shadow-none underline"
                                 />
-                                <div className="relative">
-                                    <Button
-                                        onClick={handleNotification}
-                                        icon={<NotificationIcon height="21px" width="21px" />}
-                                        customClassName="!border-none !bg-transparent font-semibold !text-black rounded-full !p-0"
-                                    />
-                                    {data?.unread_count > 0 && (
-                                        <span
-                                            className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-black"
-                                            aria-hidden
-                                        />
-                                    )}
-                                </div>
+                                <HeaderNotificationBell />
                             </>
                         )}
                     </div>
@@ -171,18 +140,7 @@ const Header = (props: Props) => {
                                         title="View Demo"
                                         customClassName="!bg-white max-lg:!text-sm !font-medium !text-black rounded-full lg:!p-3  !py-3 !px-3"
                                     />
-                                    <div className="relative">
-                                        <Button
-                                            onClick={handleNotification}
-                                            icon={<NotificationIcon />}
-                                            customClassName="!bg-transparent font-semibold !text-black rounded-full !py-3 !px-3"
-                                        />
-                                        {data?.unread_count > 0 && (
-                                            <div className="absolute -top-2.5 -right-1.5 p-1 px-2 rounded-full flex items-center justify-center text-white text-xs font-medium bg-red-500">
-                                                {data?.unread_count}
-                                            </div>
-                                        )}
-                                    </div>
+                                    <HeaderNotificationBell />
                                 </div>
                             )}
                             {isMobileOrTabScreen && (
