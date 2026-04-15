@@ -534,6 +534,9 @@ const Donate = () => {
             });
     }, []);
 
+    // Highlights are `sorted.slice(0, 3)`, so `donorHighlights.length >= 3` iff the API returned ≥3 contributors.
+    const showWithGratitudeSection = donorHighlights.length >= 3;
+
     return (
         <div className="min-h-screen w-full bg-background-input flex flex-col donate-flow">
             <section className="w-full flex flex-col items-center justify-center pt-10 md:pt-16">
@@ -589,59 +592,61 @@ const Donate = () => {
                 </div>
             </section>
 
-            <section className={`${PAGE_GUTTER_CLASS} pt-14 md:pt-20 pb-4`}>
-                <div className="flex flex-col items-center gap-[16px] text-center mb-6">
-                    <HeartDivider />
-                    <h2 className="text-[24px] md:text-[30px] font-medium md:font-semibold text-[#121212]">
-                        With Gratitude
-                    </h2>
-                    <p className="text-[14px] text-[#4F4F4F] mx-auto leading-relaxed md:hidden">
-                        Honoring the generosity of our supporters whose contributions continue to
-                        transform lives and build brighter futures.
+            {showWithGratitudeSection && (
+                <section className={`${PAGE_GUTTER_CLASS} pt-14 md:pt-20 pb-4`}>
+                    <div className="flex flex-col items-center gap-[16px] text-center mb-6">
+                        <HeartDivider />
+                        <h2 className="text-[24px] md:text-[30px] font-medium md:font-semibold text-[#121212]">
+                            With Gratitude
+                        </h2>
+                        <p className="text-[14px] text-[#4F4F4F] mx-auto leading-relaxed">
+                            Honoring the generosity of our supporters whose contributions continue to
+                            transform lives and build brighter futures.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4 md:gap-6 mt-8 md:mt-10">
+                        {donorHighlights.map((row) => (
+                            <div
+                                key={row.name}
+                                className="bg-white w-full h-auto md:h-[158px] rounded-[16px] border border-[#FECACA] p-4 md:p-8 flex flex-col items-center justify-center gap-2 md:gap-[10px] text-center shadow-[0_0_14px_rgba(239,68,68,0.22),0_0_28px_rgba(239,68,68,0.1)]"
+                            >
+                                <p className="text-[14px] md:text-[30px] font-semibold text-[#EF4444]">
+                                    {row.amount}
+                                </p>
+                                <div className="h-px w-[80px] md:w-[180px] bg-[#FECACA] mt-0 md:mt-1" />
+                                <p className="md:text-[18px] text-[12px] font-medium text-[#0A0A0A] w-[100px] md:w-auto px-2 md:px-3 block truncate md:overflow-visible md:whitespace-normal md:text-clip">
+                                    {row.name}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+
+                    <ul className="mt-6 md:mt-8 space-y-3">
+                        {leaderboardRows.map((row) => (
+                            <li
+                                key={row.rank}
+                                className="flex items-center gap-3 md:gap-4 bg-white rounded-xl border border-gray-100 px-4 py-3 shadow-sm"
+                            >
+                                <span className="text-sm text-gray-400 w-6 tabular-nums">
+                                    {row.rank}
+                                </span>
+                                <span className="flex-1 min-w-0 truncate text-[12px] md:text-base text-gray-900 font-medium">
+                                    {row.name}
+                                </span>
+                                <span className="text-[12px] md:text-base font-semibold text-[#EF4444] tabular-nums">
+                                    {row.amount}
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+
+                    <p className="text-center text-[12px] text-[#4F4F4F] italic md:mt-8 mt-4 mx-auto">
+                        Every contribution, regardless of size, makes a meaningful difference in the
+                        lives we touch.
                     </p>
-                </div>
-
-                <div className="grid grid-cols-3 gap-4 md:gap-6 mt-8 md:mt-10">
-                    {donorHighlights.map((row) => (
-                        <div
-                            key={row.name}
-                            className="bg-white w-full h-auto md:h-[158px] rounded-[16px] border border-[#FECACA] p-4 md:p-8 flex flex-col items-center justify-center gap-2 md:gap-[10px] text-center shadow-[0_0_14px_rgba(239,68,68,0.22),0_0_28px_rgba(239,68,68,0.1)]"
-                        >
-                            <p className="text-[14px] md:text-[30px] font-semibold text-[#EF4444]">
-                                {row.amount}
-                            </p>
-                            <div className="h-px w-[80px] md:w-[180px] bg-[#FECACA] mt-0 md:mt-1" />
-                            <p className="md:text-[18px] text-[12px] font-medium text-[#0A0A0A] w-[100px] md:w-auto px-2 md:px-3 block truncate md:overflow-visible md:whitespace-normal md:text-clip">
-                                {row.name}
-                            </p>
-                        </div>
-                    ))}
-                </div>
-
-                <ul className="mt-6 md:mt-8 space-y-3">
-                    {leaderboardRows.map((row) => (
-                        <li
-                            key={row.rank}
-                            className="flex items-center gap-3 md:gap-4 bg-white rounded-xl border border-gray-100 px-4 py-3 shadow-sm"
-                        >
-                            <span className="text-sm text-gray-400 w-6 tabular-nums">
-                                {row.rank}
-                            </span>
-                            <span className="flex-1 min-w-0 truncate text-[12px] md:text-base text-gray-900 font-medium">
-                                {row.name}
-                            </span>
-                            <span className="text-[12px] md:text-base font-semibold text-[#EF4444] tabular-nums">
-                                {row.amount}
-                            </span>
-                        </li>
-                    ))}
-                </ul>
-
-                <p className="text-center text-[12px] text-[#4F4F4F] italic md:mt-8 mt-4 mx-auto md:hidden">
-                    Every contribution, regardless of size, makes a meaningful difference in the
-                    lives we touch.
-                </p>
-            </section>
+                </section>
+            )}
 
             <main className="w-full flex-1 flex justify-center py-8 md:py-12 lg:py-16">
                 <div className="w-full md:w-[70%] md:px-0 md:mx-auto">
