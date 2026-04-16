@@ -32,7 +32,8 @@ export default function VerificationPage() {
         const currentStatus = data?.onboarded_status;
         if (currentStatus === "verification_completed") {
             Cookies.set("onboarded_status", "verification_completed", { expires: 1 });
-            router.push(`/${role}/schedule`);
+            const defaultRoute = role === "learner" ? "/learner/instant-sessions" : "/volunteer/schedule";
+            router.push(defaultRoute);
         }else if(currentStatus === "verification_rejected"){
             Cookies.set("onboarded_status", "verification_rejected", { expires: 1 });
         }
@@ -55,12 +56,18 @@ export default function VerificationPage() {
     }
 
     const verificationContent = role === "learner" ? LearnerThankyouCardConstants : (onboarded_status === "verification_pending") ? VolunteerThankyouCardConstants : VolunteerRejectedMessage;
+    const verificationTheme =
+        role === "learner"
+            ? { iconBgColor: "#DFF5FF", iconAccentColor: "#09BAEE" }
+            : { iconBgColor: "#FFF0E6", iconAccentColor: "#FF6C00" };
 
     return (
         <div className="flex min-h-[60dvh] bg-background-input items-center justify-center flex-col gap-5 md:px-10">
             <ThankyouCard
                 title={verificationContent.title}
                 description={verificationContent.description}
+                iconBgColor={verificationTheme.iconBgColor}
+                iconAccentColor={verificationTheme.iconAccentColor}
             />
         </div>
     );

@@ -25,7 +25,7 @@ export const useOnboardingForm = (schema: any) => {
         success: () => {
             showToast({ type: "success", message: "Form Submitted!" });
             setIsRedirecting(true);
-            Cookies.set("onboarded_status", (role === 'learner') ? "verification_completed" : "verification_pending");
+            Cookies.set("onboarded_status", "verification_pending");
             router.push("/onboarding/verification");
             setImageId(null);
             setVideoId(null);
