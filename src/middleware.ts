@@ -103,8 +103,18 @@ export default function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/onboarding", origin));
   }
 
-  if (["verification_pending", "verification_rejected"].includes(onboardedStatus) && pathname !== "/onboarding/verification") {
-    return NextResponse.redirect(new URL("/onboarding/verification", origin));
+  if (["verification_pending", "verification_rejected"].includes(onboardedStatus)) {
+    // Learner flow: lock all internal routes until approved.
+    if (role === "learner" && pathname !== "/onboarding/verification") {
+      return NextResponse.redirect(new URL("/onboarding/verification", origin));
+    }
+
+    // Volunteer flow: allow private routes and render pending state in-app.
+    if (LANDING_PAGE_ROUTES.includes(pathname) && !pathname.startsWith("/onboarding")) {
+      const defaultRoute = role === "learner" ? `/${role}/instant-sessions` : `/${role}/schedule`;
+      return NextResponse.redirect(new URL(defaultRoute, origin));
+    }
+    return NextResponse.next();
   }
 
   if (onboardedStatus === "verification_completed") {

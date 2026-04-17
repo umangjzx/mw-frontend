@@ -6,17 +6,32 @@ import { renderHeader } from "./helper";
 import { usePathname, useSearchParams } from "next/navigation";
 import { cn } from "@/utils/merge-class";
 import InnerWidth from "@/utils/innerWidth";
+import Cookies from "js-cookie";
+import { ThankyouCardBase } from "@/components/landingpage/ThankyouCard";
+import { LearnerThankyouCardConstants } from "@/constants/learner";
+import { VolunteerRejectedMessage, VolunteerThankyouCardConstants } from "@/constants/volunteer";
 
 const MainLayout: FC<PropsWithChildren> = ({ children }) => {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const width = InnerWidth();
+    const onboardedStatus = Cookies.get("onboarded_status");
+    const role = Cookies.get("role");
     const isProfile = pathname.includes("profile");
     const isMessagesChatPage =
         (pathname?.includes("/volunteer/messages") || pathname?.includes("/learner/messages")) &&
         searchParams?.get("chatId");
     const isMobile = width > 0 && width < 768;
     const hideHeaderInLayout = isMessagesChatPage && isMobile;
+    const isApprovalPending = ["verification_pending", "verification_rejected"].includes(
+        onboardedStatus || ""
+    );
+    const pendingContent =
+        role === "learner"
+            ? LearnerThankyouCardConstants
+            : onboardedStatus === "verification_pending"
+              ? VolunteerThankyouCardConstants
+              : VolunteerRejectedMessage;
 
     const header = renderHeader(pathname);
 
@@ -43,7 +58,16 @@ const MainLayout: FC<PropsWithChildren> = ({ children }) => {
                         isProfile ? "" : "lg:rounded-tl-[50px]"
                     )}
                 >
-                    {children}
+                    {isApprovalPending ? (
+                        <div className="flex min-h-[60dvh] bg-background-input items-center justify-center flex-col gap-5 md:px-10 py-8">
+                            <ThankyouCardBase
+                                title={pendingContent.title}
+                                description={pendingContent.description}
+                            />
+                        </div>
+                    ) : (
+                        children
+                    )}
                 </div>
             </div>
         </div>
