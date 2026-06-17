@@ -1,4 +1,13 @@
-import moment from "moment-timezone";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import relativeTime from "dayjs/plugin/relativeTime";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(relativeTime);
+dayjs.extend(customParseFormat);
 
 /**
  * Extracts timezone offset from timezone label
@@ -12,12 +21,12 @@ type UserTimeZoneProps = {
     format?: string;
 };
 
-const localTimeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone || moment.tz.guess();
+const localTimeZone = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone || dayjs.tz.guess();
 
 export const timesAgo = (date: string) => {
     if (!date) return "";
-    const createdAt = moment.utc(date).local();
-    const diffInMinutes = moment().diff(createdAt, "minutes");
+    const createdAt = dayjs.utc(date).local();
+    const diffInMinutes = dayjs().diff(createdAt, "minutes");
 
     if (diffInMinutes < 1) return "Just now";
 
@@ -41,12 +50,12 @@ export const toUserTimeZone = ({
     format = "YYYY-MM-DD HH:mm:ss",
 }: UserTimeZoneProps) => {
     if (!date) return "";
-    return moment.utc(date).tz(timeZone).format(format);
+    return dayjs.utc(date).tz(timeZone).format(format);
 };
 
 export const calculateAge = (dob: string) => {
     if (!dob) return "";
-    return moment()?.diff(moment(dob, "DD-MM-YYYY"), "years")?.toString();
+    return dayjs()?.diff(dayjs(dob, "DD-MM-YYYY"), "years")?.toString();
 };
 
 export const isAgeUnder18 = (dob: string) => {
@@ -64,7 +73,7 @@ export const generateTimeSlotId = (startTime: string, endTime: string) => {
 export const convertToUTC = (utc_offset: string, time: string): string => {
     // Use a fixed anchor date to ensure consistent behavior
     const anchorDate = "2000-01-01"; // arbitrary fixed date
-    const local = moment(`${anchorDate} ${time}`, "YYYY-MM-DD HH:mm").utcOffset(utc_offset, true);
+    const local = dayjs(`${anchorDate} ${time}`, "YYYY-MM-DD HH:mm").utcOffset(utc_offset, true);
     const utcTime = local.utc().format("HH:mm");
     return utcTime;
 };

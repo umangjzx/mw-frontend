@@ -1,6 +1,9 @@
 import { z, ZodError, ZodIssue } from "zod";
-import moment from "moment";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import { ADULT_VOLUNTEER_AGE } from "@/constants/volunteer";
+
+dayjs.extend(customParseFormat);
 
 const contactNumberValidation = z
     .object({
@@ -319,7 +322,7 @@ export function validateVolunteerParentDetails(data: any) {
     const errors: { [key: string]: string } = {};
     let isSuccess = true;
 
-    const age = moment().diff(moment(data.volunteer_birth_date, "DD-MM-YYYY"), "years");
+    const age = dayjs().diff(dayjs(data.volunteer_birth_date, "DD-MM-YYYY"), "years");
 
     if (age < ADULT_VOLUNTEER_AGE) {
         const requiredFields = {

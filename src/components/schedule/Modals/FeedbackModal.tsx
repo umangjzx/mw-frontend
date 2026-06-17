@@ -14,7 +14,6 @@ import InnerWidth from "@/utils/innerWidth";
 import { cn } from "@/utils/merge-class";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
-import moment from "moment";
 import { FeedbackModalProps } from "./index.type.d";
 
 const FeedbackModal = ({

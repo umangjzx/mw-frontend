@@ -11,7 +11,10 @@ import { useSendData } from "@/hooks/useReactQuery";
 import { useState } from "react";
 import { cn } from "@/utils/merge-class";
 import { showToast } from "@/components/common/Toast";
-import moment from "moment";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
+dayjs.extend(customParseFormat);
 
 interface NotificationCardProps {
     data: {
@@ -40,13 +43,13 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ data }) => {
 
     const formatTimeRange = (timeRange: string) => {
         const [start, end] = timeRange.split(" - ");
-        const startMoment = moment(start, "h:mm A");
-        const endMoment = moment(end, "h:mm A");
+        const startDayjs = dayjs(start, "h:mm A");
+        const endDayjs = dayjs(end, "h:mm A");
 
-        if (startMoment.format("A") === endMoment.format("A")) {
-            return `${startMoment.format("h:mm")} - ${endMoment.format("h:mm A")}`;
+        if (startDayjs.format("A") === endDayjs.format("A")) {
+            return `${startDayjs.format("h:mm")} - ${endDayjs.format("h:mm A")}`;
         }
-        return `${startMoment.format("h:mm A")} - ${endMoment.format("h:mm A")}`;
+        return `${startDayjs.format("h:mm A")} - ${endDayjs.format("h:mm A")}`;
     };
 
     const formatTime = (start: string, end: string) => {
@@ -118,7 +121,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ data }) => {
                 </div>
                 <div className="flex flex-col gap-1">
                     <p className="text-[0.75rem] font-medium text-gray-light">Date</p>
-                    <p className="text-sm font-medium">{moment(data?.volunteer_start_date).format("D-MMM-YYYY")}</p>
+                    <p className="text-sm font-medium">{dayjs(data?.volunteer_start_date).format("D-MMM-YYYY")}</p>
                 </div>
                 <div className="flex flex-col gap-1">
                     <p className="text-[0.75rem] font-medium text-gray-light">Time</p>

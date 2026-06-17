@@ -1,7 +1,7 @@
 "use client";
 
 import { useAppStore } from "@/store/useAppStore";
-import moment from "moment";
+import dayjs from "dayjs";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AlertModal } from "../Modals";
@@ -37,8 +37,8 @@ const MobileCalender: React.FC<CalendarProps> = ({ events = [], onDateSelect }) 
     const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
 
     const renderEventContent = (eventInfo: any) => {
-        const startTime = moment(eventInfo?.start).format("h:mm A");
-        const endTime = moment(eventInfo?.end).format("h:mm A");
+        const startTime = dayjs(eventInfo?.start).format("h:mm A");
+        const endTime = dayjs(eventInfo?.end).format("h:mm A");
         return (
             <EventCard
                 title={eventInfo?.title}
@@ -70,7 +70,7 @@ const MobileCalender: React.FC<CalendarProps> = ({ events = [], onDateSelect }) 
     useEffect(() => {
         if (currentDate && calendarRef.current) {
             const calendarApi = calendarRef.current.getApi();
-            calendarApi.gotoDate(moment(currentDate).format("YYYY-MM-DD"));
+            calendarApi.gotoDate(dayjs(currentDate).format("YYYY-MM-DD"));
         }
     }, [currentDate]);
 
@@ -108,7 +108,7 @@ const MobileCalender: React.FC<CalendarProps> = ({ events = [], onDateSelect }) 
                     >
                         <p className="font-medium text-sm mb-4">
                             {eventsByDate[0]?.date &&
-                                moment(eventsByDate[0]?.date).format("DD-MMM-YYYY")}
+                                dayjs(eventsByDate[0]?.date).format("DD-MMM-YYYY")}
                         </p>
                         <div className="space-y-2">
                             {eventsByDate.map((event: any, i: number) => (

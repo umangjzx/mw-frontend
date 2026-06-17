@@ -2,8 +2,10 @@
 
 import React, { useMemo, useState, useEffect } from "react";
 import dayjs from "dayjs";
-import moment from "moment";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import SessionCard from "@/components/learners/SessionCard";
+
+dayjs.extend(customParseFormat);
 import { InstantSessionDetailModal } from "@/components/learners/Modals";
 import ConfirmationSuccessfulModal from "@/components/learners/Modals/ConfirmationSuccessfulModal";
 import { useComponentStore } from "@/store/useComponenetStore";
@@ -217,10 +219,10 @@ export default function InstantSessionsPage() {
                     id: apiData.volunteer_slot_id ?? session.id,
                     title: apiData.title ?? session.title,
                     startTime: apiData.start_time
-                        ? moment(apiData.start_time, "HH:mm").format("h:mm a")
+                        ? dayjs(apiData.start_time, "HH:mm").format("h:mm a")
                         : session.startTime,
                     endTime: apiData.end_time
-                        ? moment(apiData.end_time, "HH:mm").format("h:mm a")
+                        ? dayjs(apiData.end_time, "HH:mm").format("h:mm a")
                         : session.endTime,
                     timezone:
                         (apiData.volunteer_timezone || session.timezone)?.split(" - ")[0] ??

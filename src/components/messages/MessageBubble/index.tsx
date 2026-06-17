@@ -1,8 +1,15 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import moment from "moment-timezone";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import advancedFormat from "dayjs/plugin/advancedFormat";
 import { useAppStore } from "@/store/useAppStore";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(advancedFormat);
 interface MessageBubbleProps {
     message: string;
     timestamp: string;
@@ -46,8 +53,8 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
 
     const ianaTimezone = timezoneMapping[rawAbbreviation];
     const formattedMessageTime = ianaTimezone
-        ? moment.parseZone(date).tz(ianaTimezone)
-        : moment.parseZone(date);
+        ? dayjs(date).tz(ianaTimezone)
+        : dayjs(date);
 
     return (
         <div

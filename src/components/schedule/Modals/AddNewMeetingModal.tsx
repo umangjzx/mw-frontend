@@ -8,7 +8,6 @@ import {
     LearnerScheduleModalDescriptionConstants,
 } from "@/constants/schedule";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import moment from "moment";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -97,7 +96,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
     const [volunteerUnavailableDates, setVolunteerUnavailableDates] = useState<string[]>([]);
     const [selectedVolunteerId, setSelectedVolunteerId] = useState<string>("");
     const [isLoadingAvailableDays, setIsLoadingAvailableDays] = useState(false);
-    const [currentMonth, setCurrentMonth] = useState<string>(moment().format("YYYY-MM"));
+    const [currentMonth, setCurrentMonth] = useState<string>(dayjs().format("YYYY-MM"));
     const learnerId = Cookies.get("learner_id");
 
     const getVolunteers = async () => {
@@ -225,7 +224,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
 
         // Check for date selection and if we have a selected volunteer
         if (name === "select_date" && value && formData.select_volunteer) {
-            const formattedDate = moment(value).format("YYYY-MM-DD");
+            const formattedDate = dayjs(value).format("YYYY-MM-DD");
             setAvailableSlots([]);
             setSlotError("");
             setFetchingSlots(true);
@@ -302,7 +301,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
         const payload = {
             volunteer_id: formData.select_volunteer,
             volunteer_slot_id: formData.selected_slot,
-            session_date: moment(formData.select_date).format("YYYY-MM-DD"),
+            session_date: dayjs(formData.select_date).format("YYYY-MM-DD"),
             session_start_time: formData.start_time,
             session_end_time: formData.end_time,
             session_title: formData.title_of_the_meeting,
@@ -377,7 +376,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
             }));
             setAvailableSlots([]);
             // Reset to current month when volunteer changes
-            setCurrentMonth(moment().format("YYYY-MM"));
+            setCurrentMonth(dayjs().format("YYYY-MM"));
             // Clear available days when volunteer changes (will be fetched when calendar opens)
             setVolunteerAvailableDays([]);
             setVolunteerAvailableDates([]);
@@ -393,9 +392,9 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
             // When calendar opens, determine the month to fetch
             let monthToFetch = currentMonth;
             if (formData.select_date) {
-                monthToFetch = moment(formData.select_date).format("YYYY-MM");
+                monthToFetch = dayjs(formData.select_date).format("YYYY-MM");
             } else {
-                monthToFetch = moment().format("YYYY-MM");
+                monthToFetch = dayjs().format("YYYY-MM");
             }
 
             // Update currentMonth if needed
@@ -512,7 +511,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
                                                 const parsed = dayjs(value);
                                                 newMonth = parsed.isValid()
                                                     ? parsed.format("YYYY-MM")
-                                                    : moment(value).format("YYYY-MM");
+                                                    : dayjs(value).format("YYYY-MM");
                                             }
 
                                             console.log(
@@ -591,7 +590,7 @@ export default function AddNewMeetingModal({ isOpen, onClose }: AddNewMeetingMod
                     fetchingSlots={fetchingSlots}
                     selectedDate={
                         formData.select_date
-                            ? moment(formData.select_date).format("YYYY-MM-DD")
+                            ? dayjs(formData.select_date).format("YYYY-MM-DD")
                             : undefined
                     }
                     volunteerTimezone={volunteerTimezone}

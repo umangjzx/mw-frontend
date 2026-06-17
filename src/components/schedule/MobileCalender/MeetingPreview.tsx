@@ -6,7 +6,7 @@ import Button from "@/components/common/Button";
 import Divider from "@/components/common/Divider";
 import { useAppStore } from "@/store/useAppStore";
 import { useQueryClient } from "@tanstack/react-query";
-import moment from "moment";
+import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { IoMdCheckmark } from "react-icons/io";
@@ -102,8 +102,8 @@ const MobileMeetingPreviewModal: React.FC<MobileMeetingPreviewModalProps> = ({
     if ((!isAnimating && !isOpen) || !event) return null;
 
     const eventData = event;
-    const startTime = moment(event.start).local().format("dddd, MMMM D, h:mm A");
-    const endTime = moment(event.end).local().format("h:mm A");
+    const startTime = dayjs(event.start).local().format("dddd, MMMM D, h:mm A");
+    const endTime = dayjs(event.end).local().format("h:mm A");
     const { title, extendedProps } = eventData;
     const {
         meetLink,

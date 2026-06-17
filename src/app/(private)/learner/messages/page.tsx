@@ -17,9 +17,14 @@ import NoMessage from "@/components/messages/NoMessage";
 import VolunteerViewModal from "@/components/leaner/VolunteerViewModal";
 import AddNewMeetingModal from "@/components/schedule/Modals/AddNewMeetingModal";
 import { useAppStore } from "@/store/useAppStore";
-import moment from "moment-timezone";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import { SendIcon } from "@/assets/icons";
 import LottieLoader from "@/components/common/Loader/Lottie";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 const MOBILE_BREAKPOINT = 768;
 
 function useIsMobile() {
@@ -283,8 +288,8 @@ const Messages = () => {
 
             if (offset) {
                 // Convert current time to learner's timezone using UTC offset
-                // moment.utcOffset accepts offset in format like "+05:30" or "-09:00"
-                const nowInTimezone = moment().utcOffset(offset);
+                // dayjs.utcOffset accepts offset in format like "+05:30" or "-09:00"
+                const nowInTimezone = dayjs().utcOffset(offset);
                 now = nowInTimezone.format(); // Returns ISO string with timezone offset (e.g., "2024-01-01T12:00:00+05:30")
             } else {
                 // Fallback to UTC if offset cannot be determined

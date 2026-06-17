@@ -6,7 +6,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { GET_API, POST_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import Cookies from "js-cookie";
-import moment from "moment";
+import dayjs from "dayjs";
 import InnerWidth from "@/utils/innerWidth";
 import { ApprovalModalProps } from "./index.type.d";
 
@@ -117,7 +117,7 @@ const ApprovalModal: React.FC<ApprovalModalProps> = ({ isOpen, onClose }) => {
                             <div className="relative inline-flex items-center justify-center w-full">
                                 <hr className="w-full h-px my-6 bg-gray-light border-0" />
                                 <span className="absolute -translate-x-1/2 left-1/2 px-3 font-semibold !text-sm !text-gray-light !bg-white">
-                                    {moment(notification?.date).format("D MMM YYYY")}
+                                    {dayjs(notification?.date).format("D MMM YYYY")}
                                 </span>
                             </div>
                             <div className="flex flex-col gap-3">
