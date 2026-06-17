@@ -1,9 +1,13 @@
+"use client";
+
 import React from "react";
-import Lottie from "react-lottie-player";
+import dynamic from "next/dynamic";
 import LearnerLoadingAnimation from "@/assets/json/animations/Learner.json";
 import VolunteerLoadingAnimation from "@/assets/json/animations/Volunteer.json";
 import Cookies from "js-cookie";
 import { createPortal } from "react-dom";
+
+const Lottie = dynamic(() => import("react-lottie-player"), { ssr: false });
 
 type Props = {
     isLoading: boolean;
