@@ -9,7 +9,8 @@ import { isNativePlatform } from '@/utils/platform';
  */
 
 // Production API URL - used by the mobile app
-const PRODUCTION_API_URL = 'https://melodywings.org/api';
+// The backend is at api.melodywings.org (FastAPI on port 8080)
+const PRODUCTION_API_URL = 'https://api.melodywings.org';
 
 /** Get the base API URL based on current platform */
 export const getApiBaseUrl = (): string => {
