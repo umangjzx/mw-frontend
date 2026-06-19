@@ -14,6 +14,8 @@ import ModalLoader from "@/components/common/Loader/Modal";
 import { getCookie } from "@/utils/auth";
 import { handleCookie } from "@/api/auth";
 import dayjs from "dayjs";
+import { isNativePlatform } from "@/utils/platform";
+import { nativeGoogleSignIn } from "@/services/native-auth";
 
 const learnerOptions = [
     { label: "I am a parent filling this profile", value: "parent" },
@@ -177,7 +179,7 @@ const SignUpAsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
             });
     };
 
-    const googleLogin = useGoogleLogin({
+    const webGoogleLogin = useGoogleLogin({
         onSuccess: async (response) => {
             if (response?.access_token && signupPayload) {
                 SIGN_UP(response.access_token, signupPayload);
@@ -186,9 +188,27 @@ const SignUpAsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
         onError: (error) => console.error("Google Login Error:", error),
     });
 
-    const handleSignUp = (payloads: any) => {
+    const handleSignUp = async (payloads: any) => {
         setSignupPayload(payloads);
-        googleLogin();
+        if (isNativePlatform()) {
+            // Native Android: use Capacitor Google Auth
+            setIsSignUpLoading(true);
+            try {
+                const accessToken = await nativeGoogleSignIn();
+                if (accessToken) {
+                    await SIGN_UP(accessToken, payloads);
+                } else {
+                    setIsSignUpLoading(false);
+                    showToast({ type: "error", message: "Google Sign-In failed. Please try again." });
+                }
+            } catch (error) {
+                setIsSignUpLoading(false);
+                showToast({ type: "error", message: "Google Sign-In failed. Please try again." });
+            }
+        } else {
+            // Web: use @react-oauth/google
+            webGoogleLogin();
+        }
     };
 
     return (

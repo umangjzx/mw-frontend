@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation"
 import { getCookie } from "@/utils/auth"
 import { showToast } from "@/components/common/Toast"
 import ModalLoader from "@/components/common/Loader/Modal"
+import { isNativePlatform } from "@/utils/platform"
+import { nativeGoogleSignIn } from "@/services/native-auth"
 
 export const LoginModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
     const router = useRouter();
@@ -48,9 +50,31 @@ export const LoginModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =
             })
     };
 
-    const handleGoogleLogin = useGoogleLogin({
+    const webGoogleLogin = useGoogleLogin({
         onSuccess: async (response) => SIGN_IN(response?.access_token),
     });
+
+    const handleGoogleLogin = async () => {
+        if (isNativePlatform()) {
+            // Native Android: use Capacitor Google Auth
+            setIsLoginLoading(true);
+            try {
+                const accessToken = await nativeGoogleSignIn();
+                if (accessToken) {
+                    await SIGN_IN(accessToken);
+                } else {
+                    setIsLoginLoading(false);
+                    showToast({ type: "error", message: "Google Sign-In failed. Please try again." });
+                }
+            } catch (error) {
+                setIsLoginLoading(false);
+                showToast({ type: "error", message: "Google Sign-In failed. Please try again." });
+            }
+        } else {
+            // Web: use @react-oauth/google
+            webGoogleLogin();
+        }
+    };
 
     return (
         <div>
