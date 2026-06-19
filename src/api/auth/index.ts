@@ -22,9 +22,10 @@ export const apiGoogleSignUp = async (access_token: string, payload: any) => {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            "Accept-Encoding": "identity",
             Authorization: `Bearer ${access_token}`,
         },
-        data: JSON.stringify(payload),
+        data: payload,
     });
 
     const { data, status } = response;
@@ -38,6 +39,7 @@ export const apiGoogleLogin = async (access_token: string) => {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            "Accept-Encoding": "identity",
             Authorization: `Bearer ${access_token}`,
         },
     });

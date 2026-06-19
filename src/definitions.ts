@@ -3,7 +3,9 @@
 import { isNativePlatform } from '@/utils/platform';
 
 // Production API URL for mobile app
-const MOBILE_API_URL = 'https://api.melodywings.org/api/v1';
+// TODO: Switch back to production URL before release
+// const MOBILE_API_URL = 'https://api.melodywings.org/api/v1';
+const MOBILE_API_URL = 'http://192.168.29.61:8002/api/v1'; // Local testing
 
 // For web, this is baked at build time from .env
 const WEB_API_URL = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'}/api/v1`;

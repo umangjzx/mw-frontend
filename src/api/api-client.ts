@@ -1,4 +1,4 @@
-import { API_URL } from "@/definitions";
+import { getAPI_URL } from "@/definitions";
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 
@@ -11,10 +11,11 @@ interface ApiError {
 
 // Create and configure axios instance
 const axiosInstance: AxiosInstance = axios.create({
-    baseURL: API_URL,
+    baseURL: getAPI_URL(),
     withCredentials: true,
     headers: {
         "Content-Type": "application/json",
+        "Accept-Encoding": "identity",
         "ngrok-skip-browser-warning": "any",
         "bypass-tunnel-reminder": "yup",
     },

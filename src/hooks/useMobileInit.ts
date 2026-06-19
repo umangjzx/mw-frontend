@@ -8,6 +8,7 @@ import { initPushNotifications, registerPushListeners, registerTokenWithBackend 
 import { initAppLifecycle } from '@/services/app-lifecycle';
 import { getCookie } from '@/utils/auth';
 import { getApiUrl } from '@/config/api';
+import { getAPI_URL } from '@/definitions';
 
 /**
  * Hook to initialize all mobile-specific features.
@@ -46,7 +47,7 @@ export default function useMobileInit() {
         // Register token with backend if user is logged in
         const userId = getCookie('learner_id') || getCookie('volunteer_id');
         if (userId) {
-          await registerTokenWithBackend(fcmToken, userId, getApiUrl());
+          await registerTokenWithBackend(fcmToken, userId, getAPI_URL());
         }
       }
 
