@@ -34,8 +34,13 @@ export default function useMobileInit() {
       // 2. Initialize app lifecycle (back button, status bar, keyboard)
       const cleanupLifecycle = initAppLifecycle(router);
 
-      // 3. Initialize push notifications
-      const fcmToken = await initPushNotifications();
+      // 3. Initialize push notifications (graceful — won't crash without Firebase)
+      let fcmToken: string | null = null;
+      try {
+        fcmToken = await initPushNotifications();
+      } catch (e) {
+        console.warn('[Mobile] Push notifications unavailable:', e);
+      }
 
       if (fcmToken) {
         // Register token with backend if user is logged in
@@ -45,21 +50,25 @@ export default function useMobileInit() {
         }
       }
 
-      // 4. Register push notification listeners
-      registerPushListeners(
-        // On notification received in foreground
-        (notification) => {
-          console.log('[Mobile] Foreground notification:', notification.title);
-        },
-        // On notification tapped
-        (notification) => {
-          console.log('[Mobile] Notification tapped:', notification.data);
-          // Navigate based on notification data
-          if (notification.data?.route) {
-            router.push(notification.data.route);
+      // 4. Register push notification listeners (safe even without FCM)
+      try {
+        registerPushListeners(
+          // On notification received in foreground
+          (notification) => {
+            console.log('[Mobile] Foreground notification:', notification.title);
+          },
+          // On notification tapped
+          (notification) => {
+            console.log('[Mobile] Notification tapped:', notification.data);
+            // Navigate based on notification data
+            if (notification.data?.route) {
+              router.push(notification.data.route);
+            }
           }
-        }
-      );
+        );
+      } catch (e) {
+        console.warn('[Mobile] Push listeners unavailable:', e);
+      }
 
       // Return cleanup
       return cleanupLifecycle;

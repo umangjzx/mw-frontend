@@ -26,16 +26,30 @@ export const initPushNotifications = async (): Promise<string | null> => {
 
     if (permStatus.receive === 'granted') {
       // Register for push notifications
-      await PushNotifications.register();
+      // This requires google-services.json / Firebase to be configured
+      // If Firebase is not set up, this will fail gracefully
+      try {
+        await PushNotifications.register();
+      } catch (registerError) {
+        console.warn('[Push] Registration failed (Firebase not configured?):', registerError);
+        return null;
+      }
 
       // Get the FCM token
       return new Promise((resolve) => {
+        const timeout = setTimeout(() => {
+          console.warn('[Push] Token registration timed out');
+          resolve(null);
+        }, 5000);
+
         PushNotifications.addListener('registration', (token) => {
+          clearTimeout(timeout);
           console.log('[Push] Registration token:', token.value);
           resolve(token.value);
         });
 
         PushNotifications.addListener('registrationError', (error) => {
+          clearTimeout(timeout);
           console.error('[Push] Registration error:', error);
           resolve(null);
         });
@@ -45,7 +59,7 @@ export const initPushNotifications = async (): Promise<string | null> => {
       return null;
     }
   } catch (error) {
-    console.error('[Push] Init failed:', error);
+    console.warn('[Push] Init failed (Firebase not configured?):', error);
     return null;
   }
 };
