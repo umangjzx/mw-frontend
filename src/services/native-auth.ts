@@ -38,17 +38,28 @@ export const nativeGoogleSignIn = async (): Promise<string | null> => {
     });
 
     const loginResult = result?.result as any;
+    console.log('[NativeAuth] Full login result:', JSON.stringify(result));
 
-    if (loginResult?.accessToken) {
+    // The token is nested: result.result.accessToken.token
+    if (loginResult?.accessToken?.token) {
+      return loginResult.accessToken.token;
+    }
+
+    // Fallback: direct accessToken string
+    if (typeof loginResult?.accessToken === 'string') {
       return loginResult.accessToken;
     }
 
-    // Fallback to idToken if accessToken isn't available
-    if (loginResult?.idToken) {
+    // Fallback to idToken
+    if (loginResult?.idToken?.token) {
+      return loginResult.idToken.token;
+    }
+
+    if (typeof loginResult?.idToken === 'string') {
       return loginResult.idToken;
     }
 
-    console.error('[NativeAuth] No token in sign-in result:', result);
+    console.error('[NativeAuth] No token in sign-in result:', JSON.stringify(loginResult));
     return null;
   } catch (error) {
     console.error('[NativeAuth] Google Sign-In failed:', error);
