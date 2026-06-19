@@ -1,8 +1,27 @@
 /** @format */
 
-import { getApiUrl } from '@/config/api';
+import { isNativePlatform } from '@/utils/platform';
 
-export const API_URL = getApiUrl();
+// Production API URL for mobile app
+const MOBILE_API_URL = 'https://api.melodywings.org/api/v1';
+
+// For web, this is baked at build time from .env
+const WEB_API_URL = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'}/api/v1`;
+
+// Use a getter to evaluate at runtime (not module load time)
+export const getAPI_URL = (): string => {
+  if (isNativePlatform()) {
+    return MOBILE_API_URL;
+  }
+  return WEB_API_URL;
+};
+
+// Keep backward compatibility - but this will be the web URL at build time
+// Components that need mobile support should use getAPI_URL() instead
+export const API_URL = typeof window !== 'undefined' && isNativePlatform() 
+  ? MOBILE_API_URL 
+  : WEB_API_URL;
+
 export const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
 export const GOOGLE_WEB_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID;

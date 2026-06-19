@@ -1,4 +1,4 @@
-import { API_URL } from "@/definitions";
+import { getAPI_URL } from "@/definitions";
 import { endpoints } from "../constants";
 import axios from "axios";
 import { setCookie } from "@/utils/auth";
@@ -17,7 +17,8 @@ export const handleCookie = (data: any) => {
 };
 
 export const apiGoogleSignUp = async (access_token: string, payload: any) => {
-    const response = await axios(`${API_URL}/${endpoints.user.signIn}`, {
+    const apiUrl = getAPI_URL();
+    const response = await axios(`${apiUrl}/${endpoints.user.signIn}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -32,7 +33,8 @@ export const apiGoogleSignUp = async (access_token: string, payload: any) => {
 };
 
 export const apiGoogleLogin = async (access_token: string) => {
-    const response = await axios(`${API_URL}/${endpoints.user.login}`, {
+    const apiUrl = getAPI_URL();
+    const response = await axios(`${apiUrl}/${endpoints.user.login}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
