@@ -3,6 +3,11 @@ import React from "react";
 import DummyImage from "@/assets/images/BackgroundImg.jpeg";
 import TagComponent from "@/components/common/Tag";
 
+// Required for static export (Capacitor mobile build)
+export function generateStaticParams() {
+    return [{ id: '1' }]; // Placeholder - add real blog IDs when available
+}
+
 const BlogDetails = () => {
     const blogDetailsData = {
         category: "Marketing",

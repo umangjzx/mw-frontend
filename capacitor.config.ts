@@ -1,0 +1,35 @@
+import type { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+  appId: 'org.melodywings.app',
+  appName: 'MelodyWings',
+  webDir: 'out',
+  server: {
+    androidScheme: 'https',
+    // For local dev, uncomment to use live reload:
+    // url: 'http://10.0.2.2:3000',
+    // cleartext: true,
+  },
+  plugins: {
+    SplashScreen: {
+      launchShowDuration: 2000,
+      launchAutoHide: true,
+      backgroundColor: '#FFFFFF',
+      androidScaleType: 'CENTER_CROP',
+      showSpinner: false,
+    },
+    PushNotifications: {
+      presentationOptions: ['badge', 'sound', 'alert'],
+    },
+    Keyboard: {
+      resize: 'body' as any,
+      resizeOnFullScreen: true,
+    },
+    StatusBar: {
+      style: 'LIGHT' as any,
+      backgroundColor: '#FFFFFF',
+    },
+  },
+};
+
+export default config;

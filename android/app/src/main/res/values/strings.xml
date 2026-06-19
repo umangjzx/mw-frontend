@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MelodyWings</string>
+    <string name="title_activity_main">MelodyWings</string>
+    <string name="package_name">org.melodywings.app</string>
+    <string name="custom_url_scheme">org.melodywings.app</string>
+</resources>

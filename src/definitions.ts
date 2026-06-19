@@ -1,6 +1,8 @@
 /** @format */
 
-export const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/v1`;
+import { getApiUrl } from '@/config/api';
+
+export const API_URL = getApiUrl();
 export const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
 export const GOOGLE_WEB_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID;

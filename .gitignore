@@ -34,3 +34,19 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Capacitor - Mobile App
+/android/app/build/
+/android/.gradle/
+/android/build/
+/android/local.properties
+/android/app/src/main/assets/public/
+next.config.web-backup.mjs
+next.config.web-backup.js
+src/app/layout.tsx.web-backup
+src/middleware.ts.web-backup
+
+# Keystore files (sensitive)
+*.keystore
+*.jks
+google-services.json
