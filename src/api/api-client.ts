@@ -1,6 +1,7 @@
 import { getAPI_URL } from "@/definitions";
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import Cookies from "js-cookie";
+import { getCookie } from "@/utils/auth";
 
 // Define custom error interface
 interface ApiError {
@@ -24,7 +25,7 @@ const axiosInstance: AxiosInstance = axios.create({
 // Request interceptor
 axiosInstance.interceptors.request.use(
     (config) => {
-        const token = Cookies.get("token");
+        const token = getCookie("token");
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }

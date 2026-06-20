@@ -18,10 +18,15 @@ const SectionCard = ({ href, text, icon, textColor, onClick }: SectionCardProps)
     const isActive = pathname.includes(href);
     const role = Cookies.get("role");
 
+    // Normalize: strip any leading slash from href so we never produce
+    // a double slash like "/learner//community" (which 404s in static export).
+    const cleanHref = href.replace(/^\/+/, "");
+    const finalHref = role ? `/${role}/${cleanHref}` : `/${cleanHref}`;
+
     return (
         <div className="w-full flex items-center justify-center">
             <Link
-                href={role ? `/${role}/${href}` : `/${href}`}
+                href={finalHref}
                 onClick={onClick}
                 className="flex items-start gap-2 lg:max-w-[150px] lg:w-full ml-[-1rem]"
             >
