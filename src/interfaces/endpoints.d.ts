@@ -16,6 +16,7 @@ export type EndpointProps = {
     user: {
         signIn: string;
         login: string;
+        deleteAccount: (id: string) => string;
     };
     learner: {
         update: (id: string) => string;
