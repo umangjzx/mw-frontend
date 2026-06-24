@@ -25,7 +25,7 @@ export default function DeleteAccountSection({ userId, role }: DeleteAccountSect
 
         setIsDeleting(true);
         try {
-            await DELETE_API(endpoints.user.deleteAccount(userId));
+            await DELETE_API(endpoints.user.deleteAccount);
             // Clear all cookies
             const allCookies = Cookies.get();
             Object.keys(allCookies).forEach((cookieName) => {
