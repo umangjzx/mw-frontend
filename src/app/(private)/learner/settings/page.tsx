@@ -8,6 +8,7 @@ import Cookies from "js-cookie";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import DropDown from "@/assets/icons/DropDown";
+import DeleteAccountSection from "@/components/common/DeleteAccountSection";
 
 const SESSION_MATCH_OPTIONS = [
     {
@@ -162,6 +163,8 @@ const Settings = () => {
                         className="session-match-select w-full md:w-[400px] [&_.ant-select-selector]:!rounded-lg [&_.ant-select-selector]:!border-gray-300 [&_.ant-select-selector]:!h-auto [&_.ant-select-selector]:!min-h-10"
                     />
                 </div>
+
+                <DeleteAccountSection userId={learnerId as string} role="learner" />
             </div>
         </div>
     );
