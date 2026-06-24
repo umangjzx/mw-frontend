@@ -49,4 +49,6 @@ src/middleware.ts.web-backup
 # Keystore files (sensitive)
 *.keystore
 *.jks
+keystores/*.keystore
+keystores/*.jks
 google-services.json
