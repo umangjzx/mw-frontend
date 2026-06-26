@@ -64,8 +64,9 @@ export const metadata: Metadata = {
     },
 };
 
-// Force dynamic rendering to avoid SSR issues
-export const dynamic = 'force-dynamic';
+// Removed force-dynamic — was disabling all Next.js caching/static generation.
+// Pages that truly need dynamic rendering (e.g., reading cookies server-side)
+// should add `export const dynamic = 'force-dynamic'` individually.
 
 export default function RootLayout({
     children,
