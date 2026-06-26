@@ -18,7 +18,7 @@ export const getApiBaseUrl = (): string => {
     return PRODUCTION_API_URL;
   }
   // On web, use the env variable (standard Next.js behavior)
-  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002';
+  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 };
 
 /** Get the full API v1 URL */
