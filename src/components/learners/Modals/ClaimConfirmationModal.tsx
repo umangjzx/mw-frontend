@@ -7,10 +7,12 @@ import Button from "@/components/common/Button";
 import ConfirmationSuccessfulModal from "./ConfirmationSuccessfulModal";
 import { GET_API, DELETE_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
-import moment from "moment";
-import { showToast } from "@/components/common/Toast";
-import { useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import { showToast } from "@/components/common/Toast";
+
+dayjs.extend(customParseFormat);
+import { useQueryClient } from "@tanstack/react-query";
 import useInnerWidth from "@/hooks/useInnerWidth";
 import { cn } from "@/utils/merge-class";
 
@@ -81,8 +83,8 @@ const ClaimConfirmationModal: React.FC<ClaimConfirmationModalProps> = ({
                         const formattedSession = {
                             id: apiData.volunteer_slot_id,
                             title: apiData.title,
-                            startTime: moment(apiData.start_time, "HH:mm").format("h:mm a"),
-                            endTime: moment(apiData.end_time, "HH:mm").format("h:mm a"),
+                            startTime: dayjs(apiData.start_time, "HH:mm").format("h:mm a"),
+                            endTime: dayjs(apiData.end_time, "HH:mm").format("h:mm a"),
                             timezone: (apiData.volunteer_timezone || session.timezone)?.split(" - ")[0], // Fallback if missing
                             duration: `${apiData.duration} Mins`,
                             instructor: {

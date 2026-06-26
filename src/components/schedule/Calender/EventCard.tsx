@@ -1,5 +1,5 @@
 import { cn } from "@/utils/merge-class";
-import moment from "moment";
+import dayjs from "dayjs";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 const EventCard = ({
@@ -39,8 +39,8 @@ const EventCard = ({
     };
 
     const currentStyle = statusStyles[status as keyof typeof statusStyles] || statusStyles.pending;
-    const startTime = moment(start).local().format("h:mm A");
-    const endTime = moment(end).local().format("h:mm A");
+    const startTime = dayjs(start).local().format("h:mm A");
+    const endTime = dayjs(end).local().format("h:mm A");
 
     return (
         <div

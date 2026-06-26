@@ -1,7 +1,12 @@
-import moment from "moment";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import advancedFormat from "dayjs/plugin/advancedFormat";
 import { GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import Cookies from "js-cookie";
+
+dayjs.extend(customParseFormat);
+dayjs.extend(advancedFormat);
 
 type UserType = "volunteer" | "learner";
 
@@ -66,8 +71,8 @@ export const getCalendarEvents = async (
     currentMonth?: string
 ): Promise<CalendarEvent[]> => {
     const monthParam = currentMonth
-        ? moment(currentMonth).format("YYYY-MM")
-        : moment().format("YYYY-MM");
+        ? dayjs(currentMonth).format("YYYY-MM")
+        : dayjs().format("YYYY-MM");
     const role = Cookies.get("role") as UserType | undefined;
 
     const endpoint =
@@ -108,8 +113,8 @@ function mapVolunteerSlotsToEvents(data: any[] | undefined): CalendarEvent[] {
                 events.push({
                     title: sd.session_title,
                     date: sd.volunteer_start_date,
-                    start: moment(`${sd.volunteer_start_date} ${sd.volunteer_start_time}`).format(),
-                    end: moment(`${sd.volunteer_start_date} ${sd.volunteer_end_time}`).format(),
+                    start: dayjs(`${sd.volunteer_start_date} ${sd.volunteer_start_time}`).format(),
+                    end: dayjs(`${sd.volunteer_start_date} ${sd.volunteer_end_time}`).format(),
                     backgroundColor: "var(--success-light-color)",
                     classNames: ["event-item", "rounded-md", "py-1", "my-0.5"],
                     textColor: "var(--success-color)",
@@ -135,8 +140,8 @@ function mapVolunteerSlotsToEvents(data: any[] | undefined): CalendarEvent[] {
                 events.push({
                     title: slot.title || "No Event",
                     date: dayDate,
-                    start: moment(`${dayDate} ${slot.start_time}`).format(),
-                    end: moment(`${dayDate} ${slot.end_time}`).format(),
+                    start: dayjs(`${dayDate} ${slot.start_time}`).format(),
+                    end: dayjs(`${dayDate} ${slot.end_time}`).format(),
                     backgroundColor: "var(--gray-100)",
                     classNames: ["event-item", "rounded-md", "py-1", "my-0.5"],
                     textColor: "var(--gray-500)",
@@ -159,8 +164,8 @@ function mapLearnerSessionsToEvents(data: any): CalendarEvent[] {
     return items.map((item: EventResponse) => ({
         title: item.session_title,
         date: item.learner_start_date,
-        start: moment(`${item.learner_start_date} ${item.learner_start_time}`).format(),
-        end: moment(`${item.learner_start_date} ${item.learner_end_time}`).format(),
+        start: dayjs(`${item.learner_start_date} ${item.learner_start_time}`).format(),
+        end: dayjs(`${item.learner_start_date} ${item.learner_end_time}`).format(),
         backgroundColor: "var(--success-light-color)",
         classNames: ["event-item", "rounded-md", "py-1", "my-0.5"],
         textColor: "var(--success-color)",
@@ -187,22 +192,22 @@ function mapLearnerSessionsToEvents(data: any): CalendarEvent[] {
 export const getTime = (date: Date): string => {
     if (!date) return "";
 
-    return moment(date).format("h:mm A");
+    return dayjs(date).format("h:mm A");
 };
 
 // Optional: Add a helper function for full date-time formatting
 export const formatDateTime = (date: string | Date): string => {
-    return moment(date).format("MMMM D, YYYY h:mm A");
+    return dayjs(date).format("MMMM D, YYYY h:mm A");
 };
 
 // Fun: Converts railway time(24 hrs) to normal time(12 hrs)
 export const formatTime = (railwayTimeString: string) =>
-    moment(railwayTimeString, "HH:mm").format("hh:mm A");
+    dayjs(railwayTimeString, "HH:mm").format("hh:mm A");
 
-export const formatDate = (date: string) => moment(date).format("YYYY-MM-DD");
+export const formatDate = (date: string) => dayjs(date).format("YYYY-MM-DD");
 
 // Fun: Converts date into day with month i.e. 12th Apr
-export const formatDateSuffix = (date: Date | string) => moment(date).format("Do MMM");
+export const formatDateSuffix = (date: Date | string) => dayjs(date).format("Do MMM");
 
 export const checkCalendarScope = async () => {
     const response = await GET_API(endpoints.auth.checkCalendarScope);

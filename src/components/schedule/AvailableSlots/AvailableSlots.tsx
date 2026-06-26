@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import moment from "moment-timezone";
 import Cookies from "js-cookie";
 import { useQuery } from "@tanstack/react-query";
 import { GET_API } from "@/api/request";

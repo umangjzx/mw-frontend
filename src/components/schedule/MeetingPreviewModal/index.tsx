@@ -6,7 +6,7 @@ import Button from "@/components/common/Button";
 import Divider from "@/components/common/Divider";
 import { useAppStore } from "@/store/useAppStore";
 import { useQueryClient } from "@tanstack/react-query";
-import moment from "moment";
+import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -119,8 +119,8 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
     if ((!isAnimating && !isOpen) || !event) return null;
 
     const eventData = event._def;
-    const startTime = moment(event.start).local().format("dddd, MMMM D, h:mm A");
-    const endTime = moment(event.end).local().format("h:mm A");
+    const startTime = dayjs(event.start).local().format("dddd, MMMM D, h:mm A");
+    const endTime = dayjs(event.end).local().format("h:mm A");
     const { title, extendedProps } = eventData;
     const {
         meetLink,
@@ -158,7 +158,7 @@ const MeetingPreviewModal: React.FC<MeetingPreviewModalProps> = ({
     const handleDeleteSlot = async (volunteer_slot_id: string) => {
         const payload = [
             {
-                date: moment(event.start).format("YYYY-MM-DD"),
+                date: dayjs(event.start).format("YYYY-MM-DD"),
                 volunteer_slot_id: volunteer_slot_id,
             },
         ];

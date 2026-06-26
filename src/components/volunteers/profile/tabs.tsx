@@ -2,8 +2,11 @@ import ContactDetails from "@/components/profile/Bio/ContactDetails";
 import { MdEmail } from "react-icons/md";
 import { FaPhoneAlt } from "react-icons/fa";
 import { formatString } from "@/utils/stringFormats";
-import moment from "moment";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import { useEffect, useRef } from "react";
+
+dayjs.extend(customParseFormat);
 
 const InfoItem = ({ label, value }: { label: string, value: string | string[] }) => {
     if (!value) return null;
@@ -70,7 +73,7 @@ export const ProfileDetails = ({ data }: { data: Volunteer }) => {
     const details = [
         { label: "First Name", value: data?.volunteer_first_name },
         { label: "Last Name", value: data?.volunteer_last_name },
-        { label: "Date of Birth", value: moment(data?.volunteer_birth_date, "DD-MM-YYYY").format("DD-MMM-YYYY") },
+        { label: "Date of Birth", value: dayjs(data?.volunteer_birth_date, "DD-MM-YYYY").format("DD-MMM-YYYY") },
         { label: "Gender", value: formatString(data?.volunteer_gender) },
         { label: "Languages Spoken", value: data?.volunteer_languages?.map((language) => language.language_name) },
         { label: "Skills", value: data?.volunteer_skills?.map((skill) => skill.skill_name) },

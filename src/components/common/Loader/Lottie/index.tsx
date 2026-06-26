@@ -5,6 +5,8 @@ import dynamic from "next/dynamic";
 import LearnerLoadingAnimation from "@/assets/json/animations/Learner.json";
 import VolunteerLoadingAnimation from "@/assets/json/animations/Volunteer.json";
 import Cookies from "js-cookie";
+
+const Lottie = dynamic(() => import("react-lottie-player"), { ssr: false });
 import { createPortal } from "react-dom";
 
 const Lottie = dynamic(() => import("react-lottie-player"), { ssr: false });

@@ -3,7 +3,7 @@ import Image from "next/image";
 import React from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Cookies from "js-cookie";
-import moment from "moment";
+import dayjs from "dayjs";
 const formatDateTime = (dateTimeString: string) => {
     const date = new Date(dateTimeString);
 
@@ -63,15 +63,15 @@ const MessageCard = ({
                     <div>
                         {unreadMessages > 0 ? (
                             <p className="text-xs font-normal text-[#22c55e]">
-                                {moment.parseZone(date).format("h.mm a")}
+                                {dayjs(date).format("h.mm a")}
                             </p>
                         ) : (
                             <>
                                 <p className="text-xs text-[#4F4F4F] max-md:block md:hidden">
-                                    {moment.parseZone(date).format("DD/MM/YYYY")}
+                                    {dayjs(date).format("DD/MM/YYYY")}
                                 </p>
                                 <p className="text-xs text-[#4F4F4F] hidden md:block">
-                                    {moment.parseZone(date).format("DD MMM, YYYY")}
+                                    {dayjs(date).format("DD MMM, YYYY")}
                                 </p>
                             </>
                         )}

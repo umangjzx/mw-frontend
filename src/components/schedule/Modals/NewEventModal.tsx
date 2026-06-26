@@ -10,7 +10,6 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import moment from "moment-timezone";
 import { POST_API, GET_API } from "@/api/request";
 import { endpoints } from "@/api/constants";
 import { showToast } from "@/components/common/Toast";
@@ -159,7 +158,7 @@ export default function NewEventModal({
 
     // Get the current active abbreviation (handles NST -> NDT transition)
     const activeAbbreviation = ianaTimezone
-        ? moment().tz(ianaTimezone).format("z")
+        ? dayjs().tz(ianaTimezone).format("z")
         : rawAbbreviation;
 
     // Get UTC offset from volunteerDetails or store, with fallback to extracting from timezone string

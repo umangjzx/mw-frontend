@@ -5,7 +5,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import moment from "moment";
+import dayjs from "dayjs";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import MeetingPreviewModal from "../MeetingPreviewModal";
@@ -124,13 +124,13 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
     };
 
     const renderEventContent = (eventInfo: any) => {
-        const startMoment = moment(eventInfo.event.start);
-        const endMoment = moment(eventInfo.event.end);
+        const startDayjs = dayjs(eventInfo.event.start);
+        const endDayjs = dayjs(eventInfo.event.end);
         let startTime, endTime;
 
-        if (startMoment.isValid() && endMoment.isValid()) {
-            startTime = startMoment.format("h:mm A");
-            endTime = endMoment.format("h:mm A");
+        if (startDayjs.isValid() && endDayjs.isValid()) {
+            startTime = startDayjs.format("h:mm A");
+            endTime = endDayjs.format("h:mm A");
         } else {
             // Fallback for invalid dates
             startTime = "Invalid";
@@ -176,7 +176,7 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
             // Use the first event's start date to determine the correct date
             // Events should have the correct date that matches the calendar cell
             // Format the event's start date to get just the date part (YYYY-MM-DD)
-            const eventDate = moment(dateEvents[0].start);
+            const eventDate = dayjs(dateEvents[0].start);
             dateStr = eventDate.format("YYYY-MM-DD");
         } else {
             // Fallback: The arg.date might be in UTC or have timezone offset
@@ -184,8 +184,8 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
             // Try using the view's date system or calculate from the date
             // If arg.date is "Wed Mar 25 2026 17:00:00" but calendar shows 26,
             // we might need to add a day or use a different extraction method
-            // For now, use moment to parse and format, which should handle timezone
-            const parsedDate = moment(arg.date);
+            // For now, use dayjs to parse and format, which should handle timezone
+            const parsedDate = dayjs(arg.date);
             dateStr = parsedDate.format("YYYY-MM-DD");
 
             // If this still gives wrong date, we might need to check the calendar cell's date
@@ -193,7 +193,7 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
         }
 
         // Format for display using the correct date string
-        const formattedDate = moment(dateStr).format("MMM DD, YYYY");
+        const formattedDate = dayjs(dateStr).format("MMM DD, YYYY");
 
         setCurrentEventData({
             events: dateEvents,
@@ -224,7 +224,7 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
     useEffect(() => {
         if (currentDate && calendarRef.current) {
             const calendarApi = calendarRef.current.getApi();
-            calendarApi.gotoDate(moment(currentDate).format("YYYY-MM-DD"));
+            calendarApi.gotoDate(dayjs(currentDate).format("YYYY-MM-DD"));
         }
     }, [currentDate]);
 
@@ -264,10 +264,10 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
     };
 
     const handleDateClick = (arg: any) => {
-        const clickedDate = moment(arg.dateStr);
-        const currentDate = moment().startOf("day");
+        const clickedDate = dayjs(arg.dateStr);
+        const currentDate = dayjs().startOf("day");
 
-        if (clickedDate.isSameOrAfter(currentDate)) {
+        if (clickedDate.isSame(currentDate) || clickedDate.isAfter(currentDate)) {
             if (onDateSelect) {
                 onDateSelect(arg.dateStr);
             }
@@ -278,16 +278,16 @@ const Calendar: React.FC<CalendarProps> = ({ events, onDateSelect }) => {
     let processedEvents =
         events?.map((event: any) => {
             if (event.start && event.end) {
-                const startMoment = moment(event.start);
-                const endMoment = moment(event.end);
+                const startDayjs = dayjs(event.start);
+                const endDayjs = dayjs(event.end);
                 if (
-                    startMoment.isValid() &&
-                    endMoment.isValid() &&
-                    endMoment.isBefore(startMoment)
+                    startDayjs.isValid() &&
+                    endDayjs.isValid() &&
+                    endDayjs.isBefore(startDayjs)
                 ) {
                     return {
                         ...event,
-                        end: endMoment.clone().add(1, "day").toISOString(),
+                        end: endDayjs.add(1, "day").toISOString(),
                     };
                 }
             }

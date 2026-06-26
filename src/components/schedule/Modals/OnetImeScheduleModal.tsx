@@ -1,5 +1,4 @@
 import SideModal from "@/components/common/Modals/SideModal";
-import moment from "moment-timezone";
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/common/Input";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -8,6 +7,7 @@ import { endpoints } from "@/api/constants";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import { LocalizationProvider, MobileTimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { useAppStore } from "@/store/useAppStore";
@@ -19,6 +19,7 @@ import { Spin } from "antd";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+dayjs.extend(customParseFormat);
 
 interface OnetImeScheduleModalProps {
     isOpen: boolean;
@@ -102,7 +103,7 @@ const OnetImeScheduleModal = ({
 
     // Get the current active abbreviation (handles NST -> NDT transition)
     const activeAbbreviation = ianaTimezone
-        ? moment().tz(ianaTimezone).format("z")
+        ? dayjs().tz(ianaTimezone).format("z")
         : rawAbbreviation;
 
     const getAvailableDaysForDate = async () => {
@@ -197,7 +198,7 @@ const OnetImeScheduleModal = ({
         });
         setIsSaving(true);
         const formattedData = finalSlots.map((slot) => ({
-            date: moment(currentDate, "YYYY-MM-DD").format("DD-MM-YYYY"),
+            date: dayjs(currentDate, "YYYY-MM-DD").format("DD-MM-YYYY"),
             volunteer_slot_id: generateTimeSlotId(slot.start_time, slot.end_time),
             start_time: slot.start_time,
             end_time: slot.end_time,
@@ -411,7 +412,7 @@ const OnetImeScheduleModal = ({
 
     return (
         <SideModal
-            title={`${moment(currentDate, "YYYY-MM-DD").format("DD MMMM YYYY")}`}
+            title={`${dayjs(currentDate, "YYYY-MM-DD").format("DD MMMM YYYY")}`}
             onClose={handleClose}
             isOpen={isOpen}
             onSave={handleSubmit}
@@ -433,7 +434,7 @@ const OnetImeScheduleModal = ({
                         labelClassName="!text-[1rem] !font-medium"
                         inputType="datepicker"
                         placeholder="Select a date"
-                        value={currentDate ? moment(currentDate, "YYYY-MM-DD").toDate() : new Date()}
+                        value={currentDate ? dayjs(currentDate, "YYYY-MM-DD").toDate() : new Date()}
                         required={true}
                         disabled={true}
                         error={""}
