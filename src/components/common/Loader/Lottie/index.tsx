@@ -9,8 +9,6 @@ import Cookies from "js-cookie";
 const Lottie = dynamic(() => import("react-lottie-player"), { ssr: false });
 import { createPortal } from "react-dom";
 
-const Lottie = dynamic(() => import("react-lottie-player"), { ssr: false });
-
 type Props = {
     isLoading: boolean;
     customClassName?: string;
