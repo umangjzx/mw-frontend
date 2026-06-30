@@ -162,7 +162,7 @@ const ProfileDetailsFields: FormField[] = [
     },
     {
         id: "volunteer_skills",
-        label: "Skills and Expertise to teach Learners",
+        label: "Skills You Can Share with Learners",
         inputType: "async-select",
         placeholder: "Don't see your option? Type it in to add.",
         creatable: true,
