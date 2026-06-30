@@ -134,7 +134,6 @@ export const VolunteerContactDetails = ({ data }: { data: Volunteercontactdetail
 
     const contactDetails = [
         { title: "Phone Number", value: data?.contact_number?.number, icon: <FaPhoneAlt size={13} /> },
-        { title: "Email", value: data?.email, icon: <MdEmail size={15} /> },
     ]
 
     return (
