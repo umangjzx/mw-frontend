@@ -214,7 +214,7 @@ const ReviewsContent = ({ userFeedback }: { userFeedback: any }) => {
 
 const learnerTabs = [
     { id: "profile-details", title: "Profile Details" },
-    { id: "parent-guardian-information", title: "Parent/Guardian Information" },
+    { id: "parent-guardian-information", title: "Guardian Information" },
     { id: "learner-information", title: "Personal Info" },
     { id: "additional-information", title: "Additional Information" },
 ]

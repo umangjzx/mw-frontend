@@ -24,7 +24,7 @@ const InfoItem = ({ label, value }: { label: string, value: string | string[] })
             );
         }
         const stringValue = typeof value === "object" ? value?.value : value;
-        const formattedValue = label === "Parent Email" ? stringValue?.toLowerCase() : formatString(stringValue);
+        const formattedValue = label === "Guardian Email" ? stringValue?.toLowerCase() : formatString(stringValue);
         return <p className="text-base font-medium break-words">{formattedValue}</p>;
     };
     
@@ -82,9 +82,9 @@ export const ProfileDetails = ({ data }: { data: Volunteer }) => {
         { label: "Volunteered Experience", value: data?.volunteer_experience },
         { label: "Work Experience", value: data?.volunteer_work_experience },
         { label: "Description", value: data?.volunteer_description },
-        { label: "Consented from Parent", value: data?.consented_from_parent ? "Yes" : "No" },
-        { label: "Parent Email", value: data?.volunteer_parent_email },
-        { label: "Parent Name", value: data?.volunteer_parent_name },
+        { label: "Consented from Guardian", value: data?.consented_from_parent ? "Yes" : "No" },
+        { label: "Guardian Email", value: data?.volunteer_parent_email },
+        { label: "Guardian Name", value: data?.volunteer_parent_name },
     ].filter(detail => detail.value && Object.keys(detail.value).length);
     
     const renderAboutMeVideo = () => {

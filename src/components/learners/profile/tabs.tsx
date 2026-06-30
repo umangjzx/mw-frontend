@@ -91,7 +91,7 @@ export const ParentGuardianInformation = ({ data }: { data: Parentinfo }) => {
 
     return (
         <div>
-            <h5 className="text-xl font-semibold mb-3">Parent/Guardian Information</h5>
+            <h5 className="text-xl font-semibold mb-3">Guardian Information</h5>
             <div className="grid grid-cols-2 gap-3">
                 {details.map((detail) => (
                     <InfoItem key={detail.label} label={detail.label} value={detail.value} />
