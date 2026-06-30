@@ -65,7 +65,7 @@ const ParentGuardianFields: FormField[] = [
     },
     {
         id: "parent_contact_number",
-        label: "Parent contact number",
+        label: "Guardian contact number",
         sublabel: "(with country code)",
         inputType: "contact-input",
         placeholder: "Enter contact number",

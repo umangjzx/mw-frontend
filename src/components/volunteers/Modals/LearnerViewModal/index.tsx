@@ -286,7 +286,7 @@ const OverviewContent = ({ learnerData }: { learnerData: VolunteerData }) => {
             description: learnerData?.learner_personal_info?.learner_primary_language || "",
         },
         {
-            title: "Parent/Guardian Name",
+            title: "Guardian Name",
             description:
                 learnerData?.parent_info?.parent_first_name &&
                 learnerData?.parent_info?.parent_last_name
