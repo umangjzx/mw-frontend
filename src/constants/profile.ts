@@ -110,7 +110,7 @@ export const VolunteerProfileFormConstants: FormField[] = [
     },
     {
         name: "volunteer_skills",
-        label: "Skills",
+        label: "Skills You Can Share with Learners",
         inputType: "async-select",
         placeholder: "Select skills",
         creatable: true,
