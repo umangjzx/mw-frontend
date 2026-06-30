@@ -11,6 +11,7 @@ import { useState } from "react";
 const HeaderNotificationBell = () => {
     const role = Cookies.get("role");
     const volunteerId = Cookies.get("volunteer_id");
+    const learnerId = Cookies.get("learner_id");
     const [isOpen, setIsOpen] = useState(false);
 
     const { data } = useQuery({
@@ -22,7 +23,8 @@ const HeaderNotificationBell = () => {
         enabled: role === "volunteer" && Boolean(volunteerId),
     });
 
-    if (role !== "volunteer") return null;
+    // Show the bell for all authenticated users (volunteer + learner)
+    if (!role || !["volunteer", "learner"].includes(role)) return null;
 
     const unreadCount = Number(data?.unread_count || 0);
 
