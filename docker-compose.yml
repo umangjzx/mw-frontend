@@ -1,26 +1,20 @@
 version: "3.9"
 
-# ── Melody Wings Integrated Platform ──────────────────────────────────────────
-# 
-# Services:
-#   1. mw-backend          — Main MW backend (FastAPI, port 8080)
-#   2. safety-backend      — Detection pipeline (FastAPI + ML, port 8000)
-#   3. safety-worker       — Celery worker for async analysis
-#   4. safety-beat         — Celery beat scheduler (cleanup, Drive watcher)
-#   5. safety-frontend     — Detection dashboard (Next.js, port 3000)
-#   6. mw-admin-frontend   — MW admin panel (Next.js, port 3001)
-#   7. redis               — Task broker + cache for detection pipeline
+# ══════════════════════════════════════════════════════════════════════════════
+# Melody Wings — Full Stack (Safety Detection Integrated)
 #
 # Usage:
-#   docker compose up -d                    # Start core services
-#   docker compose --profile full up -d     # Start with ClamAV + Ollama
-#   docker compose logs -f safety-backend   # Follow detection pipeline logs
+#   docker compose up -d          → Start all services
+#   docker compose logs -f        → View logs
+#   docker compose down           → Stop all
+#   docker compose up -d --build  → Rebuild and start
 #
-# Prerequisites:
-#   - Copy melody-wings-backend/.env.example → melody-wings-backend/.env
-#   - Copy New-Rmsi-Latest/backend/.env.example → New-Rmsi-Latest/backend/.env
-#   - Set shared SAFETY_API_KEY in both .env files
-# ──────────────────────────────────────────────────────────────────────────────
+# Access:
+#   MW Admin Panel:      http://localhost:3001
+#   Safety Dashboard:    http://localhost:3000  (also embedded at /safety)
+#   MW Backend API:      http://localhost:8080
+#   Safety Backend API:  http://localhost:8000
+# ══════════════════════════════════════════════════════════════════════════════
 
 x-dns: &dns
   dns:
@@ -29,38 +23,7 @@ x-dns: &dns
 
 services:
 
-  # ═══════════════════════════════════════════════════════════════════════════
-  # MW BACKEND (existing production backend)
-  # ═══════════════════════════════════════════════════════════════════════════
-
-  mw-backend:
-    build:
-      context: ./melody-wings-backend
-      dockerfile: Dockerfile
-    container_name: mw-backend
-    restart: unless-stopped
-    <<: *dns
-    ports:
-      - "8080:8080"
-    env_file:
-      - ./melody-wings-backend/.env
-    environment:
-      # Point to the safety service on the internal Docker network
-      - SAFETY_SERVICE_URL=http://safety-backend:8000
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
-      interval: 15s
-      timeout: 5s
-      retries: 3
-      start_period: 15s
-    depends_on:
-      safety-backend:
-        condition: service_healthy
-
-  # ═══════════════════════════════════════════════════════════════════════════
-  # SAFETY DETECTION PIPELINE
-  # ═══════════════════════════════════════════════════════════════════════════
-
+  # ── Redis (task broker + cache) ─────────────────────────────────────────────
   redis:
     image: redis:7-alpine
     container_name: mw-redis
@@ -76,6 +39,7 @@ services:
       timeout: 5s
       retries: 5
 
+  # ── Safety Detection Backend ────────────────────────────────────────────────
   safety-backend:
     build:
       context: ./New-Rmsi-Latest/backend
@@ -91,9 +55,7 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - CLAMAV_HOST=clamav
-      - CLAMAV_PORT=3310
-      # Webhook callback to MW backend (internal network)
+      - USE_CELERY=true
       - MW_BACKEND_URL=http://mw-backend:8080
     volumes:
       - safety_uploads:/app/uploads
@@ -107,7 +69,7 @@ services:
       resources:
         limits:
           memory: 4G
-          cpus: '2'
+          cpus: '4'
         reservations:
           memory: 1G
     healthcheck:
@@ -115,8 +77,9 @@ services:
       interval: 15s
       timeout: 10s
       retries: 5
-      start_period: 60s
+      start_period: 90s
 
+  # ── Safety Celery Worker (background ML analysis) ───────────────────────────
   safety-worker:
     build:
       context: ./New-Rmsi-Latest/backend
@@ -132,8 +95,7 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - CLAMAV_HOST=clamav
-      - CLAMAV_PORT=3310
+      - USE_CELERY=true
       - MW_BACKEND_URL=http://mw-backend:8080
     volumes:
       - safety_uploads:/app/uploads
@@ -143,37 +105,14 @@ services:
     deploy:
       resources:
         limits:
-          memory: 6G
-          cpus: '2'
+          memory: 4G
+          cpus: '4'
         reservations:
-          memory: 2G
+          memory: 1G
     depends_on:
       redis:
         condition: service_healthy
-
-  safety-beat:
-    build:
-      context: ./New-Rmsi-Latest/backend
-      dockerfile: Dockerfile
-    container_name: mw-safety-beat
-    restart: unless-stopped
-    <<: *dns
-    command: celery -A celery_app:celery_app beat --loglevel=info
-    env_file:
-      - ./New-Rmsi-Latest/backend/.env
-    environment:
-      - PYTHONPATH=/app
-      - REDIS_URL=redis://redis:6379/0
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    depends_on:
-      redis:
-        condition: service_healthy
-
-  # ═══════════════════════════════════════════════════════════════════════════
-  # FRONTENDS
-  # ═══════════════════════════════════════════════════════════════════════════
-
+  # ── Safety Frontend (Next.js dashboard) ─────────────────────────────────────
   safety-frontend:
     build:
       context: ./New-Rmsi-Latest/admin-next
@@ -189,47 +128,26 @@ services:
       safety-backend:
         condition: service_healthy
 
-  mw-admin-frontend:
+  # ── MW Backend (existing app + safety integration) ──────────────────────────
+  mw-backend:
     build:
-      context: ./melody-wings-admin-frontend
+      context: ./melody-wings-backend
       dockerfile: Dockerfile
-    container_name: mw-admin-frontend
-    restart: unless-stopped
-    ports:
-      - "3001:3000"
-    environment:
-      - NEXT_PUBLIC_API_URL=http://mw-backend:8080
-      - NEXT_PUBLIC_SAFETY_DASHBOARD_URL=http://localhost:3000
-    depends_on:
-      mw-backend:
-        condition: service_healthy
-
-  # ═══════════════════════════════════════════════════════════════════════════
-  # OPTIONAL SERVICES (use: docker compose --profile full up)
-  # ═══════════════════════════════════════════════════════════════════════════
-
-  clamav:
-    image: clamav/clamav:latest
-    container_name: mw-clamav
+    container_name: mw-backend
     restart: unless-stopped
     <<: *dns
     ports:
-      - "3310:3310"
-    volumes:
-      - clamav_data:/var/lib/clamav
-    profiles:
-      - full
-
-  ollama:
-    image: ollama/ollama:latest
-    container_name: mw-ollama
-    restart: unless-stopped
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-    profiles:
-      - full
+      - "8080:8080"
+    env_file:
+      - ./melody-wings-backend/.env
+    environment:
+      - SAFETY_SERVICE_URL=http://safety-backend:8000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
 
 volumes:
   redis_data:
@@ -237,5 +155,3 @@ volumes:
   safety_reports:
   safety_logs:
   model_cache:
-  clamav_data:
-  ollama_data:
