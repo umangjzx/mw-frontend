@@ -149,6 +149,31 @@ services:
       retries: 3
       start_period: 15s
 
+  # ── MW Admin Frontend (Next.js staff console) ───────────────────────────────
+  # Not the production deploy path (that's Vercel, from the same source with no
+  # Docker involved) - this is purely for exercising the full stack locally.
+  # NEXT_PUBLIC_* values are baked into the client bundle at build time by the
+  # Dockerfile itself (localhost:8080/localhost:3000), which is correct here
+  # since the browser reaches every service through the host's mapped ports,
+  # not the compose-internal network.
+  admin-frontend:
+    build:
+      context: ./melody-wings-admin-frontend
+      dockerfile: Dockerfile
+    container_name: mw-admin-frontend
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    depends_on:
+      mw-backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
 volumes:
   redis_data:
   safety_uploads:
