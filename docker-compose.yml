@@ -23,22 +23,6 @@ x-dns: &dns
 
 services:
 
-  # ── Redis (task broker + cache) ─────────────────────────────────────────────
-  redis:
-    image: redis:7-alpine
-    container_name: mw-redis
-    restart: unless-stopped
-    <<: *dns
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   # ── Safety Detection Backend ────────────────────────────────────────────────
   safety-backend:
     build:
@@ -52,19 +36,12 @@ services:
     env_file:
       - ./New-Rmsi-Latest/backend/.env
     environment:
-      - REDIS_URL=redis://redis:6379/0
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - USE_CELERY=true
       - MW_BACKEND_URL=http://mw-backend:8080
     volumes:
       - safety_uploads:/app/uploads
       - safety_reports:/app/reports
       - safety_logs:/app/logs
       - model_cache:/root/.cache/huggingface
-    depends_on:
-      redis:
-        condition: service_healthy
     deploy:
       resources:
         limits:
@@ -79,39 +56,6 @@ services:
       retries: 5
       start_period: 90s
 
-  # ── Safety Celery Worker (background ML analysis) ───────────────────────────
-  safety-worker:
-    build:
-      context: ./New-Rmsi-Latest/backend
-      dockerfile: Dockerfile
-    container_name: mw-safety-worker
-    restart: unless-stopped
-    <<: *dns
-    command: celery -A celery_app:celery_app worker --loglevel=info --pool=threads --concurrency=4
-    env_file:
-      - ./New-Rmsi-Latest/backend/.env
-    environment:
-      - PYTHONPATH=/app
-      - REDIS_URL=redis://redis:6379/0
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - USE_CELERY=true
-      - MW_BACKEND_URL=http://mw-backend:8080
-    volumes:
-      - safety_uploads:/app/uploads
-      - safety_reports:/app/reports
-      - safety_logs:/app/logs
-      - model_cache:/root/.cache/huggingface
-    deploy:
-      resources:
-        limits:
-          memory: 4G
-          cpus: '4'
-        reservations:
-          memory: 1G
-    depends_on:
-      redis:
-        condition: service_healthy
   # ── Safety Frontend (Next.js dashboard) ─────────────────────────────────────
   safety-frontend:
     build:
@@ -175,7 +119,6 @@ services:
       start_period: 15s
 
 volumes:
-  redis_data:
   safety_uploads:
   safety_reports:
   safety_logs:
